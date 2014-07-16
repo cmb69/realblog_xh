@@ -22,13 +22,13 @@ Credits :  - flatfile database class Copyright 2005 Luke Plant <L.Plant.98@canta
 License :  GNU General Public License, version 2 or later of your choice
 ************************************
 
-This program is free software; you can redistribute it and/or modify it under the terms of the 
-GNU General Public License as published by the Free Software Foundation; either version 2 of the 
+This program is free software; you can redistribute it and/or modify it under the terms of the
+GNU General Public License as published by the Free Software Foundation; either version 2 of the
 License.
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
 even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the GNU General Public License for more details.
-You should have received a copy of the GNU General Public License along with this program; 
+You should have received a copy of the GNU General Public License along with this program;
 if not, see <http://www.gnu.org/licenses>.
 */
 
@@ -47,7 +47,7 @@ $realblog_based_on = '<p>based on the Plugin <b>AdvancedNews</b> by <a href="htt
 function evaluate_cmsimple_scripting_crb($__text_crb, $__compat_crb = TRUE) {
 	global $output;
     foreach ($GLOBALS as $__name_crb => $__dummy_crb) {global $$__name_crb;}
-    
+
     $__scope_before_crb = NULL; // just that it exists
     $__scripts_crb = array();
     preg_match_all('~'.$cf['scripting']['regexp'].'~is', $__text_crb, $__scripts_crb);
@@ -68,7 +68,7 @@ function evaluate_cmsimple_scripting_crb($__text_crb, $__compat_crb = TRUE) {
 		if ($__compat_crb) {break;}
             }
         }
-		$eval_script_output = $output; 
+		$eval_script_output = $output;
 		$output = '';
 		return $eval_script_output;
     }
@@ -77,7 +77,7 @@ function evaluate_cmsimple_scripting_crb($__text_crb, $__compat_crb = TRUE) {
 
 function evaluate_plugincall_crb($__text_crb) {
     global $u;
-    
+
     $error = ' <span style="color:#5b0000; font-size:14px;">{{CALL TO:<span style="color:#c10000;">{{%1}}</span> FAILED}}</span> '; //use this for debugging of failed plugin-calls
     $pl_regex = '"{{{RGX:CALL(.*?)}}}"is'; //general CALL-RegEx (Placeholder: "RGX:CALL")
     $pl_calls = array(
@@ -124,8 +124,8 @@ function evaluate_scripting_crb($text, $compat = TRUE) {
 ********************************************************************************
 */
 
-$rss_path='./' . @$co_author_folder;
-if (!is_writeable($rss_path . 'realblog_rss_feed.xml') && $adm) 
+$rss_path='./';
+if (!is_writeable($rss_path . 'realblog_rss_feed.xml') && $adm)
 		{
 			$o.= '<div class="cmsimplecore_warning" style="text-align: center;"><b>RealBlog:</b> RSS file "./realblog_rss_feed.xml" not writable.</div>';
 		}
@@ -133,29 +133,22 @@ if (!is_writeable($rss_path . 'realblog_rss_feed.xml') && $adm)
 if (!$adm)
 {
 	// recover variables from outsite the function
-	global $pth, $sn, $plugin_tx, $plugin_cf, $u, $s, $c, $sl, $f, $tx, $cal_format, $hjs, $co_author_folder;
-	
+	global $pth, $sn, $plugin_tx, $plugin_cf, $u, $s, $c, $sl, $f, $tx, $cal_format, $hjs;
+
 	// create the site RSS:rdf file
 	realblog_export_rssfeed();
-	
+
 	// get plugin name
 	$plugin = basename(dirname(__FILE__), "/");
-	
+
 	// set locale time
 	setlocale(LC_ALL, $plugin_tx[$plugin]['date_locale']);
-	
+
 	// set general variables for the plugin
 	$plugin_images_folder = $pth['folder']['plugins'] . $plugin . "/images/";
 	$plugin_include_folder = $pth['folder']['plugins'] . $plugin . "/include/";
 
-	if($co_author_folder)
-	{
-		$db_path = $pth['folder']['base'] . $co_author_folder . str_replace('./','',$pth['folder']['content']) . 'realblog/';
-	}
-	else
-	{
-		$db_path = $pth['folder']['content'] . 'realblog/';
-	}
+	$db_path = $pth['folder']['content'] . 'realblog/';
 
 	$db_name="realblog.txt";
 
@@ -172,7 +165,7 @@ if (!$adm)
 	$m = date("n", time());
 	$y = date("Y", time());
 	$today = mktime(NULL, NULL, NULL, $m, $d, $y);
-	
+
 	// Change realblog status from ready for publishing to published when current date is within the publishing period
 	$compClause           =NULL;
 
@@ -191,13 +184,13 @@ if (!$adm)
 	}
 
 	// Change realblog status from published to archived when publishing period is ended and auto archive is enabled
-	
+
 	if ($plugin_cf['realblog']['auto_archive'] == 'true')
 	{
-	
+
 		$compClause=NULL;
 		$compClause=new AndWhereClause(new SimpleWhereClause(REALBLOG_STATUS, "<=", 1), new SimpleWhereClause(REALBLOG_ENDDATE, "<", $today, INTEGER_COMPARISON));
-		
+
 		if($plugin_cf['realblog']['entries_order'] == 'desc')
 		{
 			$records = $db->selectWhere($db_name, $compClause, -1, array(new OrderBy(REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON), new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)));
@@ -246,12 +239,7 @@ function CommentsMembersOnly()
 function showrealblog ($options = NULL,$realBlogCat = 'all')
 {
 	// recover variables from outsite the function
-    global $adm, $pth, $sn, $title, $plugin_tx, $plugin_cf, $u, $s, $c, $sl, $f, $tx, $cal_format, $hjs, $realblogID, $commentschecked, $id, $from_page, $page, $realblog_page, $co_author_folder;
-	
-	if(!defined('CMSIMPLE_VERSION'))
-	{
-		return '<p>This plugin requires <b>CMSimple 4.2</b> or higher.</p><p><a href="http://www.cmsimple.org/">CMSimple Download & Updates &raquo;</a></p>';
-	}
+    global $adm, $pth, $sn, $title, $plugin_tx, $plugin_cf, $u, $s, $c, $sl, $f, $tx, $cal_format, $hjs, $realblogID, $commentschecked, $id, $from_page, $page, $realblog_page;
 
 	// get plugin name
 	$plugin=basename(dirname(__FILE__), "/");
@@ -303,19 +291,19 @@ function showrealblog ($options = NULL,$realBlogCat = 'all')
 	$printrealblog =isset($_POST['printrealblog']) ? $_POST['printrealblog'] : @$_GET['printrealblog'];
 
 	// Date Picker settings
-	
+
 /*
 	$monthnames=explode(",", $plugin_tx[$plugin]['month_names']);
 
-	foreach ($monthnames as $key => $value) 
+	foreach ($monthnames as $key => $value)
 	{
-		$months=@$months . '"' . $value . '",'; 
+		$months=@$months . '"' . $value . '",';
 	}
 
 	$months=substr($months, 0, strlen($months) - 1);
 	$daynames1=explode(",", @$plugin_tx[$plugin]['weekday_names1']);
 
-	foreach ($daynames1 as $key => $value) 
+	foreach ($daynames1 as $key => $value)
 	{
 		$days1=@$days1 . '"' . $value . '",';
 	}
@@ -323,7 +311,7 @@ function showrealblog ($options = NULL,$realBlogCat = 'all')
 	$days1=substr($days1, 0, strlen($days1) - 1);
 	$daynames2=explode(",", @$plugin_tx[$plugin]['weekday_names2']);
 
-	foreach ($daynames2 as $key => $value) 
+	foreach ($daynames2 as $key => $value)
 	{
 		$days2=@$days2 . '"' . $value . '",';
 	}
@@ -345,19 +333,12 @@ function showrealblog ($options = NULL,$realBlogCat = 'all')
 	// set general variables for the plugin
 	$plugin_images_folder=$pth['folder']['plugins'] . $plugin . "/images/";
 	$plugin_include_folder=$pth['folder']['plugins'] . $plugin . "/include/";
-	
-	if($co_author_folder)
-	{
-		$db_path = $pth['folder']['base'] . $co_author_folder . str_replace('./','',$pth['folder']['content']) . 'realblog/';
-	}
-	else
-	{
-		$db_path = $pth['folder']['content'] . 'realblog/';
-	}
+
+	$db_path = $pth['folder']['content'] . 'realblog/';
 	$db_name="realblog.txt";
 
 	// Show / hide search block
-	$hjs.= "\n" . '<script type="text/javascript">' . "\n" . 'function realblog_showSearch() 
+	$hjs.= "\n" . '<script type="text/javascript">' . "\n" . 'function realblog_showSearch()
 	{
 	if (document.getElementById("searchblock").style.display == "none")
 		{
@@ -375,13 +356,13 @@ function showrealblog ($options = NULL,$realBlogCat = 'all')
 		}
 	}
 	</script>' . "\n";
-	
+
 	// include the flatfile database class
 	require_once ($plugin_include_folder . "flatfile.php");
-	
+
 	// declare the realblog database fields
 	require_once ($plugin_include_folder . "fields.php");
-	
+
 	// connect to the realblog database file
 	$db = new Flatfile();
 	$db->datadir=$db_path;
@@ -389,12 +370,12 @@ function showrealblog ($options = NULL,$realBlogCat = 'all')
 	if ($realblogaction != "view")
 	{
 		$compClause     =new SimpleWhereClause(REALBLOG_STATUS, '=', 1, INTEGER_COMPARISON);
-		global $pth, $sn, $plugin_tx, $plugin_cf, $u, $s, $c, $sl, $f, $tx, $co_author_folder;
-		
+		global $pth, $sn, $plugin_tx, $plugin_cf, $u, $s, $c, $sl, $f, $tx;
+
 		// Create the appropriate date format for the date picker
 		$my_date_format1=explode('/', $plugin_tx[$plugin]['date_format']);
 
-		if (count($my_date_format1) > 1) 
+		if (count($my_date_format1) > 1)
 		{
 			$date_separator1="/";
 		}
@@ -402,7 +383,7 @@ function showrealblog ($options = NULL,$realBlogCat = 'all')
 		{
 			$my_date_format1=explode('.', $plugin_tx[$plugin]['date_format']);
 
-			if (count($my_date_format1) > 1) 
+			if (count($my_date_format1) > 1)
 			{
 				$date_separator1=".";
 			}
@@ -436,7 +417,7 @@ function showrealblog ($options = NULL,$realBlogCat = 'all')
 			}
 		}
 
-		foreach ($cal_date_format1 as $key => $value) 
+		foreach ($cal_date_format1 as $key => $value)
 		{
 			$cal_format.=($key < count($my_date_format1) - 1) ? $value . $date_separator1 : $value;
 		}
@@ -452,13 +433,13 @@ function showrealblog ($options = NULL,$realBlogCat = 'all')
 			$t.='<p class="realblog_search_hint">' . $plugin_tx['realblog']['search_hint'] . '</p>';
 			$t.="\n" . '<table style="width: 100%;">' . "\n";
 			$t.="<tr>\n" . '<td style="width: 30%;" class="realblog_search_text">' . $plugin_tx[$plugin]['title_label'] . ' ' . $plugin_tx['realblog']['search_contains'] . ':' . "\n</td>\n<td>\n<select name=\"title_operator\" style=\"visibility: hidden; width: 0;\">\n<option value=\"2\" selected=\"selected\">" . $plugin_tx[$plugin]['search_contains'] . "</option>\n</select>\n" . tag('input type="text" name="realblog_title" size="35" class="realblog_search_input" maxlength="64"') . "\n</td>\n</tr>\n";
-			$t.="<tr>\n" . '<td style="width: 30%;">&nbsp;</td>' . "\n" . '<td>' . "\n" . '&nbsp;&nbsp;&nbsp;' . 
-			tag('input id="operator_2a" type="radio" name="operator_2" value="AND"') . '&nbsp;' . $plugin_tx[$plugin]['search_and'] . "&nbsp;&nbsp;&nbsp;" . 
+			$t.="<tr>\n" . '<td style="width: 30%;">&nbsp;</td>' . "\n" . '<td>' . "\n" . '&nbsp;&nbsp;&nbsp;' .
+			tag('input id="operator_2a" type="radio" name="operator_2" value="AND"') . '&nbsp;' . $plugin_tx[$plugin]['search_and'] . "&nbsp;&nbsp;&nbsp;" .
 			tag('input id="operator_2b" type="radio" name="operator_2" value="OR" checked="checked"') . '&nbsp;' . $plugin_tx[$plugin]['search_or'] . "</td>\n</tr>\n";
-			$t.="<tr>\n" . '<td style="width: 30%;" class="realblog_search_text">' . $plugin_tx[$plugin]['story_label'] . ' ' . $plugin_tx['realblog']['search_contains'] . ':' . "</td><td><select name=\"story_operator\" style=\"visibility: hidden; width: 0;\"><option value=\"2\" selected=\"selected\">" . $plugin_tx[$plugin]['search_contains'] . "</option>\n</select>\n" . 
+			$t.="<tr>\n" . '<td style="width: 30%;" class="realblog_search_text">' . $plugin_tx[$plugin]['story_label'] . ' ' . $plugin_tx['realblog']['search_contains'] . ':' . "</td><td><select name=\"story_operator\" style=\"visibility: hidden; width: 0;\"><option value=\"2\" selected=\"selected\">" . $plugin_tx[$plugin]['search_contains'] . "</option>\n</select>\n" .
 			tag('input type="text" name="realblog_story" size="35" class="realblog_search_input" maxlength="64"') . "</td></tr>\n";
 			$t.="<tr>\n<td colspan=\"2\">&nbsp;</td></tr>\n";
-			$t.="<tr>\n<td colspan=\"2\"" . ' style="text-align: center;">' . 
+			$t.="<tr>\n<td colspan=\"2\"" . ' style="text-align: center;">' .
 			tag('input type="submit" name="send" value="' . $tx['search']['button'] . '"') . "</td></tr>\n";
 			$t.="</table>\n</div>\n";
 			$t.="</form>\n";
@@ -469,28 +450,28 @@ function showrealblog ($options = NULL,$realBlogCat = 'all')
 		{
 			$compRealblogClause=new SimpleWhereClause(REALBLOG_STATUS, '=', 1, INTEGER_COMPARISON);
 
-			if (!empty($_REQUEST['realblog_from_date'])) 
+			if (!empty($_REQUEST['realblog_from_date']))
 			{
-				$compClauseDate1=new SimpleWhereClause(REALBLOG_DATE, $_REQUEST[date_operator_1], make_timestamp_dates1($_REQUEST[realblog_from_date])); 
+				$compClauseDate1=new SimpleWhereClause(REALBLOG_DATE, $_REQUEST[date_operator_1], make_timestamp_dates1($_REQUEST[realblog_from_date]));
 			}
 
-			if (!empty($_REQUEST['realblog_to_date'])) 
+			if (!empty($_REQUEST['realblog_to_date']))
 			{
-				$compClauseDate2=new SimpleWhereClause(REALBLOG_DATE, $_REQUEST[date_operator_2], make_timestamp_dates1($_REQUEST[realblog_to_date])); 
+				$compClauseDate2=new SimpleWhereClause(REALBLOG_DATE, $_REQUEST[date_operator_2], make_timestamp_dates1($_REQUEST[realblog_to_date]));
 			}
 
-			if (!empty($_REQUEST['realblog_title'])) 
+			if (!empty($_REQUEST['realblog_title']))
 			{
-			$compClauseTitle=new LikeWhereClause(REALBLOG_TITLE, $_REQUEST[realblog_title], $_REQUEST[title_operator]); 
+			$compClauseTitle=new LikeWhereClause(REALBLOG_TITLE, $_REQUEST[realblog_title], $_REQUEST[title_operator]);
 			}
 
-			if (!empty($_REQUEST['realblog_story'])) 
+			if (!empty($_REQUEST['realblog_story']))
 			{
-				$compClauseStory=new LikeWhereClause(REALBLOG_STORY, $_REQUEST['realblog_story'], $_REQUEST['story_operator']); 
+				$compClauseStory=new LikeWhereClause(REALBLOG_STORY, $_REQUEST['realblog_story'], $_REQUEST['story_operator']);
 			}
 
 			// [only from_date]
-			if (!empty($compClauseDate1) && empty($compClauseDate2) && empty($compClauseTitle) && empty($compClauseStory)) 
+			if (!empty($compClauseDate1) && empty($compClauseDate2) && empty($compClauseTitle) && empty($compClauseStory))
 			{
 				$compClause=$compClauseDate1;
 			}
@@ -502,7 +483,7 @@ function showrealblog ($options = NULL,$realBlogCat = 'all')
 			}
 
 			// [from_date & to_date]
-			if (!empty($compClauseDate1) && !empty($compClauseDate2) && empty($compClauseTitle) && empty($compClauseStory)) 
+			if (!empty($compClauseDate1) && !empty($compClauseDate2) && empty($compClauseTitle) && empty($compClauseStory))
 			{
 			$compClause=new AndWhereClause($compClauseDate1, $compClauseDate2);
 			}
@@ -553,7 +534,7 @@ function showrealblog ($options = NULL,$realBlogCat = 'all')
 			}
 
 			// [only story]
-			if (empty($compClauseDate1) && empty($compClauseDate2) && empty($compClauseTitle) && !empty($compClauseStory)) 
+			if (empty($compClauseDate1) && empty($compClauseDate2) && empty($compClauseTitle) && !empty($compClauseStory))
 			{
 				$compClause=$compClauseStory;
 			}
@@ -691,7 +672,7 @@ function showrealblog ($options = NULL,$realBlogCat = 'all')
 //			$compClause=serialize($compClause);
 			session_write_close();
 
-			if (isset($compClause)) 
+			if (isset($compClause))
 			{
 				$compClause=new AndWhereClause($compRealblogClause, $compClause);
 			}
@@ -708,9 +689,9 @@ function showrealblog ($options = NULL,$realBlogCat = 'all')
 			{
 				$records=$db->selectWhere($db_name, $compClause, -1, array(new OrderBy(REALBLOG_DATE, ASCENDING, INTEGER_COMPARISON), new OrderBy(REALBLOG_ID, ASCENDING, INTEGER_COMPARISON)));
 			}
-			
+
 			$numberOfSearchResults=$records;
-			
+
 			foreach($numberOfSearchResults as $searchresults)
 			{
 				if(strstr($searchresults[8],'|' . $realBlogCat . '|'))
@@ -718,7 +699,7 @@ function showrealblog ($options = NULL,$realBlogCat = 'all')
 					$numberOfSearchResults[] = '';
 				}
 			}
-			
+
 			if($realBlogCat != 'all')
 			{
 				$db_search_records = count($numberOfSearchResults) - count($records);
@@ -727,9 +708,9 @@ function showrealblog ($options = NULL,$realBlogCat = 'all')
 			{
 				$db_search_records = count($numberOfSearchResults);
 			}
-			
+
 			$t.= '<p>' . $plugin_tx['realblog']['search_searched_for'] . ' <b>"' . $_REQUEST['realblog_story'] . '"</b></p>';
-			
+
 			$t.='<p>' . $plugin_tx['realblog']['search_result'] . '<b> ' . $db_search_records . '</b></p>';
 			$t.='<p><a href="' . preg_replace('/\&.*\z/', '', $_SERVER['REQUEST_URI']) . '"><b>' . $plugin_tx['realblog']['search_show_all'] . '</b></a></p>' . tag('br');
 		}
@@ -753,7 +734,7 @@ function showrealblog ($options = NULL,$realBlogCat = 'all')
 				new OrderBy(REALBLOG_ID, ASCENDING, INTEGER_COMPARISON)));
 			}
 		}
-		
+
 		foreach($records as $catRecordsTemp)
 		{
 			if(strpos($catRecordsTemp[7],'|' . $realBlogCat . '|') || strpos($catRecordsTemp[8],'|' . $realBlogCat . '|') || $realBlogCat == 'all')
@@ -761,7 +742,7 @@ function showrealblog ($options = NULL,$realBlogCat = 'all')
 				$catRecords[] = $catRecordsTemp;
 			}
 		}
-		
+
 		$records = $catRecords;
 
 		switch (strtolower($layout))
@@ -770,14 +751,14 @@ function showrealblog ($options = NULL,$realBlogCat = 'all')
 			// Set limit of record in the blog
 			$page_record_limit=$plugin_cf[$plugin]['entries_per_page'];
 
-			if ($page_record_limit <= 0) 
+			if ($page_record_limit <= 0)
 			{
 				$page_record_limit=10;
 			}
 
-			if ($page_record_limit >= 32) 
+			if ($page_record_limit >= 32)
 			{
-				$page_record_limit=32; 
+				$page_record_limit=32;
 			}
 
 			// Count the total records
@@ -786,13 +767,13 @@ function showrealblog ($options = NULL,$realBlogCat = 'all')
 
 			// Calculate the number of possible pages
 			$page_total=($db_total_records % $page_record_limit == 0) ? ((int)$db_total_records / $page_record_limit) : ((int)($db_total_records / $page_record_limit) + 1);
-			
+
 			// Calculate table paging
 			@$t.="\n<div class=\"realblog_show_box\">\n";
 
-			if ($page > $page_total) 
+			if ($page > $page_total)
 			{
-				$page=1; 
+				$page=1;
 			}
 
 			if ($page == "" || $page <= 0 || $page == 1)
@@ -800,16 +781,16 @@ function showrealblog ($options = NULL,$realBlogCat = 'all')
 				$start_index=0;
 				$page       =1;
 			}
-			else 
-			{ 
-				$start_index=(($page - 1) * ($page_record_limit)); 
+			else
+			{
+				$start_index=(($page - 1) * ($page_record_limit));
 			}
 
 			// Display realblog items overview
 
 			// Blog overview paging
 			$mysearch="";
-			
+
 			if ($db_total_records > 0 && $page_total > 1)
 			{
 				if ($page_total > $page)
@@ -822,12 +803,12 @@ function showrealblog ($options = NULL,$realBlogCat = 'all')
 					$next=$page_total;
 					$back=$page_total - 1;
 				}
-			
+
 			}
-			
+
 			$tmp=($db_total_records > 0) ? "" . $plugin_tx[$plugin]['page_label'] . " : " . "\n<a href=\"" . $sn . "?" . $u[$s] . "&amp;page=" . @$back . $mysearch . "\" title=\"" . $plugin_tx[$plugin]['tooltip_previous'] . "\">" . tag("img src=\"" . $plugin_images_folder . "btn_previous.gif\" alt=\"previous_img\"") . "</a>&nbsp;\n" . $page . " / " . $page_total : "";
-			
-			$tmp.="&nbsp;\n<a href=\"" . $sn . "?" . $u[$s] . "&amp;page=" . @$next . $mysearch . "\" title=\"" . $plugin_tx[$plugin]['tooltip_next'] . "\">" . 
+
+			$tmp.="&nbsp;\n<a href=\"" . $sn . "?" . $u[$s] . "&amp;page=" . @$next . $mysearch . "\" title=\"" . $plugin_tx[$plugin]['tooltip_next'] . "\">" .
 tag("img src=\"" . $plugin_images_folder . "btn_next.gif\" class=\"btn_prev_next\" alt=\"next_img\"") . "</a>\n";
 
 			if ($db_total_records > 0 && $page_total > 1)
@@ -842,7 +823,7 @@ tag("img src=\"" . $plugin_images_folder . "btn_next.gif\" class=\"btn_prev_next
 
 				$t.="\n</div>\n";
 			}
-			
+
 			if(!@$_REQUEST['realblog_story'] && $plugin_cf['realblog']['show_numberof_entries_top'] == 'true')
 			{
 				$t.="<div class=\"realblog_db_info\">\n" . $plugin_tx[$plugin]['record_count'] . " : " . $db_total_records . "\n</div>\n";
@@ -853,7 +834,7 @@ tag("img src=\"" . $plugin_images_folder . "btn_next.gif\" class=\"btn_prev_next
 				$t.="<div class=\"realblog_page_info\">\n" . $tmp . "</div>";
 			}
 			$t.="\n<div style=\"clear:both;\"></div>";
-			
+
 			// Display table header
 			$t.="\n\n<div id=\"realblog_entries_preview\">\n";
 
@@ -864,15 +845,15 @@ tag("img src=\"" . $plugin_images_folder . "btn_next.gif\" class=\"btn_prev_next
 			{
 
 				//$color = $record_index % 2 ? "#cccccc" : "#99cccc";
-				
-				if ($record_index > $db_total_records - 1) 
+
+				if ($record_index > $db_total_records - 1)
 				{
 					$t.="";
 				}
 				else
 				{
 					$field=$records[$record_index];
-					
+
 					if(strstr($field[REALBLOG_HEADLINE],'|' . $realBlogCat . '|') || strstr($field[REALBLOG_STORY],'|' . $realBlogCat . '|') || $realBlogCat == 'all' || ($realblogaction == "search" && strstr($field[REALBLOG_H],'|' . $realBlogCat . '|')))
 					{
 						if($plugin_cf['realblog']['teaser_multicolumns'] == 'true')
@@ -880,7 +861,7 @@ tag("img src=\"" . $plugin_images_folder . "btn_next.gif\" class=\"btn_prev_next
 							$t.="\n<div class=\"realblog_single_entry_preview\">\n";
 							$t.="\n<div class=\"realblog_single_entry_preview_in\">\n";
 						}
-						
+
 						$t.= "<h4>";
 
 						if($field[REALBLOG_STORY] != '' || $adm)
@@ -894,31 +875,31 @@ tag("img src=\"" . $plugin_images_folder . "btn_next.gif\" class=\"btn_prev_next
 						{
 							$t.='</a>';
 						}
-						
+
 						$t.='</h4>' . "\n";
-						
+
 						$t.="\n<div class=\"realblog_show_date\">\n" . strftime($plugin_tx[$plugin]['display_date_format'], $field[REALBLOG_DATE]) . "\n</div>\n";
-						
+
 						$t.="\n<div class=\"realblog_show_story\">\n";
-						
+
 						$t.=evaluate_scripting_crb($field[REALBLOG_HEADLINE]);
-						
+
 						if($plugin_cf['realblog']['show_read_more_link'] == 'true' && $field[REALBLOG_STORY] != '')
 						{
 							$t.="\n".'<div class="realblog_entry_footer">'."\n";
-							
+
 							// shows number of comments in entries overview - GE 2010-12
-							
-							if (function_exists('comments_nr') && $plugin_cf['realblog']['comments_function'] == 'true' && $field[REALBLOG_COMMENTS]) 
+
+							if (function_exists('comments_nr') && $plugin_cf['realblog']['comments_function'] == 'true' && $field[REALBLOG_COMMENTS])
 							{
 								$realblog_comments_id = 'comments'.$field[REALBLOG_ID];
 								$t.= '<p class="realblog_number_of_comments">' . comments_nr($realblog_comments_id) . '</p>' . "\n";
 							}
-							
-							
+
+
 							$t.='<p class="realblog_read_more">' . "<a href=\"" . $sn . "?" . $u[$s] . "&amp;" . str_replace(' ', '_', $field[REALBLOG_TITLE]) . "&amp;realblogaction=view&amp;realblogID=" . $field[REALBLOG_ID] . "&amp;page=" . $page . "\" title=\"" . $plugin_tx[$plugin]["tooltip_view"] . "\" >" . $plugin_tx[$plugin]['read_more'] . "</a></p>\n</div>\n";
 						}
-						
+
 						$t.= '<div style="clear: both;"></div>' . "\n</div>\n";
 						if($plugin_cf['realblog']['teaser_multicolumns'] == 'true')
 						{
@@ -930,9 +911,9 @@ tag("img src=\"" . $plugin_images_folder . "btn_next.gif\" class=\"btn_prev_next
 
 
 			$t.= '<div style="clear: both;"></div>' . "\n</div>\n";
-			
+
 			// Blog overview paging
-			
+
 			if(!@$_REQUEST['realblog_story'] != '' && $plugin_cf['realblog']['show_numberof_entries_bottom'] == 'true')
 			{
 				$t.="\n<div class=\"realblog_db_info\">\n" . $plugin_tx[$plugin]['record_count'] . " : " . $db_total_records . "\n</div>\n";
@@ -942,7 +923,7 @@ tag("img src=\"" . $plugin_images_folder . "btn_next.gif\" class=\"btn_prev_next
 			{
 				$t.="\n<div class=\"realblog_page_info\">\n" . $tmp . "</div>\n";
 			}
-			
+
 			$mysearch="";
 
 			if ($db_total_records > 0 && $page_total > 1)
@@ -992,9 +973,9 @@ tag("img src=\"" . $plugin_images_folder . "btn_next.gif\" class=\"btn_prev_next
 
 			// Show selected entry (realblog above entry)
 			$t ="\n<div class=\"realblog_show_box\">\n";
- 
+
 			// Redirect back to realblog overview (realblog, above entry) - GE 2010 - 11
-			global $su, $sn, $s, $plugin_cf, $co_author_folder;
+			global $su, $sn, $s, $plugin_cf;
 			$t.= "\n".'<div class="realblog_buttons">' . "\n" . '<span class="realblog_button"><a href="' . $sn . '?' . $su . '&amp;page=' . $page . '">' .$plugin_tx[$plugin]['blog_back'] . '</a></span>';
 
 			// "edit comments" button (realblog, above entry) - GE 2010 - 11
@@ -1002,15 +983,15 @@ tag("img src=\"" . $plugin_images_folder . "btn_next.gif\" class=\"btn_prev_next
 			{
 				$t.='<span class="realblog_button"><a href="./?&comments&admin=plugin_main&action=plugin_text&selected=comments' . $realblogID . '.txt">' . $plugin_tx['realblog']['comment_edit'] . '</a></span>';
 			}
-			
+
 			// "edit entry" button (realblog, above entry)
 			if($adm == 'true')
 			{
 				$t.='<span class="realblog_button"><a href="./?&realblog&admin=plugin_main&action=modify_realblog&amp;realblogID=' . $realblogID . '">' . $plugin_tx['realblog']['entry_edit'] . '</a></span>';
 			}
-			
+
 			$t.='<div style="clear: both;"></div>';
-			
+
 			$title.= locator() . ' - ' . $record[REALBLOG_TITLE];
 			$t.= "\n".'</div>'."\n";
 			$t.="<h4>" . $record[REALBLOG_TITLE] . "</h4>";
@@ -1034,8 +1015,8 @@ tag("img src=\"" . $plugin_images_folder . "btn_next.gif\" class=\"btn_prev_next
 				</script>";
 			}
 
-			// Redirect back to realblog overview (realblog, below entry) - GE 2010 - 11 
-			global $su, $sn, $s, $page, $plugin_cf, $co_author_folder;
+			// Redirect back to realblog overview (realblog, below entry) - GE 2010 - 11
+			global $su, $sn, $s, $page, $plugin_cf;
 			$t.= "\n".'<div class="realblog_buttons">' . "\n" . '<span class="realblog_button"><a href="' . $sn . '?' . $su . '&amp;page=' . $page . '">' .$plugin_tx[$plugin]['blog_back'] . '</a></span>';
 
 			// "edit comments" button (realblog, below entry) - GE 2010 - 11
@@ -1043,15 +1024,15 @@ tag("img src=\"" . $plugin_images_folder . "btn_next.gif\" class=\"btn_prev_next
 			{
 				$t.='<span class="realblog_button"><a href="./?&comments&admin=plugin_main&action=plugin_text&selected=comments' . $realblogID . '.txt">' . $plugin_tx['realblog']['comment_edit'] . '</a></span>';
 			}
-			
+
 			// "edit entry" button (realblog, below entry)
 			if($adm == 'true')
 			{
 				$t.='<span class="realblog_button"><a href="./?&realblog&admin=plugin_main&action=modify_realblog&amp;realblogID=' . $realblogID . '">' . $plugin_tx['realblog']['entry_edit'] . '</a></span>';
 			}
-			
+
 			$t.='<div style="clear: both;"></div>';
-			
+
 			$t.= "\n".'</div>'."\n";
 
 			// output comments in RealBlog - GE 2010 - 11
@@ -1090,12 +1071,7 @@ $record[REALBLOG_COMMENTS];
 function showrealblogarchive ($options = NULL)
 {
 	// recover variables from outsite the function
-    global $adm, $pth, $sn, $title, $plugin_tx, $plugin_cf, $u, $s, $c, $sl, $f, $tx, $cal_format, $hjs, $realblogID, $commentschecked, $id, $from_page, $page, $co_author_folder;
-	
-	if(!defined('CMSIMPLE_VERSION'))
-	{
-		return '<p>This plugin requires <b>CMSimple 4.2</b> or higher.</p><p><a href="http://www.cmsimple.org/">CMSimple Download & Updates &raquo;</a></p>';
-	}
+    global $adm, $pth, $sn, $title, $plugin_tx, $plugin_cf, $u, $s, $c, $sl, $f, $tx, $cal_format, $hjs, $realblogID, $commentschecked, $id, $from_page, $page;
 
 	// get plugin name
 	$plugin=basename(dirname(__FILE__), "/");
@@ -1150,15 +1126,15 @@ function showrealblogarchive ($options = NULL)
 	// Date Picker settings
 	$monthnames=explode(",", $plugin_tx[$plugin]['month_names']);
 
-	foreach ($monthnames as $key => $value) 
+	foreach ($monthnames as $key => $value)
 	{
-		$months=@$months . '"' . $value . '",'; 
+		$months=@$months . '"' . $value . '",';
 	}
 
 	$months=substr($months, 0, strlen($months) - 1);
 	$daynames1=explode(",", @$plugin_tx[$plugin]['weekday_names1']);
 
-	foreach ($daynames1 as $key => $value) 
+	foreach ($daynames1 as $key => $value)
 	{
 		$days1=@$days1 . '"' . $value . '",';
 	}
@@ -1166,7 +1142,7 @@ function showrealblogarchive ($options = NULL)
 	$days1=substr($days1, 0, strlen($days1) - 1);
 	$daynames2=explode(",", @$plugin_tx[$plugin]['weekday_names2']);
 
-	foreach ($daynames2 as $key => $value) 
+	foreach ($daynames2 as $key => $value)
 	{
 		$days2=@$days2 . '"' . $value . '",';
 	}
@@ -1183,25 +1159,18 @@ function showrealblogarchive ($options = NULL)
 	// End modify JAT 07/11/2005
 	$hjs.='<script type="text/javascript" src="' . $pth['folder']['plugins'] . $plugin . '/jscalendar/calendar-setup.js"></script>' . "\n";
 	// End added JAT 29/10/2005 //
-	
+
 */
 
 	// set general variables for the plugin
 	$plugin_images_folder=$pth['folder']['plugins'] . $plugin . "/images/";
 	$plugin_include_folder=$pth['folder']['plugins'] . $plugin . "/include/";
-	
-	if($co_author_folder)
-	{
-		$db_path = $pth['folder']['base'] . $co_author_folder . str_replace('./','',$pth['folder']['content']) . 'realblog/';
-	}
-	else
-	{
-		$db_path = $pth['folder']['content'] . 'realblog/';
-	}
+
+	$db_path = $pth['folder']['content'] . 'realblog/';
 	$db_name="realblog.txt";
 
 	// Show / hide search block
-	$hjs.= "\n" . '<script type="text/javascript">' . "\n" . 'function realblog_showSearch() 
+	$hjs.= "\n" . '<script type="text/javascript">' . "\n" . 'function realblog_showSearch()
 	{
 	if (document.getElementById("searchblock").style.display == "none")
 		{
@@ -1219,13 +1188,13 @@ function showrealblogarchive ($options = NULL)
 		}
 	}
 	</script>' . "\n";
-	
+
 	// include the flatfile database class
 	require_once ($plugin_include_folder . "flatfile.php");
-	
+
 	// declare the realblog database fields
 	require_once ($plugin_include_folder . "fields.php");
-	
+
 	// connect to the realblog database file
 	$db = new Flatfile();
 	$db->datadir=$db_path;
@@ -1233,12 +1202,12 @@ function showrealblogarchive ($options = NULL)
 	if ($realblogaction != "view")
 	{
 		$compClause     =new SimpleWhereClause(REALBLOG_STATUS, '=', 2, INTEGER_COMPARISON);
-		global $pth, $sn, $plugin_tx, $plugin_cf, $u, $s, $c, $sl, $f, $tx, $co_author_folder;
-		
+		global $pth, $sn, $plugin_tx, $plugin_cf, $u, $s, $c, $sl, $f, $tx;
+
 		// Create the appropriate date format for the date picker
 		$my_date_format1=explode('/', $plugin_tx[$plugin]['date_format']);
 
-		if (count($my_date_format1) > 1) 
+		if (count($my_date_format1) > 1)
 		{
 			$date_separator1="/";
 		}
@@ -1246,7 +1215,7 @@ function showrealblogarchive ($options = NULL)
 		{
 			$my_date_format1=explode('.', $plugin_tx[$plugin]['date_format']);
 
-			if (count($my_date_format1) > 1) 
+			if (count($my_date_format1) > 1)
 			{
 				$date_separator1=".";
 			}
@@ -1280,7 +1249,7 @@ function showrealblogarchive ($options = NULL)
 			}
 		}
 
-		foreach ($cal_date_format1 as $key => $value) 
+		foreach ($cal_date_format1 as $key => $value)
 		{
 			$cal_format.=($key < count($my_date_format1) - 1) ? $value . $date_separator1 : $value;
 		}
@@ -1296,13 +1265,13 @@ function showrealblogarchive ($options = NULL)
 			$t.='<p class="realblog_search_hint">' . $plugin_tx['realblog']['search_hint'] . '</p>';
 			$t.="\n" . '<table style="width: 100%;">' . "\n";
 			$t.="<tr>\n" . '<td style="width: 30%;" class="realblog_search_text">' . $plugin_tx[$plugin]['title_label'] . ' ' . $plugin_tx['realblog']['search_contains'] . ':' . "\n</td>\n<td>\n<select name=\"title_operator\" style=\"visibility: hidden; width: 0;\">\n<option value=\"2\" selected=\"selected\">" . $plugin_tx[$plugin]['search_contains'] . "</option>\n</select>\n" . tag('input type="text" name="realblog_title" size="35" class="realblog_search_input" maxlength="64"') . "\n</td>\n</tr>\n";
-			$t.="<tr>\n" . '<td style="width: 30%;"></td>' . "\n" . '<td>' . "\n" . '&nbsp;&nbsp;&nbsp;' . 
-			tag('input id="operator_2a" type="radio" name="operator_2" value="AND"') . '&nbsp;' . $plugin_tx[$plugin]['search_and'] . "&nbsp;&nbsp;&nbsp;" . 
+			$t.="<tr>\n" . '<td style="width: 30%;"></td>' . "\n" . '<td>' . "\n" . '&nbsp;&nbsp;&nbsp;' .
+			tag('input id="operator_2a" type="radio" name="operator_2" value="AND"') . '&nbsp;' . $plugin_tx[$plugin]['search_and'] . "&nbsp;&nbsp;&nbsp;" .
 			tag('input id="operator_2b" type="radio" name="operator_2" value="OR" checked="checked"') . '&nbsp;' .  $plugin_tx[$plugin]['search_or'] . "</td>\n</tr>\n";
-			$t.="<tr>\n" . '<td style="width: 30%;" class="realblog_search_text">' . $plugin_tx[$plugin]['story_label'] . ' ' . $plugin_tx['realblog']['search_contains'] . ':' . "</td><td><select name=\"story_operator\" style=\"visibility: hidden; width: 0;\"><option value=\"2\" selected=\"selected\">" . $plugin_tx[$plugin]['search_contains'] . "</option>\n</select>\n" . 
+			$t.="<tr>\n" . '<td style="width: 30%;" class="realblog_search_text">' . $plugin_tx[$plugin]['story_label'] . ' ' . $plugin_tx['realblog']['search_contains'] . ':' . "</td><td><select name=\"story_operator\" style=\"visibility: hidden; width: 0;\"><option value=\"2\" selected=\"selected\">" . $plugin_tx[$plugin]['search_contains'] . "</option>\n</select>\n" .
 			tag('input type="text" name="realblog_story" size="35" class="realblog_search_input" maxlength="64"') . "</td></tr>\n";
 			$t.="<tr>\n<td colspan=\"2\">&nbsp;</td></tr>\n";
-			$t.="<tr>\n<td colspan=\"2\"" . ' style="text-align: center;">' . 
+			$t.="<tr>\n<td colspan=\"2\"" . ' style="text-align: center;">' .
 			tag('input type="submit" name="send" value="' . $tx['search']['button'] . '"') . "</td></tr>\n";
 			$t.="</table>\n</div>\n";
 			$t.="</form>\n";
@@ -1313,28 +1282,28 @@ function showrealblogarchive ($options = NULL)
 		{
 			$compArchiveClause=new SimpleWhereClause(REALBLOG_STATUS, '=', 2, INTEGER_COMPARISON);
 
-			if (!empty($_REQUEST[realblog_from_date])) 
+			if (!empty($_REQUEST[realblog_from_date]))
 			{
-				$compClauseDate1=new SimpleWhereClause(REALBLOG_DATE, $_REQUEST[date_operator_1], make_timestamp_dates1($_REQUEST[realblog_from_date])); 
+				$compClauseDate1=new SimpleWhereClause(REALBLOG_DATE, $_REQUEST[date_operator_1], make_timestamp_dates1($_REQUEST[realblog_from_date]));
 			}
 
-			if (!empty($_REQUEST[realblog_to_date])) 
+			if (!empty($_REQUEST[realblog_to_date]))
 			{
-				$compClauseDate2=new SimpleWhereClause(REALBLOG_DATE, $_REQUEST[date_operator_2], make_timestamp_dates1($_REQUEST[realblog_to_date])); 
+				$compClauseDate2=new SimpleWhereClause(REALBLOG_DATE, $_REQUEST[date_operator_2], make_timestamp_dates1($_REQUEST[realblog_to_date]));
 			}
 
-			if (!empty($_REQUEST[realblog_title])) 
+			if (!empty($_REQUEST[realblog_title]))
 			{
-			$compClauseTitle=new LikeWhereClause(REALBLOG_TITLE, $_REQUEST[realblog_title], $_REQUEST[title_operator]); 
+			$compClauseTitle=new LikeWhereClause(REALBLOG_TITLE, $_REQUEST[realblog_title], $_REQUEST[title_operator]);
 			}
 
-			if (!empty($_REQUEST[realblog_story])) 
+			if (!empty($_REQUEST[realblog_story]))
 			{
-				$compClauseStory=new LikeWhereClause(REALBLOG_STORY, $_REQUEST[realblog_story], $_REQUEST[story_operator]); 
+				$compClauseStory=new LikeWhereClause(REALBLOG_STORY, $_REQUEST[realblog_story], $_REQUEST[story_operator]);
 			}
 
 			// [only from_date]
-			if (!empty($compClauseDate1) && empty($compClauseDate2) && empty($compClauseTitle) && empty($compClauseStory)) 
+			if (!empty($compClauseDate1) && empty($compClauseDate2) && empty($compClauseTitle) && empty($compClauseStory))
 			{
 				$compClause=$compClauseDate1;
 			}
@@ -1346,7 +1315,7 @@ function showrealblogarchive ($options = NULL)
 			}
 
 			// [from_date & to_date]
-			if (!empty($compClauseDate1) && !empty($compClauseDate2) && empty($compClauseTitle) && empty($compClauseStory)) 
+			if (!empty($compClauseDate1) && !empty($compClauseDate2) && empty($compClauseTitle) && empty($compClauseStory))
 			{
 			$compClause=new AndWhereClause($compClauseDate1, $compClauseDate2);
 			}
@@ -1397,7 +1366,7 @@ function showrealblogarchive ($options = NULL)
 			}
 
 			// [only story]
-			if (empty($compClauseDate1) && empty($compClauseDate2) && empty($compClauseTitle) && !empty($compClauseStory)) 
+			if (empty($compClauseDate1) && empty($compClauseDate2) && empty($compClauseTitle) && !empty($compClauseStory))
 			{
 				$compClause=$compClauseStory;
 			}
@@ -1534,7 +1503,7 @@ function showrealblogarchive ($options = NULL)
 //			$compClause=serialize($compClause);
 			session_write_close();
 
-			if (isset($compClause)) 
+			if (isset($compClause))
 			{
 				$compClause=new AndWhereClause($compArchiveClause, $compClause);
 			}
@@ -1544,11 +1513,11 @@ function showrealblogarchive ($options = NULL)
 			}
 
 			$records=$db->selectWhere($db_name, $compClause, -1, array(new OrderBy(REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON), new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)));
-			
+
 			$db_search_records=count($records);
-			
+
 			$t.= '<p>' . $plugin_tx['realblog']['search_searched_for'] . ' <b>"' . $_REQUEST['realblog_story'] . '"</b></p>';
-			
+
 			$t.='<p>' . $plugin_tx['realblog']['search_result'] . '<b> ' . $db_search_records . '</b></p>';
 			$t.='<p><a href="' . preg_replace('/\&.*\z/', '', $_SERVER['REQUEST_URI']) . '"><b>' . $plugin_tx['realblog']['back_to_archive'] . '</b></a></p>';
 		}
@@ -1584,7 +1553,7 @@ function showrealblogarchive ($options = NULL)
 				{
 					$currentMonth=12;
 				}
-				
+
 				$_SESSION['realblogYear'] = $realblogYear;
 
 				$next=($realblogYear < $currentYear) ? ($realblogYear + 1) : $currentYear;
@@ -1593,7 +1562,7 @@ function showrealblogarchive ($options = NULL)
 				$t.="\n<div class=\"realblog_table_paging\">\n<a href=\"" . $sn . "?" . $u[$s] . "&amp;realblogYear=" . $back
  . "\" title=\"" . $plugin_tx[$plugin]['tooltip_previousyear'] . "\">" . tag("img src=\"" . $plugin_images_folder . "btn_previous.gif\" alt=\"previous_img\"") . "</a>&nbsp;&nbsp;";
 				$t.="<b>" . $plugin_tx[$plugin]['archive_year'] . $realblogYear . "</b>";
-				$t.="&nbsp;&nbsp;<a href=\"" . $sn . "?" . $u[$s] . "&amp;realblogYear=" . $next . "\" title=\"" . $plugin_tx[$plugin]['tooltip_nextyear'] . "\">" . 
+				$t.="&nbsp;&nbsp;<a href=\"" . $sn . "?" . $u[$s] . "&amp;realblogYear=" . $next . "\" title=\"" . $plugin_tx[$plugin]['tooltip_nextyear'] . "\">" .
 tag("img src=\"" . $plugin_images_folder . "btn_next.gif\" alt=\"next_img\"") . "</a>";
 				$t.="</div>";
 				$t.="\n<div>&nbsp;</div>\n";
@@ -1601,8 +1570,8 @@ tag("img src=\"" . $plugin_images_folder . "btn_next.gif\" alt=\"next_img\"") . 
 				$endmonth=mktime(NULL, NULL, NULL, 12, 1, $realblogYear);
 				$compClause=new AndWhereClause(new AndWhereClause(new SimpleWhereClause(REALBLOG_DATE, '>=', $startmonth, INTEGER_COMPARISON),new SimpleWhereClause(REALBLOG_DATE, '<=', $endmonth, INTEGER_COMPARISON)), new SimpleWhereClause(REALBLOG_STATUS, "=", 2, INTEGER_COMPARISON));
 				$generalrealbloglist=$db->selectWhere($db_name, $compClause, -1, array(new OrderBy(REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON), new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)));
-				
-				
+
+
 
 				for ($month=$currentMonth; $month >= 1; $month--)
 				{
@@ -1611,7 +1580,7 @@ tag("img src=\"" . $plugin_images_folder . "btn_next.gif\" alt=\"next_img\"") . 
 					$compClause =new AndWhereClause(new SimpleWhereClause(REALBLOG_STATUS, '=', 2, INTEGER_COMPARISON), new AndWhereClause(new SimpleWhereClause(REALBLOG_DATE, '>=', $startmonth, INTEGER_COMPARISON), new SimpleWhereClause(REALBLOG_DATE, '<', $endmonth, INTEGER_COMPARISON), new SimpleWhereClause(REALBLOG_STATUS, "=", 2,INTEGER_COMPARISON)));
 					$realbloglist   =$db->selectWhere($db_name, $compClause, -1, array(new OrderBy(REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON), new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)));
 					$monthString=strftime("%B %Y", mktime(NULL, NULL, NULL, $month, 1, $realblogYear));
-					
+
 					$month_search = explode(",", $plugin_tx['realblog']['date_month_search']);
 					$month_replace = explode(",", $plugin_tx['realblog']['date_month_replace']);
 					$monthString = str_ireplace($month_search,$month_replace,$monthString);
@@ -1619,17 +1588,17 @@ tag("img src=\"" . $plugin_images_folder . "btn_next.gif\" alt=\"next_img\"") . 
 					if (count($realbloglist) > 0)
 					{
 						$t.="\n<h4>" . $monthString . "</h4>\n\n<ul class=\"realblog_archive\">\n";
-						foreach ($realbloglist as $key => $field) 
+						foreach ($realbloglist as $key => $field)
 						{
-							$t.= '<li>' . tag("img src=\"" . $plugin_images_folder . "realblog_item.gif" . "  \" alt=\"realblogitem_img\"") . "&nbsp;" . date($plugin_tx[$plugin]['date_format'], $field[REALBLOG_DATE]) . "&nbsp;&nbsp;&nbsp;<a href=\"" . $sn . "?" . $u[$s] . "&amp;" . str_replace(' ', '_', $field[REALBLOG_TITLE]) . "&amp;realblogaction=view&amp;realblogID=" . $field[REALBLOG_ID] . "&amp;page=" . $page . "\" title=\"" . $plugin_tx[$plugin]["tooltip_view"] . "\" >" . $field[REALBLOG_TITLE] . "</a></li>\n"; 
+							$t.= '<li>' . tag("img src=\"" . $plugin_images_folder . "realblog_item.gif" . "  \" alt=\"realblogitem_img\"") . "&nbsp;" . date($plugin_tx[$plugin]['date_format'], $field[REALBLOG_DATE]) . "&nbsp;&nbsp;&nbsp;<a href=\"" . $sn . "?" . $u[$s] . "&amp;" . str_replace(' ', '_', $field[REALBLOG_TITLE]) . "&amp;realblogaction=view&amp;realblogID=" . $field[REALBLOG_ID] . "&amp;page=" . $page . "\" title=\"" . $plugin_tx[$plugin]["tooltip_view"] . "\" >" . $field[REALBLOG_TITLE] . "</a></li>\n";
 						}
 						$t.= "</ul>\n";
 					}
 				}
 
-				if (count($generalrealbloglist) == 0) 
+				if (count($generalrealbloglist) == 0)
 				{
-					$t.=$plugin_tx[$plugin]['no_topics']; 
+					$t.=$plugin_tx[$plugin]['no_topics'];
 				}
 			}
 			else
@@ -1652,7 +1621,7 @@ tag("img src=\"" . $plugin_images_folder . "btn_next.gif\" alt=\"next_img\"") . 
 							$t.="<h4>" . $monthString . "</h4>\n";
 							$realblogmonth=$month;
 						}
-							
+
 						$t.='<p style="line-height: 1em;">'. tag('img src="' . $plugin_images_folder . 'realblog_item.gif" alt="calendar_img"').'&nbsp;' . date($plugin_tx[$plugin]['date_format'], $field[REALBLOG_DATE]) . "&nbsp;&nbsp;&nbsp;<a href=\"" . $sn . "?" . $u[$s] . "&amp;" . str_replace(' ', '_', $field[REALBLOG_TITLE]) . "&amp;realblogaction=view&amp;realblogID=" . $field[REALBLOG_ID] . "&amp;page=" . $page . "\" title=\"" . $plugin_tx[$plugin]["tooltip_view"] . "\" >" . $field[REALBLOG_TITLE] . "</a></p>\n\n";
 
 					}
@@ -1684,10 +1653,10 @@ tag("img src=\"" . $plugin_images_folder . "btn_next.gif\" alt=\"next_img\"") . 
 
 			// Show selected entry (archive above entry)
 			$t ="\n<div class=\"realblog_show_box\">\n";
- 
+
 			// Redirect back to archive overview (archive, above entry) - GE 2010 - 11
-			global $su, $sn, $s, $plugin_cf, $co_author_folder, $realblogYear;
-			
+			global $su, $sn, $s, $plugin_cf, $realblogYear;
+
 			$t.= "\n" . '<div class="realblog_buttons"><span class="realblog_button">' . "\n" . '<a href="' . $sn . '?' . $su . '&amp;realblogYear=' . $_SESSION['realblogYear'] . '">' .$plugin_tx[$plugin]['archiv_back'] . '</a></span>';
 
 			// "edit comments" button (realblog, above entry) - GE 2010 - 11
@@ -1695,21 +1664,21 @@ tag("img src=\"" . $plugin_images_folder . "btn_next.gif\" alt=\"next_img\"") . 
 			{
 				$t.='<span class="realblog_button"><a href="./?&comments&admin=plugin_main&action=plugin_text&selected=comments' . $realblogID . '.txt">' . $plugin_tx['realblog']['comment_edit'] . '</a></span>';
 			}
-			
+
 			// "edit entry" button (realblog, above entry)
 			if($adm == 'true')
 			{
 				$t.='<span class="realblog_button"><a href="./?&realblog&admin=plugin_main&action=modify_realblog&amp;realblogID=' . $realblogID . '">' . $plugin_tx['realblog']['entry_edit'] . '</a></span>';
 			}
-			
+
 			$t.='<div style="clear: both;"></div>';
-			
+
 			$t.= "\n".'</div>'."\n";
-			
+
 			$t.="<h4>" . $record[REALBLOG_TITLE] . "</h4>";
 			$t.="\n<div class=\"realblog_show_date\">\n" . strftime($plugin_tx[$plugin]['display_date_format'], $record[REALBLOG_DATE]) . "\n</div>\n";
 			$t.="\n<div class=\"realblog_show_story\">\n";
-			
+
 			if($record[REALBLOG_STORY] != '')
 			{
 				$t.= stripslashes(evaluate_scripting_crb($record[REALBLOG_STORY]));
@@ -1718,7 +1687,7 @@ tag("img src=\"" . $plugin_images_folder . "btn_next.gif\" alt=\"next_img\"") . 
 			{
 				$t.= stripslashes(evaluate_scripting_crb($record[REALBLOG_HEADLINE]));
 			}
-			
+
 			$t.="\n</div>\n";
 			$t.="</div>\n";
 			$t.="\n<div>&nbsp;</div>\n";
@@ -1738,8 +1707,8 @@ tag("img src=\"" . $plugin_images_folder . "btn_next.gif\" alt=\"next_img\"") . 
 				</script>";
 			}
 
-			// Redirect back to archive overview (archive, below entry) - GE 2010 - 11 
-			global $su, $sn, $s, $realblogYear, $page, $plugin_cf, $co_author_folder;
+			// Redirect back to archive overview (archive, below entry) - GE 2010 - 11
+			global $su, $sn, $s, $realblogYear, $page, $plugin_cf;
 
 			$t.= "\n" . '<div class="realblog_buttons"><span class="realblog_button">' . "\n" . '<a href="' . $sn . '?' . $su . '&amp;realblogYear=' . $_SESSION['realblogYear'] . '">' .$plugin_tx[$plugin]['archiv_back'] . '</a></span>';
 
@@ -1748,15 +1717,15 @@ tag("img src=\"" . $plugin_images_folder . "btn_next.gif\" alt=\"next_img\"") . 
 			{
 				$t.='<span class="realblog_button"><a href="./?&comments&admin=plugin_main&action=plugin_text&selected=comments' . $realblogID . '.txt">' . $plugin_tx['realblog']['comment_edit'] . '</a></span>';
 			}
-			
+
 			// "edit entry" button (realblog, below entry)
 			if($adm == 'true')
 			{
 				$t.='<span class="realblog_button"><a href="./?&realblog&admin=plugin_main&action=modify_realblog&amp;realblogID=' . $realblogID . '">' . $plugin_tx['realblog']['entry_edit'] . '</a></span>';
 			}
-			
+
 			$t.='<div style="clear: both;"></div>';
-			
+
 			$t.= "\n".'</div>'."\n";
 
 			// output comments in archive - GE 2010 - 11
@@ -1798,13 +1767,8 @@ tag("img src=\"" . $plugin_images_folder . "btn_next.gif\" alt=\"next_img\"") . 
 
 function realbloglink ($options)
 {
-	global $pth, $sn, $plugin_tx, $plugin_cf, $u, $s, $c, $h, $sl, $page, $co_author_folder;
-	
-	if(!defined('CMSIMPLE_VERSION'))
-	{
-		return '<p>This plugin requires <b>CMSimple 4.2</b> or higher.</p><p><a href="http://www.cmsimple.org/">CMSimple Download & Updates &raquo;</a></p>';
-	}
-	
+	global $pth, $sn, $plugin_tx, $plugin_cf, $u, $s, $c, $h, $sl, $page;
+
 	$includeonfrontpage='false';
 	$arguments=explode(",", $options);
 
@@ -1843,7 +1807,7 @@ function realbloglink ($options)
 		}
 	}
 
-	if (!$page_exists) 
+	if (!$page_exists)
 	{
 		return ("");
 	}
@@ -1859,15 +1823,8 @@ function realbloglink ($options)
 		$plugin_images_folder=$pth['folder']['plugins'] . $plugin . "/images/";
 		$plugin_include_folder=$pth['folder']['plugins'] . $plugin . "/include/";
 		setlocale(LC_ALL, $plugin_tx[$plugin]['date_locale']);
-		
-		if($co_author_folder)
-		{
-			$db_path = $pth['folder']['base'] . $co_author_folder . str_replace('./','',$pth['folder']['content']) . 'realblog/';
-		}
-		else
-		{
-			$db_path = $pth['folder']['content'] . 'realblog/';
-		}
+
+		$db_path = $pth['folder']['content'] . 'realblog/';
 		$db_name="realblog.txt";
 
 		// include the flatfile database class
@@ -1882,7 +1839,7 @@ function realbloglink ($options)
 
 		if (@$id == -1 || empty($id) || !isset($id))
 		{
-			if ($plugin_cf['realblog']['links_visible'] > 0) 
+			if ($plugin_cf['realblog']['links_visible'] > 0)
 			{
 				$t ='<p class="realbloglink">
 ' . $plugin_tx['realblog']['links_visible_text'] . '
@@ -1896,7 +1853,7 @@ function realbloglink ($options)
 				$compClause=NULL;
 				$compClause=new AndWhereClause(new SimpleWhereClause(REALBLOG_STATUS, "=", 1, INTEGER_COMPARISON));
 
-				if (strtolower($includeonfrontpage) === 'true') 
+				if (strtolower($includeonfrontpage) === 'true')
 				{
 					$compClause=new OrWhereClause(new SimpleWhereClause(REALBLOG_FRONTPAGE, "=", 'on', STRING_COMPARISON), $compClause);
 				}
@@ -1909,7 +1866,7 @@ function realbloglink ($options)
 
 				if (count($realbloglist) > 0)
 				{
-					if ($max_visible <= 0 || empty($max_visible)) 
+					if ($max_visible <= 0 || empty($max_visible))
 					{
 						$max_visible=count($realbloglist);
 					}
@@ -1919,11 +1876,11 @@ function realbloglink ($options)
 						$realblog_counter++;
 						$t.="\n<div class=\"realblog_tpl_show_date\">\n".strftime($plugin_tx[$plugin]['display_date_format'], $record[REALBLOG_DATE]) . "\n</div>";
 						$t.="\n<div class=\"realblog_tpl_show_title\">\n<a href=\"" . $sn . "?" . $realblog_page . "&amp;realblogaction=view&amp;realblogID=" . $record[REALBLOG_ID] . "&amp;page=1" . "\">" . $record[REALBLOG_TITLE] .'</a>'."\n".'</div>'."\n";
-					
+
 						// Limit the number of visible realblog items (set in the configuration; empty=all realblog)
 						if ($plugin_cf[$plugin]['links_visible'] > 0)
 						{
-							if ($realblog_counter == $max_visible) 
+							if ($realblog_counter == $max_visible)
 							{
 								break;
 							}
@@ -1957,13 +1914,13 @@ function realbloglink ($options)
 
 function make_timestamp_dates1 ($tmpdate = null)
 {
-	global $plugin_cf, $plugin_tx, $date_separator1, $co_author_folder;
+	global $plugin_cf, $plugin_tx, $date_separator1;
 
 	// get plugin name
 	$plugin        =basename(dirname(__FILE__), "/");
 	$my_date_format=explode('/', $plugin_tx[$plugin]['date_format']);
 
-	if (count($my_date_format) > 1) 
+	if (count($my_date_format) > 1)
 	{
 		$date_separator="/";
 	}
@@ -1971,7 +1928,7 @@ function make_timestamp_dates1 ($tmpdate = null)
 	{
 		$my_date_format=explode('.', $plugin_tx[$plugin]['date_format']);
 
-		if (count($my_date_format) > 1) 
+		if (count($my_date_format) > 1)
 		{
 			$date_separator=".";
 		}
@@ -1979,7 +1936,7 @@ function make_timestamp_dates1 ($tmpdate = null)
 		{
 		$my_date_format=explode('-', $plugin_tx[$plugin]['date_format']);
 
-		if (count($my_date_format) > 1) 
+		if (count($my_date_format) > 1)
 			{
 				$date_separator="-";
 			}
@@ -2025,30 +1982,30 @@ function make_timestamp_dates1 ($tmpdate = null)
 	foreach ($my_detected_date_format as $key => $value)
 	{
 		if ($key < (count($my_detected_date_format) - 1)) { $date_format.=$value . $date_separator; }
-		else 
-		{ 
-		$date_format.=$value; 
+		else
+		{
+		$date_format.=$value;
 		}
 	}
 
-	foreach ($cal_date_format as $key => $value) 
+	foreach ($cal_date_format as $key => $value)
 	{
-		$cal_format.=$value; 
+		$cal_format.=$value;
 	}
 
 	foreach ($regex as $key => $value)
 	{
-		if ($key < (count($regex) - 1)) 
-		{ 
-			$regex_format.=$value . $date_separator; 
+		if ($key < (count($regex) - 1))
+		{
+			$regex_format.=$value . $date_separator;
 		}
-		else 
+		else
 		{
 		$regex_format.=$value;
 		}
 	}
 
-	if ($tmpdate == null) 
+	if ($tmpdate == null)
 	{
 		$tmpdate=date($plugin_tx[$plugin]['date_format'], time());
 	}
@@ -2085,7 +2042,7 @@ function make_timestamp_dates1 ($tmpdate = null)
 
 function realblog_export_rssfeed()
 {
-	global $tx, $pth, $sn, $u, $s, $c, $sl, $plugin_cf, $plugin_tx, $page, $co_author_folder;
+	global $tx, $pth, $sn, $u, $s, $c, $sl, $plugin_cf, $plugin_tx, $page;
 	$plugin=basename(dirname(__FILE__), "/");
 	// set general variables for the plugin
 	include_once ($pth['folder']['plugins'] . $plugin . "/config/config.php");
@@ -2093,34 +2050,27 @@ function realblog_export_rssfeed()
 
 	if (strtolower($plugin_tx[$plugin]['rss_enable']) == 'true')
 	{
-		if($co_author_folder)
-		{
-			$db_path = $pth['folder']['base'] . $co_author_folder . str_replace('./','',$pth['folder']['content']) . 'realblog/';
-		}
-		else
-		{
-			$db_path = $pth['folder']['content'] . 'realblog/';
-		}
+		$db_path = $pth['folder']['content'] . 'realblog/';
 		$db_name="realblog.txt";
-		
-		$rss_path='./' . $co_author_folder;
+
+		$rss_path='./';
 		$plugin_images_folder=$pth['folder']['plugins'] . $plugin . "/images/";
-		$plugin_include_folder=$co_author_folder.$pth['folder']['plugins'] . $plugin . "/include/";
-		
-		
+		$plugin_include_folder=$pth['folder']['plugins'] . $plugin . "/include/";
+
+
 		//setlocale(LC_ALL,$plugin_tx[$plugin]['date_locale']);
-		
+
 		// declare the realblog database fields
 		require_once ($plugin_include_folder . "fields.php");
-		
+
 		// include the flatfile database class
 		require_once ($plugin_include_folder . "flatfile.php");
-		
+
 		// connect to the realblog database file
 		$db=new Flatfile();
 		$db->datadir=$db_path;
 
-		if ($fp=@fopen($rss_path . "realblog_rss_feed.xml", "w+")) 
+		if ($fp=@fopen($rss_path . "realblog_rss_feed.xml", "w+"))
 		{
 			fputs($fp, "<?xml version=\"1.0\" encoding=\"" . strtolower($plugin_cf[$plugin]['rss_encoding']) . "\"?>\n");
 			fputs($fp,"<rss version=\"2.0\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:sy=\"http://purl.org/rss/1.0/modules/syndication/\" xmlns:admin=\"http://webns.net/mvcb/\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:content=\"http://purl.org/rss/1.0/modules/content/\">\n");
@@ -2141,7 +2091,7 @@ function realblog_export_rssfeed()
 			fputs($fp, "</image>\n");
 			$compClause=new SimpleWhereClause(REALBLOG_RSSFEED, "=", "on", STRING_COMPARISON);
             $realbloglist  =$db->selectWhere($db_name, $compClause, -1,array(new OrderBy(REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON), new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)));
-			
+
 			// Show the RSS realblog items
 			if (count($realbloglist) > 0)
 			{
@@ -2151,7 +2101,7 @@ function realblog_export_rssfeed()
 					$title="<title>" . htmlspecialchars(stripslashes($record[REALBLOG_TITLE])) . "</title>\n";
 					$link="<link>" . $plugin_tx[$plugin]["rss_page"] . "&amp;realblogaction=view" . "&amp;realblogID=" . $record[REALBLOG_ID] . "&amp;page=" . $page . "</link>\n";
 					$description="<description>" . preg_replace('/({{{PLUGIN:.*?}}}|{{{function:.*?}}}|#CMSimple .*?#)/is', '',htmlspecialchars(stripslashes($record[REALBLOG_HEADLINE]))) . "</description>\n";
-					$pubDate="<pubDate>" . date("r", $record[REALBLOG_DATE]) . "</pubDate>\n"; 
+					$pubDate="<pubDate>" . date("r", $record[REALBLOG_DATE]) . "</pubDate>\n";
 					fputs($fp, $title);
 					fputs($fp, $link);
 					fputs($fp, $description);
@@ -2179,36 +2129,17 @@ function realblog_export_rssfeed()
 
 function realblog_rss_adv ($options = NULL)
 {
-	global $plugin_tx, $plugin_cf, $cf, $pth, $sl, $c, $s, $page, $co_author_folder;
-	
-	if(!defined('CMSIMPLE_VERSION'))
-	{
-		return '<p>This plugin requires <b>CMSimple 4.2</b> or higher.</p><p><a href="http://www.cmsimple.org/">CMSimple Download & Updates &raquo;</a></p>';
-	}
-	
-	if($co_author_folder)
-	{
-		$db_path=$pth['folder']['base'] . $co_author_folder . str_replace('./','',$pth['folder']['content']) . 'realblog/';
-	}
-	else
-	{
-		$db_path = $pth['folder']['content'] . 'realblog/';
-	}
-	
+	global $plugin_tx, $plugin_cf, $cf, $pth, $sl, $c, $s, $page;
+
+	$db_path = $pth['folder']['content'] . 'realblog/';
+
 	$plugin              =basename(dirname(__FILE__), "/");
 	$plugin_images_folder=$pth['folder']['plugins'] . $plugin . "/images/";
-	
-	if(@$co_author_folder && $sl != $cf['language']['default'])
-	{
-		$rss_path ='../' . @$co_author_folder;
-	}
-	else
-	{
-		$rss_path ='./' . @$co_author_folder;
-	}
-	
+
+	$rss_path = './';
+
 	$option_replace      ='false';
-	
+
 	// determine the function arguments (separated by a comma)
 	$arguments           =explode(",", $options);
 
@@ -2229,7 +2160,7 @@ function realblog_rss_adv ($options = NULL)
 			}
 		}
 	}
-    else 
+    else
 	{
 		$option_replace='false';
 	}
@@ -2244,7 +2175,7 @@ function realblog_rss_adv ($options = NULL)
 	$tt.="<div class=\"realblog_credit\">\n
 	Powered by <a href=\"http://www.ge-webdesign.de/cmsimplerealblog/?Demo_und_WebLog\">CMSimpleRealBlog\n
 	</a>\n</div>\n";
-	
+
 	return ($tt);
 }
 ?>

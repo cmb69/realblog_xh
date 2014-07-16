@@ -22,46 +22,29 @@ Credits :  - flatfile database class Copyright 2005 Luke Plant <L.Plant.98@canta
 License :  GNU General Public License, version 2 or later of your choice
 ************************************
 
-This program is free software; you can redistribute it and/or modify it under the terms of the 
-GNU General Public License as published by the Free Software Foundation; either version 2 of the 
+This program is free software; you can redistribute it and/or modify it under the terms of the
+GNU General Public License as published by the Free Software Foundation; either version 2 of the
 License.
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
 even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the GNU General Public License for more details.
-You should have received a copy of the GNU General Public License along with this program; 
+You should have received a copy of the GNU General Public License along with this program;
 if not, see <http://www.gnu.org/licenses>.
 */
 
 if (isset($realblog))
 {
-	if(!defined('CMSIMPLE_VERSION'))
-	{
-		$o.= '<p>This plugin requires <b>CMSimple 4.2</b> or higher.</p><p><a href="http://www.cmsimple.org/">CMSimple Download & Updates &raquo;</a></p>';
-		return;
-	}
-	
-	if(defined('XH_ADM'))
-	{
-		$o.= '<div style="font-size: 15px; font-family: arial, sans-serif; letter-spacing: 0;">
-<h4><a href="?realblog">Plugin Info &raquo;</a></h4>
-<p style="line-height: 1.6em;"><b>RealBlog</b>&nbsp;by&nbsp;<a href="http://www.ge-webdesign.de/cmsimpleplugins/"><u>ge-webdesign.de&nbsp;&raquo;</u></a> &nbsp; 
-for&nbsp;<b>CMSimple&nbsp;4.0</b>&nbsp;or&nbsp;higher&nbsp;from&nbsp;<a href="http://www.cmsimple.org/"><u>cmsimple.org&nbsp;&raquo;</u></a></p>
-</div>';
-	}
-	else
-	{
-		$o.= '<div style="font-size: 15px; font-family: arial, sans-serif; letter-spacing: 0; padding: 0 0 6px 0;">
+	$o.= '<div style="font-size: 15px; font-family: arial, sans-serif; letter-spacing: 0; padding: 0 0 6px 0;">
 <b><a href="?realblog">Plugin Info &raquo;</a></b>
 </div>
 ';
-	}
-	
+
     //check if register_globals is turned OFF
-    
-	if (!isset($_GET)){global $_GET;$_GET = $GLOBALS['HTTP_GET_VARS'];} 
-	if (!isset($_POST)){global $_POST;$_POST = $GLOBALS['HTTP_POST_VARS'];} 
-	if (!isset($_COOKIE)){global $_COOKIE;$_COOKIE = $GLOBALS['HTTP_COOKIE_VARS'];} 
-	if (!isset($_SERVER)){global $_SERVER;$_SERVER = $GLOBALS['HTTP_SERVER_VARS'];}	
+
+	if (!isset($_GET)){global $_GET;$_GET = $GLOBALS['HTTP_GET_VARS'];}
+	if (!isset($_POST)){global $_POST;$_POST = $GLOBALS['HTTP_POST_VARS'];}
+	if (!isset($_COOKIE)){global $_COOKIE;$_COOKIE = $GLOBALS['HTTP_COOKIE_VARS'];}
+	if (!isset($_SERVER)){global $_SERVER;$_SERVER = $GLOBALS['HTTP_SERVER_VARS'];}
 //	ini_set('safe_mode', '1');
 
     // global variables
@@ -69,14 +52,14 @@ for&nbsp;<b>CMSimple&nbsp;4.0</b>&nbsp;or&nbsp;higher&nbsp;from&nbsp;<a href="ht
     // retrieve posted plugin variables
     $admin     =isset($_POST['admin']) ? $_POST['admin'] : @$_GET['admin'];
     $action    =isset($_POST['action']) ? $_POST['action'] : @$_GET['action'];
-	
+
     // get plugin name
     $plugin    =basename(dirname(__FILE__), "/");
-	
+
     // Calendar plugin
     $hjs.= tag('link rel="stylesheet" type="text/css" media="all" href="' . $pth['folder']['plugins'] . $plugin . '/jscalendar/calendar-system.css"');
     $hjs.= "\n".'<script type="text/javascript" src="' . $pth['folder']['plugins'] . $plugin . '/jscalendar/calendar.js"></script>';
-		
+
 	// Start modify JAT 07/11/2005 (V 1.0.1)
     // Set jscalendar to default (en) if current website language isn't available
     $hjs.=(is_file($pth['folder']['plugins'].$plugin."/jscalendar/lang/calendar-".$sl.".js"))?"\n".'<script type="text/javascript" src="'.$pth['folder']['plugins'].$plugin.'/jscalendar/lang/calendar-'.$sl.'.js"></script>':'<script type="text/javascript" src="'.$pth['folder']['plugins'].$plugin.'/jscalendar/lang/calendar-en.js"></script>';
@@ -91,7 +74,7 @@ for&nbsp;<b>CMSimple&nbsp;4.0</b>&nbsp;or&nbsp;higher&nbsp;from&nbsp;<a href="ht
             {
             case 'fckeditor':
                 // FCKeditor
-				
+
                 require_once ($pth['folder']['cmsimple'] . 'realblog_fckeditor.php');
 
                 break;
@@ -314,8 +297,8 @@ for&nbsp;<b>CMSimple&nbsp;4.0</b>&nbsp;or&nbsp;higher&nbsp;from&nbsp;<a href="ht
                     $o.= tag("input type=\"hidden\" name=\"do\" value=\"delselected\"");
                     $o.="<tr><td class=\"reablog_confirm_info\" align=\"center\">" . $info
                         . "</td></tr><tr><td>&nbsp;</td></tr>";
-                    $o.="<tr><td class=\"reablog_confirm_button\" align=\"center\">" . 
-					 tag("input type=\"submit\" name=\"submit\" value=\"" . $plugin_tx[$plugin]['btn_delete'] . "\"") . "&nbsp;&nbsp;" . 
+                    $o.="<tr><td class=\"reablog_confirm_button\" align=\"center\">" .
+					 tag("input type=\"submit\" name=\"submit\" value=\"" . $plugin_tx[$plugin]['btn_delete'] . "\"") . "&nbsp;&nbsp;" .
 					 tag("input type=\"button\" name=\"cancel\" value=\"&nbsp;" . $plugin_tx[$plugin]['btn_cancel'] . "\" onclick='location.href=\"" . $sn . "?&amp;" . $plugin . "&amp;admin=plugin_main&amp;action=plugin_text&amp;page=" . $page . "\"'") . "</td></tr>";
                     $o.="</tbody></table></form>";
                     $o.="<div>&nbsp;</div>";
@@ -331,7 +314,7 @@ for&nbsp;<b>CMSimple&nbsp;4.0</b>&nbsp;or&nbsp;higher&nbsp;from&nbsp;<a href="ht
                     $o.="<table width=\"100%\"><tbody>";
                     $o.="<tr><td class=\"reablog_confirm_info\" align=\"center\">" . $info
                         . "</td></tr><tr><td>&nbsp;</td></tr>";
-                    $o.="<tr><td class=\"reablog_confirm_button\" align=\"center\">" . 
+                    $o.="<tr><td class=\"reablog_confirm_button\" align=\"center\">" .
 					tag("input type=\"button\" name=\"cancel\" value=\"" . $plugin_tx[$plugin]['btn_ok'] . "\" onclick='location.href=\"" . $sn . "?&amp;" . $plugin . "&amp;admin=plugin_main&amp;action=plugin_text&amp;page=" . $page . "\"'") . "</td></tr>";
                     $o.="</tbody></table></form>";
                     $o.="<div>&nbsp;</div>";
@@ -369,7 +352,7 @@ for&nbsp;<b>CMSimple&nbsp;4.0</b>&nbsp;or&nbsp;higher&nbsp;from&nbsp;<a href="ht
                     $o.="<tr><td class=\"realblog_confirm_info\" align=\"center\">" . $info
                         . "</td></tr><tr><td>&nbsp;</td></tr>";
                     $o.="<tr><td class=\"realblog_confirm_button\" align=\"center\">" .
-					tag("input type=\"submit\" name=\"submit\" value=\"" . $plugin_tx[$plugin]['btn_ok'] . "\"") . "&nbsp;&nbsp;" . 
+					tag("input type=\"submit\" name=\"submit\" value=\"" . $plugin_tx[$plugin]['btn_ok'] . "\"") . "&nbsp;&nbsp;" .
 					tag("input type=\"button\" name=\"cancel\" value=\"" . $plugin_tx[$plugin]['btn_cancel'] . "\" onclick='location.href=\"" . $sn . "?&amp;" . $plugin . "&amp;admin=plugin_main&amp;action=plugin_text&amp;page=" . $page . "\"'") . "</td></tr>";
                     $o.="</tbody></table></form>";
                     $o.="<div>&nbsp;</div>";
@@ -385,7 +368,7 @@ for&nbsp;<b>CMSimple&nbsp;4.0</b>&nbsp;or&nbsp;higher&nbsp;from&nbsp;<a href="ht
                     $o.="<table width=\"100%\"><tbody>";
                     $o.="<tr><td class=\"realblog_confirm_info\" align=\"center\">" . $info
                         . "</td></tr><tr><td>&nbsp;</td></tr>";
-                    $o.="<tr><td class=\"realblog_confirm_button\" align=\"center\">" . 
+                    $o.="<tr><td class=\"realblog_confirm_button\" align=\"center\">" .
 					 tag("input type=\"button\" name=\"cancel\" value=\"" . $plugin_tx[$plugin]['btn_ok'] . "\" onclick='location.href=\"" . $sn . "?&" . $plugin . "&admin=plugin_main&action=plugin_text&page=" . $page . "\"'") . "</td></tr>";
                     $o.="</tbody></table></form>";
                     $o.="<div>&nbsp;</div>";
@@ -461,17 +444,17 @@ for&nbsp;<b>CMSimple&nbsp;4.0</b>&nbsp;or&nbsp;higher&nbsp;from&nbsp;<a href="ht
             $o.="\n<form name=\"selectstatus\" method=\"post\" action=\"$sn?&amp;" . $plugin
                 . "&amp;admin=plugin_main&amp;action=plugin_text\">";
             $o.="\n<table width=\"100%\">\n<tr>";
-            $o.="\n<td width=\"35%\">" . 
+            $o.="\n<td width=\"35%\">" .
 			tag("input type=\"checkbox\" name=\"filter1\"" . $tstfilter1 . "\"") . "&nbsp;"
                 . $plugin_tx[$plugin]['readyforpublishing'] . "</td>";
-            $o.="\n<td width=\"30%\">" . 
+            $o.="\n<td width=\"30%\">" .
 			tag("input type=\"checkbox\" name=\"filter2\"" . $tstfilter2 . "\"") . "&nbsp;"
                 . $plugin_tx[$plugin]['published'] . "</td>";
-            $o.="\n<td width=\"30%\">" . 
+            $o.="\n<td width=\"30%\">" .
 			tag("input type=\"checkbox\" name=\"filter3\"" . $tstfilter3 . "\"") . "&nbsp;"
                 . $plugin_tx[$plugin]['archived'] . "</td>";
-            $o.="\n<td width=\"5%\" >" . 
-			tag("input type=\"image\" align=\"middle\" src=\"" . $plugin_images_folder . "btn_filter.png\" name=\"send\" value=\"Apply filter\" title=\"" . $plugin_tx[$plugin]['btn_search'] . "\"") . 
+            $o.="\n<td width=\"5%\" >" .
+			tag("input type=\"image\" align=\"middle\" src=\"" . $plugin_images_folder . "btn_filter.png\" name=\"send\" value=\"Apply filter\" title=\"" . $plugin_tx[$plugin]['btn_search'] . "\"") .
 			"</td>";
             $o.="\n</tr>\n</table>";
             $o.="\n" . tag("input type=\"hidden\" name=\"filter\" value=\"true\"");
@@ -479,28 +462,28 @@ for&nbsp;<b>CMSimple&nbsp;4.0</b>&nbsp;or&nbsp;higher&nbsp;from&nbsp;<a href="ht
             // Display table header
             $o.="\n<div>
 			\n<form method=\"post\" action=\"$sn?&amp;" . $plugin .  "&amp;admin=plugin_main&amp;action=plugin_text\">\n<table class=\"realblog_table\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\">";
-			
+
             $o.="\n<tr>
-			
-			\n<td class=\"realblog_table_header\" align=\"center\">" . 
-			tag("input type=\"image\" align=\"middle\" src=\"" . $plugin_images_folder . "btn_delsel.png\" name=\"batchdelete\" value=\"true\" title=\"" . $plugin_tx[$plugin]['tooltip_deleteall'] . "\"") . 
+
+			\n<td class=\"realblog_table_header\" align=\"center\">" .
+			tag("input type=\"image\" align=\"middle\" src=\"" . $plugin_images_folder . "btn_delsel.png\" name=\"batchdelete\" value=\"true\" title=\"" . $plugin_tx[$plugin]['tooltip_deleteall'] . "\"") .
 			"</td>
-			
-			\n<td class=\"realblog_table_header\" align=\"center\">" . 
-			tag("input type=\"image\" align=\"middle\" src=\"" . $plugin_images_folder . "btn_status.png\" name=\"changestatus\" value=\"true\" title=\"" . $plugin_tx[$plugin]['tooltip_changestatus'] . "\"") . 
+
+			\n<td class=\"realblog_table_header\" align=\"center\">" .
+			tag("input type=\"image\" align=\"middle\" src=\"" . $plugin_images_folder . "btn_status.png\" name=\"changestatus\" value=\"true\" title=\"" . $plugin_tx[$plugin]['tooltip_changestatus'] . "\"") .
 			"</td>
-			
-			\n<td class=\"realblog_table_header\" align=\"center\"><a href=\"$sn?&amp;" . $plugin . "&amp;admin=plugin_main&amp;action=add_realblog\">" . tag("img src=\"" . $plugin_images_folder . "btn_add.gif\" align=\"middle\" title=\"" . $plugin_tx[$plugin]['tooltip_add'] . "\" alt=\"\"") . 
+
+			\n<td class=\"realblog_table_header\" align=\"center\"><a href=\"$sn?&amp;" . $plugin . "&amp;admin=plugin_main&amp;action=add_realblog\">" . tag("img src=\"" . $plugin_images_folder . "btn_add.gif\" align=\"middle\" title=\"" . $plugin_tx[$plugin]['tooltip_add'] . "\" alt=\"\"") .
 			"</a></td>
-			
+
 			\n<td class=\"realblog_table_header\" align=\"center\">" . $plugin_tx[$plugin]['id_label'] . "</td>
-			
+
 			\n<td class=\"realblog_table_header\" align=\"center\">" . $plugin_tx[$plugin]['date_label'] . "</td>
 			\n<td class=\"realblog_table_header\" align=\"center\">" . 'Status' . "</td>
 			\n<td class=\"realblog_table_header\" align=\"center\">RSS Feed</td>
 			\n<td class=\"realblog_table_header\" align=\"center\">" . $plugin_tx['realblog']['comments_onoff'] . "</td>
 			\n</tr>";
-				
+
             $end_index=$page * $page_record_limit - 1;
 
             // Display table lines
@@ -523,29 +506,29 @@ for&nbsp;<b>CMSimple&nbsp;4.0</b>&nbsp;or&nbsp;higher&nbsp;from&nbsp;<a href="ht
                     $field=$records[$record_index];
                     $o.="<tr>
 					<td class=\"realblog_table_line\" align=\"center\">" . tag("input type=\"checkbox\" name=\"realblogtopics[]\" value=\"" . $field[REALBLOG_ID] . "\"") . "</td>
-					
+
 					<td class=\"realblog_table_line\" valign=\"top\" align=\"center\"><a href=\"$sn?&" . $plugin . "&admin=plugin_main&action=delete_realblog&realblogID=" . $field[REALBLOG_ID] . "&page=" . $page . "\">" . 			tag("img src=\"" . $plugin_images_folder . "btn_delete.gif\" align=\"center\" title=\"" . $plugin_tx[$plugin]['tooltip_delete'] . "\" alt=\"\"") . "</a></td>
-					
+
 					<td class=\"realblog_table_line\" valign=\"top\" align=\"center\"><a href=\"$sn?&"               . $plugin . "&admin=plugin_main&action=modify_realblog&realblogID=" . $field[REALBLOG_ID] . "&page=" . $page . "\">" .tag("img src=\"" . $plugin_images_folder . "btn_modify.gif\" align=\"center\" title=\"" . $plugin_tx[$plugin]['tooltip_modify'] . "\" alt=\"\"") . "</a></td>
-					
+
 					<td  class=\"realblog_table_line\" valign=\"top\" align=\"center\"><b>" . $field[REALBLOG_ID] . "</b></td>
 					<td valign=\"top\" style=\"text-align: center;\" class=\"realblog_table_line\">" . date($plugin_tx[$plugin]['date_format'], $field[REALBLOG_DATE]) . "</td>
-					
+
 					\n<td class=\"realblog_table_line\" valign=\"top\"  style=\"text-align: center;\"><b>" . $field[REALBLOG_STATUS] . "</b></td>
-					
+
 					\n<td class=\"realblog_table_line realblog_onoff\" valign=\"top\"  style=\"text-align: center;\">" . $field[REALBLOG_RSSFEED] . "</td>
-					
+
 					\n<td class=\"realblog_table_line realblog_onoff\" valign=\"top\"  style=\"text-align: center;\">" . $field[REALBLOG_COMMENTS] . "</td>
-					
+
 					\n</tr>
 					\n<tr>
-						
+
 					\n<td colspan=\"8\" valign=\"top\"class=\"realblog_table_title\"><span>" . $field[REALBLOG_TITLE] . "</span></td></tr>";
                     }
                 }
 
             $o.="</table></div>";
-            $o.= tag("input type=\"hidden\" name=\"page\" value=\"" . $page . "\"") . 
+            $o.= tag("input type=\"hidden\" name=\"page\" value=\"" . $page . "\"") .
 			"</form><div>&nbsp;</div>";
             // Display table paging
             $tmp=($db_total_records > 0)
@@ -567,8 +550,8 @@ for&nbsp;<b>CMSimple&nbsp;4.0</b>&nbsp;or&nbsp;higher&nbsp;from&nbsp;<a href="ht
                     }
 
                 $o.="<div class=\"realblog_table_paging\"><a href=\"" . $sn . "?&" . $plugin
-                    . "&admin=plugin_main&action=plugin_text&page=" . $back ."&amp;filter1=".$filter1."&amp;filter2=".$filter2."&amp;filter3=".$filter3."&amp;filter=".$filter. "\" title=\"" . $plugin_tx[$plugin]['tooltip_previous'] . "\">" . 
-					tag("img src=\"" . $plugin_images_folder . "btn_previous.gif\" . alt=\"\"") . 
+                    . "&admin=plugin_main&action=plugin_text&page=" . $back ."&amp;filter1=".$filter1."&amp;filter2=".$filter2."&amp;filter3=".$filter3."&amp;filter=".$filter. "\" title=\"" . $plugin_tx[$plugin]['tooltip_previous'] . "\">" .
+					tag("img src=\"" . $plugin_images_folder . "btn_previous.gif\" . alt=\"\"") .
 					"</a>&nbsp;&nbsp;";
 
                 for ($tt=1; $tt <= $page_total; $tt++)
@@ -579,8 +562,8 @@ for&nbsp;<b>CMSimple&nbsp;4.0</b>&nbsp;or&nbsp;higher&nbsp;from&nbsp;<a href="ht
                     }
 
                 $o.="&nbsp;&nbsp;<a href=\"" . $sn . "?&amp;" . $plugin
-                    . "&amp;admin=plugin_main&amp;action=plugin_text&amp;page=" . $next . "&amp;filter1=".$filter1."&amp;filter2=".$filter2."&amp;filter3=".$filter3."&amp;filter=".$filter. "\" title=\"" . $plugin_tx[$plugin]['tooltip_next'] . "\">" . 
-				tag("img src=\"" . $plugin_images_folder . "btn_next.gif\" alt=\"\"") . 
+                    . "&amp;admin=plugin_main&amp;action=plugin_text&amp;page=" . $next . "&amp;filter1=".$filter1."&amp;filter2=".$filter2."&amp;filter3=".$filter3."&amp;filter=".$filter. "\" title=\"" . $plugin_tx[$plugin]['tooltip_next'] . "\">" .
+				tag("img src=\"" . $plugin_images_folder . "btn_next.gif\" alt=\"\"") .
 				"</a>";
                 $o.="</div>";
                 }
@@ -649,17 +632,17 @@ function realblogform ($realblogID = NULL, $action = NULL, $ret_page = 1)
 
     $t = "<div class=\"realblog_fields_block\"><div><h4>" . ucfirst(REALBLOG_VERSION) . " : " . $title . "</h4></div>";
     //$t.="<div>&nbsp;</div>";
-    $t.="<form name=\"realblog\" method=\"post\" action=\"$sn?&" . $plugin . "&admin=plugin_main\">" . 
+    $t.="<form name=\"realblog\" method=\"post\" action=\"$sn?&" . $plugin . "&admin=plugin_main\">" .
 	tag("input type=\"hidden\" name=\"page\" value=\"" . $ret_page . "\"");
-    $t.="<table width=\"100%\"><tr><td>" . 
+    $t.="<table width=\"100%\"><tr><td>" .
 	tag("input type=\"hidden\" name=\"realblog_id\" value=\"" . @$realblog_id . "\"") . "
 	</td></tr>";
     $t.="<tr><td width=\"30%\"><span class=\"realblog_date_label\">" . $plugin_tx[$plugin]['date_label'] ."</span></td><td width=\"5%\">&nbsp;</td><td width=\"30%\"><span class=\"realblog_date_label\">" . $plugin_tx[$plugin]['startdate_label'] . "</span></td><td width=\"5%\">&nbsp;</td><td width=\"30%\"><span class=\"realblog_date_label\">" . $plugin_tx[$plugin]['enddate_label'] . "</span></td></tr><tr>";
     // Start modify [JAT] 31/10/2005
-    $t.="<td width=\"30%\" valign=\"top\">" . 
-	tag("input type=\"text\" name=\"realblog_date\" id=\"date1\" value=\"" . $realblog_date . "\" size=\"10\" maxlength=\"10\" onfocus=\"this.blur()\"") . 
-	"&nbsp;" . 
-	tag("img src=\"" . $plugin_images_folder . "btn_calendar.gif\" style=\"margin-left:1px;margin-bottom:-3px;\" id=\"trig_date1\" title=\"" . $plugin_tx[$plugin]['tooltip_datepicker'] . "\" alt=\"\"") . 
+    $t.="<td width=\"30%\" valign=\"top\">" .
+	tag("input type=\"text\" name=\"realblog_date\" id=\"date1\" value=\"" . $realblog_date . "\" size=\"10\" maxlength=\"10\" onfocus=\"this.blur()\"") .
+	"&nbsp;" .
+	tag("img src=\"" . $plugin_images_folder . "btn_calendar.gif\" style=\"margin-left:1px;margin-bottom:-3px;\" id=\"trig_date1\" title=\"" . $plugin_tx[$plugin]['tooltip_datepicker'] . "\" alt=\"\"") .
 	"</td><td width=\"5%\">&nbsp;</td>";
     $t.="<td width=\"30%\" valign=\"top\">";
 
@@ -675,63 +658,63 @@ function realblogform ($realblogID = NULL, $action = NULL, $ret_page = 1)
 
 	$t.="</td><td width=\"5%\">&nbsp;</td>";
     $t.="<td width=\"30%\" valign=\"top\">";
-	
+
 	// Auto archiving enabled/disabled by config variable - GE 2010-11-16
 	if ($plugin_cf['realblog']['auto_archive'] == 'true')
 	{
-	$t.= tag("input type=\"text\" name=\"realblog_enddate\" id=\"date3\" value=\"" . $realblog_enddate . "\" size=\"10\" maxlength=\"10\" onfocus=\"this.blur()\"") . 
-	"&nbsp;" . 
+	$t.= tag("input type=\"text\" name=\"realblog_enddate\" id=\"date3\" value=\"" . $realblog_enddate . "\" size=\"10\" maxlength=\"10\" onfocus=\"this.blur()\"") .
+	"&nbsp;" .
 	tag("img src=\"" . $plugin_images_folder . "btn_calendar.gif\" style=\"margin-left:1px;margin-bottom:-3px;\" id=\"trig_date3\" title=\"" . $plugin_tx[$plugin]['tooltip_datepicker'] . "\" alt=\"\"");
 	}
 	else
 	{
 		$t.= $plugin_tx['realblog']['enddate_hint'];
 	}
-	
+
 	$t.="</td></tr><tr>";
     // End modify [JAT] 31/10/2005
-	
+
     // Start added [JAT] 31/10/2005
-	
+
 	$t.="<script type=\"text/javascript\">
 	Calendar.setup({inputField : \"date1\",ifFormat : \"" . $cal_format . "\",button : \"trig_date1\",align : \"Br\",singleClick : false,firstDay: 1,weekNumbers : false,electric:false,showsTime:false,timeFormat: \"24\"});";
 
-		
+
 	// Auto publishing enabled/disabled by config variable - GE 2010-12-16
 	if($plugin_cf['realblog']['auto_publish'] == 'true')
 	{
 	$t.="Calendar.setup({inputField : \"date2\",ifFormat : \"" . $cal_format . "\",button : \"trig_date2\",align : \"Br\",singleClick : true,firstDay: 1,weekNumbers : false,electric:false,showsTime:false,timeFormat: \"24\"});";
 	}
-		
+
 	// Auto archiving enabled/disabled by config variable - GE 2010-11-16
 	if ($plugin_cf['realblog']['auto_archive'] == 'true')
-	{	
+	{
 	$t.="Calendar.setup({inputField : \"date3\",ifFormat : \"" . $cal_format . "\",button : \"trig_date3\",align : \"Br\",singleClick : false,firstDay: 1,weekNumbers : false,electric:false,showsTime:false,timeFormat: \"24\"});";
 	}
 	$t.="</script>";
-	
+
     // End added [JAT] 31/10/2005
-	
+
     $t.="<td width=\"30%\"><span class=\"realblog_date_label\">" . $plugin_tx[$plugin]['status_label']
         . "</span></td><td width=\"5%\">&nbsp;</td><td width=\"30%\">&nbsp;</span></td><td width=\"5%\">&nbsp;</td><td width=\"30%\"><span>&nbsp;</span></td></tr><tr>";
     $t.="<td width=\"30%\" valign=\"top\"><select name=\"realblog_status\"><option value=\"0\" " . @$status[0] . ">"
         . $plugin_tx[$plugin]['readyforpublishing'] . "</option><option value=\"1\" " . @$status[1] . ">" . $plugin_tx[$plugin]['published'] . "</option><option value=\"2\" " . @$status[2] . ">" . $plugin_tx[$plugin]['archived'] . "</option><option value=\"3\" " . @$status[3] . ">" . $plugin_tx[$plugin]['backuped'] . "</option></select></td>";
     $t.="<td width=\"5%\">&nbsp;</td><td width=\"30%\" valign=\"top\">" . tag('input type="checkbox" name="realblog_comments" ' . @$commentschecked) . '&nbsp;<span>' . $plugin_tx[$plugin]['comment_label'] . "</td>";
-    $t.="<td width=\"5%\">&nbsp;</td><td width=\"30%\" valign=\"top\">" . 
-	tag('input type="checkbox" name="realblog_rssfeed" ' . @$rsschecked) . 
+    $t.="<td width=\"5%\">&nbsp;</td><td width=\"30%\" valign=\"top\">" .
+	tag('input type="checkbox" name="realblog_rssfeed" ' . @$rsschecked) .
 	"&nbsp;<span>" . $plugin_tx[$plugin]['rss_label'] . "</span></td></tr>";
-		
+
     $t.="<tr><td width=\"30%\"><h4>" . $plugin_tx[$plugin]['title_label'] . "</h4></td></tr>";
-    $t.="<tr><td colspan=\"5\">" . 
-	tag("input type=\"text\" value=\"" . @$realblog_title . "\" name=\"realblog_title\" size=\"70\"") . 
+    $t.="<tr><td colspan=\"5\">" .
+	tag("input type=\"text\" value=\"" . @$realblog_title . "\" name=\"realblog_title\" size=\"70\"") .
 	"</td></tr>";
-	
+
     $t.="<tr><td width=\"30%\" style=\"padding-bottom: 8px;\"><h4>" . $plugin_tx[$plugin]['headline_label'] . "</h4>
 	<p><b>Script for copy & paste:</b></p>
 	{{{PLUGIN:rbCat('|the_category|');}}}
 	</td></tr>";
     $t.="<tr><td colspan=\"5\" style=\"padding-bottom: 8px;\"><textarea class=\"realblog_headline_field\" name=\"realblog_headline\" id=\"realblog_headline\" rows=\"6\" cols=\"60\">".htmlspecialchars(@$realblog_headline)."</textarea></td></tr>";
-	
+
     $t.="<tr><td colspan=5 style=\"padding-bottom: 8px;\"><h4>" . $plugin_tx[$plugin]['story_label'] . "</h4>
 	<p><b>Script for copy & paste:</b></p>
 	{{{PLUGIN:CommentsMembersOnly();}}}
@@ -741,34 +724,34 @@ function realblogform ($realblogID = NULL, $action = NULL, $ret_page = 1)
     switch ($action)
         {
         case "add_realblog":
-            $t.="<tr><td>&nbsp;" . 
-			tag("input type=\"hidden\" name=\"do\" value=\"add\"") . 
+            $t.="<tr><td>&nbsp;" .
+			tag("input type=\"hidden\" name=\"do\" value=\"add\"") .
 			"</td></tr>";
 
             $button_label=$plugin_tx[$plugin]['btn_add'];
             break;
 
         case "modify_realblog":
-            $t.="<tr><td>&nbsp;" . 
-			tag("input type=\"hidden\" name=\"do\" value=\"modify\"") . 
+            $t.="<tr><td>&nbsp;" .
+			tag("input type=\"hidden\" name=\"do\" value=\"modify\"") .
 			"</td></tr>";
 
             $button_label=$plugin_tx[$plugin]['btn_modify'];
             break;
 
         case "delete_realblog":
-            $t.="<tr><td>&nbsp;" . 
-			tag("input type=\"hidden\" name=\"do\" value=\"delete\"") . 
+            $t.="<tr><td>&nbsp;" .
+			tag("input type=\"hidden\" name=\"do\" value=\"delete\"") .
 			"</td></tr>";
 
             $button_label=$plugin_tx[$plugin]['btn_delete'];
             break;
         }
 
-    $t.="<tr><td colspan=\"5\" align=\"center\">" . 
-	tag("input type=\"submit\" name=\"save\" value=\"" . $button_label . "\"") . 
-	"&nbsp;&nbsp;&nbsp;" . 
-	tag("input type=\"button\" name=\"cancel\" value=\"" . $plugin_tx[$plugin]['btn_cancel'] . "\" onclick='location.href=\"" . $sn . "?&" . $plugin . "&admin=plugin_main&action=plugin_text&page=" . $ret_page . "\"'") .  
+    $t.="<tr><td colspan=\"5\" align=\"center\">" .
+	tag("input type=\"submit\" name=\"save\" value=\"" . $button_label . "\"") .
+	"&nbsp;&nbsp;&nbsp;" .
+	tag("input type=\"button\" name=\"cancel\" value=\"" . $plugin_tx[$plugin]['btn_cancel'] . "\" onclick='location.href=\"" . $sn . "?&" . $plugin . "&admin=plugin_main&action=plugin_text&page=" . $ret_page . "\"'") .
 	"</td></tr>";
     $t.="</table></form>";
     $t.="</div>";
@@ -847,7 +830,7 @@ function realblog_make_timestamp_dates ($tmpdate = null)
         }
 
     if ($tmpdate == null) { $tmpdate=date($plugin_tx[$plugin]['date_format'], time()); }
-	
+
 	if($date_separator1==".")
 	{
 		$dateArr=explode('.', $tmpdate);
@@ -880,8 +863,8 @@ function realblog_dbconfirm ($title, $info, $page)
     $t.="<form name=\"confirm\" method=\"post\" action=\"" . $sn . "?&" . $plugin . "&admin=plugin_main\">";
     $t.="<table width=\"100%\"><tbody>";
     $t.="<tr><td class=\"realblog_confirm_info\" align=\"center\">" . $info . "</td></tr><tr><td>&nbsp;</td></tr>";
-    $t.="<tr><td class=\"realblog_confirm_button\" align=\"center\">" . 
-	tag("input type=\"button\" name=\"cancel\" value=\"" . $plugin_tx[$plugin]['btn_ok'] . "\" onclick='location.href=\"" . $sn . "?&" . $plugin . "&admin=plugin_main&action=plugin_text&page=" . $page . "\"'") . 
+    $t.="<tr><td class=\"realblog_confirm_button\" align=\"center\">" .
+	tag("input type=\"button\" name=\"cancel\" value=\"" . $plugin_tx[$plugin]['btn_ok'] . "\" onclick='location.href=\"" . $sn . "?&" . $plugin . "&admin=plugin_main&action=plugin_text&page=" . $page . "\"'") .
 	"</td></tr>";
     $t.="</tbody></table></form>";
     $t.="<div>&nbsp;</div>";
