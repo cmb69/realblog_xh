@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html;charset=utf-8">
+<title>RealBlog Kurzdoku</title>
+<meta name="content-language" content="de">
+<style type="text/css">
+body {font-family: arial, sans-serif; font-size: 15px;}
+div#main {width: 740px; padding: 20px;}
+.code {font-family: Courier New; border: 1px solid #999; background: #eed; padding: 8px 12px;}
+li {padding-top: 5px; padding-bottom: 5px;}
+</style>
+</head>
+
+<body>
+<!-- utf-8 check: äöü -->
+
+<div id="main">
+<h1>Kurz-Dokumentation Plugin "RealBlog"</h1>
+<p><b><i>Version RealBlog 2.6</i></b></p>
+<p>Eine Dokumentation in deutscher Sprache finden Sie unter <a href="http://www.ge-webdesign.de/cmsimplerealblog/?Dokumentation:RealBlog">ge-webdesign.de/cmsimplerealblog/</a></p>
+<p>Das Plugin "RealBlog" ist eine Weiterentwicklung des Plugins AdvancedNews von Jan Kanters. Vielen Dank an dieser Stelle noch einmal an Jan für die Erlaubnis, den Code seines Plugins AdvancedNews als Basis für die Entwicklung des Plugins "RealBlog" zu verwenden.</p>
+
+<p>&#160;</p>
+
+<h2>1. Funktionen:</h2>
+<ul>
+    <li>Blog-Funktion, chronologische Verwaltung der Beiträge </li>
+    <li>Archiv-Funktion, Jahres- und Monatsarchive</li>
+	<li>Kategorien</li>
+    <li>RSS-feed</li>
+    <li>Artikel-Status: nicht veröffentlicht - veröffentlicht - archiviert - gesichert</li>
+    <li>Zeitgesteuerte Veröffentlichung und Archivierung</li>
+    <li>WYSIWYG Editoren für Teaser und Artikel</li>
+	<li>Erweiterbar mit dem Plugin <b>Comments</b>, Beiträge sind dann kommentierbar. Die Kommentarfunktion kann für jeden einzelnen Artikel aktiviert oder deaktiviert werden.</li>
+	<li>Wenn die Plugins <b>MembersArea</b> und <b>Comments 3.3</b> oder höher installiert sind, kann das Kommentarformular für nicht eingeloggte Besucher und Mitglieder der Gruppe für neu registrierte Mitglieder ausgeblendet werden.</li>
+</ul>
+<p>&#160;</p>
+
+<h2>2. Systemvoraussetzungen</h2>
+<p>Voraussetzung ist eine funktionierende Installation von CMSimple 4.0 oder höher.</p>
+<p>Für Kommentare muss das Plugin "Comments" installiert sein.</p>
+<p>&#160;</p>
+
+<h2>3. Installation</h2>
+<ol>
+    <li>zip-Datei herunterladen und mit einem geeigneten Programm entpacken</li>
+    <li>Laden Sie alle Ordner und Dateien des Verzeichnisses CMSimpleRoot in das Verzeichnis, in dem sich Ihre CMSimple-Installation befindet. Das kann in einem Zug passieren, indem Sie den Inhalt des Verzeichnisses "CMSimpleRoot" in das Root-Verzeichnis Ihrer CMSimple-Installation hochladen, es werden keine vorhandenen Dateien überschrieben.</li>
+    <li>Vergeben mit Ihrem ftp-Programm die erforderlichen Lese- und Schreibrechte.</li>
+</ol>
+<p>&#160;</p>
+
+<h2>4. Datei- und Ordnerrechte</h2>
+<p>Damit das Programm funktioniert und arbeiten kann, müssen für bestimmte Dateien und Ordner bestimmte Schreib- und Leserechte vergeben werden.</p>
+<h3>Ordner / Verzeichnisse: chmod 777</h3>
+<ul>
+    <li><span style="font-family: Courier New;">./content/<b>realblog</b></span></li>
+</ul>
+<h3>Dateien: chmod 666</h3>
+<ul>
+    <li><span style="font-family: Courier New;">./content/realblog/<b>alle .txt-Dateien</b></span></li>
+    <li><span style="font-family: Courier New;">./plugins/realblog/config/<strong>config.php</strong></span></li>
+    <li><span style="font-family: Courier New;">./plugins/realblog/css/<strong>stylesheet.css</strong></span></li>
+    <li><span style="font-family: Courier New;">./plugins/realblog/languages/<strong>alle xx.php-Dateien (Sprachdateien)</strong></span></li>
+    <li><span style="font-family: Courier New;">./<strong>realblog_rss_feed.xml</strong></span></li>
+</ul>
+<p>&#160;</p>
+
+<h2>5. Funktionsaufrufe</h2>
+<p>Auf den Seiten, auf denen Ihr WebLog oder Ihr Archiv laufen sollen, oder auf der Sie einen RSS-feed anbieten wollen, müssen Sie den entsprechenden Funktionsaufruf auf der Seite einfügen, am besten direkt unter der Hauptüberschrift:</p>
+
+<h3>Weblog:</h3>
+<p class="code">{{{PLUGIN:showrealblog();}}}</p>
+<p>oder mit aktivierter Suchfunktion:</p>
+<p class="code">{{{PLUGIN:showrealblog('showsearch=true');}}}</p>
+<p>Auf dieser Seite werden dann die Artikel aller Kategorien ausgegeben.</p>
+
+<h3>Kategorien:</h3>
+<p>Die Artikel können nach Kategorien gefiltert ausgegeben werden. Dazu muss auf den entsprechenden CMSimple Seiten im Plugin Aufruf ein 2. Parameter angegeben werden.</p>
+<p>Ohne Suchfunktion:</p>
+<p class="code">{{{PLUGIN:showrealblog('','Die_Kategorie');}}}</p>
+<p>Mit Suchfunktion:</p>
+<p class="code">{{{PLUGIN:showrealblog('showsearch=true','Die_Kategorie');}}}</p>
+<p>Auf dieser Seite werden dann nur die Artikel der entsprechenden Kategorie ausgegeben.</p>
+
+<h3>Kategorien für Artikel definieren:</h3>
+<p>Die Kategorie, in der ein Artikel veröffentlicht werden soll, wird im Teaser oder im Artikel per Funktionsaufruf definiert:</p>
+<p class="code">{{{PLUGIN:rbCat('|Kategorie_1|');}}}</p>
+<p>Ein Artikel kann in mehreren Kategorien veröffentlicht werden:</p>
+<p class="code">{{{PLUGIN:rbCat('|Kategorie_1|Kategorie_2|');}}}</p>
+<p>Vor, hinter und zwischen den Kategorien muss ein senkrechter Strich ("|") notiert werden.</p>
+
+<h3>Archiv:</h3>
+<p class="code">{{{PLUGIN:showrealblogarchive();}}}</p>
+
+<h3>RSS-feed:</h3>
+<p class="code">{{{PLUGIN:realblog_rss_adv('replace=true');}}}</p>
+<p>Der RSS Feed wird immer von allen Beiträgen erstellt. RSS Feeds für einzelne Kategorien sind zur Zeit nicht möglich.</p>
+<p>Deshalb sollte auf der Website eine Seite sein, auf der alle Kategorien angezeigt werden. Diese Seite sollte in der Sprachdatei als rss_page: angegeben werden.</p>
+
+<h3>Kommentarfunktion nur für Mitglieder</h3>
+<p>Wenn die Plugins <b>MembersArea</b> und <b>Comments 3.3</b> oder höher installiert sind, kann das Kommentarformular für nicht eingeloggte Besucher und Mitglieder der Gruppe für neu registrierte Mitglieder ausgeblendet werden. Die Kommentare bleiben für alle sichtbar.</p>
+<p>Das kann global für alle Beiträge in der Konfiguration festgelegt werden, oder für jeden Beitrag einzeln per Funktionsaufruf im Artikel (nicht im Teaser!):</p>
+<p class="code">{{{PLUGIN:CommentsMembersOnly();}}}</p>
+<p>Wird dieser Funktionsaufruf auf der CMSimple Seite (<b>VOR</b> dem Plugin Aufruf) gesetzt, ist er für alle Artikel dieser Seite (Blog oder Kategorie) wirksam.</p>
+<p><span style="color: rgb(128, 0, 0);">Hinweis: fügen Sie diesen Code in der Quelltext-Ansicht ein. Prüfen Sie, ob Formatierungen im Code enthalten sind und entfernen Sie diese ggf.</span></p>
+<p>&#160;</p>
+
+<h2>6. Konfiguration</h2>
+<p>Wenn Sie in CMSimple eingeloggt sind, finden Sie unterhalb des Edit Menüs eine Selectbox "Plugin wählen". Wählen Sie hier "Realblog".</p>
+<p>Jetzt öffnet sich das Plugin-Menü, wählen Sie hier "Konfiguration".</p>
+<p>Bei den verschiedenen Einstellungs-Möglichkeiten finden Sie jeweils ein kleines blaues Fragezeichen-Symbol. Gehen Sie mit der Maus auf das entsprechende Fragezeichen-Symbol, und Sie erhalten Informationen über die entsprechende Konfigurationsmöglichkeit.</p>
+
+<h3>RSS Feed</h3>
+<p>Die meisten Einstellungen zum RSS Feed finden Sie in der Sprachdatei. Die Sprachdatei können Sie bearbeiten, wenn Sie im Plugin Menü auf "RealBlog Sprache" klicken.</p>
+<p>&#160;</p>
+
+<h2>7. Mehrere Blogs in Zweitsprachen und Subsites</h2>
+<p>Ab der Version 2.0 können auch Blogs in Zweitsprachen und Subsites betrieben werden.</p>
+
+<h3>7.1 Die RealBlog Daten</h3>
+<p>Die Daten werden im content-Verzeichnis der jeweiligen Zweitsprachen oder Subsites abgelegt. Sie müssen also das Verzeichnis "content" aus dem Download in das Verzeichnis der Zweitsprache oder Subsite hochladen und die Schreibrechte vergeben, so wie im content Verzeichnis der Hauptinstallation.</p>
+
+<h3>7.2 Die RSS Feed Datei</h3>
+<p>Die RSS Feed Datei "realblog_rss_feed.xml" liegt im CMSimpleRoot bzw. im Root Verzeichnis der Subsites und Zweitsprachen.</p>
+<p><span style="font-family: Courier New;">./realblog_rss_feed.xml</span></p>
+<p><span style="font-family: Courier New;">./fr/realblog_rss_feed.xml</span></p>
+<p><span style="font-family: Courier New;">./subsite/realblog_rss_feed.xml</span></p>
+<p><span style="font-family: Courier New;">usw.</span></p>
+<p>Alle newsfeed Dateien müssen beschreibbar sein (chmod 666).</p>
+<p>Als Vorlage können Sie die Datei</p>
+<p><span style="font-family: Courier New;">./plugins/realblog/rss/realblog_rss_feed_template.xml</span></p>
+<p>benutzen.</p>
+<p>&#160;</p>
+</div>
+</body>
+</html>

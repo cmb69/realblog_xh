@@ -1,0 +1,345 @@
+/* utf-8 marker äöüß */
+
+#enablesearch {
+height: 24px; 
+border: 0px solid #c00;
+}
+
+#btn_img {
+float: left;
+margin-right: 6px;
+}
+
+/* Version and link*/
+
+#realblog_version {
+font-family:arial,sans-serif; 
+font-size: 14px; 
+text-align: center;
+}
+
+
+/* Textareas */
+
+#realblog_headline {
+width: 99%;
+height: 320px;
+font-family: 'courier new', serif;
+font-size: 16px;
+padding: 0;
+}
+
+.realblog_headline_field {
+font-family: 'courier new', serif;
+font-size: 16px;
+}
+
+#realblog_story {
+width: 99%;
+height: 480px;
+font-family: 'courier new', serif;
+font-size: 16px;
+padding: 0;
+}
+
+/* buttons */
+
+div.realblog_buttons {
+clear: both;
+padding: 6px 0;
+}
+
+.realblog_button {
+display: block;
+float: left;
+clear: both;
+background: url(button.jpg) repeat-x; 
+font-family: arial, sans-serif;
+font-size: 14px;
+text-align: center;
+font-weight: 100;
+border: 1px solid #999; 
+padding: 1px 8px 2px 8px; 
+margin: -1px 12px 0 0;
+}
+
+.realblog_button a:link {color: #258; text-decoration: none;}
+.realblog_button a:visited {color: #258; text-decoration: none;}
+.realblog_button a:hover {color: #c60; text-decoration: underline;}
+.realblog_button a:active {color: #c60; text-decoration: underline;}
+.realblog_button a:focus {color: #c60; text-decoration: underline;}
+
+.realblog_story_field {
+width: 100%;
+font-family: 'courier new', serif;
+font-size: 16px;
+font-size: 1.1em;
+}
+
+div.realblog_fields_block #date1 {
+margin-bottom: 12px;
+}
+
+.realblog_date_label {
+font-weight: 700;
+}
+
+span.realblog_date_label {
+font-weight: bold;
+font-family: arial;
+font-size: 1em;
+margin-bottom: 56px;
+}
+
+span.realblog_title_label {
+font-weight: bold;
+font-family: arial;
+font-size: 1em;
+}
+
+span.realblog_headline_label {
+font-weight: bold;
+font-family: arial;
+font-size: 1em;
+}
+
+span.realblog_story_label {
+font-weight: bold;
+font-family: arial;
+font-size: 1em;
+}
+
+.realblog_entry_footer {
+clear: both;
+}
+
+.realblog_number_of_comments {
+float: left;
+font-style: italic;
+}
+
+.realblog_read_more {
+float: right; 
+text-align: right;
+padding-bottom: 12px;
+}
+
+span.realblog_frontpage_label{
+font-weight: bold;
+font-family: arial;
+font-size: 1em;
+}
+
+span.realblog_date_field {
+font-weight: lighter; color:red;
+font-family: arial;
+font-size: 0.8em;
+}
+
+span.realblog_title_field {
+font-weight: lighter; color:blue;
+font-family: arial;
+font-size: 0.8em;
+}
+
+span.realblog_frontpage_field {
+font-weight: lighter; color:blue;
+font-family: arial;
+font-size: 0.8em;
+}
+
+/* BACKEND select entry table */
+
+.realblog_table {
+width: 100%;
+table-layout: auto;
+border: 1px solid;
+}
+
+td.realblog_table_header {
+height: 26px;
+background: #555;
+color: #fff;
+font-family: arial, sans-serif;
+font-size: 15px;
+font-weight: bold;
+}
+
+.realblog_table_details {
+border: 1px solid #075FB9;
+}
+
+.realblog_table_line {
+background: #ddd;
+font-family: arial, sans-serif;
+font-size: 14px;
+text-decoration: none;
+padding: 4px;
+}
+
+.realblog_onoff {
+color: #070;
+font-weight: 700;
+}
+
+td.realblog_table_title {
+background: #fff;
+font-family: arial, sans-serif;
+font-size: 14px;
+font-weight: 300;
+line-height: 1.6em;
+border-bottom: 1px solid;
+padding: 0 6px;
+}
+
+td.realblog_table_title span {
+color: #900;
+}
+
+.realblog_table_line img, .realblog_table_header img {
+border: 0;
+}
+
+.realblog_paging_block {}
+
+.realblog_db_info {
+float: right;
+text-align: right;
+font-weight: 700;
+padding-top: 10px;
+}
+
+.realblog_page_info {
+float: left;
+text-align: left;
+font-weight: 700;
+padding: 10px 0 0 0;
+}
+
+.realblog_credit {
+clear: both;
+font-family: arial, sans-serif;
+font-size: 12px;
+text-align: right;
+padding: 12px 6px 0 0;
+}
+
+.realblog_table_paging {
+clear: both;
+text-align: center;
+padding: 6px 0 0 0;
+}
+
+div.realblog_table_paging img, div.realblog_page_info img {
+border: 0;
+}
+
+/* entries overwiew */
+
+#realblog_entries_preview {
+border-top: 1px solid; 
+margin: 10px 0 0 0;
+}
+
+/* multi columns overwiew outer div */
+.realblog_single_entry_preview {
+width: 49.9%;
+float: left;
+}
+
+/* multi columns overwiew inner div */
+.realblog_single_entry_preview_in {
+height: 250px;
+overflow: auto;
+border: 1px solid;
+padding: 10px;
+margin: 10px 10px 0 0;
+}
+
+.realblog_show_date {
+font-size: 94%; 
+font-weight: 700; 
+font-style: italic; 
+margin: 6px 0 10px 0; 
+}
+
+.realblog_show_title {
+font-weight: 700;
+font-size: 113%;
+font-style: italic;
+padding-bottom: 2px;
+padding-top: 2px;
+background-image: url(../images/realblog_item_current.gif);
+background-position: left;
+background-repeat: no-repeat;
+padding-left: 15px;
+margin: 0;
+}
+
+.realblog_show_story {
+width: 100%;
+border-bottom: 1px solid; 
+}
+
+.realblog_show_story_entry {
+width: 100%;
+border-bottom: 0; 
+}
+
+.realblog_show_box {
+margin: 10px 0;
+width:100%;
+}
+
+/* tpl_classes for function realbloglink */
+
+p.realbloglink {
+font-weight: 700; 
+border: 0;
+padding: 12px 0 0 0;
+margin: 0;
+}
+
+.realblog_tpl_show_date {
+font-style: italic;
+border-top: 1px solid;
+padding: 5px 0 0 0;
+margin: 6px 0 0 0;
+}
+
+.realblog_tpl_show_story {}
+
+.realblog_tpl_show_box {
+border-bottom: 1px solid;
+padding: 0 0 8px 0;
+}
+
+.realblog_admin {
+height:24px;
+background-color: #075FB9;
+color: White;
+display: block;
+}
+
+#btn_img, #trig_date1, #trig_date2{
+margin-bottom: 10px
+}
+
+ul.realblog_archive li {
+list-style-type: none;
+list-style-image: none;
+}
+
+td.realblog_search_text {
+text-align: right; 
+font-weight: 700;
+}
+
+.realblog_search_hint {
+padding: 0 0 10px 0;
+}
+
+.realblog_search_input {
+border: 1px solid #999;
+padding: 2px 5px;
+}
