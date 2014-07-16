@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- $Id$ -->
+
+<project name="Realblog" default="default">
+
+    <!-- Properties -->
+
+    <property name="styledir" value="C:\xampp\php\data\phing\etc"/>
+
+    <!-- Filesets -->
+
+    <fileset id="php-sources" dir=".">
+        <include name="index.php"/>
+        <include name="admin.php"/>
+    </fileset>
+
+    <fileset id="unit-tests" dir="tests/unit">
+        <include name="*Test.php"/>
+    </fileset>
+
+<!--    <fileset id="attack-tests" dir="tests/attack">
+        <include name="*Test.php"/>
+    </fileset>
+-->
+    <!-- Checks -->
+
+    <target name="sniff">
+        <phpcodesniffer standard="PEAR" format="full">
+            <fileset refid="php-sources"/>
+            <!--<fileset refid="unit-tests"/>-->
+            <!--<fileset refid="attack-tests"/>-->
+        </phpcodesniffer>
+    </target>
+
+    <target name="compat">
+        <exec command="phpcompatinfo --configuration phpcompatinfo.xml print
+                                     --exclude-pattern realblog ."
+              logoutput="true"/>
+    </target>
+
+    <!-- Tests -->
+
+    <target name="unit-tests">
+        <phpunit haltonerror="true" haltonfailure="true">
+            <formatter type="plain" usefile="false"/>
+            <batchtest>
+                <fileset refid="unit-tests"/>
+            </batchtest>
+        </phpunit>
+    </target>
+
+<!--    <target name="attack-tests">
+        <fail unless="env.CMSIMPLEDIR" message="CMSIMPLEDIR undefined!"/>
+        <phpunit haltonerror="true" haltonfailure="true">
+            <formatter type="plain" usefile="false"/>
+            <batchtest>
+                <fileset refid="attack-tests"/>
+            </batchtest>
+        </phpunit>
+    </target>
+-->
+    <!-- Code coverage -->
+
+    <target name="coverage">
+        <exec command="phpunit --configuration coverage.xml" logoutput="true"/>
+    </target>
+
+    <!-- Documentation -->
+
+    <target name="php-doc">
+        <phpdoc title="Realblog_XH Developer Documentation" destdir="doc/php"
+                output="HTML:Smarty:HandS" defaultpackagename="Realblog"
+                defaultcategoryname="CMSimple_XH">
+            <fileset refid="php-sources"/>
+            <projdocfileset dir=".">
+               <include name="README"/>
+               <include name="CHANGELOG"/>
+            </projdocfileset>
+        </phpdoc>
+    </target>
+
+<!--    <target name="js-doc">
+        <exec command="jsdoc -destination doc/js imgzoom.js" checkreturn="true"/>
+    </target>
+-->
+    <target name="doc" depends="php-doc"/>
+
+    <!-- Build -->
+
+    <target name="build">
+        <fail unless="version" message="version is not defined!"/>
+        <svnexport revision="" repositoryurl="." todir="export"/>
+        <move todir="dist">
+            <fileset dir="export">
+                <include name="index.php"/>
+                <include name="version.nfo"/>
+            </fileset>
+            <filterchain>
+                <replacetokens>
+                    <token key="REALBLOG_VERSION" value="${version}"/>
+                </replacetokens>
+            </filterchain>
+        </move>
+        <!--<jsMin targetDir="dist" suffix="" failOnError="false">
+            <fileset dir="export">
+                <include name="wdir.js"/>
+            </fileset>
+        </jsMin>-->
+        <move todir="dist">
+            <fileset dir="export">
+                <exclude name="tests/**"/>
+                <exclude name="build.xml"/>
+                <exclude name="composer.*"/>
+                <exclude name="coverage.xml"/>
+                <exclude name="phpcompatinfo.xml"/>
+                <exclude name="realblog.komodoproject"/>
+                <exclude name="TODO"/>
+            </fileset>
+        </move>
+        <delete dir="export"/>
+        <copy file="dist/config/config.php" tofile="dist/config/defaultconfig.php"/>
+        <copy file="dist/languages/en.php" tofile="dist/languages/default.php"/>
+        <zip destfile="Realblog_XH-${version}.zip" basedir="dist" prefix="realblog/"/>
+        <delete dir="dist"/>
+    </target>
+
+</project>
