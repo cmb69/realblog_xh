@@ -348,7 +348,6 @@ if (isset($realblog) && $realblog == 'true') {
             if (isset($changestatus_x)) {
                 // session_register ('page'); // removed in php 5.4
                 $_SESSION['page'] = $page;
-                session_write_close(); // FIXME: DO NOT DO THIS
                 $title = $plugin_tx[$plugin]['tooltip_changestatus'];
                 $info = $plugin_tx[$plugin]['confirm_changestatus'];
 
@@ -1120,7 +1119,7 @@ function Realblog_dbconfirm($title, $info, $page)
     global $plugin_tx, $plugin, $sn;
 
     if (!isset($page)) {
-        $page=$_SESSION['page'];
+        $page = $_SESSION['page'];
     }
 
     $t = '<div><h4>Realblog_XH ' . REALBLOG_VERSION . ' : ' . $title . '</h4></div>';

@@ -705,8 +705,6 @@ EOT;
         if ($realblogaction == "search") {
             $plugin_cf['realblog']['entries_per_page'] = '0';
             //$compClause=serialize($compClause);
-            session_write_close(); // FIXME: DON'T
-
             if (isset($compClause)) {
                 $compClause = new AndWhereClause($compRealblogClause, $compClause);
             } else {
@@ -1638,9 +1636,6 @@ EOT;
 
         if ($realblogaction == 'search') {
             //$compClause=serialize($compClause);
-            // FIXME DON'T
-            session_write_close();
-
             if (isset($compClause)) {
                 $compClause = new AndWhereClause($compArchiveClause, $compClause);
             } else {
