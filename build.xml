@@ -11,6 +11,7 @@
     <!-- Filesets -->
 
     <fileset id="php-sources" dir=".">
+        <include name="classes/*.php"/>
         <include name="index.php"/>
         <include name="admin.php"/>
         <include name="functions.php"/>

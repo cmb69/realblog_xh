@@ -54,6 +54,7 @@ this program; if not, see <http://www.gnu.org/licenses>.
 ////////////////////////////////////////////////// HISTORIC LICENSE SECTION END
 
 require_once $pth['folder']['plugin'] . 'functions.php';
+require_once $pth['folder']['plugin_classes'] . 'Presentation.php';
 /**
  * Backward compatibility.
  */
@@ -550,87 +551,10 @@ EOT;
         $return_page = ($from_page == $u[$s]) ? $u[$s] : $from_page;
 
         if (count($record) > 0) {
-            // Show selected entry (realblog above entry)
-            $t = "\n" . '<div class="realblog_show_box">' . "\n";
-            // Redirect back to realblog overview (realblog, above entry)
-            $t .= "\n" . '<div class="realblog_buttons">' . "\n"
-                . '<span class="realblog_button">'
-                . '<a href="' . $sn . '?' . $su . '&amp;page=' . $page . '">'
-                . $plugin_tx[$plugin]['blog_back'] . '</a></span>';
-            // "edit comments" button (realblog, above entry)
-            if (function_exists('comments')
-                && $plugin_cf['realblog']['comments_function'] == 'true'
-                && $adm == 'true'
-            ) {
-                $t .= '<span class="realblog_button">'
-                    . '<a href="./?&amp;comments&amp;admin=plugin_main'
-                    . '&amp;action=plugin_text&amp;selected=comments'
-                    . $realblogID . '.txt">'
-                    . $plugin_tx['realblog']['comment_edit'] . '</a></span>';
-            }
-            // "edit entry" button (realblog, above entry)
-            if ($adm == 'true') {
-                $t .= '<span class="realblog_button">'
-                    . '<a href="./?&amp;realblog&amp;admin=plugin_main'
-                    . '&amp;action=modify_realblog&amp;realblogID='
-                    . $realblogID . '">'
-                    . $plugin_tx['realblog']['entry_edit'] . '</a></span>';
-            }
-            $t .= '<div style="clear: both;"></div>';
+            $articleView = new Realblog_ArticleView($realblogID, $record, $page);
+            $t = $articleView->render();
             // FIXME: see cmsimpleforum.com
             $title .= locator() . ' - ' . $record[REALBLOG_TITLE];
-            $t .= "\n" . '</div>' . "\n";
-            $t .= '<h4>' . $record[REALBLOG_TITLE] . '</h4>';
-            $t .= "\n" . '<div class="realblog_show_date">' . "\n"
-                . strftime(
-                    $plugin_tx[$plugin]['display_date_format'],
-                    $record[REALBLOG_DATE]
-                )
-                . "\n" . '</div>' . "\n";
-            $t .= "\n" . '<div class="realblog_show_story_entry">' . "\n"
-                // FIXME: stripslashes() ?
-                . stripslashes(evaluate_scripting($record[REALBLOG_STORY]))
-                . "\n" . '</div>' . "\n";
-            $t .= '</div>' . "\n";
-            $t .= "\n" . '<div>&nbsp;</div>' . "\n";
-
-            // Redirect back to realblog overview (realblog, below entry)
-            $t .= "\n" . '<div class="realblog_buttons">' . "\n"
-                . '<span class="realblog_button"><a href="' . $sn . '?' . $su
-                . '&amp;page=' . $page . '">' .$plugin_tx[$plugin]['blog_back']
-                . '</a></span>';
-            // "edit comments" button (realblog, below entry)
-            if (function_exists('comments')
-                && $plugin_cf['realblog']['comments_function'] == 'true'
-                && $adm == 'true'
-            ) {
-                $t .= '<span class="realblog_button">'
-                    . '<a href="./?&amp;comments&amp;admin=plugin_main'
-                    . '&amp;action=plugin_text&ampselected=comments' . $realblogID
-                    . '.txt">' . $plugin_tx['realblog']['comment_edit']
-                    . '</a></span>';
-            }
-            // "edit entry" button (realblog, below entry)
-            if ($adm == 'true') {
-                $t .= '<span class="realblog_button">'
-                    . '<a href="./?&amp;realblog&amp;admin=plugin_main'
-                    . '&amp;action=modify_realblog&amp;realblogID=' . $realblogID
-                    . '">' . $plugin_tx['realblog']['entry_edit'] . '</a></span>';
-            }
-            $t .= '<div style="clear: both;"></div>';
-            $t .= "\n" . '</div>' . "\n";
-            // output comments in RealBlog
-            if (function_exists('comments')
-                && $plugin_cf['realblog']['comments_function'] == 'true'
-                && $record[REALBLOG_COMMENTS] == 'on'
-            ) {
-                $realblog_comments_id = 'comments' . $realblogID;
-                if ($plugin_cf['realblog']['comments_form_protected'] == 'true') {
-                    $t .= comments($realblog_comments_id, 'protected');
-                } else {
-                    $t .= comments($realblog_comments_id);
-                }
-            }
         }
     }
     $t .= "\n" . '<div class="realblog_credit">' . "\n" . 'Powered by'
@@ -967,94 +891,8 @@ EOT;
         }
         $return_page = ($from_page == $u[$s]) ? $u[$s] : $from_page;
         if (count($record) > 0) {
-            // Show selected entry (archive above entry)
-            $t = "\n" . '<div class="realblog_show_box">' . "\n";
-            // Redirect back to archive overview (archive, above entry)
-            $t .= "\n"
-                . '<div class="realblog_buttons"><span class="realblog_button">'
-                . "\n" . '<a href="' . $sn . '?' . $su . '&amp;realblogYear='
-                . $_SESSION['realblogYear'] . '">'
-                .$plugin_tx[$plugin]['archiv_back'] . '</a></span>';
-            // "edit comments" button (realblog, above entry)
-            if (function_exists('comments')
-                && $plugin_cf['realblog']['comments_function'] == 'true'
-                && $adm == 'true'
-            ) {
-                $t .= '<span class="realblog_button">'
-                    . '<a href="./?&amp;comments&amp;admin=plugin_main'
-                    . '&amp;action=plugin_text&selected=comments' . $realblogID
-                    . '.txt">' . $plugin_tx['realblog']['comment_edit']
-                    . '</a></span>';
-            }
-            // "edit entry" button (realblog, above entry)
-            if ($adm == 'true') {
-                $t .= '<span class="realblog_button">'
-                    . '<a href="./?&amp;realblog&amp;admin=plugin_main'
-                    . '&amp;action=modify_realblog&amp;realblogID=' . $realblogID
-                    . '">' . $plugin_tx['realblog']['entry_edit'] . '</a></span>';
-            }
-            $t .= '<div style="clear: both;"></div>';
-            $t .= "\n" . '</div>' . "\n";
-            $t .= '<h4>' . $record[REALBLOG_TITLE] . '</h4>';
-            $t .= "\n" . '<div class="realblog_show_date">' . "\n"
-                . strftime(
-                    $plugin_tx[$plugin]['display_date_format'],
-                    $record[REALBLOG_DATE]
-                )
-                . "\n" . '</div>' . "\n";
-            $t .= "\n" . '<div class="realblog_show_story">' . "\n";
-            if ($record[REALBLOG_STORY] != '') {
-                // FIXME: stripslashes()?
-                $t .= stripslashes(
-                    evaluate_scripting($record[REALBLOG_STORY])
-                );
-            } else {
-                $t .= stripslashes(
-                    evaluate_scripting($record[REALBLOG_HEADLINE])
-                );
-            }
-            $t .= "\n" . '</div>' . "\n";
-            $t .= '</div>' . "\n";
-            $t .= "\n" . '<div>&nbsp;</div>' . "\n";
-
-            // Redirect back to archive overview (archive, below entry)
-            $t .= "\n" . '<div class="realblog_buttons">'
-                . '<span class="realblog_button">' . "\n"
-                . '<a href="' . $sn . '?' . $su . '&amp;realblogYear='
-                . $_SESSION['realblogYear'] . '">'
-                . $plugin_tx[$plugin]['archiv_back'] . '</a></span>';
-            // "edit comments" button (realblog, below entry)
-            if (function_exists('comments')
-                && $plugin_cf['realblog']['comments_function'] == 'true'
-                && $adm == 'true'
-            ) {
-                $t .= '<span class="realblog_button">'
-                    . '<a href="./?&amp;comments&amp;admin=plugin_main'
-                    . '&amp;action=plugin_text&amp;selected=comments'
-                    . $realblogID . '.txt">'
-                    . $plugin_tx['realblog']['comment_edit'] . '</a></span>';
-            }
-            // "edit entry" button (realblog, below entry)
-            if ($adm == 'true') {
-                $t .= '<span class="realblog_button">'
-                    . '<a href="./?&amp;realblog&amp;admin=plugin_main'
-                    . '&amp;action=modify_realblog&amp;realblogID=' . $realblogID
-                    . '">' . $plugin_tx['realblog']['entry_edit'] . '</a></span>';
-            }
-            $t .= '<div style="clear: both;"></div>';
-            $t .= "\n" . '</div>' . "\n";
-            // output comments in archive
-            if (function_exists('comments')
-                && $plugin_cf['realblog']['comments_function'] == 'true'
-                && $record[REALBLOG_COMMENTS] == 'on'
-            ) {
-                $realblog_comments_id = 'comments' . $realblogID;
-                if ($plugin_cf['realblog']['comments_form_protected'] == 'true') {
-                    $t .= tag('br') . comments($realblog_comments_id, 'protected');
-                } else {
-                    $t .= tag('br') . comments($realblog_comments_id);
-                }
-            }
+            $articleView = new Realblog_ArticleView($realblogID, $record, $page);
+            $t = $articleView->render();
         }
     }
     $t .= '<div class="realblog_credit">' . "\n"
