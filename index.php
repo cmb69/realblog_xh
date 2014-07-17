@@ -79,6 +79,24 @@ href="http://www.cmsimple.org/en/?Downloads___CMSimple"
 </div>
 EOT;
 
+/**
+ * Returns the value of a POST or GET parameter; <var>null</var> if not set.
+ *
+ * @param string $name A parameter name.
+ *
+ * @return string
+ */
+function Realblog_getPgParameter($name)
+{
+    if (isset($_POST[$name])) {
+        return $_POST[$name];
+    } elseif (isset($_GET[$name])) {
+        return $_GET[$name];
+    } else {
+        return null;
+    }
+}
+
 /*
 ********************************************************************************
 * This routine does some automatic realblog status updating
@@ -271,19 +289,12 @@ function Realblog_blog($options = null, $realBlogCat = 'all')
         }
     }
 
-    // retrieve posted variables
-    $realblogID = isset($_POST['realblogID'])
-        ? $_POST['realblogID'] : @$_GET['realblogID'];
-    $page = isset($_POST['page'])
-        ? $_POST['page'] : @$_GET['page'];
-    $realblogaction = isset($_POST['realblogaction'])
-        ? $_POST['realblogaction'] : @$_GET['realblogaction'];
-    $realblogYear = isset($_POST['realblogYear'])
-        ? $_POST['realblogYear'] : @$_GET['realblogYear'];
-    $compClause = isset($_POST['compClause'])
-        ? $_POST['compClause'] : @$_GET['compClause'];
-    $printrealblog = isset($_POST['printrealblog'])
-        ? $_POST['printrealblog'] : @$_GET['printrealblog'];
+    $realblogID = Realblog_getPgParameter('realblogID');
+    $page = Realblog_getPgParameter('page');
+    $realblogaction = Realblog_getPgParameter('realblogaction');
+    $realblogYear = Realblog_getPgParameter('realblogYear');
+    $compClause = Realblog_getPgParameter('compClause');
+    $printrealblog = Realblog_getPgParameter('printrealblog');
 
     // set general variables for the plugin
     $plugin_images_folder = $pth['folder']['plugins'] . $plugin . '/images/';
@@ -1219,18 +1230,12 @@ function Realblog_archive($options = null)
         }
     }
 
-    // retrieve posted variables
-    $realblogID = isset($_POST['realblogID'])
-        ? $_POST['realblogID'] : @$_GET['realblogID'];
-    $page = isset($_POST['page']) ? $_POST['page'] : @$_GET['page'];
-    $realblogaction = isset($_POST['realblogaction'])
-        ? $_POST['realblogaction'] : @$_GET['realblogaction'];
-    $realblogYear = isset($_POST['realblogYear'])
-        ? $_POST['realblogYear'] : @$_GET['realblogYear'];
-    $compClause = isset($_POST['compClause'])
-        ? $_POST['compClause'] : @$_GET['compClause'];
-    $printrealblog = isset($_POST['printrealblog'])
-        ? $_POST['printrealblog'] : @$_GET['printrealblog'];
+    $realblogID = Realblog_getPgParameter('realblogID');
+    $page = Realblog_getPgParameter('page');
+    $realblogaction = Realblog_getPgParameter('realblogaction');
+    $realblogYear = Realblog_getPgParameter('realblogYear');
+    $compClause = Realblog_getPgParameter('compClause');
+    $printrealblog = Realblog_getPgParameter('printrealblog');
 
     // set general variables for the plugin
     $plugin_images_folder = $pth['folder']['plugins'] . $plugin . '/images/';

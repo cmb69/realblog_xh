@@ -152,49 +152,29 @@ if (isset($realblog) && $realblog == 'true') {
                 : $value;
         }
 
-        // FIXME: simplify this
-        // retrieve posted plugin variables
-        $realblogID = isset($_POST['realblogID'])
-            ? $_POST['realblogID'] : @$_GET['realblogID'];
-        $page = isset($_POST['page']) ? $_POST['page'] : @$_GET['page'];
-        $do = isset($_POST['do']) ? $_POST['do'] : @$_GET['do'];
-        $filter= isset($_POST['filter']) ? $_POST['filter'] : @$_GET['filter'];
-        // retrieve posted Form fields information
-        $realblog_id = isset($_POST['realblog_id'])
-            ? $_POST['realblog_id'] : @$_GET['realblog_id'];
-        $realblog_date = isset($_POST['realblog_date'])
-            ? $_POST['realblog_date'] : @$_GET['realblog_date'];
-        $realblog_title = isset($_POST['realblog_title'])
-            ? $_POST['realblog_title'] : @$_GET['realblog_title'];
-        $realblog_headline = isset($_POST['realblog_headline'])
-            ? $_POST['realblog_headline'] : @$_GET['realblog_headline'];
-        $realblog_story = isset($_POST['realblog_story'])
-            ? $_POST['realblog_story'] : @$_GET['realblog_story'];
-        $realblog_frontpage = isset($_POST['realblog_frontpage'])
-            ? $_POST['realblog_frontpage'] : @$_GET['realblog_frontpage'];
-        $realblog_rssfeed = isset($_POST['realblog_rssfeed'])
-            ? $_POST['realblog_rssfeed'] : @$_GET['realblog_rssfeed'];
-        $realblog_comments = isset($_POST['realblog_comments'])
-            ? $_POST['realblog_comments'] : @$_GET['realblog_comments'];
-        $realblog_startdate = isset($_POST['realblog_startdate'])
-            ? $_POST['realblog_startdate'] : @$_GET['realblog_startdate'];
-        $realblog_enddate = isset($_POST['realblog_enddate'])
-            ? $_POST['realblog_enddate'] : @$_GET['realblog_enddate'];
-        $realblog_status = isset($_POST['realblog_status'])
-            ? $_POST['realblog_status'] : @$_GET['realblog_status'];
-        $filter1 = isset($_POST['filter1']) ? $_POST['filter1'] : @$_GET['filter1'];
-        $filter2 = isset($_POST['filter2']) ? $_POST['filter2'] : @$_GET['filter2'];
-        $filter3 = isset($_POST['filter3']) ? $_POST['filter3'] : @$_GET['filter3'];
-        $realblogtopics = isset($_POST['realblogtopics'])
-            ? $_POST['realblogtopics'] : @$_GET['realblogtopics'];
-        $batchdelete_x = isset($_POST['batchdelete_x'])
-            ? $_POST['batchdelete_x'] : @$_GET['batchdelete_x'];
-        $changestatus_x = isset($_POST['changestatus_x'])
-            ? $_POST['changestatus_x'] : @$_GET['changestatus_x'];
-        $batchchangestatus = isset($_POST['batchchangestatus'])
-            ? $_POST['batchchangestatus'] : @$_GET['batchchangestatus'];
-        $new_realblogstatus = isset($_POST['new_realblogstatus'])
-            ? $_POST['new_realblogstatus'] : @$_GET['new_realblogstatus'];
+        $realblogID = Realblog_getPgParameter('realblogID');
+        $page = Realblog_getPgParameter('page');
+        $do = Realblog_getPgParameter('do');
+        $filter = Realblog_getPgParameter('filter');
+        $realblog_id = Realblog_getPgParameter('realblog_id');
+        $realblog_date = Realblog_getPgParameter('realblog_date');
+        $realblog_title = Realblog_getPgParameter('realblog_title');
+        $realblog_headline = Realblog_getPgParameter('realblog_headline');
+        $realblog_story = Realblog_getPgParameter('realblog_story');
+        $realblog_frontpage = Realblog_getPgParameter('realblog_frontpage');
+        $realblog_rssfeed = Realblog_getPgParameter('realblog_rssfeed');
+        $realblog_comments = Realblog_getPgParameter('realblog_comments');
+        $realblog_startdate = Realblog_getPgParameter('realblog_startdate');
+        $realblog_enddate = Realblog_getPgParameter('realblog_enddate');
+        $realblog_status = Realblog_getPgParameter('realblog_status');
+        $filter1 = Realblog_getPgParameter('filter1');
+        $filter2 = Realblog_getPgParameter('filter2');
+        $filter3 = Realblog_getPgParameter('filter3');
+        $realblogtopics = Realblog_getPgParameter('realblogtopics');
+        $batchdelete_x = Realblog_getPgParameter('batchdelete_x');
+        $changestatus_x = Realblog_getPgParameter('changestatus_x');
+        $batchchangestatus = Realblog_getPgParameter('batchchangestatus');
+        $new_realblogstatus = Realblog_getPgParameter('new_realblogstatus');
 
         // perform the appropriate action for the selected record
         if ($action == 'delete_realblog' || $action == 'add_realblog'
