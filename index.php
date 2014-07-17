@@ -266,26 +266,17 @@ EOT;
             } else {
                 unset($realblogaction);
             }
+            $temp = $plugin_cf['realblog']['entries_order'] == 'desc'
+                ? DESCENDING : ASCENDING;
+            $records = $db->selectWhere(
+                'realblog.txt', $compClause, -1,
+                array(
+                    new OrderBy(REALBLOG_DATE, $temp, INTEGER_COMPARISON),
+                    new OrderBy(REALBLOG_ID, $temp, INTEGER_COMPARISON)
+                )
+            );
 
-            if ($plugin_cf['realblog']['entries_order'] == 'desc') {
-                $records = $db->selectWhere(
-                    'realblog.txt', $compClause, -1,
-                    array(
-                        new OrderBy(REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON),
-                        new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
-                    )
-                );
-            } else {
-                $records = $db->selectWhere(
-                    'realblog.txt', $compClause, -1,
-                    array(
-                        new OrderBy(REALBLOG_DATE, ASCENDING, INTEGER_COMPARISON),
-                        new OrderBy(REALBLOG_ID, ASCENDING, INTEGER_COMPARISON)
-                    )
-                );
-            }
-
-            $numberOfSearchResults=$records;
+            $numberOfSearchResults = $records;
 
             foreach ($numberOfSearchResults as $searchresults) {
                 if (strstr($searchresults[8], '|' . $realBlogCat . '|')) {
@@ -313,23 +304,15 @@ EOT;
                 $compClause = $compRealblogClause;
             }
 
-            if ($plugin_cf['realblog']['entries_order'] == 'desc') {
-                $records = $db->selectWhere(
-                    'realblog.txt', $compClause, -1,
-                    array(
-                        new OrderBy(REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON),
-                        new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
-                    )
-                );
-            } else {
-                $records = $db->selectWhere(
-                    'realblog.txt', $compClause, -1,
-                    array(
-                        new OrderBy(REALBLOG_DATE, ASCENDING, INTEGER_COMPARISON),
-                        new OrderBy(REALBLOG_ID, ASCENDING, INTEGER_COMPARISON)
-                    )
-                );
-            }
+            $temp = $plugin_cf['realblog']['entries_order'] == 'desc'
+                ? DESCENDING : ASCENDING;
+            $records = $db->selectWhere(
+                'realblog.txt', $compClause, -1,
+                array(
+                    new OrderBy(REALBLOG_DATE, $temp, INTEGER_COMPARISON),
+                    new OrderBy(REALBLOG_ID, $temp, INTEGER_COMPARISON)
+                )
+            );
         }
 
         foreach ($records as $catRecordsTemp) {
