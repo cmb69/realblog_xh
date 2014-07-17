@@ -130,30 +130,13 @@ if (!$adm) {
 
     $db = Realblog_connect();
 
-    $today = strtotime('midnight');
-
     // Change realblog status from ready for publishing to published when
     // current date is within the publishing period
     $compClause = null;
 
     if (strtolower($plugin_cf[$plugin]['auto_publish']) == 'true') {
-        $compClause = new AndWhereClause(
-            new SimpleWhereClause(REALBLOG_STATUS, '<=', 0, INTEGER_COMPARISON),
-            new AndWhereClause(
-                new SimpleWhereClause(REALBLOG_STARTDATE, '<=', $today),
-                new SimpleWhereClause(REALBLOG_ENDDATE, '>=', $today)
-            )
-        );
-        $records = $db->selectWhere($db_name, $compClause, -1);
-
-        foreach ($records as $key => $field) {
-            unset($realblogitem);
-            $realblogitem[REALBLOG_ID] = $field[REALBLOG_ID];
-            $realblogitem[REALBLOG_STATUS] = 1;
-            $db->updateRowById($db_name, REALBLOG_ID, $realblogitem);
-        }
+        Realblog_autoPublish();
     }
-
     if ($plugin_cf['realblog']['auto_archive'] == 'true') {
         Realblog_autoArchive();
     }
@@ -2369,6 +2352,31 @@ function Realblog_getCalendarDateFormat()
     }
 
     return $cal_format;
+}
+
+/**
+ * Changes status to published when current date is within the publishing period.
+ *
+ * @return void
+ */
+function Realblog_autoPublish()
+{
+    $db = Realblog_connect();
+    $today = strtotime('midnight');
+    $compClause = new AndWhereClause(
+        new SimpleWhereClause(REALBLOG_STATUS, '<=', 0, INTEGER_COMPARISON),
+        new AndWhereClause(
+            new SimpleWhereClause(REALBLOG_STARTDATE, '<=', $today),
+            new SimpleWhereClause(REALBLOG_ENDDATE, '>=', $today)
+        )
+    );
+    $records = $db->selectWhere('realblog.txt', $compClause, -1);
+
+    foreach ($records as $key => $field) {
+        $realblogitem[REALBLOG_ID] = $field[REALBLOG_ID];
+        $realblogitem[REALBLOG_STATUS] = 1;
+        $db->updateRowById('realblog.txt', REALBLOG_ID, $realblogitem);
+    }
 }
 
 /**
