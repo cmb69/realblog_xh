@@ -212,7 +212,6 @@ function Realblog_blog($options = null, $realBlogCat = 'all')
     $realblogaction = Realblog_getPgParameter('realblogaction');
     $realblogYear = Realblog_getPgParameter('realblogYear');
     $compClause = Realblog_getPgParameter('compClause');
-    $printrealblog = Realblog_getPgParameter('printrealblog');
 
     // set general variables for the plugin
     $plugin_images_folder = $pth['folder']['plugins'] . $plugin . '/images/';
@@ -594,36 +593,6 @@ EOT;
                 . "\n" . '</div>' . "\n";
             $t .= '</div>' . "\n";
             $t .= "\n" . '<div>&nbsp;</div>' . "\n";
-            if (isset($printrealblog)) {
-                $tt = '<html><head><title>' . sitename() . ' - '
-                    . str_replace('_', ' ', $u[$s]) . '</title>';
-                $tt .= tag(
-                    'link rel="stylesheet" href="' . $pth['folder']['plugins']
-                    . $plugin . '/css/stylesheet.css" type="text/css"'
-                );
-                $tt .= '</head><body>';
-                $tt .= $t;
-                $tt .= "\n" . '<div align="center">'
-                    // FIXME: javascript protocol
-                    . '<a href="javascript:void(0);" onclick="window.close()">'
-                    . $plugin_tx[$plugin]['window_close']
-                    . '</a>&nbsp;&nbsp;&nbsp;' . "\n"
-                    . '<a href="javascript:void(0);" onclick="window.print()">'
-                    . $plugin_tx[$plugin]['window_print'] . '</a>' . "\n"
-                    . '</div>' . "\n";
-                $tt .= '</body></html>';
-                // FIXME
-                $wurstsuppe = addslashes($tt);
-                $t .= <<<EOT
-<script language='javascript' type='text/javascript'>
-var printinfo = '$wurstsuppe';
-win = window.open('', 'printversion', 'toolbar = 0, status = 0, width=600',
-        scrollbars=1);
-win.document.write(printinfo);
-win.document.close();
-</script>
-EOT;
-            }
 
             // Redirect back to realblog overview (realblog, below entry)
             $t .= "\n" . '<div class="realblog_buttons">' . "\n"
@@ -736,7 +705,6 @@ function Realblog_archive($options = null)
     $realblogaction = Realblog_getPgParameter('realblogaction');
     $realblogYear = Realblog_getPgParameter('realblogYear');
     $compClause = Realblog_getPgParameter('compClause');
-    $printrealblog = Realblog_getPgParameter('printrealblog');
 
     $plugin_images_folder = $pth['folder']['plugins'] . $plugin . '/images/';
 
@@ -1048,36 +1016,6 @@ EOT;
             $t .= "\n" . '</div>' . "\n";
             $t .= '</div>' . "\n";
             $t .= "\n" . '<div>&nbsp;</div>' . "\n";
-            if (isset($printrealblog)) {
-                $tt = '<html><head><title>' . sitename() . ' - '
-                    . str_replace('_', ' ', $u[$s]) . '</title>';
-                $tt .= tag(
-                    'link rel="stylesheet" href="' . $pth['folder']['plugins']
-                    . $plugin . '/css/stylesheet.css" type="text/css">'
-                );
-                $tt .= '</head><body>';
-                $tt .= $t;
-                $tt .= "\n" . '<div align="center">'
-                    // FIXME javascript protocol
-                    . '<a href="javascript:void(0);" onclick="window.close()">'
-                    . $plugin_tx[$plugin]['window_close']
-                    . '</a>&nbsp;&nbsp;&nbsp;'
-                    // FIXME javascript protocol
-                    . '<a href="javascript:void(0);" onclick="window.print()">'
-                    . $plugin_tx[$plugin]['window_print'] . '</a>' . "\n"
-                    . '</div>' . "\n";
-                $tt .= '</body></html>';
-                $wurstsuppe = addslashes($tt);
-                $t .= <<<EOT
-<script language="javascript" type="text/javascript">
-var printinfo = '$wurstsuppe';
-win = window.open('', 'printversion', 'toolbar = 0, status = 0, width=600',
-        scrollbars=1);
-win.document.write(printinfo);
-win.document.close();
-</script>
-EOT;
-            }
 
             // Redirect back to archive overview (archive, below entry)
             $t .= "\n" . '<div class="realblog_buttons">'
