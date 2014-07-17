@@ -73,78 +73,6 @@ href="http://www.cmsimple.org/en/?Downloads___CMSimple"
 </div>
 EOT;
 
-/* EVALUATION FUNCTIONS FOR PLUGINS / SCRIPTING */
-
-function evaluate_cmsimple_scripting_crb($__text_crb, $__compat_crb = TRUE) {
-    global $output;
-    foreach ($GLOBALS as $__name_crb => $__dummy_crb) {global $$__name_crb;}
-
-    $__scope_before_crb = NULL; // just that it exists
-    $__scripts_crb = array();
-    preg_match_all('~'.$cf['scripting']['regexp'].'~is', $__text_crb, $__scripts_crb);
-    if (count($__scripts_crb[1]) > 0) {
-        $output = preg_replace('~'.$cf['scripting']['regexp'].'~is', '', $__text_crb);
-    if ($__compat_crb) {$__scripts_crb[1] = array_reverse($__scripts_crb[1]);}
-        foreach ($__scripts_crb[1] as $__script_crb) {
-            if ($__script_crb !== 'hide' && $__script_crb !== 'remove') {
-                $__script_crb = preg_replace(
-                        array("'&(quot|#34);'i", "'&(amp|#38);'i", "'&(apos|#39);'i", "'&(lt|#60);'i", "'&(gt|#62);'i", "'&(nbsp|#160);'i"),
-                        array("\"", "&", "'", "<", ">", " "),
-                        $__script_crb);
-        $__scope_before_crb = array_keys(get_defined_vars());
-                eval($__script_crb);
-        $__scope_after_crb = array_keys(get_defined_vars());
-        $__diff_crb = array_diff($__scope_after_crb, $__scope_before_crb);
-        foreach ($__diff_crb as $__var_crb) {$GLOBALS[$__var_crb] = $$__var_crb;}
-        if ($__compat_crb) {break;}
-            }
-        }
-        $eval_script_output = $output;
-        $output = '';
-        return $eval_script_output;
-    }
-    return $__text_crb;
-}
-
-function evaluate_plugincall_crb($__text_crb) {
-    global $u;
-
-    $error = ' <span style="color:#5b0000; font-size:14px;">{{CALL TO:<span style="color:#c10000;">{{%1}}</span> FAILED}}</span> '; //use this for debugging of failed plugin-calls
-    $pl_regex = '"{{{RGX:CALL(.*?)}}}"is'; //general CALL-RegEx (Placeholder: "RGX:CALL")
-    $pl_calls = array(
-    'PLUGIN:' => 'return {{%1}}',
-    'HOME:' => 'return trim(\'<a href="?' . $u[0] . '" title="' . urldecode('{{%1}}') . '">' . urldecode('{{%1}}') . '</a>\');',
-    'HOME' => 'return trim(\'<a href="?' . $u[0] . '" title="' . urldecode($u[0]) . '">' . urldecode($u[0]) . '</a>\');'
-    );
-    $fd_calls = array();
-    foreach ($pl_calls AS $regex => $call) {
-    preg_match_all(str_replace("RGX:CALL", $regex, $pl_regex), $__text_crb, $fd_calls[$regex]); //catch all PL-CALLS
-    foreach ($fd_calls[$regex][0] AS $call_nr => $replace) {
-        $call = str_replace("{{%1}}", $fd_calls[$regex][1][$call_nr], $pl_calls[$regex]);
-        $fnct_call = preg_replace('"(?:(?:return)\s)*(.*?)\(.*?\);"is', '$1', $call);
-        $fnct = function_exists($fnct_call) ? TRUE : FALSE; //without object-calls; functions-only!!
-        if ($fnct) {
-        preg_match_all("/\\$([a-z_0-9]*)/i", $call, $matches);
-        foreach ($matches[1] as $var) {
-            global $$var;
-        }
-        }
-        $__text_crb = str_replace($replace,
-            ($fnct
-            ? eval(str_replace('{{%1}}', $fd_calls[$regex][1][$call_nr], $pl_calls[$regex]))
-            : str_replace('{{%1}}', $regex . $fd_calls[$regex][1][$call_nr], $error)),
-            $__text_crb); //replace PL-CALLS (String only!!)
-    }
-    }
-    return $__text_crb;
-}
-
-function evaluate_scripting_crb($text, $compat = TRUE) {
-    return evaluate_cmsimple_scripting_crb(evaluate_plugincall_crb($text), $compat);
-}
-
-/* END EVALUATION FUNCTIONS FOR PLUGINS / SCRIPTING */
-
 /*
 ********************************************************************************
 * This routine does some automatic realblog status updating
@@ -1033,7 +961,7 @@ EOT;
                             )
                             . "\n" . '</div>' . "\n";
                         $t .= "\n" . '<div class="realblog_show_story">' . "\n";
-                        $t .= evaluate_scripting_crb($field[REALBLOG_HEADLINE]);
+                        $t .= evaluate_scripting($field[REALBLOG_HEADLINE]);
                         if ($plugin_cf['realblog']['show_read_more_link'] == 'true'
                             && $field[REALBLOG_STORY] != ''
                         ) {
@@ -1156,7 +1084,7 @@ EOT;
                 . "\n" . '</div>' . "\n";
             $t .= "\n" . '<div class="realblog_show_story_entry">' . "\n"
                 // FIXME: stripslashes() ?
-                . stripslashes(evaluate_scripting_crb($record[REALBLOG_STORY]))
+                . stripslashes(evaluate_scripting($record[REALBLOG_STORY]))
                 . "\n" . '</div>' . "\n";
             $t .= '</div>' . "\n";
             $t .= "\n" . '<div>&nbsp;</div>' . "\n";
@@ -2014,11 +1942,11 @@ EOT;
             if ($record[REALBLOG_STORY] != '') {
                 // FIXME: stripslashes()?
                 $t .= stripslashes(
-                    evaluate_scripting_crb($record[REALBLOG_STORY])
+                    evaluate_scripting($record[REALBLOG_STORY])
                 );
             } else {
                 $t .= stripslashes(
-                    evaluate_scripting_crb($record[REALBLOG_HEADLINE])
+                    evaluate_scripting($record[REALBLOG_HEADLINE])
                 );
             }
             $t .= "\n" . '</div>' . "\n";
