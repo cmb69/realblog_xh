@@ -2301,15 +2301,20 @@ function Realblog_feedLink($options = null)
  * @return Flatfile
  *
  * @global array The paths of system files and folders.
+ *
+ * @staticvar Flatfile $db The database object.
  */
 function Realblog_connect()
 {
     global $pth;
+    static $db = null;
 
-    include_once $pth['folder']['plugins'] . 'realblog/include/flatfile.php';
-    include_once $pth['folder']['plugins'] . 'realblog/include/fields.php';
-    $db = new Flatfile();
-    $db->datadir = $pth['folder']['content'] . 'realblog/';
+    if (!isset($db)) {
+        include_once $pth['folder']['plugins'] . 'realblog/include/flatfile.php';
+        include_once $pth['folder']['plugins'] . 'realblog/include/fields.php';
+        $db = new Flatfile();
+        $db->datadir = $pth['folder']['content'] . 'realblog/';
+    }
     return $db;
 }
 
