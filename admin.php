@@ -52,25 +52,6 @@ this program; if not, see <http://www.gnu.org/licenses>.
 */
 
 if (isset($realblog)) {
-    // FIXME: get rid of this fallback
-    //check if register_globals is turned OFF
-    if (!isset($_GET)) {
-        global $_GET;
-        $_GET = $GLOBALS['HTTP_GET_VARS'];
-    }
-    if (!isset($_POST)) {
-        global $_POST;
-        $_POST = $GLOBALS['HTTP_POST_VARS'];
-    }
-    if (!isset($_COOKIE)) {
-        global $_COOKIE;
-        $_COOKIE = $GLOBALS['HTTP_COOKIE_VARS'];
-    }
-    if (!isset($_SERVER)) {
-        global $_SERVER;
-        $_SERVER = $GLOBALS['HTTP_SERVER_VARS'];
-    }
-
     // FIXME: get rid of unnecessary global declarations
     // global variables
     global $pth, $cf, $tx, $cl, $u, $sn, $s, $c, $h, $plugin_cf, $plugin_tx;

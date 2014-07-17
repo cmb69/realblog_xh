@@ -2,4 +2,3 @@
 * keep an eye on compat.php
 * CSRF protection
 * prevent usage from unsupported CMSimple variants/versions
-* remove "plugin info" link
