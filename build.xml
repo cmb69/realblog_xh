@@ -13,6 +13,7 @@
     <fileset id="php-sources" dir=".">
         <include name="index.php"/>
         <include name="admin.php"/>
+        <include name="functions.php"/>
     </fileset>
 
     <fileset id="unit-tests" dir="tests/unit">

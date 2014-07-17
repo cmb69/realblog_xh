@@ -53,6 +53,7 @@ this program; if not, see <http://www.gnu.org/licenses>.
 */
 ////////////////////////////////////////////////// HISTORIC LICENSE SECTION END
 
+require_once $pth['folder']['plugin'] . 'functions.php';
 /**
  * Backward compatibility.
  */
@@ -246,81 +247,8 @@ EOT;
 
         $cal_format = Realblog_getCalendarDateFormat();
 
-        // Build the search block
-        if (strtolower($includesearch) == 'true') {
-            $t = "\n" . '<div>' . "\n"
-                . '<form name="realblogsearch" method="post" action="' . $sn
-                . '?' . $u[$s] . '">';
-            $t .= "\n" . '<div id="enablesearch">' . "\n"
-                . '<a href="javascript:realblog_showSearch()">' . "\n"
-                . tag(
-                    'img id="btn_img" alt="searchbuttonimg" src="'
-                    . $plugin_images_folder . 'btn_expand.gif" title="'
-                    . $plugin_tx[$plugin]['tooltip_showsearch']
-                    . '" style="border: 0;"'
-                )
-                . '</a>\n&nbsp;<b>' . $tx['search']['button'] . '</b>\n</div>'
-                . "\n";
-            $t .= "\n" . '<div id="searchblock" style="display:none">' . "\n";
-            $t .= tag('input type="hidden" name="realblogaction" value="search"');
-            $t .= tag(
-                'input type="hidden" name="realblogYear" value="'
-                . $realblogYear . '"'
-            );
-            $t .= '<p class="realblog_search_hint">'
-                . $plugin_tx['realblog']['search_hint'] . '</p>';
-            $t .= "\n" . '<table style="width: 100%;">' . "\n";
-            $t .= '<tr>' . "\n"
-                . '<td style="width: 30%;" class="realblog_search_text">'
-                . $plugin_tx[$plugin]['title_label'] . ' '
-                . $plugin_tx['realblog']['search_contains'] . ':' . "\n"
-                . '</td>\n<td>\n<select name="title_operator"'
-                . ' style="visibility: hidden; width: 0;">' . "\n"
-                . '<option value="2" selected="selected">'
-                . $plugin_tx[$plugin]['search_contains']
-                . '</option>' . "\n" . '</select>' . "\n"
-                . tag(
-                    'input type="text" name="realblog_title" size="35"'
-                    . ' class="realblog_search_input" maxlength="64"'
-                )
-                . "\n" . '</td>' . "\n" . '</tr>' . "\n";
-            $t .= '<tr>' . "\n" . '<td style="width: 30%;">&nbsp;</td>' . "\n"
-                . '<td>' . "\n" . '&nbsp;&nbsp;&nbsp;'
-                . tag(
-                    'input id="operator_2a" type="radio" name="operator_2"'
-                    . ' value="AND"'
-                )
-                . '&nbsp;' . $plugin_tx[$plugin]['search_and'] . '&nbsp;&nbsp;&nbsp;'
-                . tag(
-                    'input id="operator_2b" type="radio" name="operator_2"'
-                    . ' value="OR" checked="checked"'
-                )
-                . '&nbsp;' . $plugin_tx[$plugin]['search_or'] . '</td>\n</tr>'
-                . "\n";
-            $t .= '<tr>' . "\n"
-                . '<td style="width: 30%;" class="realblog_search_text">'
-                . $plugin_tx[$plugin]['story_label'] . ' '
-                . $plugin_tx['realblog']['search_contains'] . ':' . '</td>'
-                . '<td><select name="story_operator"'
-                . ' style="visibility: hidden; width: 0;">'
-                . '<option value="2" selected="selected">'
-                . $plugin_tx[$plugin]['search_contains'] . '</option>' . "\n"
-                . '</select>' . "\n"
-                . tag(
-                    'input type="text" name="realblog_story" size="35"'
-                    . ' class="realblog_search_input" maxlength="64"'
-                )
-                . '</td></tr>' . "\n";
-            $t .= '<tr>' . "\n" . '<td colspan="2">&nbsp;</td></tr>' . "\n";
-            $t .= '<tr>' . "\n" . '<td colspan="2" style="text-align: center;">'
-                . tag(
-                    'input type="submit" name="send" value="'
-                    . $tx['search']['button'] . '"'
-                )
-                . '</td></tr>' . "\n";
-            $t .= '</table>' . "\n" . '</div>' . "\n";
-            $t .= '</form>' . "\n";
-            $t .= '</div>' . "\n";
+        if ($includesearch == 'true') {
+            $t = Realblog_renderSearchForm($realblogYear);
         }
 
         if ($realblogaction == 'search') {
@@ -341,8 +269,8 @@ EOT;
             }
             if (!empty($_REQUEST['realblog_title'])) {
                 $compClauseTitle = new LikeWhereClause(
-                    REALBLOG_TITLE, $_REQUEST[realblog_title],
-                    $_REQUEST[title_operator]
+                    REALBLOG_TITLE, $_REQUEST['realblog_title'],
+                    $_REQUEST['title_operator']
                 );
             }
             if (!empty($_REQUEST['realblog_story'])) {
@@ -1105,83 +1033,8 @@ EOT;
 
         $cal_format = Realblog_getCalendarDateFormat();
 
-        // Build the search block
-        if (strtolower($includesearch) == 'true') {
-            $t = "\n" . '<div>' . "\n" .
-                '<form name="realblogsearch" method="post" action="' . $sn . "?"
-                . $u[$s] . '">';
-            $t .= "\n" . '<div id="enablesearch">' . "\n"
-                // FIXME: javascript protocol
-                . '<a href="javascript:realblog_showSearch()">' . "\n"
-                . tag(
-                    'img id="btn_img" alt="searchbuttonimg" src="'
-                    . $plugin_images_folder . 'btn_expand.gif" title="'
-                    . $plugin_tx[$plugin]['tooltip_showsearch']
-                    . '" style="border: 0;"'
-                )
-                . '</a>' . "\n" . '&nbsp;<b>' . $tx['search']['button']
-                . '</b>' . "\n" . '</div>' . "\n";
-            $t .= "\n" . '<div id="searchblock" style="display:none">' . "\n";
-            $t .= tag('input type="hidden" name="realblogaction" value="search"');
-            $t .= tag(
-                'input type="hidden" name="realblogYear" value="'
-                . $realblogYear . '"'
-            );
-            $t .= '<p class="realblog_search_hint">'
-                . $plugin_tx['realblog']['search_hint'] . '</p>';
-            $t .= "\n" . '<table style="width: 100%;">' . "\n";
-            $t .= '<tr>' . "\n"
-                . '<td style="width: 30%;" class="realblog_search_text">'
-                . $plugin_tx[$plugin]['title_label'] . ' '
-                . $plugin_tx['realblog']['search_contains'] . ':' . "\n"
-                . '</td>' . "\n" . '<td>' . "\n"
-                . '<select name="title_operator"'
-                . ' style="visibility: hidden; width: 0;">' . "\n"
-                . '<option value="2" selected="selected">'
-                . $plugin_tx[$plugin]['search_contains'] . '</option>' . "\n"
-                . '</select>' . "\n"
-                . tag(
-                    'input type="text" name="realblog_title" size="35"'
-                    . ' class="realblog_search_input" maxlength="64"'
-                )
-                . "\n" . '</td>' . "\n" . '</tr>' . "\n";
-            $t .= '<tr>' . "\n" . '<td style="width: 30%;"></td>' . "\n"
-                . '<td>' . "\n" . '&nbsp;&nbsp;&nbsp;'
-                . tag(
-                    'input id="operator_2a" type="radio" name="operator_2"'
-                    . ' value="AND"'
-                )
-                . '&nbsp;' . $plugin_tx[$plugin]['search_and'] . '&nbsp;&nbsp;&nbsp;'
-                . tag(
-                    'input id="operator_2b" type="radio" name="operator_2"'
-                    . ' value="OR" checked="checked"'
-                )
-                . '&nbsp;' .  $plugin_tx[$plugin]['search_or'] . '</td>' . "\n"
-                . '</tr>' . "\n";
-            $t .= '<tr>' . "\n" .
-                '<td style="width: 30%;" class="realblog_search_text">'
-                . $plugin_tx[$plugin]['story_label'] . ' '
-                . $plugin_tx['realblog']['search_contains'] . ':' . '</td>'
-                . '<td><select name="story_operator"'
-                . ' style="visibility: hidden; width: 0;">'
-                . '<option value="2" selected="selected">'
-                . $plugin_tx[$plugin]['search_contains']
-                . '</option>' . "\n" . '</select>' . "\n"
-                . tag(
-                    'input type="text" name="realblog_story" size="35"'
-                    . ' class="realblog_search_input" maxlength="64"'
-                )
-                . '</td></tr>' . "\n";
-            $t .= '<tr>' . "\n" . '<td colspan="2">&nbsp;</td></tr>' . "\n";
-            $t .= '<tr>' . "\n" . '<td colspan="2" style="text-align: center;">'
-                . tag(
-                    'input type="submit" name="send" value="'
-                    . $tx['search']['button'] . '"'
-                )
-                . '</td></tr>' . "\n";
-            $t .= '</table>' . "\n" . '</div>' . "\n";
-            $t .= '</form>' . "\n";
-            $t .= '</div>' . "\n";
+        if ($includesearch == 'true') {
+            $t = Realblog_renderSearchForm($realblogYear);
         }
 
         if ($realblogaction == 'search') {
@@ -1486,7 +1339,7 @@ EOT;
                 $next = ($realblogYear < $currentYear)
                     ? ($realblogYear + 1) : $currentYear;
                 $back = $realblogYear - 1;
-                $t = "\n" . '<div>&nbsp;</div>' . "\n";
+                $t .= "\n" . '<div>&nbsp;</div>' . "\n";
                 $t .= "\n" . '<div class="realblog_table_paging">' . "\n"
                     . '<a href="' . $sn . '?' . $u[$s] . '&amp;realblogYear='
                     . $back . '" title="'
