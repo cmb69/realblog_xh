@@ -99,8 +99,6 @@ if (isset($realblog) && $realblog == 'true') {
     // set general variables for the plugin
     // TO DO: check if these folders exist - if not, exit plugin...
     $plugin_images_folder = $pth['folder']['plugins'] . $plugin . '/images/';
-    $plugin_include_folder = $pth['folder']['plugins'] . $plugin . '/include/';
-    $db_path = $pth['folder']['content'] . 'realblog/';
     $db_name = 'realblog.txt';
     $o .= print_plugin_admin('on');
     if ($admin <> 'plugin_main') {
@@ -115,12 +113,11 @@ if (isset($realblog) && $realblog == 'true') {
             . $realblog_based_on . '</p></div>';
     }
 
-    include_once $plugin_include_folder . 'flatfile.php';
-    include_once $plugin_include_folder . 'fields.php';
-    $db = new Flatfile();
-    $db->datadir = $db_path;
+    $db = Realblog_connect();
 
-    if ($admin == 'plugin_main' && is_writable($db_path . 'realblog.txt')) {
+    if ($admin == 'plugin_main'
+        && is_writable($pth['folder']['content'] . 'realblog/realblog.txt')
+    ) {
         // Verify date format settings & make correct date format for the
         // datepicker.js script
         $my_date_format1 = explode('/', $plugin_tx[$plugin]['date_format']);
@@ -762,18 +759,16 @@ if (isset($realblog) && $realblog == 'true') {
  * @global string The script name.
  * @global string FIXME
  * @global string FIXME
- * @global string FIXME
  * @global array  The configuration of the core.
  * @global array  The localization of the core.
  * @global mixed  FIXME
  */
 function Realblog_form($realblogID = null, $action = null, $ret_page = 1)
 {
-    global $pth, $plugin, $plugin_cf, $plugin_tx, $sn, $db_name, $db_path,
+    global $pth, $plugin, $plugin_cf, $plugin_tx, $sn, $db_name,
         $plugin_images_folder, $cf, $tx, $cal_format;
 
-    $db = new Flatfile();
-    $db->datadir = $db_path;
+    $db = Realblog_connect();
 
     switch ($action){
     case 'add_realblog':

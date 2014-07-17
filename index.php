@@ -128,11 +128,8 @@ if (!$adm) {
 
     $db_name = "realblog.txt";
 
-    include_once $plugin_include_folder . 'flatfile.php';
-    include_once $plugin_include_folder . 'fields.php';
+    $db = Realblog_connect();
 
-    $db = new Flatfile();
-    $db->datadir = $db_path;
     $d = date('d');
     $m = date('n');
     $y = date('Y');
@@ -284,10 +281,6 @@ function Realblog_blog($options = null, $realBlogCat = 'all')
 
     // set general variables for the plugin
     $plugin_images_folder = $pth['folder']['plugins'] . $plugin . '/images/';
-    $plugin_include_folder = $pth['folder']['plugins'] . $plugin . '/include/';
-
-    $db_path = $pth['folder']['content'] . 'realblog/';
-    $db_name = "realblog.txt";
 
     // Show / hide search block
     $hjs .= "\n" . <<<EOT
@@ -310,12 +303,7 @@ function realblog_showSearch() {
 </script>'
 EOT;
 
-    include_once $plugin_include_folder . 'flatfile.php';
-    include_once $plugin_include_folder . 'fields.php';
-
-    // connect to the realblog database file
-    $db = new Flatfile();
-    $db->datadir = $db_path;
+    $db = Realblog_connect();
 
     if ($realblogaction != 'view') {
         $compClause = new SimpleWhereClause(
@@ -703,7 +691,7 @@ EOT;
 
             if ($plugin_cf['realblog']['entries_order'] == 'desc') {
                 $records = $db->selectWhere(
-                    $db_name, $compClause, -1,
+                    'realblog.txt', $compClause, -1,
                     array(
                         new OrderBy(REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON),
                         new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
@@ -711,7 +699,7 @@ EOT;
                 );
             } else {
                 $records = $db->selectWhere(
-                    $db_name, $compClause, -1,
+                    'realblog.txt', $compClause, -1,
                     array(
                         new OrderBy(REALBLOG_DATE, ASCENDING, INTEGER_COMPARISON),
                         new OrderBy(REALBLOG_ID, ASCENDING, INTEGER_COMPARISON)
@@ -749,7 +737,7 @@ EOT;
 
             if ($plugin_cf['realblog']['entries_order'] == 'desc') {
                 $records = $db->selectWhere(
-                    $db_name, $compClause, -1,
+                    'realblog.txt', $compClause, -1,
                     array(
                         new OrderBy(REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON),
                         new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
@@ -757,7 +745,7 @@ EOT;
                 );
             } else {
                 $records = $db->selectWhere(
-                    $db_name, $compClause, -1,
+                    'realblog.txt', $compClause, -1,
                     array(
                         new OrderBy(REALBLOG_DATE, ASCENDING, INTEGER_COMPARISON),
                         new OrderBy(REALBLOG_ID, ASCENDING, INTEGER_COMPARISON)
@@ -993,7 +981,7 @@ EOT;
         }
     } else {
         // Display the realblogitem for the given ID
-        $record = $db->selectUnique($db_name, REALBLOG_ID, $realblogID);
+        $record = $db->selectUnique('realblog.txt', REALBLOG_ID, $realblogID);
 
         // Set the return page, based on the caling page
         if ($from_page == '' || empty($from_page)) {
@@ -1203,10 +1191,6 @@ function Realblog_archive($options = null)
     $printrealblog = Realblog_getPgParameter('printrealblog');
 
     $plugin_images_folder = $pth['folder']['plugins'] . $plugin . '/images/';
-    $plugin_include_folder = $pth['folder']['plugins'] . $plugin . '/include/';
-
-    $db_path = $pth['folder']['content'] . 'realblog/';
-    $db_name = 'realblog.txt';
 
     // Show / hide search block
     $hjs .= "\n" . <<<EOT
@@ -1229,11 +1213,7 @@ function realblog_showSearch() {
 </script>
 EOT;
 
-    include_once $plugin_include_folder . 'flatfile.php';
-    include_once $plugin_include_folder . 'fields.php';
-
-    $db = new Flatfile();
-    $db->datadir = $db_path;
+    $db = Realblog_connect();
 
     if ($realblogaction != 'view') {
         $compClause = new SimpleWhereClause(
@@ -1614,7 +1594,7 @@ EOT;
                 unset($realblogaction);
             }
             $records = $db->selectWhere(
-                $db_name, $compClause, -1,
+                'realblog.txt', $compClause, -1,
                 array(
                     new OrderBy(REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON),
                     new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
@@ -1633,7 +1613,7 @@ EOT;
                 $compClause=$compArchiveClause;
             }
             $records = $db->selectWhere(
-                $db_name, $compClause, -1,
+                'realblog.txt', $compClause, -1,
                 array(
                     new OrderBy(REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON),
                     new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
@@ -1697,7 +1677,7 @@ EOT;
                     )
                 );
                 $generalrealbloglist = $db->selectWhere(
-                    $db_name, $compClause, -1,
+                    'realblog.txt', $compClause, -1,
                     array(
                         new OrderBy(REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON),
                         new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
@@ -1726,7 +1706,7 @@ EOT;
                         )
                     );
                     $realbloglist = $db->selectWhere(
-                        $db_name, $compClause, -1,
+                        'realblog.txt', $compClause, -1,
                         array(
                             new OrderBy(
                                 REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON
@@ -1819,7 +1799,7 @@ EOT;
         }
     } else {
         // Display the realblogitem for the given ID
-        $record = $db->selectUnique($db_name, REALBLOG_ID, $realblogID);
+        $record = $db->selectUnique('realblog.txt', REALBLOG_ID, $realblogID);
         // Set the return page, based on the caling page
         if ($from_page == '' || empty($from_page)) {
             $from_page = 1;
@@ -2022,16 +2002,8 @@ function Realblog_link($options)
 
         // set general variables for the plugin
         $plugin_images_folder = $pth['folder']['plugins'] . $plugin . '/images/';
-        $plugin_include_folder = $pth['folder']['plugins'] . $plugin . '/include/';
 
-        $db_path = $pth['folder']['content'] . 'realblog/';
-        $db_name = 'realblog.txt';
-
-        include_once $plugin_include_folder . 'flatfile.php';
-        include_once $plugin_include_folder . 'fields.php';
-
-        $db = new Flatfile();
-        $db->datadir = $db_path;
+        $db = Realblog_connect();
 
         if (@$id == -1 || empty($id) || !isset($id)) {
             if ($plugin_cf['realblog']['links_visible'] > 0) {
@@ -2058,7 +2030,7 @@ function Realblog_link($options)
                     );
                 }
                 $realbloglist = $db->selectWhere(
-                    $db_name, $compClause, -1,
+                    'realblog.txt', $compClause, -1,
                     array(
                         new OrderBy(REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON),
                         new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
@@ -2241,18 +2213,11 @@ function Realblog_exportRssFeed()
     include_once $pth['folder']['plugins'] . $plugin . '/languages/' . $sl . '.php';
 
     if (strtolower($plugin_tx[$plugin]['rss_enable']) == 'true') {
-        $db_path = $pth['folder']['content'] . 'realblog/';
-        $db_name = 'realblog.txt';
 
         $rss_path = './';
         $plugin_images_folder = $pth['folder']['plugins'] . $plugin . '/images/';
-        $plugin_include_folder = $pth['folder']['plugins'] . $plugin . '/include/';
 
-        include_once $plugin_include_folder . 'fields.php';
-        include_once $plugin_include_folder . 'flatfile.php';
-
-        $db = new Flatfile();
-        $db->datadir = $db_path;
+        $db = Realblog_connect();
 
         if ($fp = @fopen($rss_path . "realblog_rss_feed.xml", "w+")) {
             fputs(
@@ -2327,7 +2292,7 @@ function Realblog_exportRssFeed()
                 REALBLOG_RSSFEED, "=", "on", STRING_COMPARISON
             );
             $realbloglist = $db->selectWhere(
-                $db_name, $compClause, -1,
+                'realblog.txt', $compClause, -1,
                 array(
                     new OrderBy(REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON),
                     new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
@@ -2443,6 +2408,24 @@ function Realblog_feedLink($options = null)
         . 'CMSimpleRealBlog' . "\n"
         . '</a>' . "\n" . '</div>' . "\n";
     return $tt;
+}
+
+/**
+ * Connects to the flatfile database and returns the database object.
+ *
+ * @return Flatfile
+ *
+ * @global array The paths of system files and folders.
+ */
+function Realblog_connect()
+{
+    global $pth;
+
+    include_once $pth['folder']['plugins'] . 'realblog/include/flatfile.php';
+    include_once $pth['folder']['plugins'] . 'realblog/include/fields.php';
+    $db = new Flatfile();
+    $db->datadir = $pth['folder']['content'] . 'realblog/';
+    return $db;
 }
 
 ?>
