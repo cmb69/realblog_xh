@@ -120,7 +120,6 @@ $plugin_tx['realblog']['cf_show_numberof_entries_bottom']="\"true\" zeigt die An
 $plugin_tx['realblog']['cf_show_numberof_entries_top']="\"true\" zeigt die Anzahl der Artikel oberhalb der Artikelvorschau.";
 $plugin_tx['realblog']['cf_show_read_more_link']="\"true\" zeigt den Link zum Artikel (read more Link) und die Anzahl der Kommentare im Teaser.";
 $plugin_tx['realblog']['cf_teaser_multicolumns']="\"true\" zeigt die Artikelvorschau (teaser) in 2 Spalten.";
-$plugin_tx['realblog']['cf_utf8_marker']="Bitte nicht ändern!";
 $plugin_tx['realblog']['cf_comments_form_protected']="\"true\" versteckt das Kommentar Formular für nicht eingeloggte Besucher und Mitglieder der Gruppe für neu registrierte Mitglieder, wenn das Plugin MembersArea installiert ist. Setzen Sie diese Option nur auf true, wenn: 1. Das Plugin MembersArea installiert ist, 2. Das Plugin Comments 3.3 oder höher installiert ist.";
 
 ?>

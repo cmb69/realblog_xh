@@ -120,7 +120,6 @@ $plugin_tx['realblog']['cf_show_numberof_entries_bottom']="\"true\" shows number
 $plugin_tx['realblog']['cf_show_numberof_entries_top']="\"true\" shows number of entries above the entries preview.";
 $plugin_tx['realblog']['cf_show_read_more_link']="\"true\" shows the read more link and the number of comments in the teaser.";
 $plugin_tx['realblog']['cf_teaser_multicolumns']="\"true\" shows the entries preview (teaser) in 2 columns.";
-$plugin_tx['realblog']['cf_utf8_marker']="Please do not change!";
 $plugin_tx['realblog']['cf_comments_form_protected']="\"true\" hides the comment form for not logged in visitors and members of the group for newly registered members, if the plugin MembersArea is installed. Set to true only, if: 1. The plugin MembersArea is installed; 2. The plugin Comments 3.3 or higher is installed.";
 
 ?>
