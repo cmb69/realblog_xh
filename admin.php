@@ -51,32 +51,43 @@ You should have received a copy of the GNU General Public License along with
 this program; if not, see <http://www.gnu.org/licenses>.
 */
 
+/**
+ * Writes the required references to the head element.
+ *
+ * @return void
+ *
+ * @global array The paths of system files and folders.
+ * @global string The current language.
+ * @global string The (X)HTML fragment to insert in the head element.
+ */
+function Realblog_useCalendar()
+{
+    global $pth, $sl, $hjs;
+
+    $hjs .= tag(
+        'link rel="stylesheet" type="text/css" media="all" href="'
+        . $pth['folder']['plugins'] . 'realblog/jscalendar/calendar-system.css"'
+    );
+    $hjs .= '<script type="text/javascript" src="' . $pth['folder']['plugins']
+        . 'realblog/jscalendar/calendar.js"></script>';
+    $filename = $pth['folder']['plugins'] . 'realblog/jscalendar/lang/calendar-'
+        . $sl . '.js';
+    if (file_exists($filename)) {
+        $hjs .= '<script type="text/javascript" src="' . $pth['folder']['plugins']
+            . 'realblog/jscalendar/lang/calendar-' . $sl . '.js"></script>';
+    } else {
+        $hjs .= '<script type="text/javascript" src="' . $pth['folder']['plugins']
+            . 'realblog/jscalendar/lang/calendar-en.js"></script>';
+    }
+    $hjs .= '<script type="text/javascript" src="' . $pth['folder']['plugins']
+        . 'realblog/jscalendar/calendar-setup.js"></script>';
+}
+
 if (isset($realblog) && $realblog == 'true') {
     initvar('admin');
     initvar('action');
 
-    // Calendar plugin
-    $hjs .= tag(
-        'link rel="stylesheet" type="text/css" media="all" href="'
-        . $pth['folder']['plugins'] . $plugin . '/jscalendar/calendar-system.css"'
-    );
-    $hjs .= "\n" . '<script type="text/javascript" src="' . $pth['folder']['plugins']
-        . $plugin . '/jscalendar/calendar.js"></script>';
-
-    // Set jscalendar to default (en) if current website language isn't available
-    $temp = $pth['folder']['plugins'] . $plugin . '/jscalendar/lang/calendar-'
-        . $sl . '.js';
-    if (is_file($temp)) {
-        $hjs .= '<script type="text/javascript" src="' . $pth['folder']['plugins']
-            . $plugin . '/jscalendar/lang/calendar-' . $sl . '.js"></script>';
-    } else {
-        $hjs .= '<script type="text/javascript" src="' . $pth['folder']['plugins']
-            . $plugin . '/jscalendar/lang/calendar-en.js"></script>';
-    }
-
-    $hjs .= "\n" . '<script type="text/javascript" src="' . $pth['folder']['plugins']
-        . $plugin . '/jscalendar/calendar-setup.js"></script>';
-
+    Realblog_useCalendar();
     if ($action == 'delete_realblog' || $action == 'add_realblog'
         || $action == 'modify_realblog'
     ) {
