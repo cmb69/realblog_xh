@@ -973,13 +973,12 @@ function Realblog_form($realblogID = null, $action = null, $ret_page = 1)
  * @global array  The configuration of the plugins.
  * @global array  The localization of the plugins.
  * @global string The name of the current plugin.
- * @global string FIXME
  *
  * @todo Realblog_makeTimestampDates1() in index.php
  */
 function Realblog_makeTimestampDates($tmpdate = null)
 {
-    global $plugin_cf, $plugin_tx, $plugin, $date_separator1;
+    global $plugin_cf, $plugin_tx, $plugin;
 
     $my_date_format = explode('/', $plugin_tx[$plugin]['date_format']);
     if (count($my_date_format) > 1) {
@@ -1049,13 +1048,13 @@ function Realblog_makeTimestampDates($tmpdate = null)
         $tmpdate = date($plugin_tx[$plugin]['date_format']);
     }
 
-    if ($date_separator1 == '.') {
+    if ($date_separator == '.') {
         $dateArr = explode('.', $tmpdate);
     }
-    if ($date_separator1 == '/') {
+    if ($date_separator == '/') {
         $dateArr = explode('/', $tmpdate);
     }
-    if ($date_separator1 == '-') {
+    if ($date_separator == '-') {
         $dateArr = explode('-', $tmpdate);
     }
     $m = $dateArr[$monthposition];

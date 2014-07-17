@@ -154,40 +154,8 @@ if (!$adm) {
         }
     }
 
-    // Change realblog status from published to archived when publishing period
-    // is ended and auto archive is enabled
-
     if ($plugin_cf['realblog']['auto_archive'] == 'true') {
-        $compClause = null;
-        $compClause = new AndWhereClause(
-            new SimpleWhereClause(REALBLOG_STATUS, '<=', 1),
-            new SimpleWhereClause(REALBLOG_ENDDATE, '<', $today, INTEGER_COMPARISON)
-        );
-
-        if ($plugin_cf['realblog']['entries_order'] == 'desc') {
-            $records = $db->selectWhere(
-                $db_name, $compClause, -1,
-                array(
-                    new OrderBy(REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON),
-                    new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
-                )
-            );
-        } else {
-            $records = $db->selectWhere(
-                $db_name, $compClause, -1,
-                array(
-                    new OrderBy(REALBLOG_DATE, ASCENDING, INTEGER_COMPARISON),
-                    new OrderBy(REALBLOG_ID, ASCENDING, INTEGER_COMPARISON)
-                )
-            );
-        }
-
-        foreach ($records as $key => $field) {
-            unset($realblogitem);
-            $realblogitem[REALBLOG_ID] = $field[REALBLOG_ID];
-            $realblogitem[REALBLOG_STATUS] = 2;
-            $db->updateRowById($db_name, REALBLOG_ID, $realblogitem);
-        }
+        Realblog_autoArchive();
     }
     $hjs .= tag(
         'link rel="alternate" type="application/rss+xml" title="'
@@ -2010,13 +1978,12 @@ function Realblog_link($options)
  *
  * @global array The configuration of the plugins.
  * @global array The localization of the plugins.
- * @global mixed FIXME
  *
  * @todo reuse Realblog_getCalendarDateFormat
  */
 function Realblog_makeTimestampDates1($tmpdate = null)
 {
-    global $plugin_cf, $plugin_tx, $date_separator1;
+    global $plugin_cf, $plugin_tx;
 
     // get plugin name
     $plugin = basename(dirname(__FILE__), '/');
@@ -2087,13 +2054,13 @@ function Realblog_makeTimestampDates1($tmpdate = null)
     // FIXME: remove ereg()
     if (ereg($regex_format, $tmpdate)) {
         // FIXME: means assignment???
-        if ($date_separator1 = '.') {
+        if ($date_separator = '.') {
             $dateArr = explode('.', $tmpdate);
         }
-        if ($date_separator1 = '/') {
+        if ($date_separator = '/') {
             $dateArr=explode('/', $tmpdate);
         }
-        if ($date_separator1 = '-') {
+        if ($date_separator = '-') {
             $dateArr = explode('-', $tmpdate);
         }
         $m = $dateArr[$monthposition];
@@ -2397,6 +2364,41 @@ function Realblog_getCalendarDateFormat()
     }
 
     return $cal_format;
+}
+
+/**
+ * Change realblog status from published to archived when publishing period
+ * is ended.
+ *
+ * @return void
+ *
+ * @global array The configuration of the plugins.
+ */
+function Realblog_autoArchive()
+{
+    global $plugin_cf;
+
+    $db = Realblog_connect();
+    $compClause = new AndWhereClause(
+        new SimpleWhereClause(REALBLOG_STATUS, '<=', 1),
+        new SimpleWhereClause(REALBLOG_ENDDATE, '<', time(), INTEGER_COMPARISON)
+    );
+
+    $order = ($plugin_cf['realblog']['entries_order'] == 'desc')
+        ? DESCENDING : ASCENDING;
+    $records = $db->selectWhere(
+        'realblog.txt', $compClause, -1,
+        array(
+            new OrderBy(REALBLOG_DATE, $order, INTEGER_COMPARISON),
+            new OrderBy(REALBLOG_ID, $order, INTEGER_COMPARISON)
+        )
+    );
+
+    foreach ($records as $key => $field) {
+        $realblogitem[REALBLOG_ID] = $field[REALBLOG_ID];
+        $realblogitem[REALBLOG_STATUS] = 2;
+        $db->updateRowById('realblog.txt', REALBLOG_ID, $realblogitem);
+    }
 }
 
 ?>
