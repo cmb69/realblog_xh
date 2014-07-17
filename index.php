@@ -189,33 +189,19 @@ function Realblog_blog($options = null, $realBlogCat = 'all')
 
     $layout = 'blog';
     $includesearch = 'false';
-    $arguments = explode(',', $options);
-
-    if (count($arguments > 0)) {
-        foreach ($arguments as $argument) {
-            $property = explode('=', $argument);
-            switch (strtolower($property[0])) {
-            case 'showsearch':
-                if (strtolower($property[1]) === 'true'
-                    || strtolower($property[1]) === 'false'
-                    || strtolower($property[1]) === '1'
-                    || strtolower($property[1]) === '0'
-                ) {
-                    switch ($property[1]) {
-                    case '0':
-                        $includesearch = 'false';
-                        break;
-                    case '1':
-                        $includesearch = 'true';
-                        break;
-                    default:
-                        $includesearch = strtolower($property[1]);
-                        break;
-                    }
-                } else {
-                    $includesearch = 'false';
-                }
+    $arguments = Realblog_getArguments($options);
+    if (isset($arguments['showsearch'])) {
+        $argument = strtolower($arguments['showsearch']);
+        if (in_array($argument, array('true', 'false', '1', '0'))) {
+            switch ($argument) {
+            case '0':
+                $includesearch = 'false';
                 break;
+            case '1':
+                $includesearch = 'true';
+                break;
+            default:
+                $includesearch = $argument;
             }
         }
     }
@@ -1063,32 +1049,19 @@ function Realblog_archive($options = null)
 
     $layout = 'archive';
     $includesearch = 'false';
-    $arguments = explode(',', $options);
-
-    if (count($arguments > 0)) {
-        foreach ($arguments as $argument) {
-            $property = explode('=', $argument);
-            switch (strtolower($property[0])) {
-            case 'showsearch':
-                if (strtolower($property[1]) === 'true'
-                    || strtolower($property[1]) === 'false'
-                    || strtolower($property[1]) === '1'
-                    || strtolower($property[1]) === '0'
-                ) {
-                    switch ($property[1]) {
-                    case '0':
-                        $includesearch = 'false';
-                        break;
-                    case '1':
-                        $includesearch = 'true';
-                        break;
-                    default:
-                        $includesearch = strtolower($property[1]);
-                    }
-                } else {
-                    $includesearch = 'false';
-                }
+    $arguments = Realblog_getArguments($options);
+    if (isset($arguments['showsearch'])) {
+        $argument = strtolower($arguments['showsearch']);
+        if (in_array($argument, array('true', 'false', '1', '0'))) {
+            switch ($argument) {
+            case '0':
+                $includesearch = 'false';
                 break;
+            case '1':
+                $includesearch = 'true';
+                break;
+            default:
+                $includesearch = $argument;
             }
         }
     }
@@ -1836,17 +1809,10 @@ function Realblog_link($options)
     global $pth, $sn, $plugin_tx, $plugin_cf, $u, $s, $c, $h, $sl, $page;
 
     $includeonfrontpage = 'false';
-    $arguments = explode(',', $options);
-
-    if (count($arguments > 0)) {
-        foreach ($arguments as $argument) {
-            $property = explode('=', $argument);
-            switch (strtolower($property[0])) {
-            case 'realblogpage':
-                $realblog_page = $property[1];
-                break;
-            }
-        }
+    $realblog_page = '';
+    $arguments = Realblog_getArguments($options);
+    if (isset($arguments['realblogpage'])) {
+        $realblog_page = $arguments['realblogpage'];
     }
 
     // Check if the specified realblog_page realy exists
@@ -2238,26 +2204,12 @@ function Realblog_feedLink($options = null)
     $plugin_images_folder = $pth['folder']['plugins'] . $plugin . '/images/';
     $rss_path = './';
     $option_replace = 'false';
-
-    // determine the function arguments (separated by a comma)
-    $arguments = explode(',', $options);
-    if (count($arguments > 0)) {
-        foreach ($arguments as $argument) {
-            $property = explode("=", $argument);
-            switch ($property[0]) {
-            case 'replace':
-                if (strtolower($property[1]) == 'true'
-                    || strtolower($property[1]) == 'false'
-                    || strtolower($property[1]) == 1
-                    || strtolower($property[1]) == 0
-                ) {
-                    $option_replace = strtolower($property[1]);
-                }
-                break;
-            }
+    $arguments = Realblog_getArguments($options);
+    if (isset($arguments['replace'])) {
+        $argument = strtolower($arguments['replace']);
+        if (in_array($argument, array('true', 'false', '1', '0'))) {
+            $option_replace = $argument;
         }
-    } else {
-        $option_replace = 'false';
     }
 
     $tt = tag('br') . '<a href="' . $rss_path . 'realblog_rss_feed.xml">'
@@ -2412,6 +2364,26 @@ function Realblog_autoArchive()
         $realblogitem[REALBLOG_STATUS] = 2;
         $db->updateRowById('realblog.txt', REALBLOG_ID, $realblogitem);
     }
+}
+
+/**
+ * Parses the $arguments string and returns a map of names to values.
+ *
+ * @param string $arguments An arguments string ('name1=value1,name2=value2').
+ *
+ * @return array
+ */
+function Realblog_getArguments($arguments)
+{
+    $result = array();
+    $arguments = explode(',', $arguments);
+    foreach ($arguments as $argument) {
+        $pair = explode('=', $argument);
+        if (count($pair) == 2) {
+            $result[$pair[0]] = $pair[1];
+        }
+    }
+    return $result;
 }
 
 ?>
