@@ -251,7 +251,7 @@ if (isset($realblog)) {
         if ($action == 'delete_realblog' || $action == 'add_realblog'
             || $action == 'modify_realblog'
         ) {
-            $o .= realblogform($realblogID, $action, $page);
+            $o .= Realblog_form($realblogID, $action, $page);
         }
 
         // add new realblog item to the database or modify the selected realblog item
@@ -829,7 +829,7 @@ if (isset($realblog)) {
  * @global array  The localization of the core.
  * @global mixed  FIXME
  */
-function realblogform($realblogID = null, $action = null, $ret_page = 1)
+function Realblog_form($realblogID = null, $action = null, $ret_page = 1)
 {
     global $pth, $plugin, $plugin_cf, $plugin_tx, $sn, $db_name, $db_path,
         $plugin_images_folder, $cf, $tx, $cal_format;
@@ -1081,6 +1081,8 @@ function realblogform($realblogID = null, $action = null, $ret_page = 1)
  * @global array  The localization of the plugins.
  * @global string The name of the current plugin.
  * @global string FIXME
+ *
+ * @todo Realblog_makeTimestampDates1() in index.php
  */
 function Realblog_makeTimestampDates($tmpdate = null)
 {

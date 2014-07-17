@@ -1,1 +1,2 @@
 * original used str_ireplace()!
+* keep an eye on compat.php
