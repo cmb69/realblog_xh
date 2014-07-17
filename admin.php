@@ -83,18 +83,10 @@ if (isset($realblog)) {
     $hjs .= "\n" . '<script type="text/javascript" src="' . $pth['folder']['plugins']
         . $plugin . '/jscalendar/calendar-setup.js"></script>';
 
-    if ($action == "delete_realblog" || $action == "add_realblog"
-        || $action == "modify_realblog"
+    if ($action == 'delete_realblog' || $action == 'add_realblog'
+        || $action == 'modify_realblog'
     ) {
-        // FIXME: get rid of this option
-        // Selection of external editors
-        switch (strtolower($plugin_cf[$plugin]['editor'])) {
-        case 'fckeditor':
-            include_once $pth['folder']['cmsimple'] . 'realblog_fckeditor.php';
-            break;
-        default:
-            init_editor(array('realblog_headline_field','realblog_story_field'));
-        }
+        init_editor(array('realblog_headline_field', 'realblog_story_field'));
     }
 
     // set general variables for the plugin

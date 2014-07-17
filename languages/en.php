@@ -93,7 +93,6 @@ $plugin_tx['realblog']['cf_admin_records_page']="Number of entries on one page o
 $plugin_tx['realblog']['cf_auto_archive']="\"true\" enables automatic scheduled archiving of entries.";
 $plugin_tx['realblog']['cf_auto_publish']="\"true\" enables automatic scheduled publishing of entries.";
 $plugin_tx['realblog']['cf_comments_function']="\"true\" activates the comments function, if the Plugin Comments_XH is installed";
-$plugin_tx['realblog']['cf_editor']="used editor for entries";
 $plugin_tx['realblog']['cf_entries_order']="\"desc\" - newest entry on top; \"asc\" - oldest entry on top";
 $plugin_tx['realblog']['cf_entries_per_page']="number of entries on one page of entries-overview (Blog). \"0\" disables page-splitting.";
 $plugin_tx['realblog']['cf_links_visible']="number of visible entries of function realbloglink()";

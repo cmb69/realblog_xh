@@ -93,7 +93,6 @@ $plugin_tx['realblog']['cf_admin_records_page']="Anzahl der Artikel auf einer Se
 $plugin_tx['realblog']['cf_auto_archive']="\"true\" aktiviert die automatische zeitgesteuerte Archivierung der Artikel.";
 $plugin_tx['realblog']['cf_auto_publish']="\"true\" aktiviert die automatische zeitgesteuerte Veröffentlichung der Artikel.";
 $plugin_tx['realblog']['cf_comments_function']="\"true\" aktiviert die Kommentarfunktion, wenn das Plugin Comments_XH installiert ist.";
-$plugin_tx['realblog']['cf_editor']="Der im Admin-Bereich verwendete Editor. Bitte nur ändern, wenn Sie wissen was Sie tun.";
 $plugin_tx['realblog']['cf_entries_order']="\"desc\" - neuester Artikel oben; \"asc\" - ältester Artikel oben";
 $plugin_tx['realblog']['cf_entries_per_page']="Anzahl der Artikel auf einer Seite (Blog). \"0\" zeigt alle Artikel auf einer Seite.";
 $plugin_tx['realblog']['cf_links_visible']="Anzahl der sichtbaren Artikel in der Funktion realbloglink()";

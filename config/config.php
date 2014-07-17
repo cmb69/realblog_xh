@@ -4,7 +4,6 @@ $plugin_cf['realblog']['admin_records_page']="16";
 $plugin_cf['realblog']['auto_archive']="";
 $plugin_cf['realblog']['auto_publish']="";
 $plugin_cf['realblog']['comments_function']="true";
-$plugin_cf['realblog']['editor']="";
 $plugin_cf['realblog']['entries_per_page']="6";
 $plugin_cf['realblog']['links_visible']="4";
 $plugin_cf['realblog']['entries_order']="desc";
