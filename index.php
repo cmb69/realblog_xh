@@ -557,9 +557,6 @@ EOT;
             $title .= locator() . ' - ' . $record[REALBLOG_TITLE];
         }
     }
-    $t .= "\n" . '<div class="realblog_credit">' . "\n" . 'Powered by'
-        . ' <a href="http://www.ge-webdesign.de/cmsimplerealblog/?Demo_und_WebLog">'
-        . 'CMSimpleRealBlog</a>' . "\n" . '</div>' . "\n";
     // FIXME?
     $c[$s] = '';
     // FIXME?
@@ -895,11 +892,6 @@ EOT;
             $t = $articleView->render();
         }
     }
-    $t .= '<div class="realblog_credit">' . "\n"
-        . 'Powered by'
-        . '<a href="http://www.ge-webdesign.de/cmsimplerealblog/?Demo_und_WebLog">'
-        . 'CMSimpleRealBlog' . "\n"
-        . '</a>' . "\n" . '</div>' . "\n";
     $c[$s]='';
     unset($realblogaction);
     unset($compClause);
@@ -1346,11 +1338,6 @@ function Realblog_feedLink($options = null)
     if ($option_replace === is_bool('true')) {
         $tt = preg_replace('/' . $cf['scripting']['regexp']. "/is", $tt, $c[$s]);
     }
-    $tt .= '<div class="realblog_credit">' . "\n"
-        . 'Powered by'
-        . '<a href="http://www.ge-webdesign.de/cmsimplerealblog/?Demo_und_WebLog">'
-        . 'CMSimpleRealBlog' . "\n"
-        . '</a>' . "\n" . '</div>' . "\n";
     return $tt;
 }
 
