@@ -22,7 +22,6 @@ $plugin_tx['realblog']['confirm_changestatus']="Do you really want to change sta
 $plugin_tx['realblog']['confirm_deleteall']="Do you really want to delete selected entries?";
 $plugin_tx['realblog']['date_format']="Y-m-d";
 $plugin_tx['realblog']['date_label']="date";
-$plugin_tx['realblog']['date_locale']="en_EN.utf-8";
 $plugin_tx['realblog']['date_month_replace']="January,February,March,April,May,June,July,August,September,October,November,December";
 $plugin_tx['realblog']['date_month_search']="January,February,March,April,May,June,July,August,September,October,November,December";
 $plugin_tx['realblog']['deleteall_done']="Selected entries was deleted.";

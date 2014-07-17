@@ -123,10 +123,6 @@ if (!$adm) {
     // get plugin name
     $plugin = basename(dirname(__FILE__), "/");
 
-    // FIXME: DON'T!
-    // set locale time
-    setlocale(LC_ALL, $plugin_tx[$plugin]['date_locale']);
-
     // set general variables for the plugin
     $plugin_images_folder = $pth['folder']['plugins'] . $plugin . "/images/";
     $plugin_include_folder = $pth['folder']['plugins'] . $plugin . "/include/";
@@ -253,9 +249,6 @@ function Realblog_blog($options = null, $realBlogCat = 'all')
 
     $pcf = $plugin_cf['realblog'];
 
-    // FIXME: DON'T
-    // set locale time
-    setlocale(LC_ALL, $plugin_tx[$plugin]['date_locale']);
     $layout = 'blog';
     $includesearch = 'false';
     $arguments = explode(',', $options);
@@ -1195,9 +1188,6 @@ function Realblog_archive($options = null)
     // get plugin name
     $plugin = basename(dirname(__FILE__), '/');
 
-    // set locale time
-    // FIXME DON'T
-    setlocale(LC_ALL, $plugin_tx[$plugin]['date_locale']);
     $layout = 'archive';
     $includesearch = 'false';
     $arguments = explode(',', $options);
@@ -2068,8 +2058,6 @@ function Realblog_link($options)
         // set general variables for the plugin
         $plugin_images_folder = $pth['folder']['plugins'] . $plugin . '/images/';
         $plugin_include_folder = $pth['folder']['plugins'] . $plugin . '/include/';
-        // FIXME DON'T
-        setlocale(LC_ALL, $plugin_tx[$plugin]['date_locale']);
 
         $db_path = $pth['folder']['content'] . 'realblog/';
         $db_name = 'realblog.txt';
@@ -2305,8 +2293,6 @@ function Realblog_exportRssFeed()
         $rss_path = './';
         $plugin_images_folder = $pth['folder']['plugins'] . $plugin . '/images/';
         $plugin_include_folder = $pth['folder']['plugins'] . $plugin . '/include/';
-
-        //setlocale(LC_ALL,$plugin_tx[$plugin]['date_locale']);
 
         // declare the realblog database fields
         include_once $plugin_include_folder . 'fields.php';
