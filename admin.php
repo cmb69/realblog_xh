@@ -52,11 +52,6 @@ this program; if not, see <http://www.gnu.org/licenses>.
 */
 
 if (isset($realblog)) {
-    $o.= '<div style="font-size: 15px; font-family: arial, sans-serif;'
-        . ' letter-spacing: 0; padding: 0 0 6px 0;">'
-        . '<b><a href="?realblog">Plugin Info &raquo;</a></b>'
-        . '</div>';
-
     // FIXME: get rid of this fallback
     //check if register_globals is turned OFF
     if (!isset($_GET)) {
