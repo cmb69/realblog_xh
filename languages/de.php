@@ -1,5 +1,6 @@
 <?php
 
+$plugin_tx['realblog']['alt_logo']="Ringbuch mit Bleistift";
 $plugin_tx['realblog']['archiv_back']="zur Archiv-Übersicht";
 $plugin_tx['realblog']['archive_year']="Jahresarchiv:";
 $plugin_tx['realblog']['archived']="Archiviert";
