@@ -52,10 +52,6 @@ this program; if not, see <http://www.gnu.org/licenses>.
 */
 
 if (isset($realblog)) {
-    // FIXME: get rid of unnecessary global declarations
-    // global variables
-    global $pth, $cf, $tx, $cl, $u, $sn, $s, $c, $h, $plugin_cf, $plugin_tx;
-
     // FIXME: remove or use initvar()
     // retrieve posted plugin variables
     $admin = isset($_POST['admin']) ? $_POST['admin'] : @$_GET['admin'];

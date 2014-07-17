@@ -97,11 +97,6 @@ if (!is_writeable($rss_path . 'realblog_rss_feed.xml') && $adm) {
 }
 
 if (!$adm) {
-    // FIXME: we are not inside of a function!
-    // recover variables from outsite the function
-    global $pth, $sn, $plugin_tx, $plugin_cf, $u, $s, $c, $sl, $f, $tx,
-        $cal_format, $hjs;
-
     // create the site RSS:rdf file
     Realblog_exportRssFeed();
 
@@ -232,12 +227,13 @@ if (!$adm) {
  * @global mixed  FIXME
  * @global mixed  FIXME
  * @global mixed  FIXME
+ * @global string The requested page URL.
  */
 function Realblog_blog($options = null, $realBlogCat = 'all')
 {
     global $adm, $pth, $sn, $title, $plugin_tx, $plugin_cf, $u, $s, $c, $sl, $f,
         $tx, $cal_format, $hjs, $realblogID, $commentschecked, $id, $from_page,
-        $page, $realblog_page;
+        $page, $realblog_page, $su;
 
     // get plugin name
     $plugin = basename(dirname(__FILE__), '/');
@@ -336,8 +332,6 @@ EOT;
         $compClause = new SimpleWhereClause(
             REALBLOG_STATUS, '=', 1, INTEGER_COMPARISON
         );
-        // FIXME
-        global $pth, $sn, $plugin_tx, $plugin_cf, $u, $s, $c, $sl, $f, $tx;
 
         // FIXME: the following is also in admin.php
         // Create the appropriate date format for the date picker
@@ -1027,8 +1021,6 @@ EOT;
             // Show selected entry (realblog above entry)
             $t = "\n" . '<div class="realblog_show_box">' . "\n";
             // Redirect back to realblog overview (realblog, above entry)
-            // FIXME: move globals
-            global $su, $sn, $s, $plugin_cf;
             $t .= "\n" . '<div class="realblog_buttons">' . "\n"
                 . '<span class="realblog_button">'
                 . '<a href="' . $sn . '?' . $su . '&amp;page=' . $page . '">'
@@ -1101,8 +1093,6 @@ EOT;
             }
 
             // Redirect back to realblog overview (realblog, below entry)
-            // FIXME: move globals
-            global $su, $sn, $s, $page, $plugin_cf;
             $t .= "\n" . '<div class="realblog_buttons">' . "\n"
                 . '<span class="realblog_button"><a href="' . $sn . '?' . $su
                 . '&amp;page=' . $page . '">' .$plugin_tx[$plugin]['blog_back']
@@ -1187,12 +1177,14 @@ EOT;
  * @global mixed  FIXME
  * @global mixed  FIXME
  * @global mixed  FIXME
+ * @global string The URL of the requested page.
+ * @global mixed  FIXME
  */
 function Realblog_archive($options = null)
 {
     global $adm, $pth, $sn, $title, $plugin_tx, $plugin_cf, $u, $s, $c, $sl, $f,
         $tx, $cal_format, $hjs, $realblogID, $commentschecked, $id, $from_page,
-        $page;
+        $page, $su, $realblogYear;
 
     // get plugin name
     $plugin = basename(dirname(__FILE__), '/');
@@ -1287,8 +1279,6 @@ EOT;
         $compClause = new SimpleWhereClause(
             REALBLOG_STATUS, '=', 2, INTEGER_COMPARISON
         );
-        // FIXME move globals
-        global $pth, $sn, $plugin_tx, $plugin_cf, $u, $s, $c, $sl, $f, $tx;
 
         // Create the appropriate date format for the date picker
         $my_date_format1 = explode('/', $plugin_tx[$plugin]['date_format']);
@@ -1885,8 +1875,6 @@ EOT;
             // Show selected entry (archive above entry)
             $t = "\n" . '<div class="realblog_show_box">' . "\n";
             // Redirect back to archive overview (archive, above entry)
-            // FIXME: move globals
-            global $su, $sn, $s, $plugin_cf, $realblogYear;
             $t .= "\n"
                 . '<div class="realblog_buttons"><span class="realblog_button">'
                 . "\n" . '<a href="' . $sn . '?' . $su . '&amp;realblogYear='
@@ -1965,8 +1953,6 @@ EOT;
             }
 
             // Redirect back to archive overview (archive, below entry)
-            // FIXME Move globals
-            global $su, $sn, $s, $realblogYear, $page, $plugin_cf;
             $t .= "\n" . '<div class="realblog_buttons">'
                 . '<span class="realblog_button">' . "\n"
                 . '<a href="' . $sn . '?' . $su . '&amp;realblogYear='
