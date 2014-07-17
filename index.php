@@ -56,8 +56,9 @@ this program; if not, see <http://www.gnu.org/licenses>.
  */
 require_once $pth['folder']['plugin'] . 'compat.php';
 
-// FIXME: don't start when already started
-@session_start();
+if (session_id() == '') {
+    session_start();
+}
 
 define('REALBLOG_VERSION', '@REALBLOG_VERSION@');
 $realblog_release = '05/2014';
@@ -96,6 +97,7 @@ if (!is_writeable($rss_path . 'realblog_rss_feed.xml') && $adm) {
         . '</div>';
 }
 
+// FIXME: move to admin.php
 if (!$adm) {
     // create the site RSS:rdf file
     Realblog_exportRssFeed();
@@ -191,13 +193,6 @@ if (!$adm) {
         . sitename(). '" href="./realblog_rss_feed.xml"'
     ) . "\n";
 }
-
-/*
-********************************************************************************
-* This function display's the realblog topics status=published
-* usage : showrealblog()
-********************************************************************************
-*/
 
 /**
  * Displays the realblog's topic with status = published.

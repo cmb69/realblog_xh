@@ -51,22 +51,16 @@ You should have received a copy of the GNU General Public License along with
 this program; if not, see <http://www.gnu.org/licenses>.
 */
 
-if (isset($realblog)) {
-    // FIXME: remove or use initvar()
-    // retrieve posted plugin variables
-    $admin = isset($_POST['admin']) ? $_POST['admin'] : @$_GET['admin'];
-    $action = isset($_POST['action']) ? $_POST['action'] : @$_GET['action'];
-
-    // FIXME: probably not necessary
-    // get plugin name
-    $plugin = basename(dirname(__FILE__), "/");
+if (isset($realblog) && $realblog == 'true') {
+    initvar('admin');
+    initvar('action');
 
     // Calendar plugin
-    $hjs.= tag(
+    $hjs .= tag(
         'link rel="stylesheet" type="text/css" media="all" href="'
         . $pth['folder']['plugins'] . $plugin . '/jscalendar/calendar-system.css"'
     );
-    $hjs.= "\n" . '<script type="text/javascript" src="' . $pth['folder']['plugins']
+    $hjs .= "\n" . '<script type="text/javascript" src="' . $pth['folder']['plugins']
         . $plugin . '/jscalendar/calendar.js"></script>';
 
     // Set jscalendar to default (en) if current website language isn't available
@@ -93,15 +87,6 @@ if (isset($realblog)) {
     // TO DO: check if these folders exist - if not, exit plugin...
     $plugin_images_folder = $pth['folder']['plugins'] . $plugin . '/images/';
     $plugin_include_folder = $pth['folder']['plugins'] . $plugin . '/include/';
-    // FIXME: don't manipulate $pth
-    $pth['file']['plugin_stylesheet'] = $pth['folder']['plugins'] . $plugin
-        . '/css/stylesheet.css';
-    $pth['file']['plugin_config'] = $pth['folder']['plugins'] . $plugin
-        . '/config/config.php';
-    $pth['file']['plugin_language'] = $pth['folder']['plugins'] . $plugin
-        . '/languages/' . $sl . '.php';
-    $pth['file']['plugin_help'] = $pth['folder']['plugins'] . $plugin
-        . '/help/help.htm';
     $db_path = $pth['folder']['content'] . 'realblog/';
     $db_name = 'realblog.txt';
     $o .= print_plugin_admin('on');
