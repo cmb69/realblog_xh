@@ -118,46 +118,7 @@ if (isset($realblog) && $realblog == 'true') {
     if ($admin == 'plugin_main'
         && is_writable($pth['folder']['content'] . 'realblog/realblog.txt')
     ) {
-        // Verify date format settings & make correct date format for the
-        // datepicker.js script
-        $my_date_format1 = explode('/', $plugin_tx[$plugin]['date_format']);
-
-        if (count($my_date_format1) > 1) {
-            $date_separator1 = "/";
-        } else {
-            $my_date_format1 = explode('.', $plugin_tx[$plugin]['date_format']);
-            if (count($my_date_format1) > 1) {
-                $date_separator1=".";
-            } else {
-                $my_date_format1 = explode('-', $plugin_tx[$plugin]['date_format']);
-                if (count($my_date_format1) > 1) {
-                    $date_separator1="-";
-                }
-            }
-        }
-
-        for ($aCounter1=0; $aCounter1 <= 2; $aCounter1++) {
-            switch ($my_date_format1[$aCounter1]) {
-            case 'd':
-                $cal_date_format1[$aCounter1] = '%d';
-                break;
-            case 'm':
-                $cal_date_format1[$aCounter1] = '%m';
-                break;
-            case 'y':
-                $cal_date_format1[$aCounter1] = '%y';
-                break;
-            case 'Y':
-                $cal_date_format1[$aCounter1] = '%Y';
-                break;
-            }
-        }
-
-        foreach ($cal_date_format1 as $key => $value) {
-            @$cal_format .= ($key < count($my_date_format1) - 1)
-                ? $value . $date_separator1
-                : $value;
-        }
+        $cal_format = Realblog_getCalendarDateFormat();
 
         $realblogID = Realblog_getPgParameter('realblogID');
         $page = Realblog_getPgParameter('page');

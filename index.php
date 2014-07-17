@@ -310,45 +310,7 @@ EOT;
             REALBLOG_STATUS, '=', 1, INTEGER_COMPARISON
         );
 
-        // FIXME: the following is also in admin.php
-        // Create the appropriate date format for the date picker
-        $my_date_format1 = explode('/', $plugin_tx[$plugin]['date_format']);
-
-        if (count($my_date_format1) > 1) {
-            $date_separator1 = '/';
-        } else {
-            $my_date_format1 = explode('.', $plugin_tx[$plugin]['date_format']);
-            if (count($my_date_format1) > 1) {
-                $date_separator1 = '.';
-            } else {
-                $my_date_format1 = explode('-', $plugin_tx[$plugin]['date_format']);
-                if (count($my_date_format1) > 1) {
-                    $date_separator1 = '-';
-                }
-            }
-        }
-
-        for ($aCounter1=0; $aCounter1 <= 2; $aCounter1++) {
-            switch ($my_date_format1[$aCounter1]) {
-            case 'd':
-                $cal_date_format1[$aCounter1] = '%d';
-                break;
-            case 'm':
-                $cal_date_format1[$aCounter1] = '%m';
-                break;
-            case 'y':
-                $cal_date_format1[$aCounter1] = '%y';
-                break;
-            case 'Y':
-                $cal_date_format1[$aCounter1] = '%Y';
-                break;
-            }
-        }
-
-        foreach ($cal_date_format1 as $key => $value) {
-            $cal_format .= ($key < count($my_date_format1) - 1)
-                ? $value . $date_separator1 : $value;
-        }
+        $cal_format = Realblog_getCalendarDateFormat();
 
         // Build the search block
         if (strtolower($includesearch) == 'true') {
@@ -1220,43 +1182,7 @@ EOT;
             REALBLOG_STATUS, '=', 2, INTEGER_COMPARISON
         );
 
-        // Create the appropriate date format for the date picker
-        $my_date_format1 = explode('/', $plugin_tx[$plugin]['date_format']);
-        if (count($my_date_format1) > 1) {
-            $date_separator1 = '/';
-        } else {
-            $my_date_format1 = explode('.', $plugin_tx[$plugin]['date_format']);
-            if (count($my_date_format1) > 1) {
-                $date_separator1 = '.';
-            } else {
-                $my_date_format1 = explode('-', $plugin_tx[$plugin]['date_format']);
-                if (count($my_date_format1) > 1) {
-                    $date_separator1 = '-';
-                }
-            }
-        }
-
-        for ($aCounter1=0; $aCounter1 <= 2; $aCounter1++) {
-            switch ($my_date_format1[$aCounter1]) {
-            case 'd':
-                $cal_date_format1[$aCounter1] = '%d';
-                break;
-            case 'm':
-                $cal_date_format1[$aCounter1] = '%m';
-                break;
-            case 'y':
-                $cal_date_format1[$aCounter1] = '%y';
-                break;
-            case 'Y':
-                $cal_date_format1[$aCounter1] = '%Y';
-                break;
-            }
-        }
-
-        foreach ($cal_date_format1 as $key => $value) {
-            $cal_format .= ($key < count($my_date_format1) - 1)
-                ? $value . $date_separator1 : $value;
-        }
+        $cal_format = Realblog_getCalendarDateFormat();
 
         // Build the search block
         if (strtolower($includesearch) == 'true') {
@@ -2094,7 +2020,7 @@ function Realblog_link($options)
  * @global array The localization of the plugins.
  * @global mixed FIXME
  *
- * @todo reuse in other parts of the code
+ * @todo reuse Realblog_getCalendarDateFormat
  */
 function Realblog_makeTimestampDates1($tmpdate = null)
 {
@@ -2426,6 +2352,59 @@ function Realblog_connect()
     $db = new Flatfile();
     $db->datadir = $pth['folder']['content'] . 'realblog/';
     return $db;
+}
+
+/**
+ * Returns the date format for the datepicker.js script.
+ *
+ * @return string
+ *
+ * @global array The localization of the plugins.
+ */
+function Realblog_getCalendarDateFormat()
+{
+    global $plugin_tx;
+
+    $my_date_format1 = explode('/', $plugin_tx['realblog']['date_format']);
+    if (count($my_date_format1) > 1) {
+        $date_separator1 = '/';
+    } else {
+        $my_date_format1 = explode('.', $plugin_tx['realblog']['date_format']);
+        if (count($my_date_format1) > 1) {
+            $date_separator1 = '.';
+        } else {
+            $my_date_format1 = explode('-', $plugin_tx['realblog']['date_format']);
+            if (count($my_date_format1) > 1) {
+                $date_separator1 = '-';
+            }
+        }
+    }
+
+    for ($aCounter1=0; $aCounter1 <= 2; $aCounter1++) {
+        switch ($my_date_format1[$aCounter1]) {
+        case 'd':
+            $cal_date_format1[$aCounter1] = '%d';
+            break;
+        case 'm':
+            $cal_date_format1[$aCounter1] = '%m';
+            break;
+        case 'y':
+            $cal_date_format1[$aCounter1] = '%y';
+            break;
+        case 'Y':
+            $cal_date_format1[$aCounter1] = '%Y';
+            break;
+        }
+    }
+
+    $cal_format = '';
+    foreach ($cal_date_format1 as $key => $value) {
+        $cal_format .= ($key < count($my_date_format1) - 1)
+            ? $value . $date_separator1
+            : $value;
+    }
+
+    return $cal_format;
 }
 
 ?>
