@@ -1,5 +1,3 @@
-/* utf-8 marker äöüß */
-
 #enablesearch {
 height: 24px;
 border: 0px solid #c00;
@@ -334,4 +332,15 @@ padding: 0 0 10px 0;
 .realblog_search_input {
 border: 1px solid #999;
 padding: 2px 5px;
+}
+
+/*
+ * Back-end.
+ */
+.realblog_logo {
+    float: left;
+    margin-right: 16px;
+}
+.realblog_license {
+    text-align: justify;
 }

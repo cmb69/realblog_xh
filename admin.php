@@ -105,12 +105,8 @@ if (isset($realblog) && $realblog == 'true') {
         $o .= plugin_admin_common($action, $admin, $plugin);
     }
     if ($admin == '') {
-        $o.= tag('br') . '<div id="realblog_version"><h4>Realblog_XH '
-            . REALBLOG_VERSION
-            . '</h4><p>by <a href="http://www.ge-webdesign.de/cmsimplerealblog"'
-            . ' target="_blank">ge-webdesign.de</a>'
-            . ' (released: ' . $realblog_release . ')</p><p>'
-            . $realblog_based_on . '</p></div>';
+        $temp = new Realblog_InfoView();
+        $o .= $temp->render();
     }
 
     $db = Realblog_connect();

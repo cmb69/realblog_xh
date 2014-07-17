@@ -64,24 +64,10 @@ if (session_id() == '') {
     session_start();
 }
 
+/**
+ * The plugin version.
+ */
 define('REALBLOG_VERSION', '@REALBLOG_VERSION@');
-$realblog_release = '05/2014';
-$realblog_based_on = <<<EOT
-<p>based on the Plugin <b>AdvancedNews</b> by <a
-href="http://www.jat-at-home.be/index.php?CMSimple_plugins">Jan
-Kanters</a></p><div style="font-family: arial, sans-serif; font-size: 15px;
-letter-spacing: 0; border: 4px double; padding: 6px 16px; margin: 2px 0 8px 0;">
-<p style="text-align: center;">This Plugin is made for <a
-href="http://www.cmsimple.org/"><span style="font-weight: 700; padding: 0 6px;
-">CMSimple 4.0 &raquo;</span></a> or higher.</p>
-<p style="text-align: center;">Optimized for <span style="font-weight: 700;
-padding: 0 6px; ">CMSimple 4.4</span> or higher.</p>
-<p style="text-align: center;">Recommended is the current version of CMSimple
-from <a
-href="http://www.cmsimple.org/en/?Downloads___CMSimple"
->cmsimple.org&nbsp;&raquo;</a></p>
-</div>
-EOT;
 
 /**
  * Returns the value of a POST or GET parameter; <var>null</var> if not set.
