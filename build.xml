@@ -29,7 +29,7 @@
     <target name="sniff">
         <phpcodesniffer standard="PEAR" format="full">
             <fileset refid="php-sources"/>
-            <!--<fileset refid="unit-tests"/>-->
+            <fileset refid="unit-tests"/>
             <!--<fileset refid="attack-tests"/>-->
         </phpcodesniffer>
     </target>
