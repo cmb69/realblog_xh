@@ -145,7 +145,7 @@ if (isset($realblog)) {
         $o .= plugin_admin_common($action, $admin, $plugin);
     }
     if ($admin == '') {
-        $o.= tag('br') . '<div id="realblog_version"><h4>' . REALBLOG_VERSION
+        $o.= tag('br') . '<div id="realblog_version"><h4>Realblog_XH ' . REALBLOG_VERSION
             . '</h4><p>by <a href="http://www.ge-webdesign.de/cmsimplerealblog"'
             . ' target="_blank">ge-webdesign.de</a>'
             . ' (released: ' . $realblog_release . ')</p><p>'
@@ -352,7 +352,7 @@ if (isset($realblog)) {
                 if (count($realblogtopics) > 0) {
                     // Confirm batch delete of the selected realblog topics
                     // FIXME: append to $o ?
-                    $o = '<div><h4>' . ucfirst(REALBLOG_VERSION) . ' : ' . $title
+                    $o = '<div><h4>Realblog_XH ' . REALBLOG_VERSION . ' : ' . $title
                         . '</h4></div>';
                     $o .= '<div>&nbsp;</div>';
                     $o .= '<form name="confirm" method="post" action="' . $sn
@@ -391,7 +391,7 @@ if (isset($realblog)) {
                 } else {
                     // Nothing selected
                     $info = $plugin_tx[$plugin]['nothing_selected'];
-                    $o = '<div><h4>' . ucfirst(REALBLOG_VERSION) . ' : ' . $title
+                    $o = '<div><h4>Realblog_XH ' . REALBLOG_VERSION . ' : ' . $title
                         . '</h4></div>';
                     $o .= '<div>&nbsp;</div>';
                     $o .= '<form name="confirm" method="post" action="' . $sn
@@ -425,7 +425,7 @@ if (isset($realblog)) {
 
                 if (count($realblogtopics) > 0) {
                     // Confirm batch status change of the selected realblog topics
-                    $o = '<div><h4>' . ucfirst(REALBLOG_VERSION) . ' : '
+                    $o = '<div><h4>Realblog_XH ' . REALBLOG_VERSION . ' : '
                         . $title . '</h4></div>';
                     $o .= '<div>&nbsp;</div>';
                     $o .= '<form name="confirm" method="post" action="' . $sn
@@ -477,7 +477,7 @@ if (isset($realblog)) {
                 } else {
                     // Nothing selected
                     $info = $plugin_tx[$plugin]['nothing_selected'];
-                    $o = '<div><h4>' . ucfirst(REALBLOG_VERSION) . ' : ' . $title
+                    $o = '<div><h4>Realblog_XH ' . REALBLOG_VERSION . ' : ' . $title
                         . '</h4></div>';
                     $o .= '<div>&nbsp;</div>';
                     $o .= '<form name="confirm" method="post" action="' . $sn
@@ -572,7 +572,7 @@ if (isset($realblog)) {
                 ? ((int) $db_total_records / $page_record_limit)
                 : ((int) ($db_total_records / $page_record_limit) + 1);
             // Calculate table paging
-            $o .= '<div><h4>' . ucfirst(REALBLOG_VERSION) . ' - '
+            $o .= '<div><h4>Realblog_XH ' . REALBLOG_VERSION . ' - '
                 . $plugin_tx[$plugin]['story_overview'] . '</h4></div>';
 
             if ($page > $page_total) {
@@ -884,8 +884,8 @@ function Realblog_form($realblogID = null, $action = null, $ret_page = 1)
 
     // Display realblog item form
 
-    $t = '<div class="realblog_fields_block"><div><h4>'
-        . ucfirst(REALBLOG_VERSION) . ' : ' . $title . '</h4></div>';
+    $t = '<div class="realblog_fields_block"><div><h4>Realblog_XH '
+        . REALBLOG_VERSION . ' : ' . $title . '</h4></div>';
     //$t.="<div>&nbsp;</div>";
     $t .= '<form name="realblog" method="post" action="' . $sn . '?&amp;'
         . $plugin . '&amp;admin=plugin_main">'
@@ -1195,7 +1195,7 @@ function Realblog_dbconfirm($title, $info, $page)
         $page=$_SESSION['page'];
     }
 
-    $t = '<div><h4>' . ucfirst(REALBLOG_VERSION) . ' : ' . $title . '</h4></div>';
+    $t = '<div><h4>Realblog_XH ' . REALBLOG_VERSION . ' : ' . $title . '</h4></div>';
     $t .= '<div>&nbsp;</div>';
     $t .= '<form name="confirm" method="post" action="' . $sn . '?&amp;'
         . $plugin . '&amp;admin=plugin_main">';

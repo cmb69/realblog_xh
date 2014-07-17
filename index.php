@@ -59,7 +59,7 @@ require_once $pth['folder']['plugin'] . 'compat.php';
 // FIXME: don't start when already started
 @session_start();
 
-define('REALBLOG_VERSION', 'RealBlog 2.8');
+define('REALBLOG_VERSION', '@REALBLOG_VERSION@');
 $realblog_release = '05/2014';
 $realblog_based_on = <<<EOT
 <p>based on the Plugin <b>AdvancedNews</b> by <a
