@@ -1062,7 +1062,7 @@ function Realblog_makeTimestampDates($tmpdate = null)
     $d = $dateArr[$dayposition];
     $y = $dateArr[$yearposition];
 
-    $tmpdate = mktime(null, null, null, $m, $d, $y);
+    $tmpdate = mktime(0, 0, 0, $m, $d, $y);
     return $tmpdate;
 }
 

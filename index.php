@@ -130,10 +130,7 @@ if (!$adm) {
 
     $db = Realblog_connect();
 
-    $d = date('d');
-    $m = date('n');
-    $y = date('Y');
-    $today = mktime(null, null, null, $m, $d, $y);
+    $today = strtotime('midnight');
 
     // Change realblog status from ready for publishing to published when
     // current date is within the publishing period
@@ -1587,8 +1584,8 @@ EOT;
                     . '</a>';
                 $t .= '</div>';
                 $t .= "\n" . '<div>&nbsp;</div>' . "\n";
-                $startmonth = mktime(null, null, null, 1, 1, $realblogYear);
-                $endmonth = mktime(null, null, null, 12, 1, $realblogYear);
+                $startmonth = mktime(0, 0, 0, 1, 1, $realblogYear);
+                $endmonth = mktime(0, 0, 0, 12, 1, $realblogYear);
                 $compClause = new AndWhereClause(
                     new AndWhereClause(
                         new SimpleWhereClause(
@@ -1611,10 +1608,8 @@ EOT;
                 );
 
                 for ($month = $currentMonth; $month >= 1; $month--) {
-                    $startmonth = mktime(null, null, null, $month, 1, $realblogYear);
-                    $endmonth = mktime(
-                        null, null, null, $month + 1, 1, $realblogYear
-                    );
+                    $startmonth = mktime(0, 0, 0, $month, 1, $realblogYear);
+                    $endmonth = mktime(0, 0, 0, $month + 1, 1, $realblogYear);
                     $compClause = new AndWhereClause(
                         new SimpleWhereClause(
                             REALBLOG_STATUS, '=', 2, INTEGER_COMPARISON
@@ -1643,7 +1638,7 @@ EOT;
                         )
                     );
                     $monthString = strftime(
-                        '%B %Y', mktime(null, null, null, $month, 1, $realblogYear)
+                        '%B %Y', mktime(0, 0, 0, $month, 1, $realblogYear)
                     );
                     $month_search = explode(
                         ',', $plugin_tx['realblog']['date_month_search']
@@ -1692,7 +1687,7 @@ EOT;
                         $month = date('n', $field[REALBLOG_DATE]);
                         $year = date('Y', $field[REALBLOG_DATE]);
                         $monthString = strftime(
-                            '%B %Y', mktime(null, null, null, $month, 1, $year)
+                            '%B %Y', mktime(0, 0, 0, $month, 1, $year)
                         );
                         if ($realblogmonth != $month) {
                             $t .= ($key != 0) ? tag('br') : '';
@@ -1911,6 +1906,7 @@ function Realblog_link($options)
                 $page_exists = true;
                 break;
             }
+            // FIXME: fix for Realblog_blog or remove check alltogether
             if (preg_match('/showrealblog\(.*/is', $c[$key])) {
                 $page_exists = true;
                 break;
@@ -1937,10 +1933,6 @@ function Realblog_link($options)
                     . $plugin_tx['realblog']['links_visible_text'] . '</p>';
                 // Select all published realblog items ordered by DATE
                 // descending within the publishing range
-                $d = date('d');
-                $m = date('n');
-                $y = date('Y');
-                $today = mktime(null, null, null, $m, $d, $y);
                 $compClause = null;
                 $compClause = new AndWhereClause(
                     new SimpleWhereClause(
@@ -2108,7 +2100,7 @@ function Realblog_makeTimestampDates1($tmpdate = null)
         $d = $dateArr[$dayposition];
         $y = $dateArr[$yearposition];
     }
-    $tmpdate = mktime(null, null, null, $m, $d, $y);
+    $tmpdate = mktime(0, 0, 0, $m, $d, $y);
     return $tmpdate;
 }
 

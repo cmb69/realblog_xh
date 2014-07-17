@@ -6,3 +6,4 @@
 * inline include/fields.php
 * remove backlinks to ge-webdesign.de
 * replace images (need license and want PNG)
+* replace mktime() with strtotime()
