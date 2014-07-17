@@ -116,4 +116,273 @@ function Realblog_renderSearchForm($realblogYear)
     return $t;
 }
 
+/**
+ * Returns the search clause.
+ *
+ * @return CompositeWhereClause
+ *
+ * @todo realblog_from_date and realblog_to_date are unused!
+ */
+function Realblog_searchClause()
+{
+    if (!empty($_REQUEST['realblog_from_date'])) {
+        $compClauseDate1 = new SimpleWhereClause(
+            REALBLOG_DATE, $_REQUEST['date_operator_1'],
+            Realblog_makeTimestampDates1($_REQUEST['realblog_from_date'])
+        );
+    }
+    if (!empty($_REQUEST['realblog_to_date'])) {
+        $compClauseDate2 = new SimpleWhereClause(
+            REALBLOG_DATE, $_REQUEST['date_operator_2'],
+            Realblog_makeTimestampDates1($_REQUEST['realblog_to_date'])
+        );
+    }
+    if (!empty($_REQUEST['realblog_title'])) {
+        $compClauseTitle = new LikeWhereClause(
+            REALBLOG_TITLE, $_REQUEST['realblog_title'],
+            $_REQUEST['title_operator']
+        );
+    }
+    if (!empty($_REQUEST['realblog_story'])) {
+        $compClauseStory = new LikeWhereClause(
+            REALBLOG_STORY, $_REQUEST['realblog_story'],
+            $_REQUEST['story_operator']
+        );
+    }
+    //$code = (int) !empty($compClauseDate1) << 3
+    //    | (int) !empty($compClauseDate2) << 2
+    //    | (int) !empty($compClauseTitle) << 1
+    //    | (int) !empty($compClauseStory);
+
+    if (empty($compClauseDate1) && empty($compClauseDate2)
+        && empty($compClauseTitle) && empty($compClauseStory)
+    ) {
+        $compClause = null;
+    }
+    // [only from_date]
+    if (!empty($compClauseDate1) && empty($compClauseDate2)
+        && empty($compClauseTitle) && empty($compClauseStory)
+    ) {
+        $compClause = $compClauseDate1;
+    }
+    // [only to_date]
+    if (empty($compClauseDate1) && !empty($compClauseDate2)
+        && empty($compClauseTitle) && empty($compClauseStory)
+    ) {
+        $compClause = $compClauseDate2;
+    }
+    // [from_date & to_date]
+    if (!empty($compClauseDate1) && !empty($compClauseDate2)
+        && empty($compClauseTitle) && empty($compClauseStory)
+    ) {
+        $compClause = new AndWhereClause($compClauseDate1, $compClauseDate2);
+    }
+    // [only title]
+    if (empty($compClauseDate1) && empty($compClauseDate2)
+        && !empty($compClauseTitle) && empty($compClauseStory)
+    ) {
+        $compClause = $compClauseTitle;
+    }
+    // [from_date & title]
+    if (!empty($compClauseDate1) && empty($compClauseDate2)
+        && !empty($compClauseTitle) && empty($compClauseStory)
+    ) {
+        switch ($_REQUEST['operator_1']) {
+        case 'AND':
+            $compClause = new AndWhereClause(
+                $compClauseDate1, $compClauseTitle
+            );
+            break;
+        case 'OR':
+            $compClause = new OrWhereClause(
+                $compClauseDate1, $compClauseTitle
+            );
+            break;
+        }
+    }
+    // [to_date & title]
+    if (empty($compClauseDate1) && !empty($compClauseDate2)
+        && !empty($compClauseTitle) && empty($compClauseStory)
+    ) {
+        switch ($_REQUEST['operator_1']) {
+        case 'AND':
+            $compClause = new AndWhereClause(
+                $compClauseDate2, $compClauseTitle
+            );
+            break;
+        case 'OR':
+            $compClause = new OrWhereClause(
+                $compClauseDate2, $compClauseTitle
+            );
+            break;
+        }
+    }
+    // [from_date, to_date & title]
+    if (!empty($compClauseDate1) && !empty($compClauseDate2)
+        && !empty($compClauseTitle) && empty($compClauseStory)
+    ) {
+        switch ($_REQUEST['operator_1']) {
+        case 'AND':
+            $compClause = new AndWhereClause(
+                new AndWhereClause($compClauseDate1, $compClauseDate2),
+                $compClauseTitle
+            );
+            break;
+        case 'OR':
+            $compClause = new OrWhereClause(
+                new AndWhereClause($compClauseDate1, $compClauseDate2),
+                $compClauseTitle
+            );
+            break;
+        }
+    }
+    // [only story]
+    if (empty($compClauseDate1) && empty($compClauseDate2)
+        && empty($compClauseTitle) && !empty($compClauseStory)
+    ) {
+        $compClause = $compClauseStory;
+    }
+    // [from_date & story]
+    if (!empty($compClauseDate1) && empty($compClauseDate2)
+        && empty($compClauseTitle) && !empty($compClauseStory)
+    ) {
+        switch ($_REQUEST['operator_2']) {
+        case 'AND':
+            $compClause = new AndWhereClause(
+                $compClauseDate1, $compClauseStory
+            );
+            break;
+        case 'OR':
+            $compClause = new OrWhereClause(
+                $compClauseDate1, $compClauseStory
+            );
+            break;
+        }
+    }
+    // [to_date & story]
+    if (empty($compClauseDate1) && !empty($compClauseDate2)
+        && empty($compClauseTitle) && !empty($compClauseStory)
+    ) {
+        switch ($_REQUEST['operator_2']) {
+        case 'AND':
+            $compClause = new AndWhereClause(
+                $compClauseDate2, $compClauseStory
+            );
+            break;
+        case 'OR':
+            $compClause = new OrWhereClause(
+                $compClauseDate2, $compClauseStory
+            );
+            break;
+        }
+    }
+    // [from_date, to_date & story]
+    if (!empty($compClauseDate1) && !empty($compClauseDate2)
+        && empty($compClauseTitle) && !empty($compClauseStory)
+    ) {
+        switch ($_REQUEST['operator_2']) {
+        case 'AND':
+            $compClause = new AndWhereClause(
+                new AndWhereClause($compClauseDate1, $compClauseDate2),
+                $compClauseStory
+            );
+            break;
+        case 'OR':
+            $compClause = new OrWhereClause(
+                new AndWhereClause($compClauseDate1, $compClauseDate2),
+                $compClauseStory
+            );
+            break;
+        }
+    }
+    // [title & story]
+    if (empty($compClauseDate1) && empty($compClauseDate2)
+        && !empty($compClauseTitle) && !empty($compClauseStory)
+    ) {
+        switch ($_REQUEST['operator_2']) {
+        case 'AND':
+            $compClause = new AndWhereClause(
+                $compClauseTitle, $compClauseStory
+            );
+            break;
+        case 'OR':
+            $compClause = new OrWhereClause(
+                $compClauseTitle, $compClauseStory
+            );
+            break;
+        }
+    }
+    // [from_date, title & story specified
+    if (!empty($compClauseDate1) && empty($compClauseDate2)
+        && !empty($compClauseTitle) && !empty($compClauseStory)
+    ) {
+        $compClause = $compClauseDate1;
+        switch ($_REQUEST['operator_1']) {
+        case 'AND':
+            $compClause = new AndWhereClause(
+                $compClause, $compClauseTitle
+            );
+            break;
+        case 'OR':
+            $compClause = new OrWhereClause(
+                $compClause, $compClauseTitle
+            );
+            break;
+        }
+        switch ($_REQUEST['operator_2']) {
+        case 'AND':
+            $compClause = new AndWhereClause($compClause, $compClauseStory);
+            break;
+        case 'OR':
+            $compClause = new OrWhereClause($compClause, $compClauseStory);
+            break;
+        }
+    }
+    // [to_date, title & story]
+    if (empty($compClauseDate1) && !empty($compClauseDate2)
+        && !empty($compClauseTitle) && !empty($compClauseStory)
+    ) {
+        $compClause = $compClauseDate2;
+        switch ($_REQUEST['operator_1']) {
+        case 'AND':
+            $compClause = new AndWhereClause($compClause, $compClauseTitle);
+            break;
+        case 'OR':
+            $compClause = new OrWhereClause($compClause, $compClauseTitle);
+            break;
+        }
+        switch ($_REQUEST['operator_2']) {
+        case 'AND':
+            $compClause = new AndWhereClause($compClause, $compClauseStory);
+            break;
+        case 'OR':
+            $compClause = new OrWhereClause($compClause, $compClauseStory);
+            break;
+        }
+    }
+    // [from_date, to_date, title & story]
+    if (!empty($compClauseDate1) && !empty($compClauseDate2)
+        && !empty($compClauseTitle) && !empty($compClauseStory)
+    ) {
+        $compClause = new AndWhereClause($compClauseDate1, $compClauseDate2);
+        switch ($_REQUEST['operator_1']) {
+        case 'AND':
+            $compClause = new AndWhereClause($compClause, $compClauseTitle);
+            break;
+        case 'OR':
+            $compClause = new OrWhereClause($compClause, $compClauseTitle);
+            break;
+        }
+        switch ($_REQUEST['operator_2']) {
+        case 'AND':
+            $compClause = new AndWhereClause($compClause, $compClauseStory);
+            break;
+        case 'OR':
+            $compClause = new OrWhereClause($compClause, $compClauseStory);
+            break;
+        }
+    }
+    return $compClause;
+}
+
 ?>
