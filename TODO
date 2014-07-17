@@ -1,2 +1,6 @@
 * original used str_ireplace()!
 * keep an eye on compat.php
+* CSRF protection
+* prevent usage from unsupported CMSimple variants/versions
+* remove "plugin info" link
+* remove $plugin_tx[realblog][menu_*]
