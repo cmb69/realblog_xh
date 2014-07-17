@@ -144,9 +144,9 @@ if (!$adm) {
     // connect to the realblog database file
     $db = new Flatfile();
     $db->datadir = $db_path;
-    $d = date('d', time());
-    $m = date('n', time());
-    $y = date('Y', time());
+    $d = date('d');
+    $m = date('n');
+    $y = date('Y');
     $today = mktime(null, null, null, $m, $d, $y);
 
     // Change realblog status from ready for publishing to published when
@@ -1691,13 +1691,12 @@ EOT;
             $realblog_topics_total = count($records);
             $filter_total = 0;
             if ($realblogaction != 'search') {
-                $currentYear = date('Y', time());
+                $currentYear = date('Y');
                 if (!isset($realblogYear) || $realblogYear <= 0
                     || $realblogYear >= $currentYear || empty($realblogYear)
                 ) {
                     $realblogYear = $currentYear;
-                    // FIXME: remove time() parameter
-                    $currentMonth = date('n', time());
+                    $currentMonth = date('n');
                 } else {
                     $currentMonth = 12;
                 }
@@ -2091,10 +2090,9 @@ function Realblog_link($options)
                     . $plugin_tx['realblog']['links_visible_text'] . '</p>';
                 // Select all published realblog items ordered by DATE
                 // descending within the publishing range
-                // FIXME remove time() parameter
-                $d = date('d', time());
-                $m = date('n', time());
-                $y = date('Y', time());
+                $d = date('d');
+                $m = date('n');
+                $y = date('Y');
                 $today = mktime(null, null, null, $m, $d, $y);
                 $compClause = null;
                 $compClause = new AndWhereClause(
@@ -2245,8 +2243,7 @@ function Realblog_makeTimestampDates1($tmpdate = null)
         }
     }
     if ($tmpdate == null) {
-        // FIXME: remove time() parameter
-        $tmpdate = date($plugin_tx[$plugin]['date_format'], time());
+        $tmpdate = date($plugin_tx[$plugin]['date_format']);
     }
     // FIXME: remove ereg()
     if (ereg($regex_format, $tmpdate)) {

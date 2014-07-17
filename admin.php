@@ -769,10 +769,9 @@ function Realblog_form($realblogID = null, $action = null, $ret_page = 1)
     switch ($action){
     case 'add_realblog':
         $title = $plugin_tx[$plugin]['tooltip_add'];
-        // FIXME: remove superfluous time() parameter
-        $realblog_date =date($plugin_tx[$plugin]['date_format'], time());
-        $realblog_startdate = date($plugin_tx[$plugin]['date_format'], time());
-        $realblog_enddate = date($plugin_tx[$plugin]['date_format'], time());
+        $realblog_date = date($plugin_tx[$plugin]['date_format']);
+        $realblog_startdate = date($plugin_tx[$plugin]['date_format']);
+        $realblog_enddate = date($plugin_tx[$plugin]['date_format']);
         break;
     case 'modify_realblog':
         $title = $plugin_tx[$plugin]['tooltip_modify'] . ' [ID: '
@@ -1082,7 +1081,7 @@ function Realblog_makeTimestampDates($tmpdate = null)
     }
 
     if ($tmpdate == null) {
-        $tmpdate = date($plugin_tx[$plugin]['date_format'], time());
+        $tmpdate = date($plugin_tx[$plugin]['date_format']);
     }
 
     if ($date_separator1 == '.') {
