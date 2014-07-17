@@ -24,6 +24,7 @@ if (!function_exists('sv')
     die('no direct access');
 }
 
+//////////////////////////////////////////////// HISTORIC LICENSE SECTION START
 /*
 ************************************
 RealBlog plugin for CMSimple
@@ -50,6 +51,7 @@ PARTICULAR PURPOSE. See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with
 this program; if not, see <http://www.gnu.org/licenses>.
 */
+////////////////////////////////////////////////// HISTORIC LICENSE SECTION END
 
 /**
  * Writes the required references to the head element.
@@ -105,19 +107,16 @@ if (isset($realblog) && $realblog == 'true') {
         $o .= plugin_admin_common($action, $admin, $plugin);
     }
     if ($admin == '') {
-        $o.= tag('br') . '<div id="realblog_version"><h4>Realblog_XH ' . REALBLOG_VERSION
+        $o.= tag('br') . '<div id="realblog_version"><h4>Realblog_XH '
+            . REALBLOG_VERSION
             . '</h4><p>by <a href="http://www.ge-webdesign.de/cmsimplerealblog"'
             . ' target="_blank">ge-webdesign.de</a>'
             . ' (released: ' . $realblog_release . ')</p><p>'
             . $realblog_based_on . '</p></div>';
     }
 
-    // include the flatfile database class
-    // TO DO: check if this file exists
     include_once $plugin_include_folder . 'flatfile.php';
-    // declare the realblog database fields
     include_once $plugin_include_folder . 'fields.php';
-    // connect to the realblog database file
     $db = new Flatfile();
     $db->datadir = $db_path;
 

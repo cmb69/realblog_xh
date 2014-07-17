@@ -24,6 +24,7 @@ if (!function_exists('sv')
     die('no direct access');
 }
 
+//////////////////////////////////////////////// HISTORIC LICENSE SECTION START
 /*
 ************************************
 RealBlog plugin for CMSimple
@@ -50,6 +51,7 @@ PARTICULAR PURPOSE. See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with
 this program; if not, see <http://www.gnu.org/licenses>.
 */
+////////////////////////////////////////////////// HISTORIC LICENSE SECTION END
 
 /**
  * Backward compatibility.
@@ -98,14 +100,12 @@ function Realblog_getPgParameter($name)
 }
 
 /*
-********************************************************************************
-* This routine does some automatic realblog status updating
-* it changes the realblog status automatically from :
-*   - ready to publish -> published; when current date is in between start
-*     & end date
-*   - published -> archived; when current date > end date
-* and also generates an up-to-date RSS newsfeed file
-********************************************************************************
+ * This routine does some automatic realblog status updating
+ * it changes the realblog status automatically from :
+ *   - ready to publish -> published; when current date is in between start
+ *     & end date
+ *   - published -> archived; when current date > end date
+ * and also generates an up-to-date RSS newsfeed file
 */
 
 $rss_path='./';
@@ -117,10 +117,7 @@ if (!is_writeable($rss_path . 'realblog_rss_feed.xml') && $adm) {
 
 // FIXME: move to admin.php
 if (!$adm) {
-    // create the site RSS:rdf file
     Realblog_exportRssFeed();
-
-    // get plugin name
     $plugin = basename(dirname(__FILE__), "/");
 
     // set general variables for the plugin
@@ -131,13 +128,9 @@ if (!$adm) {
 
     $db_name = "realblog.txt";
 
-    // include the flatfile database class
     include_once $plugin_include_folder . 'flatfile.php';
-
-    // declare the realblog database fields
     include_once $plugin_include_folder . 'fields.php';
 
-    // connect to the realblog database file
     $db = new Flatfile();
     $db->datadir = $db_path;
     $d = date('d');
@@ -317,10 +310,7 @@ function realblog_showSearch() {
 </script>'
 EOT;
 
-    // include the flatfile database class
     include_once $plugin_include_folder . 'flatfile.php';
-
-    // declare the realblog database fields
     include_once $plugin_include_folder . 'fields.php';
 
     // connect to the realblog database file
@@ -753,9 +743,6 @@ EOT;
                 . $plugin_tx['realblog']['search_show_all'] . '</b></a></p>'
                 . tag('br');
         } else {
-            // Select all realblog items from the DB
-            // if (isset($compClause)) { $compClause=unserialize($compClause); }
-
             if (empty($compClause)) {
                 $compClause = $compRealblogClause;
             }
@@ -1115,8 +1102,6 @@ EOT;
             $t .= '<div style="clear: both;"></div>';
             $t .= "\n" . '</div>' . "\n";
             // output comments in RealBlog
-            // FIXME: what is the following line?
-            $record[REALBLOG_COMMENTS];
             if (function_exists('comments')
                 && $plugin_cf['realblog']['comments_function'] == 'true'
                 && $record[REALBLOG_COMMENTS] == 'on'
@@ -1140,13 +1125,6 @@ EOT;
     unset($compClause);
     return $t;
 }
-
-/*
-********************************************************************************
-* This function display's the archived realblog topics in archiv-view
-* usage : showrealblogarchive()
-********************************************************************************
-*/
 
 /**
  * Displays the archived realblog topics.
@@ -1183,7 +1161,6 @@ function Realblog_archive($options = null)
         $tx, $cal_format, $hjs, $realblogID, $commentschecked, $id, $from_page,
         $page, $su, $realblogYear;
 
-    // get plugin name
     $plugin = basename(dirname(__FILE__), '/');
 
     $layout = 'archive';
@@ -1225,7 +1202,6 @@ function Realblog_archive($options = null)
     $compClause = Realblog_getPgParameter('compClause');
     $printrealblog = Realblog_getPgParameter('printrealblog');
 
-    // set general variables for the plugin
     $plugin_images_folder = $pth['folder']['plugins'] . $plugin . '/images/';
     $plugin_include_folder = $pth['folder']['plugins'] . $plugin . '/include/';
 
@@ -1253,13 +1229,9 @@ function realblog_showSearch() {
 </script>
 EOT;
 
-    // include the flatfile database class
     include_once $plugin_include_folder . 'flatfile.php';
-
-    // declare the realblog database fields
     include_once $plugin_include_folder . 'fields.php';
 
-    // connect to the realblog database file
     $db = new Flatfile();
     $db->datadir = $db_path;
 
@@ -1657,8 +1629,6 @@ EOT;
                 . preg_replace('/\&.*\z/', '', $_SERVER['REQUEST_URI']) . '"><b>'
                 . $plugin_tx['realblog']['back_to_archive'] . '</b></a></p>';
         } else {
-            // Select all realblog items from the DB
-            // if (isset($compClause)) { $compClause=unserialize($compClause); }
             if (empty($compClause)) {
                 $compClause=$compArchiveClause;
             }
@@ -2057,13 +2027,9 @@ function Realblog_link($options)
         $db_path = $pth['folder']['content'] . 'realblog/';
         $db_name = 'realblog.txt';
 
-        // include the flatfile database class
         include_once $plugin_include_folder . 'flatfile.php';
-
-        // declare the realblog database fields
         include_once $plugin_include_folder . 'fields.php';
 
-        // connect to the realblog database file
         $db = new Flatfile();
         $db->datadir = $db_path;
 
@@ -2248,13 +2214,6 @@ function Realblog_makeTimestampDates1($tmpdate = null)
     return $tmpdate;
 }
 
-/*
-********************************************************************************
-* This function makes a rss compatible newsfeed file
-* parameters : none
-********************************************************************************
-*/
-
 /**
  * Generates the RSS feed.
  *
@@ -2289,13 +2248,9 @@ function Realblog_exportRssFeed()
         $plugin_images_folder = $pth['folder']['plugins'] . $plugin . '/images/';
         $plugin_include_folder = $pth['folder']['plugins'] . $plugin . '/include/';
 
-        // declare the realblog database fields
         include_once $plugin_include_folder . 'fields.php';
-
-        // include the flatfile database class
         include_once $plugin_include_folder . 'flatfile.php';
 
-        // connect to the realblog database file
         $db = new Flatfile();
         $db->datadir = $db_path;
 
