@@ -12,6 +12,8 @@
 
     <fileset id="php-sources" dir=".">
         <include name="classes/*.php"/>
+        <exclude name="classes/flatfile.php"/>
+        <exclude name="classes/fields.php"/>
         <include name="index.php"/>
         <include name="admin.php"/>
         <include name="functions.php"/>
