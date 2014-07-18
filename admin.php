@@ -496,7 +496,7 @@ if (isset($realblog) && $realblog == 'true') {
             $o .= "\n" . '<td width="5%">'
                 . tag(
                     'input type="image" align="middle" src="'
-                    . $plugin_images_folder . 'btn_filter.png" name="send"'
+                    . $plugin_images_folder . 'filter.png" name="send"'
                     . ' value="Apply filter" title="'
                     . $plugin_tx[$plugin]['btn_search']
                     . '"'
@@ -516,7 +516,7 @@ if (isset($realblog) && $realblog == 'true') {
                 . '<td class="realblog_table_header" align="center">'
                 . tag(
                     'input type="image" align="middle" src="'
-                    . $plugin_images_folder . 'btn_delsel.png" name="batchdelete"'
+                    . $plugin_images_folder . 'delete.png" name="batchdelete"'
                     . ' value="true" title="'
                     . $plugin_tx[$plugin]['tooltip_deleteall'] . '"'
                 )
@@ -524,7 +524,7 @@ if (isset($realblog) && $realblog == 'true') {
                 . '<td class="realblog_table_header" align="center">'
                 . tag(
                     'input type="image" align="middle" src="' . $plugin_images_folder
-                    . 'btn_status.png" name="changestatus" value="true"'
+                    . 'change-status.png" name="changestatus" value="true"'
                     . ' title="' . $plugin_tx[$plugin]['tooltip_changestatus']
                     . '"'
                 )
@@ -533,7 +533,7 @@ if (isset($realblog) && $realblog == 'true') {
                 . '<a href="' . $sn . '?&amp;' . $plugin
                 . '&amp;admin=plugin_main&amp;action=add_realblog">'
                 . tag(
-                    'img src="' . $plugin_images_folder . 'btn_add.gif"'
+                    'img src="' . $plugin_images_folder . 'add.png"'
                     . ' align="middle" title="'
                     . $plugin_tx[$plugin]['tooltip_add'] . '" alt=""'
                 )
@@ -588,7 +588,7 @@ if (isset($realblog) && $realblog == 'true') {
                         . '&amp;realblogID=' . $field[REALBLOG_ID] . '&amp;page='
                         . $page . '">'
                         . tag(
-                            'img src="' . $plugin_images_folder . 'btn_delete.gif"'
+                            'img src="' . $plugin_images_folder . 'delete.png"'
                             . ' align="center" title="'
                             . $plugin_tx[$plugin]['tooltip_delete'] . '" alt=""'
                         )
@@ -600,7 +600,7 @@ if (isset($realblog) && $realblog == 'true') {
                         . '&amp;realblogID=' . $field[REALBLOG_ID] . '&amp;page='
                         . $page . '">'
                         . tag(
-                            'img src="' . $plugin_images_folder . 'btn_modify.gif"'
+                            'img src="' . $plugin_images_folder . 'edit.png"'
                             . ' align="center" title="'
                             . $plugin_tx[$plugin]['tooltip_modify'] . '" alt=""'
                         )
@@ -659,11 +659,11 @@ if (isset($realblog) && $realblog == 'true') {
                     . $filter2 . '&amp;filter3=' . $filter3 . '&amp;filter='
                     . $filter . '" title="'
                     . $plugin_tx[$plugin]['tooltip_previous'] . '">'
-                    . tag(
-                        'img src="' . $plugin_images_folder . 'btn_previous.gif"'
-                        . ' alt=""'
-                    )
-                    . '</a>&nbsp;&nbsp;';
+                    //. tag(
+                    //    'img src="' . $plugin_images_folder . 'btn_previous.gif"'
+                    //    . ' alt=""'
+                    //)
+                    . '&#9664;</a>&nbsp;&nbsp;';
                 for ($tt=1; $tt <= $page_total; $tt++) {
                     $separator = ($tt < $page_total) ? ' ' : '';
                     $o .= '<a href="' . $sn . '?&amp;' . $plugin
@@ -679,10 +679,10 @@ if (isset($realblog) && $realblog == 'true') {
                     . $filter2 . '&amp;filter3=' . $filter3 . '&amp;filter='
                     . $filter . '" title="' . $plugin_tx[$plugin]['tooltip_next']
                     . '">'
-                    . tag(
-                        'img src="' . $plugin_images_folder . 'btn_next.gif" alt=""'
-                    )
-                    . '</a>';
+                    //. tag(
+                    //    'img src="' . $plugin_images_folder . 'next.png" alt=""'
+                    //)
+                    . '&#9654;</a>';
                 $o .= '</div>';
             }
             $o .= '</div>';
@@ -795,7 +795,7 @@ function Realblog_form($realblogID = null, $action = null, $ret_page = 1)
         )
         . '&nbsp;'
         . tag(
-            'img src="' . $plugin_images_folder . 'btn_calendar.gif"'
+            'img src="' . $plugin_images_folder . 'calendar.png"'
             . ' style="margin-left:1px;margin-bottom:-3px;"'
             . ' id="trig_date1" title="'
             . $plugin_tx[$plugin]['tooltip_datepicker'] . '" alt=""'
@@ -812,7 +812,7 @@ function Realblog_form($realblogID = null, $action = null, $ret_page = 1)
         );
         $t .= '&nbsp;'
             . tag(
-                'img src="' . $plugin_images_folder . 'btn_calendar.gif"'
+                'img src="' . $plugin_images_folder . 'calendar.png"'
                 . ' style="margin-left:1px;margin-bottom:-3px;"'
                 . ' id="trig_date2" title="'
                 . $plugin_tx[$plugin]['tooltip_datepicker'] . '" alt=""'
@@ -833,7 +833,7 @@ function Realblog_form($realblogID = null, $action = null, $ret_page = 1)
         );
         $t .= '&nbsp;'
             . tag(
-                'img src="' . $plugin_images_folder . 'btn_calendar.gif"'
+                'img src="' . $plugin_images_folder . 'calendar.png"'
                 . ' style="margin-left:1px;margin-bottom:-3px;"'
                 . ' id="trig_date3" title="'
                 . $plugin_tx[$plugin]['tooltip_datepicker'] . '" alt=""'

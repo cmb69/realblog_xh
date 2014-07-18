@@ -246,19 +246,6 @@ font-style: italic;
 margin: 6px 0 10px 0;
 }
 
-.realblog_show_title {
-font-weight: 700;
-font-size: 113%;
-font-style: italic;
-padding-bottom: 2px;
-padding-top: 2px;
-background-image: url(../images/realblog_item_current.gif);
-background-position: left;
-background-repeat: no-repeat;
-padding-left: 15px;
-margin: 0;
-}
-
 .realblog_show_story {
 width: 100%;
 border-bottom: 1px solid;

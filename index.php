@@ -364,21 +364,21 @@ EOT;
                     . '<a href="' . $sn . '?' . $u[$s] . '&amp;page=' . @$back
                     . $mysearch . '" title="'
                     . $plugin_tx[$plugin]['tooltip_previous'] . '">'
-                    . tag(
-                        'img src="' . $plugin_images_folder . 'btn_previous.gif\"'
-                        . ' alt="previous_img"'
-                    )
-                    . '</a>&nbsp;' . "\n" . $page . ' / ' . $page_total
+                    //. tag(
+                    //    'img src="' . $plugin_images_folder . 'btn_previous.gif"'
+                    //    . ' alt="previous_img"'
+                    //)
+                    . '&#9664;</a>&nbsp;' . "\n" . $page . ' / ' . $page_total
                 : '';
 
             $tmp .= '&nbsp;' . "\n" . '<a href="' . $sn . '?' . $u[$s]
                 . '&amp;page=' . @$next . $mysearch . '" title="'
                 . $plugin_tx[$plugin]['tooltip_next'] . '">'
-                . tag(
-                    'img src="' . $plugin_images_folder . 'btn_next.gif"'
-                    . ' class="btn_prev_next" alt="next_img"'
-                )
-                . '</a>' . "\n";
+                //. tag(
+                //    'img src="' . $plugin_images_folder . 'next.png"'
+                //    . ' class="btn_prev_next" alt="next_img"'
+                //)
+                . '&#9654;</a>' . "\n";
 
             if ($db_total_records > 0 && $page_total > 1) {
                 $t .= "\n" . '<div class="realblog_table_paging">' . "\n";
@@ -714,21 +714,21 @@ EOT;
                     . '<a href="' . $sn . '?' . $u[$s] . '&amp;realblogYear='
                     . $back . '" title="'
                     . $plugin_tx[$plugin]['tooltip_previousyear'] . '">'
-                    . tag(
-                        'img src="' . $plugin_images_folder . 'btn_previous.gif"'
-                        . ' alt="previous_img"'
-                    )
-                    . '</a>&nbsp;&nbsp;';
+                    //. tag(
+                    //    'img src="' . $plugin_images_folder . 'btn_previous.gif"'
+                    //    . ' alt="previous_img"'
+                    //)
+                    . '&#9664;</a>&nbsp;&nbsp;';
                 $t .= '<b>' . $plugin_tx[$plugin]['archive_year']
                     . $realblogYear . '</b>';
                 $t .= '&nbsp;&nbsp;<a href="' . $sn . '?' . $u[$s]
                     . '&amp;realblogYear=' . $next . '" title="'
                     . $plugin_tx[$plugin]['tooltip_nextyear'] . '">'
-                    . tag(
-                        'img src="' . $plugin_images_folder . 'btn_next.gif"'
-                        . ' alt="next_img"'
-                    )
-                    . '</a>';
+                    //. tag(
+                    //    'img src="' . $plugin_images_folder . 'next.png"'
+                    //    . ' alt="next_img"'
+                    //)
+                    . '&#9654;</a>';
                 $t .= '</div>';
                 $t .= "\n" . '<div>&nbsp;</div>' . "\n";
                 $startmonth = mktime(0, 0, 0, 1, 1, $realblogYear);
@@ -801,11 +801,11 @@ EOT;
                             . '<ul class="realblog_archive">' . "\n";
                         foreach ($realbloglist as $key => $field) {
                             $t .= '<li>'
-                                . tag(
-                                    'img src="' . $plugin_images_folder
-                                    . 'realblog_item.gif" alt="realblogitem_img"'
-                                )
-                                . '&nbsp;'
+                                //. tag(
+                                //    'img src="' . $plugin_images_folder
+                                //    . 'realblog_item.gif" alt="realblogitem_img"'
+                                //)
+                                //. '&nbsp;'
                                 . date(
                                     $plugin_tx[$plugin]['date_format'],
                                     $field[REALBLOG_DATE]
@@ -842,11 +842,6 @@ EOT;
                             $realblogmonth = $month;
                         }
                         $t .= '<p style="line-height: 1em;">'
-                            . tag(
-                                'img src="' . $plugin_images_folder
-                                . 'realblog_item.gif" alt="calendar_img"'
-                            )
-                            . '&nbsp;'
                             . date(
                                 $plugin_tx[$plugin]['date_format'],
                                 $field[REALBLOG_DATE]
