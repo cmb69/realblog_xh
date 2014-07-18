@@ -48,17 +48,11 @@ padding: 6px 0;
 }
 
 .realblog_button {
-display: block;
-float: left;
-clear: both;
-background: url(button.jpg) repeat-x;
-font-family: arial, sans-serif;
-font-size: 14px;
-text-align: center;
-font-weight: 100;
-border: 1px solid #999;
-padding: 1px 8px 2px 8px;
-margin: -1px 12px 0 0;
+    display: inline-block;
+    border: 1px solid #888;
+    border-radius: 0.8em;
+    padding: 0.1em 0.5em;
+    margin-right: 1em;
 }
 
 .realblog_button a:link {color: #258; text-decoration: none;}
@@ -201,10 +195,9 @@ border: 0;
 .realblog_paging_block {}
 
 .realblog_db_info {
-float: right;
-text-align: right;
-font-weight: 700;
-padding-top: 10px;
+    text-align: right;
+    font-weight: 700;
+    padding-top: 10px;
 }
 
 .realblog_page_info {
