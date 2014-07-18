@@ -14,8 +14,8 @@
  * @link      http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
 
-require_once './include/flatfile.php';
-require_once './include/fields.php';
+require_once './classes/flatfile.php';
+require_once './classes/fields.php';
 require_once './functions.php';
 
 /**

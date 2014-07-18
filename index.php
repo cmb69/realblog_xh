@@ -1312,8 +1312,8 @@ function Realblog_connect()
     static $db = null;
 
     if (!isset($db)) {
-        include_once $pth['folder']['plugins'] . 'realblog/include/flatfile.php';
-        include_once $pth['folder']['plugins'] . 'realblog/include/fields.php';
+        include_once $pth['folder']['plugins'] . 'realblog/classes/flatfile.php';
+        include_once $pth['folder']['plugins'] . 'realblog/classes/fields.php';
         $db = new Flatfile();
         $db->datadir = $pth['folder']['content'] . 'realblog/';
     }
