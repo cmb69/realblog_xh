@@ -245,8 +245,7 @@ if (isset($realblog) && $realblog == 'true') {
                 if (count($realblogtopics) > 0) {
                     // Confirm batch delete of the selected realblog topics
                     // FIXME: append to $o ?
-                    $o = '<div><h4>Realblog_XH ' . REALBLOG_VERSION . ' : ' . $title
-                        . '</h4></div>';
+                    $o = '<h1>Realblog &ndash; ' . $title . '</h1>';
                     $o .= '<div>&nbsp;</div>';
                     $o .= '<form name="confirm" method="post" action="' . $sn
                         . '?&amp;' . $plugin . '&amp;admin=plugin_main">';
@@ -284,8 +283,7 @@ if (isset($realblog) && $realblog == 'true') {
                 } else {
                     // Nothing selected
                     $info = $plugin_tx[$plugin]['nothing_selected'];
-                    $o = '<div><h4>Realblog_XH ' . REALBLOG_VERSION . ' : ' . $title
-                        . '</h4></div>';
+                    $o = '<h1>Realblog &ndash; ' . $title . '</h1>';
                     $o .= '<div>&nbsp;</div>';
                     $o .= '<form name="confirm" method="post" action="' . $sn
                         . '?&amp;' . $plugin
@@ -317,8 +315,7 @@ if (isset($realblog) && $realblog == 'true') {
 
                 if (count($realblogtopics) > 0) {
                     // Confirm batch status change of the selected realblog topics
-                    $o = '<div><h4>Realblog_XH ' . REALBLOG_VERSION . ' : '
-                        . $title . '</h4></div>';
+                    $o = '<h1>Realblog &ndash; ' . $title . '</h1>';
                     $o .= '<div>&nbsp;</div>';
                     $o .= '<form name="confirm" method="post" action="' . $sn
                         . '?&amp;' . $plugin . '&amp;admin=plugin_main">';
@@ -369,8 +366,7 @@ if (isset($realblog) && $realblog == 'true') {
                 } else {
                     // Nothing selected
                     $info = $plugin_tx[$plugin]['nothing_selected'];
-                    $o = '<div><h4>Realblog_XH ' . REALBLOG_VERSION . ' : ' . $title
-                        . '</h4></div>';
+                    $o = '<h1>Realblog &ndash; ' . $title . '</h1>';
                     $o .= '<div>&nbsp;</div>';
                     $o .= '<form name="confirm" method="post" action="' . $sn
                         . '?&amp;' . $plugin . '&amp;admin=plugin_main">';
@@ -464,8 +460,8 @@ if (isset($realblog) && $realblog == 'true') {
                 ? ((int) $db_total_records / $page_record_limit)
                 : ((int) ($db_total_records / $page_record_limit) + 1);
             // Calculate table paging
-            $o .= '<div><h4>Realblog_XH ' . REALBLOG_VERSION . ' - '
-                . $plugin_tx[$plugin]['story_overview'] . '</h4></div>';
+            $o .= '<h1>Realblog &ndash; '
+                . $plugin_tx[$plugin]['story_overview'] . '</h1>';
 
             if ($page > $page_total) {
                 $page=1;
@@ -773,8 +769,8 @@ function Realblog_form($realblogID = null, $action = null, $ret_page = 1)
 
     // Display realblog item form
 
-    $t = '<div class="realblog_fields_block"><div><h4>Realblog_XH '
-        . REALBLOG_VERSION . ' : ' . $title . '</h4></div>';
+    $t = '<div class="realblog_fields_block"><h1>Realblog &ndash; '
+        . $title . '</h1>';
     //$t.="<div>&nbsp;</div>";
     $t .= '<form name="realblog" method="post" action="' . $sn . '?&amp;'
         . $plugin . '&amp;admin=plugin_main">'
@@ -1083,7 +1079,7 @@ function Realblog_dbconfirm($title, $info, $page)
         $page = $_SESSION['page'];
     }
 
-    $t = '<div><h4>Realblog_XH ' . REALBLOG_VERSION . ' : ' . $title . '</h4></div>';
+    $t = '<h1>Realblog &ndash; ' . $title . '</h1>';
     $t .= '<div>&nbsp;</div>';
     $t .= '<form name="confirm" method="post" action="' . $sn . '?&amp;'
         . $plugin . '&amp;admin=plugin_main">';
