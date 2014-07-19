@@ -1182,6 +1182,186 @@ EOT;
 }
 
 /**
+ * The delete views.
+ *
+ * @category CMSimple_XH
+ * @package  Realblog
+ * @author   Christoph M. Becker <cmbecker69@gmx.de>
+ * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
+ * @link     http://3-magi.net/?CMSimple_XH/Realblog_XH
+ */
+class Realblog_DeleteView
+{
+    /**
+     * The title of the page.
+     *
+     * @var string
+     */
+    private $_title;
+
+    /**
+     * The topics (articles).
+     *
+     * @var array
+     */
+    private $_articles;
+
+    /**
+     * Initializes a new instance.
+     *
+     * @return void
+     *
+     * @global string The title of the page.
+     * @global array  The localization of the plugins.
+     */
+    public function __construct()
+    {
+        global $title, $plugin_tx;
+
+        $title = $this->_title = $plugin_tx['realblog']['tooltip_deleteall'];
+        $this->_articles = Realblog_getPgParameter('realblogtopics');
+    }
+
+    /**
+     * Renders the view.
+     *
+     * @return string (X)HTML.
+     */
+    public function render()
+    {
+        if (count($this->_articles) > 0) {
+            $html = $this->_renderConfirmation();
+        } else {
+            $html = $this->_renderNoSelectionInfo();
+        }
+        return $html;
+    }
+
+    /**
+     * Renders the delete confirmation.
+     *
+     * @return string (X)HTML.
+     *
+     * @global string The script name.
+     * @global array  The localization of the plugins.
+     */
+    private function _renderConfirmation()
+    {
+        global $sn, $plugin_tx;
+
+        $o = '<h1>Realblog &ndash; ' . $this->_title . '</h1>';
+        $o .= '<form name="confirm" method="post" action="' . $sn
+            . '?&amp;realblog&amp;admin=plugin_main">'
+            . $this->_renderHiddenFields();
+        $o .= '<table width="100%">';
+        $o .= '<tr><td class="reablog_confirm_info" align="center">'
+            . $plugin_tx['realblog']['confirm_deleteall']
+            . '</td></tr><tr><td>&nbsp;</td></tr>';
+        $o .= '<tr><td class="reablog_confirm_button" align="center">'
+            . $this->_renderConfirmationButtons()
+            . '</td></tr>';
+        $o .= '</table></form>';
+        return $o;
+    }
+
+    /**
+     * Renders the hidden fields.
+     *
+     * @return string (X)HTML.
+     *
+     * @global string The number of the current page.
+     */
+    private function _renderHiddenFields()
+    {
+        global $page;
+
+        $html = '';
+        foreach ($this->_articles as $value) {
+            $html .= $this->_renderHiddenField('realblogtopics[]', $value);
+        }
+        $html .= $this->_renderHiddenField('page', $page)
+            . $this->_renderHiddenField('do', 'delselected');
+        return $html;
+    }
+
+    /**
+     * Renders a hidden field.
+     *
+     * @param string $name  A field name.
+     * @param string $value A field value.
+     *
+     * @return string (X)HTML.
+     */
+    private function _renderHiddenField($name, $value)
+    {
+        return tag(
+            'input type="hidden" name="' . $name . '" value="' . $value . '"'
+        );
+    }
+
+    /**
+     * Renders the confirmation buttons
+     *
+     * @return string (X)HTML.
+     *
+     * @global string The script name.
+     * @global array  The localization of the plugins.
+     * @global string The number of the current page.
+     */
+    private function _renderConfirmationButtons()
+    {
+        global $sn, $plugin_tx, $page;
+
+        $html = tag(
+            'input type="submit" name="submit" value="'
+            . $plugin_tx['realblog']['btn_delete'] . '"'
+        );
+        $html .= '&nbsp;&nbsp;';
+        $url = $sn . '?&amp;realblog&amp;admin=plugin_main&amp;action=plugin_text'
+            . '&amp;page=' . $page;
+        $html .= tag(
+            'input type="button" name="cancel" value="'
+            . $plugin_tx['realblog']['btn_cancel'] . '" onclick="'
+            . 'location.href=&quot;' . $url . '&quot;"'
+        );
+        return $html;
+    }
+
+    /**
+     * Renders the no selection information.
+     *
+     * @return string (X)HTML.
+     *
+     * @global string The script name.
+     * @global array  The localization of the plugins.
+     * @global string The number of the current page.
+     */
+    private function _renderNoSelectionInfo()
+    {
+        global $sn, $plugin_tx, $page;
+
+        $o = '<h1>Realblog &ndash; ' . $this->_title . '</h1>';
+        $o .= '<form name="confirm" method="post" action="' . $sn
+            . '?&amp;realblog&amp;admin=plugin_main&amp;action=plugin_text">';
+        $o .= '<table width="100%">';
+        $o .= '<tr><td class="reablog_confirm_info" align="center">'
+            . $plugin_tx['realblog']['nothing_selected']
+            . '</td></tr>';
+        $o .= '<tr><td class="reablog_confirm_button" align="center">'
+            . tag(
+                'input type="button" name="cancel" value="'
+                . $plugin_tx['realblog']['btn_ok'] . '" onclick=\''
+                . 'location.href="' . $sn . '?&amp;' . 'realblog'
+                . '&amp;admin=plugin_main&amp;action=plugin_text'
+                . '&amp;page=' . $page . '"\''
+            )
+            . '</td></tr>';
+        $o .= '</table></form>';
+        return $o;
+    }
+}
+
+/**
  * The change status views.
  *
  * @category CMSimple_XH

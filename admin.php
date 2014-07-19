@@ -239,70 +239,8 @@ if (isset($realblog) && $realblog == 'true') {
         if ($action === 'plugin_text' || $action=== 'edit') {
             // delete the selected realblog items
             if (isset($batchdelete_x)) {
-                $title = $plugin_tx[$plugin]['tooltip_deleteall'];
-                $info = $plugin_tx[$plugin]['confirm_deleteall'];
-
-                if (count($realblogtopics) > 0) {
-                    // Confirm batch delete of the selected realblog topics
-                    // FIXME: append to $o ?
-                    $o = '<h1>Realblog &ndash; ' . $title . '</h1>';
-                    $o .= '<div>&nbsp;</div>';
-                    $o .= '<form name="confirm" method="post" action="' . $sn
-                        . '?&amp;' . $plugin . '&amp;admin=plugin_main">';
-                    $o .= '<table width="100%"><tbody>';
-
-                    foreach ($realblogtopics as $value => $key) {
-                        $o.= tag(
-                            'input type="hidden" name="realblogtopics[]" value="'
-                            . $key . '"'
-                        );
-                    }
-
-                    $o .= tag(
-                        'input type="hidden" name="page" value="' . $page . '"'
-                    );
-                    $o .= tag('input type="hidden" name="do" value="delselected"');
-                    $o .= '<tr><td class="reablog_confirm_info" align="center">'
-                        . $info . '</td></tr><tr><td>&nbsp;</td></tr>';
-                    $o .= '<tr><td class="reablog_confirm_button" align="center">'
-                        . tag(
-                            'input type="submit" name="submit" value="'
-                            . $plugin_tx[$plugin]['btn_delete'] . '"'
-                        )
-                        . '&nbsp;&nbsp;'
-                        . tag(
-                            'input type="button" name="cancel" value="&nbsp;'
-                            . $plugin_tx[$plugin]['btn_cancel'] . '" onclick=\''
-                            . 'location.href="' . $sn . '?&amp;' . $plugin
-                            . '&amp;admin=plugin_main&amp;action=plugin_text'
-                            . '&amp;page=' . $page . '"\''
-                        )
-                        . '</td></tr>';
-                    $o .= '</tbody></table></form>';
-                    $o .= '<div>&nbsp;</div>';
-                } else {
-                    // Nothing selected
-                    $info = $plugin_tx[$plugin]['nothing_selected'];
-                    $o = '<h1>Realblog &ndash; ' . $title . '</h1>';
-                    $o .= '<div>&nbsp;</div>';
-                    $o .= '<form name="confirm" method="post" action="' . $sn
-                        . '?&amp;' . $plugin
-                        . '&amp;admin=plugin_main&amp;action=plugin_text">';
-                    $o .= '<table width="100%"><tbody>';
-                    $o .= '<tr><td class="reablog_confirm_info" align="center">'
-                        . $info . '</td></tr><tr><td>&nbsp;</td></tr>';
-                    $o .= '<tr><td class="reablog_confirm_button" align="center">'
-                        . tag(
-                            'input type="button" name="cancel" value="'
-                            . $plugin_tx[$plugin]['btn_ok'] . '" onclick=\''
-                            . 'location.href="' . $sn . '?&amp;' . $plugin
-                            . '&amp;admin=plugin_main&amp;action=plugin_text'
-                            . '&amp;page=' . $page . '"\''
-                        )
-                        . '</td></tr>';
-                    $o .= '</tbody></table></form>';
-                    $o .= '<div>&nbsp;</div>';
-                }
+                $temp = new Realblog_DeleteView();
+                $o = $temp->render(); // FIXME: append to $o ?
                 return $o; // FIXME: why return $o?
             }
 
