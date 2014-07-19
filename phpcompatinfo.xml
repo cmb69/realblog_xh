@@ -11,8 +11,9 @@
 
     <excludes>
         <exclude id="realblog">
-            <!--<directory name="test"/>
-            <directory name="vendor"/>-->
+            <directory name="test"/>
+            <directory name="vendor"/>
+            <file name="classes/flatfile.php"/>
         </exclude>
     </excludes>
 </phpcompatinfo>
