@@ -657,34 +657,128 @@ class Realblog_ArticlesAdminView
     }
 }
 
+/**
+ * The article administration views.
+ *
+ * @category CMSimple_XH
+ * @package  Realblog
+ * @author   Christoph M. Becker <cmbecker69@gmx.de>
+ * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
+ * @link     http://3-magi.net/?CMSimple_XH/Realblog_XH
+ */
 class Realblog_ArticleAdminView
 {
+    /**
+     * The id of the current article.
+     *
+     * @var string
+     */
     private $_realblogId;
 
+    /**
+     * The date of the article.
+     *
+     * @var FIXME
+     */
     private $_realblogDate;
 
+    /**
+     * The publishing date of the article.
+     *
+     * @var FIXME
+     */
     private $_startDate;
 
+    /**
+     * The archiving date of the article.
+     *
+     * @var FIXME
+     */
     private $_endDate;
 
+    /**
+     * The status of the article.
+     *
+     * @var int
+     */
     private $_status;
 
+    /**
+     * FIXME
+     *
+     * @var FIXME
+     */
     private $_commentsChecked;
 
+    /**
+     * FIXME
+     *
+     * @var FIXME
+     */
     private $_rssChecked;
 
+    /**
+     * The title of the article.
+     *
+     * @var string
+     */
     private $_realBlogTitle;
 
+    /**
+     * The headline (teaser) of the article.
+     *
+     * @var string
+     */
     private $_headline;
 
+    /**
+     * The story (body) of the article.
+     *
+     * @var string
+     */
     private $_story;
 
+    /**
+     * The requested action.
+     *
+     * @var string
+     */
     private $_action;
 
+    /**
+     * FIXME
+     *
+     * @var FIXME
+     */
     private $_retPage;
 
+    /**
+     * The paths of the plugin image folder.
+     *
+     * @var string
+     */
     private $_imageFolder;
 
+    /**
+     * Initializes a new instance.
+     *
+     * @param string $realblogId      The id of the current article.
+     * @param FIXME  $realblogDate    The date of the article.
+     * @param FIXME  $startDate       The publishing date of the article.
+     * @param FIXME  $endDate         The archiving date of the article.
+     * @param int    $status          The status of the article.
+     * @param FIXME  $commentsChecked FIXME.
+     * @param FIXME  $rssChecked      FIXME.
+     * @param string $realBlogTitle   The title of the article.
+     * @param string $headline        The teaser of the article.
+     * @param string $story           The body of the article.
+     * @param string $action          The requested action.
+     * @param FIXME  $ret_page        FIXME.
+     *
+     * @return void
+     *
+     * @global array The paths of system files and folders.
+     */
     public function __construct(
         $realblogId, $realblogDate, $startDate, $endDate, $status,
         $commentsChecked, $rssChecked, $realBlogTitle, $headline, $story,
@@ -707,9 +801,18 @@ class Realblog_ArticleAdminView
         $this->_imageFolder = $pth['folder']['plugins'] . 'realblog/images/';
     }
 
+    /**
+     * Renders the article administration view.
+     *
+     * @return string (X)HTML.
+     *
+     * @global string The script name.
+     * @global array  The localization of the plugins.
+     * @global string The title of the page.     *
+     */
     public function render()
     {
-        global $sn, $plugin_cf, $plugin_tx, $title, $cal_format;
+        global $sn, $plugin_tx, $title;
 
         $t = '<div class="realblog_fields_block"><h1>Realblog &ndash; '
             . $title . '</h1>';
@@ -736,9 +839,11 @@ class Realblog_ArticleAdminView
         $t .= $this->_renderCalendarScript();
 
         $t .= '<td width="30%"><span class="realblog_date_label">'
-            . $plugin_tx['realblog']['status_label']
-            . '</span></td><td width="5%">&nbsp;</td><td width="30%">&nbsp;</span></td>'
-            . '<td width="5%">&nbsp;</td><td width="30%"><span>&nbsp;</span></td></tr>'
+            . $plugin_tx['realblog']['status_label'] . '</span></td>'
+            . '<td width="5%">&nbsp;</td>'
+            . '<td width="30%">&nbsp;</span></td>'
+            . '<td width="5%">&nbsp;</td>'
+            . '<td width="30%"><span>&nbsp;</span></td></tr>'
             . '<tr>';
         $t .= '<td width="30%" valign="top">' . $this->_renderStatusSelect()
             . '</td>';
@@ -749,14 +854,19 @@ class Realblog_ArticleAdminView
         $t .= '</table>';
         $t .= '<h4>' . $plugin_tx['realblog']['title_label'] . '</h4>';
         $t .= tag(
-                'input type="text" value="' . @$this->_realblogTitle
-                . '" name="realblog_title" size="70"'
-            );
+            'input type="text" value="' . @$this->_realblogTitle
+            . '" name="realblog_title" size="70"'
+        );
         $t .= $this->_renderHeadline() . $this->_renderStory()
             . $this->_renderSubmitButtons() . '</form>' . '</div>';
         return $t;
     }
 
+    /**
+     * Renders the hidden fields.
+     *
+     * @return string (X)HTML.
+     */
     private function _renderHiddenFields()
     {
         $html = '';
@@ -771,6 +881,14 @@ class Realblog_ArticleAdminView
         return $html;
     }
 
+    /**
+     * Renders a hidden field.
+     *
+     * @param string $name  A field name.
+     * @param string $value A field value.
+     *
+     * @return string (X)HTML.
+     */
     private function _renderHiddenField($name, $value)
     {
         return tag(
@@ -778,23 +896,40 @@ class Realblog_ArticleAdminView
         );
     }
 
+    /**
+     * Renders the date input.
+     *
+     * @return string (X)HTML.
+     *
+     * @global array The localization of the plugins.
+     */
     private function _renderDate()
     {
         global $plugin_tx;
 
-        return tag(
-                'input type="text" name="realblog_date" id="date1" value="'
-                . $this->_realblogDate . '" size="10" maxlength="10" onfocus="this.blur()"'
-            )
-            . '&nbsp;'
+        $html = tag(
+            'input type="text" name="realblog_date" id="date1" value="'
+            . $this->_realblogDate . '" size="10" maxlength="10"'
+            . ' onfocus="this.blur()"'
+        );
+        $html .= '&nbsp;'
             . tag(
                 'img src="' . $this->_imageFolder . 'calendar.png"'
                 . ' style="margin-left:1px;margin-bottom:-3px;"'
                 . ' id="trig_date1" title="'
                 . $plugin_tx['realblog']['tooltip_datepicker'] . '" alt=""'
             );
+        return $html;
     }
 
+    /**
+     * Renders the publishing date input.
+     *
+     * @return string (X)HTML.
+     *
+     * @global array The configuration of the plugins.
+     * @global array The localization of the plugins.
+     */
     private function _renderPublishingDate()
     {
         global $plugin_cf, $plugin_tx;
@@ -818,6 +953,14 @@ class Realblog_ArticleAdminView
         return $html;
     }
 
+    /**
+     * Renders the archiving date input.
+     *
+     * @return string (X)HTML.
+     *
+     * @global array The configuration of the plugins.
+     * @global array The localization of the plugins.
+     */
     private function _renderArchiveDate()
     {
         global $plugin_cf, $plugin_tx;
@@ -841,6 +984,13 @@ class Realblog_ArticleAdminView
         return $html;
     }
 
+    /**
+     * Renders the calendar script.
+     *
+     * @return string (X)HTML.
+     *
+     * @return array The configuration of the plugins.
+     */
     private function _renderCalendarScript()
     {
         global $plugin_cf;
@@ -857,6 +1007,15 @@ class Realblog_ArticleAdminView
         return $html;
     }
 
+    /**
+     * Renders a calendar initialization.
+     *
+     * @param string $num A date input number.
+     *
+     * @return string (X)HTML.
+     *
+     * @global string The date format.
+     */
     private function _renderCalendarInitialization($num)
     {
         global $cal_format;
@@ -877,6 +1036,13 @@ Calendar.setup({
 EOT;
     }
 
+    /**
+     * Renders the status select.
+     *
+     * @return string (X)HTML.
+     *
+     * @global array The localization of the plugins.
+     */
     private function _renderStatusSelect()
     {
         global $plugin_tx;
@@ -891,28 +1057,53 @@ EOT;
         return $html;
     }
 
+    /**
+     * Renders the comments checkbox.
+     *
+     * @return string (X)HTML.
+     *
+     * @global array The localization of the plugins.
+     */
     private function _renderCommentsCheckbox()
     {
         global $plugin_tx;
 
         return '<label>'
             . tag(
-                'input type="checkbox" name="realblog_comments" ' . @$this->_commentsChecked
+                'input type="checkbox" name="realblog_comments" '
+                . @$this->_commentsChecked
             )
-            . '&nbsp;<span>' . $plugin_tx['realblog']['comment_label'] . '</span></label>';
+            . '&nbsp;<span>' . $plugin_tx['realblog']['comment_label']
+            . '</span></label>';
     }
 
+    /**
+     * Renders the feed checkbox.
+     *
+     * @return string (X)HTML.
+     *
+     * @global array The localization of the plugins.
+     */
     private function _renderFeedCheckbox()
     {
         global $plugin_tx;
 
         return '<label>'
             . tag(
-                'input type="checkbox" name="realblog_rssfeed" ' . @$this->_rssChecked
+                'input type="checkbox" name="realblog_rssfeed" '
+                . @$this->_rssChecked
             )
-            . '&nbsp;<span>' . $plugin_tx['realblog']['rss_label'] . '</span></label>';
+            . '&nbsp;<span>' . $plugin_tx['realblog']['rss_label']
+            . '</span></label>';
     }
 
+    /**
+     * Renders the headline (teaser).
+     *
+     * @return string (X)HTML.
+     *
+     * @global array The localization of the plugins.
+     */
     private function _renderHeadline()
     {
         global $plugin_tx;
@@ -925,6 +1116,13 @@ EOT;
             . XH_hsc(@$this->_headline) . '</textarea>';
     }
 
+    /**
+     * Renders the story (body).
+     *
+     * @return string (X)HTML.
+     *
+     * @global array The localization of the plugins.
+     */
     private function _renderStory()
     {
         global $plugin_tx;
@@ -937,6 +1135,14 @@ EOT;
              . XH_hsc(@$this->_story) . '</textarea>';
     }
 
+    /**
+     * Renders the submit buttons.
+     *
+     * @return string (X)HTML.
+     *
+     * @global string The script name.
+     * @global array  The localization of the plugins.
+     */
     private function _renderSubmitButtons()
     {
         global $sn, $plugin_tx;
@@ -949,13 +1155,19 @@ EOT;
             . '&nbsp;&nbsp;&nbsp;'
             . tag(
                 'input type="button" name="cancel" value="'
-                . $plugin_tx['realblog']['btn_cancel'] . '" onclick=\'location.href="'
-                . $sn . '?&amp;' . 'realblog' . '&amp;admin=plugin_main'
-                . '&amp;action=plugin_text&page=' . $this->_retPage . '"\''
+                . $plugin_tx['realblog']['btn_cancel'] . '" onclick="'
+                . 'location.href=&quot;' . $sn . '?&amp;realblog&amp;'
+                . 'admin=plugin_main&amp;action=plugin_text&page='
+                . $this->_retPage . '&quot;"'
             )
             . '</p>';
     }
 
+    /**
+     * Gets the current verb.
+     *
+     * @return string
+     */
     private function _getVerb()
     {
         switch ($this->_action) {
@@ -966,6 +1178,211 @@ EOT;
         case 'delete_realblog':
             return 'delete';
         }
+    }
+}
+
+/**
+ * The change status views.
+ *
+ * @category CMSimple_XH
+ * @package  Realblog
+ * @author   Christoph M. Becker <cmbecker69@gmx.de>
+ * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
+ * @link     http://3-magi.net/?CMSimple_XH/Realblog_XH
+ */
+class Realblog_ChangeStatusView
+{
+    /**
+     * The title of the page.
+     *
+     * @var string
+     */
+    private $_title;
+
+    /**
+     * The topics (articles).
+     *
+     * @var array
+     */
+    private $_topics;
+
+    /**
+     * Initializes a new instance.
+     *
+     * @return void
+     *
+     * @global string The title of the page.
+     * @global array  The localization of the plugins.
+     */
+    public function __construct()
+    {
+        global $title, $plugin_tx;
+
+        $title = $this->_title = $plugin_tx['realblog']['tooltip_changestatus'];
+        $this->_topics = Realblog_getPgParameter('realblogtopics');
+    }
+
+    /**
+     * Renders the change status view.
+     *
+     * @return string (X)HTML.
+     */
+    public function render()
+    {
+        if (count($this->_topics) > 0) {
+            $o = $this->_renderConfirmation();
+        } else {
+            $o = $this->_renderNoSelectionInfo();
+        }
+        return $o;
+    }
+
+    /**
+     * Renders the change status confirmation.
+     *
+     * @return string (X)HTML.
+     *
+     * @global string The script name.
+     * @global array  The localization of the plugins.
+     */
+    private function _renderConfirmation()
+    {
+        global $sn, $plugin_tx;
+
+        $html = '<h1>Realblog &ndash; ' . $this->_title . '</h1>'
+            . '<form name="confirm" method="post" action="' . $sn
+            . '?&amp;' . 'realblog' . '&amp;admin=plugin_main">'
+            . $this->_renderHiddenFields()
+            . '<table width="100%">'
+            . '<tr><td width="100%" align="center">'
+            . $this->_renderStatusSelect() . '</td></tr>'
+            . '<tr><td class="realblog_confirm_info" align="center">'
+            . $plugin_tx['realblog']['confirm_changestatus']
+            . '</td></tr>'
+            . '<tr><td>&nbsp;</td></tr>'
+            . '<tr><td class="realblog_confirm_button" align="center">'
+            . $this->_renderConfirmationButtons() . '</td></tr>'
+            . '</table></form>';
+        return $html;
+    }
+
+    /**
+     * Renders the hidden fields.
+     *
+     * @return string (X)HTML.
+     *
+     * @global string The number of the current page.
+     */
+    private function _renderHiddenFields()
+    {
+        global $page;
+
+        $html = '';
+        foreach ($this->_topics as $value) {
+            $html .= $this->_renderHiddenField('realblogtopics[]', $value);
+        }
+        $html .= $this->_renderHiddenField('page', $page)
+            . $this->_renderHiddenField('do', 'batchchangestatus');
+        return $html;
+    }
+
+    /**
+     * Renders a hidden field.
+     *
+     * @param string $name  A field name.
+     * @param string $value A field value.
+     *
+     * @return string (X)HTML.
+     */
+    private function _renderHiddenField($name, $value)
+    {
+        return tag(
+            'input type="hidden" name="' . $name . '" value="' . $value . '"'
+        );
+    }
+
+    /**
+     * Renders the status select.
+     *
+     * @return string (X)HTML.
+     *
+     * @global array The localization of the plugins.
+     */
+    private function _renderStatusSelect()
+    {
+        global $plugin_tx;
+
+        $states = array(
+            'entry_status', 'readyforpublishing', 'published', 'archived'
+        );
+        $html = '<select name="new_realblogstatus">';
+        foreach ($states as $i => $state) {
+            $value = $i == 0 ? '' : $i - 1;
+            $html .= '<option value="' . $value . '" ' . @$this->_status[$i] . '>'
+                . $plugin_tx['realblog'][$state] . '</option>';
+        }
+        $html .= '</select>';
+        return $html;
+    }
+
+    /**
+     * Renders the confirmation buttons
+     *
+     * @return string (X)HTML.
+     *
+     * @global string The script name.
+     * @global array  The localization of the plugins.
+     * @global string The number of the current page.
+     */
+    private function _renderConfirmationButtons()
+    {
+        global $sn, $plugin_tx, $page;
+
+        $html = tag(
+            'input type="submit" name="submit" value="'
+            . $plugin_tx['realblog']['btn_ok'] . '"'
+        );
+        $html .= '&nbsp;&nbsp;';
+        $url = $sn . '?&amp;realblog&amp;admin=plugin_main&amp;action=plugin_text'
+            . '&amp;page=' . $page;
+        $html .= tag(
+            'input type="button" name="cancel" value="'
+            . $plugin_tx['realblog']['btn_cancel'] . '" onclick="'
+            . 'location.href=&quot;' . $url . '&quot;"'
+        );
+        return $html;
+    }
+
+    /**
+     * Renders the no selection information.
+     *
+     * @return string (X)HTML.
+     *
+     * @global string The script name.
+     * @global array  The localization of the plugins.
+     * @global string The number of the current page.
+     */
+    private function _renderNoSelectionInfo()
+    {
+        global $sn, $plugin_tx, $page;
+
+        return '<h1>Realblog &ndash; ' . $this->_title . '</h1>'
+            . '<form name="confirm" method="post" action="' . $sn
+            . '?&amp;' . 'realblog' . '&amp;admin=plugin_main">'
+            . '<table width="100%">'
+            . '<tr><td class="realblog_confirm_info" align="center">'
+            . $plugin_tx['realblog']['nothing_selected']
+            . '</td></tr>'
+            . '<tr><td class="realblog_confirm_button" align="center">'
+            . tag(
+                'input type="button" name="cancel" value="'
+                . $plugin_tx['realblog']['btn_ok'] . '" onclick=\''
+                . 'location.href="' . $sn . '?&amp;' . 'realblog'
+                . '&amp;admin=plugin_main&amp;action=plugin_text'
+                . '&amp;page=' . $page . '"\''
+            )
+            . '</td></tr>'
+            . '</table></form>';
     }
 }
 

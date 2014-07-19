@@ -310,81 +310,8 @@ if (isset($realblog) && $realblog == 'true') {
             if (isset($changestatus_x)) {
                 // session_register ('page'); // removed in php 5.4
                 $_SESSION['page'] = $page;
-                $title = $plugin_tx[$plugin]['tooltip_changestatus'];
-                $info = $plugin_tx[$plugin]['confirm_changestatus'];
-
-                if (count($realblogtopics) > 0) {
-                    // Confirm batch status change of the selected realblog topics
-                    $o = '<h1>Realblog &ndash; ' . $title . '</h1>';
-                    $o .= '<div>&nbsp;</div>';
-                    $o .= '<form name="confirm" method="post" action="' . $sn
-                        . '?&amp;' . $plugin . '&amp;admin=plugin_main">';
-                    $o .= '<table width="100%"><tbody>';
-
-                    foreach ($realblogtopics as $value => $key) {
-                        $o.= tag(
-                            'input type="hidden" name="realblogtopics[]" value="'
-                            . $key . '"'
-                        );
-                    }
-
-                    $o .= tag(
-                        'input type="hidden" name="page" value="' . $page . '"'
-                    );
-                    $o .= tag(
-                        'input type="hidden" name="do" value="batchchangestatus"'
-                    );
-                    $o .= '<td width="100%" align="center">'
-                        . '<select name="new_realblogstatus">'
-                        . '<option value="">'
-                        . $plugin_tx[$plugin]['entry_status'] . '</option>'
-                        . '<option value="0">'
-                        . $plugin_tx[$plugin]['readyforpublishing'] . '</option>'
-                        . '<option value="1">'
-                        . $plugin_tx[$plugin]['published'] . '</option>'
-                        . '<option value="2">'
-                        . $plugin_tx[$plugin]['archived'] . '</option>'
-                        . '</select></td>';
-                    $o .= '<tr><td class="realblog_confirm_info" align="center">'
-                        . $info . '</td></tr><tr><td>&nbsp;</td></tr>';
-                    $o .= '<tr><td class="realblog_confirm_button" align="center">'
-                        . tag(
-                            'input type="submit" name="submit" value="'
-                            . $plugin_tx[$plugin]['btn_ok'] . '"'
-                        )
-                        . '&nbsp;&nbsp;'
-                        . tag(
-                            'input type="button" name="cancel" value="'
-                            . $plugin_tx[$plugin]['btn_cancel'] . '" onclick=\''
-                            . 'location.href="' . $sn . '?&amp;' . $plugin
-                            . '&amp;admin=plugin_main&amp;action=plugin_text'
-                            . '&amp;page=' . $page . '"\''
-                        )
-                        . '</td></tr>';
-                    $o .= '</tbody></table></form>';
-                    $o .= '<div>&nbsp;</div>';
-                } else {
-                    // Nothing selected
-                    $info = $plugin_tx[$plugin]['nothing_selected'];
-                    $o = '<h1>Realblog &ndash; ' . $title . '</h1>';
-                    $o .= '<div>&nbsp;</div>';
-                    $o .= '<form name="confirm" method="post" action="' . $sn
-                        . '?&amp;' . $plugin . '&amp;admin=plugin_main">';
-                    $o .= '<table width="100%"><tbody>';
-                    $o .= '<tr><td class="realblog_confirm_info" align="center">'
-                        . $info . '</td></tr><tr><td>&nbsp;</td></tr>';
-                    $o .= '<tr><td class="realblog_confirm_button" align="center">'
-                        . tag(
-                            'input type="button" name="cancel" value="'
-                            . $plugin_tx[$plugin]['btn_ok'] . '" onclick=\''
-                            . 'location.href="' . $sn . '?&amp;' . $plugin
-                            . '&amp;admin=plugin_main&amp;action=plugin_text'
-                            . '&amp;page=' . $page . '"\''
-                        )
-                        . '</td></tr>';
-                    $o .= '</tbody></table></form>';
-                    $o .= '<div>&nbsp;</div>';
-                }
+                $temp = new Realblog_ChangeStatusView();
+                $o .= $temp->render();
                 return $o; // FIXME: why return $o?
             }
 
