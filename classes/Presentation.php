@@ -19,6 +19,404 @@
  */
 
 /**
+ * The articles views.
+ *
+ * @category CMSimple_XH
+ * @package  Realblog
+ * @author   Christoph M. Becker <cmbecker69@gmx.de>
+ * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
+ * @link     http://3-magi.net/?CMSimple_XH/Realblog_XH
+ */
+class Realblog_ArticlesView
+{
+    /**
+     * The articles.
+     *
+     * @var array
+     */
+    private $_articles;
+
+    /**
+     * The categories.
+     *
+     * @var string
+     */
+    private $_categories;
+
+    /**
+     * The realblog action.
+     *
+     * @var FIXME
+     */
+    private $_action;
+
+    /**
+     * Initializes a new instance.
+     *
+     * @param array  $articles   An array of articles.
+     * @param string $categories FIXME
+     * @param FIXME  $action     FIXME
+     *
+     * @return void
+     */
+    public function __construct($articles, $categories, $action)
+    {
+        $this->_articles = $articles;
+        $this->_categories = (string) $categories;
+        $this->_action = $action;
+    }
+
+    /**
+     * Renders the view.
+     *
+     * @return string (X)HTML.
+     *
+     * @global array  The configuration of the plugins.
+     * @global string The number of the current page.
+     */
+    public function render()
+    {
+        global $plugin_cf, $page;
+
+        $articleCount = count($this->_articles);
+        $pageCount = (int) ceil(
+            $articleCount / $plugin_cf['realblog']['entries_per_page']
+        );
+
+        if ($page > $pageCount) {
+            $page=1;
+        }
+        if ($page == "" || $page <= 0 || $page == 1) {
+            $start_index = 0;
+            $page = 1;
+        } else {
+            $start_index = ($page - 1) *
+                $plugin_cf['realblog']['entries_per_page'];
+        }
+        $end_index = $page * $plugin_cf['realblog']['entries_per_page'] - 1;
+
+        $mysearch = '';
+
+        if ($articleCount > 0 && $pageCount > 1) {
+            if ($pageCount > $page) {
+                $next = $page + 1;
+                $back = ($page > 1) ? $next - 2 : "1";
+            } else {
+                $next = $pageCount;
+                $back = $pageCount - 1;
+            }
+        }
+
+        $t = "\n" . '<div class="realblog_show_box">' . "\n";
+        $t .= $this->_renderPagination(
+            'top', $page, $pageCount, @$back, @$next, $mysearch
+        );
+        $t .= "\n" . '<div style="clear:both;"></div>';
+        $t .= $this->_renderArticlePreviews($start_index, $end_index);
+        $t .= $this->_renderPagination(
+            'bottom', $page, $pageCount, @$back, @$next, $mysearch
+        );
+        $t .= '</div>';
+        return $t;
+    }
+
+    /**
+     * Renders the article previews.
+     *
+     * @param int $start The first article to render.
+     * @param int $end   The last article to render.
+     *
+     * @return string (X)HTML.
+     */
+    private function _renderArticlePreviews($start, $end)
+    {
+        $articleCount = count($this->_articles);
+        $t = '<div id="realblog_entries_preview">';
+        for ($i = $start; $i <= $end; $i++) {
+            if ($i > $articleCount - 1) {
+                $t .= '';
+            } else {
+                $field = $this->_articles[$i];
+                $t .= $this->_renderArticlePreview($field);
+            }
+        }
+        $t .= '<div style="clear: both;"></div>' . '</div>';
+        return $t;
+    }
+
+    /**
+     * Renders an article preview.
+     *
+     * @param array $field An article record.
+     *
+     * @return string (X)HTML.
+     *
+     * @global array The configuration of the plugins.
+     */
+    private function _renderArticlePreview($field)
+    {
+        global $plugin_cf;
+
+        $t = '';
+        if (strstr($field[REALBLOG_HEADLINE], '|' . $this->_categories . '|')
+            || strstr($field[REALBLOG_STORY], '|' . $this->_categories . '|')
+            || $this->_categories == 'all'
+            || ($this->_action == "search"
+            && strstr($field[REALBLOG_H], '|' . $this->_categories . '|'))
+        ) {
+            if ($plugin_cf['realblog']['teaser_multicolumns'] == 'true') {
+                $t .= '<div class="realblog_single_entry_preview">'
+                    . '<div class="realblog_single_entry_preview_in">';
+            }
+            $t .= $this->_renderArticleHeading($field);
+            $t .= $this->_renderArticleDate($field);
+            $t .= "\n" . '<div class="realblog_show_story">' . "\n";
+            $t .= evaluate_scripting($field[REALBLOG_HEADLINE]);
+            if ($plugin_cf['realblog']['show_read_more_link'] == 'true'
+                && $field[REALBLOG_STORY] != ''
+            ) {
+                $t .= $this->_renderArticleFooter($field);
+            }
+            $t .= '<div style="clear: both;"></div>' . "\n"
+                . '</div>' . "\n";
+            if ($plugin_cf['realblog']['teaser_multicolumns'] == 'true') {
+                $t .= '</div>' . "\n" . '</div>' . "\n";
+            }
+        }
+        return $t;
+    }
+
+    /**
+     * Renders an article heading.
+     *
+     * @param array $field An article record.
+     *
+     * @return string (X)HTML.
+     *
+     * @global bool   Whether we're in admin mode.
+     * @global string The script name.
+     * @global string The URL of the current page.
+     * @global array  The localization of the plugins.
+     * @global string The current page number.
+     */
+    private function _renderArticleHeading($field)
+    {
+        global $adm, $sn, $su, $plugin_tx, $page;
+
+        $t = '<h4>';
+        if ($field[REALBLOG_STORY] != '' || $adm) {
+            $t .= '<a href="' . $sn . '?' . $su . '&amp;'
+                . str_replace(' ', '_', $field[REALBLOG_TITLE])
+                . '&amp;realblogaction=view&amp;realblogID='
+                . $field[REALBLOG_ID] . '&amp;page=' . $page
+                . '" title="' . $plugin_tx['realblog']["tooltip_view"]
+                . '">';
+        }
+        $t .= $field[REALBLOG_TITLE];
+        if ($field[REALBLOG_STORY] != '' || $adm) {
+            $t .= '</a>';
+        }
+        $t .= '</h4>' . "\n";
+        return $t;
+    }
+
+    /**
+     * Renders an article date.
+     *
+     * @param array $field An article record.
+     *
+     * @return string (X)HTML.
+     *
+     * @global array The localization of the plugins.
+     */
+    private function _renderArticleDate($field)
+    {
+        global $plugin_tx;
+
+        return '<div class="realblog_show_date">'
+            . strftime(
+                $plugin_tx['realblog']['display_date_format'],
+                $field[REALBLOG_DATE]
+            )
+            . '</div>';
+    }
+
+    /**
+     * Renders an article footer.
+     *
+     * @param array $field An article record.
+     *
+     * @return string (X)HTML.
+     *
+     * @global string The script name.
+     * @global string The URL of the current page.
+     * @global array  The configuration of the plugins.
+     * @global array  The localization of the plugins.
+     * @global string The number of the current page.
+     */
+    private function _renderArticleFooter($field)
+    {
+        global $sn, $su, $plugin_cf, $plugin_tx, $page;
+
+        $t = '<div class="realblog_entry_footer">';
+
+        if (function_exists('comments_nr')
+            && $plugin_cf['realblog']['comments_function'] == 'true'
+            && $field[REALBLOG_COMMENTS]
+        ) {
+            $t .= $this->_renderCommentCount($field);
+        }
+        $t .= '<p class="realblog_read_more">'
+            . '<a href="' . $sn . '?' . $su . '&amp;'
+            . str_replace(' ', '_', $field[REALBLOG_TITLE])
+            . '&amp;realblogaction=view&amp;realblogID='
+            . $field[REALBLOG_ID] . '&amp;page=' . $page
+            . '" title="' . $plugin_tx['realblog']["tooltip_view"]
+            . '">' . $plugin_tx['realblog']['read_more']
+            . '</a></p>' . '</div>';
+        return $t;
+    }
+
+    /**
+     * Renders a comment count.
+     *
+     * @param array $field An article record.
+     *
+     * @return string (X)HTML.
+     */
+    private function _renderCommentCount($field)
+    {
+        $commentsId = 'comments' . $field[REALBLOG_ID];
+        return '<p class="realblog_number_of_comments">'
+            . comments_nr($commentsId) . '</p>';
+    }
+
+    /**
+     * Renders the pagination.
+     *
+     * @param string $place        A place to render ('top' or 'bottom').
+     * @param string $page         A page number.
+     * @param int    $pageCount    A page count.
+     * @param int    $back         The number of the previous page.
+     * @param int    $next         The number of the next page.
+     * @param string $searchClause A search clause.
+     *
+     * @return string (X)HTML.
+     */
+    private function _renderPagination(
+        $place, $page, $pageCount, $back, $next, $searchClause
+    ) {
+        $articleCount = count($this->_articles);
+        $t = '';
+        if ($articleCount > 0 && $pageCount > 1) {
+            $t .= $this->_renderPageLinks($pageCount, $searchClause);
+        }
+        if ($this->_wantsNumberOfArticles($place)) {
+            $t .= $this->_renderNumberOfArticles();
+        }
+        if ($articleCount > 0 && $pageCount > 1) {
+            $t .= $this->_renderPageOfPages(
+                $page, $pageCount, @$back, @$next, $searchClause
+            );
+        }
+        return $t;
+    }
+
+    /**
+     * Whether the number of articles ought to be displayed.
+     *
+     * @param string $place A place ('top' or 'bottom').
+     *
+     * @return bool
+     *
+     * @global array The configuration of the plugins.
+     */
+    private function _wantsNumberOfArticles($place)
+    {
+        global $plugin_cf;
+
+        return !isset($_REQUEST['realblog_story'])
+            && $plugin_cf['realblog']['show_numberof_entries_' . $place] == 'true';
+    }
+
+    /**
+     * Renders the page links.
+     *
+     * @param int    $pageCount    A page count.
+     * @param string $searchClause A search clause.
+     *
+     * @return string (X)HTML.
+     *
+     * @global string The script name.
+     * @global string The URL of the current page.
+     * @global array  The localization of the plugins.
+     */
+    private function _renderPageLinks($pageCount, $searchClause)
+    {
+        global $sn, $su, $plugin_tx;
+
+        $t = '<div class="realblog_table_paging">';
+        for ($i = 1; $i <= $pageCount; $i++) {
+            $separator = ($i < $pageCount) ? ' ' : '';
+            $t .= '<a href="' . $sn . '?' . $su . '&amp;page=' . $i
+                . $searchClause . '" title="'
+                . $plugin_tx['realblog']['page_label'] . ' ' . $i . '">['
+                . $i . ']</a>' . $separator;
+        }
+        $t .= '</div>';
+        return $t;
+    }
+
+    /**
+     * Renders the page of pages.
+     *
+     * @param string $page         The number of the current page.
+     * @param int    $pageCount    A page count.
+     * @param int    $back         The number of the previous page.
+     * @param int    $next         The number of the next page.
+     * @param string $searchClause A search clause.
+     *
+     * @return string (X)HTML.
+     *
+     * @global string The script name.
+     * @global string The URL of the current page.
+     * @global array  The localization of the plugins.
+     */
+    private function _renderPageOfPages(
+        $page, $pageCount, $back, $next, $searchClause
+    ) {
+        global $sn, $su, $plugin_tx;
+
+        return '<div class="realblog_page_info">'
+            . $plugin_tx['realblog']['page_label'] . ' : '
+            . '<a href="' . $sn . '?' . $su . '&amp;page=' . @$back
+            . $searchClause . '" title="'
+            . $plugin_tx['realblog']['tooltip_previous'] . '">'
+            . '&#9664;</a>&nbsp;' . $page . ' / ' . $pageCount
+            . '&nbsp;' . '<a href="' . $sn . '?' . $su
+            . '&amp;page=' . @$next . $searchClause . '" title="'
+            . $plugin_tx['realblog']['tooltip_next'] . '">'
+            . '&#9654;</a></div>';
+    }
+
+    /**
+     * Renders the number of articles.
+     *
+     * @return string (X)HTML.
+     *
+     * @global array The localization of the plugins.
+     */
+    private function _renderNumberOfArticles()
+    {
+        global $plugin_tx;
+
+        return '<div class="realblog_db_info">'
+            . $plugin_tx['realblog']['record_count'] . ' : '
+            . count($this->_articles) . '</div>';
+    }
+}
+
+/**
  * The article views.
  *
  * @category CMSimple_XH
@@ -1266,6 +1664,7 @@ abstract class Realblog_ConfirmationView
             . $this->renderHiddenField('do', $do);
         return $html;
     }
+
     /**
      * Renders a hidden field.
      *
