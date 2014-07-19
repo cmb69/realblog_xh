@@ -657,4 +657,316 @@ class Realblog_ArticlesAdminView
     }
 }
 
+class Realblog_ArticleAdminView
+{
+    private $_realblogId;
+
+    private $_realblogDate;
+
+    private $_startDate;
+
+    private $_endDate;
+
+    private $_status;
+
+    private $_commentsChecked;
+
+    private $_rssChecked;
+
+    private $_realBlogTitle;
+
+    private $_headline;
+
+    private $_story;
+
+    private $_action;
+
+    private $_retPage;
+
+    private $_imageFolder;
+
+    public function __construct(
+        $realblogId, $realblogDate, $startDate, $endDate, $status,
+        $commentsChecked, $rssChecked, $realBlogTitle, $headline, $story,
+        $action, $ret_page
+    ) {
+        global $pth;
+
+        $this->_realblogId = $realblogId;
+        $this->_realblogDate = $realblogDate;
+        $this->_startDate = $startDate;
+        $this->_endDate = $endDate;
+        $this->_status = $status;
+        $this->_commentsChecked = $commentsChecked;
+        $this->_rssChecked = $rssChecked;
+        $this->_realblogTitle = $realBlogTitle;
+        $this->_headline = $headline;
+        $this->_story = $story;
+        $this->_action = $action;
+        $this->_retPage = $ret_page;
+        $this->_imageFolder = $pth['folder']['plugins'] . 'realblog/images/';
+    }
+
+    public function render()
+    {
+        global $sn, $plugin_cf, $plugin_tx, $title, $cal_format;
+
+        $t = '<div class="realblog_fields_block"><h1>Realblog &ndash; '
+            . $title . '</h1>';
+        $t .= '<form name="realblog" method="post" action="' . $sn . '?&amp;'
+            . 'realblog' . '&amp;admin=plugin_main">'
+            . $this->_renderHiddenFields();
+        $t .= '<table width="100%">';
+        $t .= '<tr><td width="30%"><span class="realblog_date_label">'
+            . $plugin_tx['realblog']['date_label'] . '</span></td>'
+            . '<td width="5%">&nbsp;</td><td width="30%">'
+            . '<span class="realblog_date_label">'
+            . $plugin_tx['realblog']['startdate_label'] . '</span></td>'
+            . '<td width="5%">&nbsp;</td><td width="30%">'
+            . '<span class="realblog_date_label">'
+            . $plugin_tx['realblog']['enddate_label'] . '</span></td></tr><tr>';
+        $t .= '<td width="30%" valign="top">'
+            . $this->_renderDate()
+            . '</td><td width="5%">&nbsp;</td>';
+        $t .= '<td width="30%" valign="top">' . $this->_renderPublishingDate();
+        $t .= '</td><td width="5%">&nbsp;</td>';
+        $t .= '<td width="30%" valign="top">' . $this->_renderArchiveDate()
+            . '</td></tr><tr>';
+
+        $t .= $this->_renderCalendarScript();
+
+        $t .= '<td width="30%"><span class="realblog_date_label">'
+            . $plugin_tx['realblog']['status_label']
+            . '</span></td><td width="5%">&nbsp;</td><td width="30%">&nbsp;</span></td>'
+            . '<td width="5%">&nbsp;</td><td width="30%"><span>&nbsp;</span></td></tr>'
+            . '<tr>';
+        $t .= '<td width="30%" valign="top">' . $this->_renderStatusSelect()
+            . '</td>';
+        $t .= '<td width="5%">&nbsp;</td><td width="30%" valign="top">'
+            . $this->_renderCommentsCheckbox() . '</td>';
+        $t .= '<td width="5%">&nbsp;</td><td width="30%" valign="top">'
+            . $this->_renderFeedCheckbox() . '</td></tr>';
+        $t .= '</table>';
+        $t .= '<h4>' . $plugin_tx['realblog']['title_label'] . '</h4>';
+        $t .= tag(
+                'input type="text" value="' . @$this->_realblogTitle
+                . '" name="realblog_title" size="70"'
+            );
+        $t .= $this->_renderHeadline() . $this->_renderStory()
+            . $this->_renderSubmitButtons() . '</form>' . '</div>';
+        return $t;
+    }
+
+    private function _renderHiddenFields()
+    {
+        $html = '';
+        $fields = array(
+            'page' => $this->_retPage,
+            'realblog_id' => $this->_realblogId,
+            'do' => $this->_getVerb()
+        );
+        foreach ($fields as $name => $value) {
+            $html .= $this->_renderHiddenField($name, $value);
+        }
+        return $html;
+    }
+
+    private function _renderHiddenField($name, $value)
+    {
+        return tag(
+            'input type="hidden" name="' . $name . '" value="' . $value . '"'
+        );
+    }
+
+    private function _renderDate()
+    {
+        global $plugin_tx;
+
+        return tag(
+                'input type="text" name="realblog_date" id="date1" value="'
+                . $this->_realblogDate . '" size="10" maxlength="10" onfocus="this.blur()"'
+            )
+            . '&nbsp;'
+            . tag(
+                'img src="' . $this->_imageFolder . 'calendar.png"'
+                . ' style="margin-left:1px;margin-bottom:-3px;"'
+                . ' id="trig_date1" title="'
+                . $plugin_tx['realblog']['tooltip_datepicker'] . '" alt=""'
+            );
+    }
+
+    private function _renderPublishingDate()
+    {
+        global $plugin_cf, $plugin_tx;
+
+        if ($plugin_cf['realblog']['auto_publish'] == 'true') {
+            $html = tag(
+                'input type="text" name="realblog_startdate" id="date2"'
+                . ' value="' . $this->_startDate . '" size="10" maxlength="10"'
+                . ' onfocus="this.blur()"'
+            );
+            $html .= '&nbsp;'
+                . tag(
+                    'img src="' . $this->_imageFolder . 'calendar.png"'
+                    . ' style="margin-left:1px;margin-bottom:-3px;"'
+                    . ' id="trig_date2" title="'
+                    . $plugin_tx['realblog']['tooltip_datepicker'] . '" alt=""'
+                );
+        } else {
+            $html = $plugin_tx['realblog']['startdate_hint'];
+        }
+        return $html;
+    }
+
+    private function _renderArchiveDate()
+    {
+        global $plugin_cf, $plugin_tx;
+
+        if ($plugin_cf['realblog']['auto_archive'] == 'true') {
+            $html = tag(
+                'input type="text" name="realblog_enddate" id="date3"'
+                . ' value="' . $this->_endDate . '" size="10" maxlength="10"'
+                . ' onfocus="this.blur()"'
+            );
+            $html .= '&nbsp;'
+                . tag(
+                    'img src="' . $this->_imageFolder . 'calendar.png"'
+                    . ' style="margin-left:1px;margin-bottom:-3px;"'
+                    . ' id="trig_date3" title="'
+                    . $plugin_tx['realblog']['tooltip_datepicker'] . '" alt=""'
+                );
+        } else {
+            $html = $plugin_tx['realblog']['enddate_hint'];
+        }
+        return $html;
+    }
+
+    private function _renderCalendarScript()
+    {
+        global $plugin_cf;
+
+        $html = '<script type="text/javascript">/* <![CDATA[ */'
+            . $this->_renderCalendarInitialization(1);
+        if ($plugin_cf['realblog']['auto_publish'] == 'true') {
+            $html .= $this->_renderCalendarInitialization(2);
+        }
+        if ($plugin_cf['realblog']['auto_archive'] == 'true') {
+            $html .= $this->_renderCalendarInitialization(3);
+        }
+        $html .= '/* ]]> */</script>';
+        return $html;
+    }
+
+    private function _renderCalendarInitialization($num)
+    {
+        global $cal_format;
+
+        return <<<EOT
+Calendar.setup({
+    inputField: "date$num",
+    ifFormat: "$cal_format",
+    button: "trig_date$num",
+    align: "Br",
+    singleClick: true,
+    firstDay: 1,
+    weekNumbers: false,
+    electric: false,
+    showsTime: false,
+    timeFormat: "24"
+});
+EOT;
+    }
+
+    private function _renderStatusSelect()
+    {
+        global $plugin_tx;
+
+        $states = array('readyforpublishing', 'published', 'archived', 'backuped');
+        $html = '<select name="realblog_status">';
+        foreach ($states as $i => $state) {
+            $html .= '<option value="' . $i . '" ' . @$this->_status[$i] . '>'
+                . $plugin_tx['realblog'][$state] . '</option>';
+        }
+        $html .= '</select>';
+        return $html;
+    }
+
+    private function _renderCommentsCheckbox()
+    {
+        global $plugin_tx;
+
+        return '<label>'
+            . tag(
+                'input type="checkbox" name="realblog_comments" ' . @$this->_commentsChecked
+            )
+            . '&nbsp;<span>' . $plugin_tx['realblog']['comment_label'] . '</span></label>';
+    }
+
+    private function _renderFeedCheckbox()
+    {
+        global $plugin_tx;
+
+        return '<label>'
+            . tag(
+                'input type="checkbox" name="realblog_rssfeed" ' . @$this->_rssChecked
+            )
+            . '&nbsp;<span>' . $plugin_tx['realblog']['rss_label'] . '</span></label>';
+    }
+
+    private function _renderHeadline()
+    {
+        global $plugin_tx;
+
+        return '<h4>' . $plugin_tx['realblog']['headline_label'] . '</h4>'
+            . '<p><b>Script for copy &amp; paste:</b></p>'
+            . '{{{PLUGIN:rbCat(\'|the_category|\');}}}'
+            . '<textarea class="realblog_headline_field" name="realblog_headline"'
+            . ' id="realblog_headline" rows="6" cols="60">'
+            . XH_hsc(@$this->_headline) . '</textarea>';
+    }
+
+    private function _renderStory()
+    {
+        global $plugin_tx;
+
+        return '<h4>' . $plugin_tx['realblog']['story_label'] . '</h4>'
+            . '<p><b>Script for copy &amp; paste:</b></p>'
+            . '{{{PLUGIN:CommentsMembersOnly();}}}'
+            . '<textarea class="realblog_story_field"'
+             . ' name="realblog_story" id="realblog_story" rows="30" cols="80">'
+             . XH_hsc(@$this->_story) . '</textarea>';
+    }
+
+    private function _renderSubmitButtons()
+    {
+        global $sn, $plugin_tx;
+
+        return '<p style="text-align: center">'
+            . tag(
+                'input type="submit" name="save" value="'
+                . $plugin_tx['realblog']['btn_' . $this->_getVerb()] . '"'
+            )
+            . '&nbsp;&nbsp;&nbsp;'
+            . tag(
+                'input type="button" name="cancel" value="'
+                . $plugin_tx['realblog']['btn_cancel'] . '" onclick=\'location.href="'
+                . $sn . '?&amp;' . 'realblog' . '&amp;admin=plugin_main'
+                . '&amp;action=plugin_text&page=' . $this->_retPage . '"\''
+            )
+            . '</p>';
+    }
+
+    private function _getVerb()
+    {
+        switch ($this->_action) {
+        case 'add_realblog':
+            return 'add';
+        case 'modify_realblog':
+            return 'modify';
+        case 'delete_realblog':
+            return 'delete';
+        }
+    }
+}
+
 ?>
