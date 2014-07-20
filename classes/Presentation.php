@@ -51,19 +51,28 @@ class Realblog_ArticlesView
     private $_action;
 
     /**
+     * The number of articles per page.
+     *
+     * @var int
+     */
+    private $_articlesPerPage;
+
+    /**
      * Initializes a new instance.
      *
-     * @param array  $articles   An array of articles.
-     * @param string $categories FIXME
-     * @param FIXME  $action     FIXME
+     * @param array  $articles        An array of articles.
+     * @param string $categories      FIXME
+     * @param FIXME  $action          FIXME
+     * @param int    $articlesPerPage The number of articles per page.
      *
      * @return void
      */
-    public function __construct($articles, $categories, $action)
+    public function __construct($articles, $categories, $action, $articlesPerPage)
     {
         $this->_articles = $articles;
         $this->_categories = (string) $categories;
         $this->_action = $action;
+        $this->_articlesPerPage = (int) $articlesPerPage;
     }
 
     /**
@@ -79,13 +88,7 @@ class Realblog_ArticlesView
         global $plugin_cf, $page;
 
         $articleCount = count($this->_articles);
-        if ($plugin_cf['realblog']['entries_per_page']) {
-            $pageCount = (int) ceil(
-                $articleCount / $plugin_cf['realblog']['entries_per_page']
-            );
-        } else {
-            $pageCount = 1;
-        }
+        $pageCount = (int) ceil($articleCount / $this->_articlesPerPage);
 
         if ($page > $pageCount) {
             $page=1;
@@ -94,10 +97,9 @@ class Realblog_ArticlesView
             $start_index = 0;
             $page = 1;
         } else {
-            $start_index = ($page - 1) *
-                $plugin_cf['realblog']['entries_per_page'];
+            $start_index = ($page - 1) * $this->_articlesPerPage;
         }
-        $end_index = $page * $plugin_cf['realblog']['entries_per_page'] - 1;
+        $end_index = min($page * $this->_articlesPerPage - 1, $articleCount);
 
         $mysearch = '';
 

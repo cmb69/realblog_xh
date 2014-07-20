@@ -221,7 +221,7 @@ function Realblog_blog($options = null, $realBlogCat = 'all')
         }
 
         if ($realblogaction == "search") {
-            $plugin_cf['realblog']['entries_per_page'] = '0';
+            $articlesPerPage = PHP_INT_MAX;
             //$compClause=serialize($compClause);
             if (isset($compClause)) {
                 $compClause = new AndWhereClause($compRealblogClause, $compClause);
@@ -255,6 +255,7 @@ function Realblog_blog($options = null, $realBlogCat = 'all')
 
             $t .= Realblog_renderSearchResults('blog', $db_search_records);
         } else {
+            $articlesPerPage = $plugin_cf['realblog']['entries_per_page'];
             if (empty($compClause)) {
                 $compClause = $compRealblogClause;
             }
@@ -282,7 +283,7 @@ function Realblog_blog($options = null, $realBlogCat = 'all')
         $records = $catRecords;
 
         $temp = new Realblog_ArticlesView(
-            $records, $realBlogCat, $realblogaction
+            $records, $realBlogCat, $realblogaction, $articlesPerPage
         );
         $t .= $temp->render();
     } else {
