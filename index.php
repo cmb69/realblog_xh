@@ -200,27 +200,6 @@ function Realblog_blog($options = null, $realBlogCat = 'all')
     // set general variables for the plugin
     $plugin_images_folder = $pth['folder']['plugins'] . $plugin . '/images/';
 
-    // Show / hide search block
-    $hjs .= "\n" . <<<EOT
-<script type="text/javascript">
-function realblog_showSearch() {
-    if (document.getElementById("searchblock").style.display == "none") {
-        var mytitle = "{$plugin_tx[$plugin]['tooltip_hidesearch']}";
-        document.getElementById("btn_img").title = mytitle;
-        document.getElementById("btn_img").src =
-                "{$plugin_images_folder}btn_collapse.gif";
-        document.getElementById("searchblock").style.display = "block";
-    } else {
-        var mytitle = "{$plugin_tx[$plugin]['tooltip_showsearch']}";
-        document.getElementById("btn_img").title = mytitle;
-        document.getElementById("btn_img").src
-                = "{$plugin_images_folder}btn_expand.gif";
-        document.getElementById("searchblock").style.display = "none";
-    }
-}
-</script>'
-EOT;
-
     $db = Realblog_connect();
 
     if ($realblogaction != 'view') {
@@ -229,9 +208,9 @@ EOT;
         );
 
         $cal_format = Realblog_getCalendarDateFormat();
-
         if ($includesearch == 'true') {
-            $t = Realblog_renderSearchForm($realblogYear);
+            $temp = new Realblog_SearchFormView($realblogYear);
+            $t = $temp->render();
         }
 
         if ($realblogaction == 'search') {
@@ -312,7 +291,7 @@ EOT;
         $temp = new Realblog_ArticlesView(
             $records, $realBlogCat, $realblogaction
         );
-        $t = $temp->render();
+        $t .= $temp->render();
     } else {
         // Display the realblogitem for the given ID
         $record = $db->selectUnique('realblog.txt', REALBLOG_ID, $realblogID);
@@ -401,27 +380,6 @@ function Realblog_archive($options = null)
 
     $plugin_images_folder = $pth['folder']['plugins'] . $plugin . '/images/';
 
-    // Show / hide search block
-    $hjs .= "\n" . <<<EOT
-<script type="text/javascript">
-function realblog_showSearch() {
-    if (document.getElementById("searchblock").style.display == "none") {
-        var mytitle = "{$plugin_tx[$plugin]['tooltip_hidesearch']}";
-        document.getElementById("btn_img").title = mytitle;
-        document.getElementById("btn_img").src =
-                "{$plugin_images_folder}btn_collapse.gif";
-        document.getElementById("searchblock").style.display = "block";
-    } else {
-        var mytitle = "{$plugin_tx[$plugin]['tooltip_showsearch']}";
-        document.getElementById("btn_img").title = mytitle;
-        document.getElementById("btn_img").src =
-                "{$plugin_images_folder}btn_expand.gif";
-        document.getElementById("searchblock").style.display = "none";
-    }
-}
-</script>
-EOT;
-
     $db = Realblog_connect();
 
     if ($realblogaction != 'view') {
@@ -432,7 +390,8 @@ EOT;
         $cal_format = Realblog_getCalendarDateFormat();
 
         if ($includesearch == 'true') {
-            $t = Realblog_renderSearchForm($realblogYear);
+            $temp = new Realblog_SearchFormView($realblogYear);
+            $t = $temp->render();
         }
 
         if ($realblogaction == 'search') {
