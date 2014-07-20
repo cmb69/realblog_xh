@@ -1136,10 +1136,11 @@ EOT;
     {
         global $plugin_tx;
 
+        $checked = ($which == 'or') ? ' checked="checked"' : '';
         return '<label>'
             . tag(
                 'input type="radio" name="operator_2"'
-                . ' value="' . strtoupper($which) . '"'
+                . ' value="' . strtoupper($which) . '"' . $checked
             )
             . '&nbsp;' . $plugin_tx['realblog']["search_$which"] . '</label>';
     }
