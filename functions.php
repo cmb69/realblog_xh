@@ -270,7 +270,7 @@ function Realblog_renderSearchResults($what, $count)
     }
     $words = implode(',', $words);
     return '<p>' . $plugin_tx['realblog']['search_searched_for'] . ' <b>"'
-        . $words . '"</b></p>'
+        . XH_hsc($words) . '"</b></p>'
         . '<p>' . $plugin_tx['realblog']['search_result'] . '<b> '
         . $count . '</b></p>'
         . '<p><a href="' . $sn . '?' . $su . '"><b>'
