@@ -166,7 +166,7 @@ if (!$adm) {
  */
 function Realblog_blog($options = null, $realBlogCat = 'all')
 {
-    global $adm, $pth, $sn, $title, $plugin_tx, $plugin_cf, $u, $s, $c, $sl, $f,
+    global $adm, $pth, $sn, $title, $plugin_tx, $plugin_cf, $u, $h, $s, $c, $sl, $f,
         $tx, $cal_format, $hjs, $realblogID, $commentschecked, $id, $from_page,
         $page, $realblog_page, $su;
 
@@ -299,8 +299,7 @@ function Realblog_blog($options = null, $realBlogCat = 'all')
         if (count($record) > 0) {
             $articleView = new Realblog_ArticleView($realblogID, $record, $page);
             $t = $articleView->render();
-            // FIXME: see cmsimpleforum.com
-            $title .= locator() . ' - ' . $record[REALBLOG_TITLE];
+            $title .= $h[$s] . " \xE2\x80\x93 " . $record[REALBLOG_TITLE];
         }
     }
     // FIXME?
