@@ -142,36 +142,17 @@ if (!$adm) {
  *
  * @return string (X)HTML.
  *
- * @global string Whether we're in admin mode.
- * @global array  The paths of system files and folders.
- * @global string The script name.
- * @global string The contents of the title element.
- * @global array  The localization of the plugins.
- * @global array  The configuration of the plugins.
- * @global array  The URLs of the pages.
+ * @global string The page title.
  * @global int    The current page index.
- * @global array  The contents of the pages.
- * @global string The current language.
- * @global string The current special functionality.
- * @global array  The localization of the core.
- * @global mixed  FIXME
- * @global string The (X)HTML fragment to insert into the head element.
- * @global mixed  FIXME
- * @global mixed  FIXME
- * @global mixed  FIXME
- * @global mixed  FIXME
- * @global mixed  FIXME
- * @global mixed  FIXME
- * @global string The requested page URL.
+ * @global array  The headings of the pages.
+ * @global array  The configuration of the plugins.
+ * @global string The calendar date format.
+ * @global int    The ID of the requested blog article.
+ * @global int    The number of the current blog page.
  */
 function Realblog_blog($options = null, $realBlogCat = 'all')
 {
-    global $adm, $pth, $sn, $title, $plugin_tx, $plugin_cf, $u, $h, $s, $c, $sl, $f,
-        $tx, $cal_format, $hjs, $realblogID, $commentschecked, $id, $from_page,
-        $page, $realblog_page, $su;
-
-    // get plugin name
-    $plugin = basename(dirname(__FILE__), '/');
+    global $title, $s, $h, $plugin_cf, $cal_format, $realblogID, $page;
 
     $includesearch = 'false';
     $arguments = Realblog_getArguments($options);
@@ -197,9 +178,6 @@ function Realblog_blog($options = null, $realBlogCat = 'all')
     $realblogYear = Realblog_getPgParameter('realblogYear');
     $compClause = Realblog_getPgParameter('compClause');
 
-    // set general variables for the plugin
-    $plugin_images_folder = $pth['folder']['plugins'] . $plugin . '/images/';
-
     $db = Realblog_connect();
 
     if ($realblogaction != 'view') {
@@ -222,7 +200,6 @@ function Realblog_blog($options = null, $realBlogCat = 'all')
 
         if ($realblogaction == "search") {
             $articlesPerPage = PHP_INT_MAX;
-            //$compClause=serialize($compClause);
             if (isset($compClause)) {
                 $compClause = new AndWhereClause($compRealblogClause, $compClause);
             } else {
@@ -239,13 +216,11 @@ function Realblog_blog($options = null, $realBlogCat = 'all')
             );
 
             $numberOfSearchResults = $records;
-
             foreach ($numberOfSearchResults as $searchresults) {
                 if (strstr($searchresults[8], '|' . $realBlogCat . '|')) {
                     $numberOfSearchResults[] = '';
                 }
             }
-
             if ($realBlogCat != 'all') {
                 $db_search_records = count($numberOfSearchResults)
                     - count($records);
@@ -272,8 +247,8 @@ function Realblog_blog($options = null, $realBlogCat = 'all')
         }
 
         foreach ($records as $catRecordsTemp) {
-            if (strpos($catRecordsTemp[7], '|' . $realBlogCat . '|')
-                || strpos($catRecordsTemp[8], '|' . $realBlogCat . '|')
+            if (strpos($catRecordsTemp[REALBLOG_HEADLINE], '|' . $realBlogCat . '|')
+                || strpos($catRecordsTemp[REALBLOG_STORY], '|' . $realBlogCat . '|')
                 || $realBlogCat == 'all'
             ) {
                 $catRecords[] = $catRecordsTemp;
@@ -289,24 +264,12 @@ function Realblog_blog($options = null, $realBlogCat = 'all')
     } else {
         // Display the realblogitem for the given ID
         $record = $db->selectUnique('realblog.txt', REALBLOG_ID, $realblogID);
-
-        // Set the return page, based on the caling page
-        if ($from_page == '' || empty($from_page)) {
-            $from_page = 1;
-        }
-        $return_page = ($from_page == $u[$s]) ? $u[$s] : $from_page;
-
         if (count($record) > 0) {
             $articleView = new Realblog_ArticleView($realblogID, $record, $page);
             $t = $articleView->render();
             $title .= $h[$s] . " \xE2\x80\x93 " . $record[REALBLOG_TITLE];
         }
     }
-    // FIXME?
-    $c[$s] = '';
-    // FIXME?
-    unset($realblogaction);
-    unset($compClause);
     return $t;
 }
 
@@ -317,33 +280,14 @@ function Realblog_blog($options = null, $realBlogCat = 'all')
  *
  * @return string (X)HTML.
  *
- * @global string Whether we're in admin mode.
- * @global array  The paths of system files and folders.
- * @global string The script name.
- * @global string The contents of the title element.
- * @global array  The localization of the plugins.
- * @global array  The configuration of the plugins.
- * @global array  The URLs of the pages.
- * @global int    The current page index.
- * @global array  The contents of the pages.
- * @global string The current language.
- * @global string The current special functionality.
- * @global array  The localization of the core.
- * @global mixed  FIXME
- * @global string The (X)HTML fragment to insert into the head element.
- * @global mixed  FIXME
- * @global mixed  FIXME
- * @global mixed  FIXME
- * @global mixed  FIXME
- * @global mixed  FIXME
- * @global string The URL of the requested page.
- * @global mixed  FIXME
+ * @global string The calendar date format.
+ * @global int    The ID of the requested blog article.
+ * @global int    The number of the blog page.
+ * @global int    The requested blog year.
  */
 function Realblog_archive($options = null)
 {
-    global $adm, $pth, $sn, $title, $plugin_tx, $plugin_cf, $u, $s, $c, $sl, $f,
-        $tx, $cal_format, $hjs, $realblogID, $commentschecked, $id, $from_page,
-        $page, $su, $realblogYear;
+    global $cal_format, $realblogID, $page, $realblogYear;
 
     $plugin = basename(dirname(__FILE__), '/');
 
@@ -371,8 +315,6 @@ function Realblog_archive($options = null)
     $realblogYear = Realblog_getPgParameter('realblogYear');
     $compClause = Realblog_getPgParameter('compClause');
 
-    $plugin_images_folder = $pth['folder']['plugins'] . $plugin . '/images/';
-
     $db = Realblog_connect();
 
     if ($realblogaction != 'view') {
@@ -395,7 +337,6 @@ function Realblog_archive($options = null)
         }
 
         if ($realblogaction == 'search') {
-            //$compClause=serialize($compClause);
             if (isset($compClause)) {
                 $compClause = new AndWhereClause($compArchiveClause, $compClause);
             } else {
@@ -428,19 +369,11 @@ function Realblog_archive($options = null)
     } else {
         // Display the realblogitem for the given ID
         $record = $db->selectUnique('realblog.txt', REALBLOG_ID, $realblogID);
-        // Set the return page, based on the caling page
-        if ($from_page == '' || empty($from_page)) {
-            $from_page = 1;
-        }
-        $return_page = ($from_page == $u[$s]) ? $u[$s] : $from_page;
         if (count($record) > 0) {
             $articleView = new Realblog_ArticleView($realblogID, $record, $page);
             $t = $articleView->render();
         }
     }
-    $c[$s]='';
-    unset($realblogaction);
-    unset($compClause);
     return $t;
 }
 
