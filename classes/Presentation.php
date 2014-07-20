@@ -417,6 +417,275 @@ class Realblog_ArticlesView
 }
 
 /**
+ * The archive views.
+ *
+ * @category CMSimple_XH
+ * @package  Realblog
+ * @author   Christoph M. Becker <cmbecker69@gmx.de>
+ * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
+ * @link     http://3-magi.net/?CMSimple_XH/Realblog_XH
+ */
+class Realblog_ArchiveView
+{
+    /**
+     * The articles.
+     *
+     * @var array
+     */
+    private $_articles;
+
+    /**
+     * The action.
+     *
+     * @var string
+     */
+    private $_action;
+
+    /**
+     * The requested year.
+     *
+     * @var int
+     */
+    private $_year;
+
+    /**
+     * Initializes a new instance.
+     *
+     * @param array $articles An array of articles.
+     *
+     * @return void
+     */
+    public function __construct($articles)
+    {
+        $this->_articles = $articles;
+        $this->_action = Realblog_getPgParameter('realblogaction');
+        $this->_year = Realblog_getPgParameter('realblogYear');
+    }
+
+    /**
+     * Renders the view.
+     *
+     * @return string (X)HTML.
+     *
+     * @global array The localization of the plugins.
+     */
+    public function render()
+    {
+        global $plugin_tx;
+
+        $t = '';
+        $filter_total = 0;
+        if ($this->_action != 'search') {
+            $currentYear = date('Y');
+            if (!isset($this->_year) || $this->_year <= 0
+                || $this->_year >= $currentYear || empty($this->_year)
+            ) {
+                $this->_year = $currentYear;
+                $currentMonth = date('n');
+            } else {
+                $currentMonth = 12;
+            }
+            $_SESSION['realblogYear'] = $this->_year;
+            $next = min($this->_year + 1, $currentYear);
+            $back = $this->_year - 1;
+            $t .= $this->_renderPagination($back, $next);
+            $generalrealbloglist = $this->_selectArticlesInPeriod(
+                mktime(0, 0, 0, 1, 1, $this->_year),
+                mktime(0, 0, 0, 1, 1, $this->_year + 1)
+            );
+            $t .= $this->_renderMonthlyArticleLists($currentMonth);
+            if (count($generalrealbloglist) == 0) {
+                $t .= $plugin_tx['realblog']['no_topics'];
+            }
+        } else {
+            if (count($this->_articles) > 0) {
+                $t .= $this->_renderSearchResults();
+            } else {
+                $t .= $plugin_tx['realblog']['no_topics'];
+            }
+        }
+        return $t;
+    }
+
+    /**
+     * Returns the localized month name.
+     *
+     * @param int $month A month.
+     *
+     * @return string
+     *
+     * @global array The localization of the plugins.
+     */
+    private function _getMonthName($month)
+    {
+        global $plugin_tx;
+
+        $monthNames = explode(',', $plugin_tx['realblog']['date_month_replace']);
+        return $monthNames[$month - 1];
+    }
+
+    /**
+     * Selects all articles within a certain period.
+     *
+     * @param int $start A start timestamp.
+     * @param int $end   An end timestamp.
+     *
+     * @return array
+     */
+    private function _selectArticlesInPeriod($start, $end)
+    {
+        $db = Realblog_connect();
+        $whereClause = new AndWhereClause(
+            new SimpleWhereClause(
+                REALBLOG_STATUS, '=', 2, INTEGER_COMPARISON
+            ),
+            new SimpleWhereClause(
+                REALBLOG_DATE, '>=', $start, INTEGER_COMPARISON
+            ),
+            new SimpleWhereClause(
+                REALBLOG_DATE, '<', $end, INTEGER_COMPARISON
+            )
+        );
+        return $db->selectWhere(
+            'realblog.txt', $whereClause, -1,
+            array(
+                new OrderBy(REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON),
+                new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
+            )
+        );
+    }
+
+    /**
+     * Renders the pagination.
+     *
+     * @param int $back The previous year.
+     * @param int $next The next year.
+     *
+     * @return string (X)HTML.
+     *
+     * @global string The script name.
+     * @global string The URL of the current page.
+     * @global array  The localization of the plugins.
+     */
+    private function _renderPagination($back, $next)
+    {
+        global $sn, $su, $plugin_tx;
+
+        $t = '<div class="realblog_table_paging">'
+            . '<a href="' . $sn . '?' . $su . '&amp;realblogYear='
+            . $back . '" title="'
+            . $plugin_tx['realblog']['tooltip_previousyear'] . '">'
+            . '&#9664;</a>&nbsp;&nbsp;';
+        $t .= '<b>' . $plugin_tx['realblog']['archive_year']
+            . $this->_year . '</b>';
+        $t .= '&nbsp;&nbsp;<a href="' . $sn . '?' . $su
+            . '&amp;realblogYear=' . $next . '" title="'
+            . $plugin_tx['realblog']['tooltip_nextyear'] . '">'
+            . '&#9654;</a>';
+        $t .= '</div>';
+        return $t;
+    }
+
+    /**
+     * Renders the monthly article lists.
+     *
+     * @param int $currentMonth The current month.
+     *
+     * @return string (X)HTML.
+     */
+    private function _renderMonthlyArticleLists($currentMonth)
+    {
+        $t = '';
+        for ($month = $currentMonth; $month >= 1; $month--) {
+            $realbloglist = $this->_selectArticlesInPeriod(
+                mktime(0, 0, 0, $month, 1, $this->_year),
+                mktime(0, 0, 0, $month + 1, 1, $this->_year)
+            );
+            $monthName = $this->_getMonthName($month);
+            if (count($realbloglist) > 0) {
+                $t .= '<h4>' . $monthName . ' ' . $this->_year . '</h4>'
+                    . $this->_renderArticleList($realbloglist);
+            }
+        }
+        return $t;
+    }
+
+    /**
+     * Renders an article list.
+     *
+     * @param array $articles An array of articles.
+     *
+     * @return string (X)HTML.
+     *
+     * @global string The script name.
+     * @global string The URL of the current page.
+     * @global array  The localization of the plugins.
+     * @global int    The number of the current page.
+     */
+    private function _renderArticleList($articles)
+    {
+        global $sn, $su, $plugin_tx, $page;
+
+        $t = '<ul class="realblog_archive">';
+        foreach ($articles as $key => $field) {
+            $t .= '<li>'
+                . date(
+                    $plugin_tx['realblog']['date_format'],
+                    $field[REALBLOG_DATE]
+                )
+                . '&nbsp;&nbsp;&nbsp;<a href="' . $sn . '?'
+                . $su . '&amp;'
+                . str_replace(' ', '_', $field[REALBLOG_TITLE])
+                . '&amp;realblogaction=view&amp;realblogID='
+                . $field[REALBLOG_ID] . '&amp;page=' . $page
+                . '" title="' . $plugin_tx['realblog']["tooltip_view"]
+                . '">' . $field[REALBLOG_TITLE] . '</a></li>';
+        }
+        $t .= '</ul>';
+        return $t;
+    }
+
+    /**
+     * Renders the search results.
+     *
+     * @return string (X)HTML.
+     *
+     * @global string The script name.
+     * @global string The URL of the current page.
+     * @global array  The localization of the plugins.
+     * @global int    The number of the current page.
+     */
+    private function _renderSearchResults()
+    {
+        global $sn, $su, $plugin_tx, $page;
+
+        $currentMonth = -1;
+        $t = '';
+        foreach ($this->_articles as $key => $field) {
+            $month = date('n', $field[REALBLOG_DATE]);
+            $year = date('Y', $field[REALBLOG_DATE]);
+            if ($month != $currentMonth) {
+                $t .= '<h4>' . $this->_getMonthName($month) . ' ' . $year . '</h4>';
+                $currentMonth = $month;
+            }
+            $t .= '<p>'
+                . date(
+                    $plugin_tx['realblog']['date_format'],
+                    $field[REALBLOG_DATE]
+                )
+                . '&nbsp;&nbsp;&nbsp;<a href="' . $sn . '?' . $su
+                . '&amp;'
+                . str_replace(' ', '_', $field[REALBLOG_TITLE])
+                . '&amp;realblogaction=view&amp;realblogID='
+                . $field[REALBLOG_ID] . '&amp;page=' . $page
+                . '" title="' . $plugin_tx['realblog']["tooltip_view"]
+                . '">' . $field[REALBLOG_TITLE] . '</a></p>';
+        }
+        return $t;
+    }
+}
+
+/**
  * The article views.
  *
  * @category CMSimple_XH
