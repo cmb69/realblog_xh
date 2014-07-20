@@ -242,4 +242,39 @@ function Realblog_searchClause()
     return $compClause;
 }
 
+/**
+ * Renders the search results.
+ *
+ * @param string $what  Which search results ('blog' or 'archive').
+ * @param string $count The number of hits.
+ *
+ * @return string (X)HTML.
+ *
+ * @global string The script name.
+ * @global string The URL of the current page.
+ * @global array  The localization of the plugins.
+ */
+function Realblog_renderSearchResults($what, $count)
+{
+    global $sn, $su, $plugin_tx;
+
+    $key = ($what == 'archive') ? 'back_to_archive' : 'search_show_all';
+    $title = Realblog_getPgParameter('realblog_title');
+    $story = Realblog_getPgParameter('realblog_story');
+    $words = array();
+    if ($title != '') {
+        $words[] = $title;
+    }
+    if ($story != '') {
+        $words[] = $story;
+    }
+    $words = implode(',', $words);
+    return '<p>' . $plugin_tx['realblog']['search_searched_for'] . ' <b>"'
+        . $words . '"</b></p>'
+        . '<p>' . $plugin_tx['realblog']['search_result'] . '<b> '
+        . $count . '</b></p>'
+        . '<p><a href="' . $sn . '?' . $su . '"><b>'
+        . $plugin_tx['realblog'][$key] . '</b></a></p>';
+}
+
 ?>

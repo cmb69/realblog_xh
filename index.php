@@ -253,14 +253,7 @@ function Realblog_blog($options = null, $realBlogCat = 'all')
                 $db_search_records = count($numberOfSearchResults);
             }
 
-            $t .= '<p>' . $plugin_tx['realblog']['search_searched_for'] . ' <b>"'
-                . $_REQUEST['realblog_story'] . '"</b></p>';
-            $t .= '<p>' . $plugin_tx['realblog']['search_result'] . '<b> '
-                . $db_search_records . '</b></p>';
-            $t .= '<p><a href="'
-                . preg_replace('/\&.*\z/', '', $_SERVER['REQUEST_URI']) . '"><b>'
-                . $plugin_tx['realblog']['search_show_all'] . '</b></a></p>'
-                . tag('br');
+            $t .= Realblog_renderSearchResults('blog', $db_search_records);
         } else {
             if (empty($compClause)) {
                 $compClause = $compRealblogClause;
@@ -416,13 +409,7 @@ function Realblog_archive($options = null)
                 )
             );
             $db_search_records = count($records);
-            $t .= '<p>' . $plugin_tx['realblog']['search_searched_for'] . ' <b>"'
-                . $_REQUEST['realblog_story'] . '"</b></p>';
-            $t .= '<p>' . $plugin_tx['realblog']['search_result'] . '<b> '
-                . $db_search_records . '</b></p>';
-            $t .= '<p><a href="'
-                . preg_replace('/\&.*\z/', '', $_SERVER['REQUEST_URI']) . '"><b>'
-                . $plugin_tx['realblog']['back_to_archive'] . '</b></a></p>';
+            $t .= Realblog_renderSearchResults('archive', $db_search_records);
         } else {
             if (empty($compClause)) {
                 $compClause=$compArchiveClause;
