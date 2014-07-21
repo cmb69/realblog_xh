@@ -15,7 +15,6 @@
  */
 
 require_once './classes/flatfile.php';
-require_once './classes/fields.php';
 require_once './functions.php';
 
 /**
