@@ -738,7 +738,6 @@ function Realblog_connect()
 
     if (!isset($db)) {
         include_once $pth['folder']['plugins'] . 'realblog/classes/flatfile.php';
-        include_once $pth['folder']['plugins'] . 'realblog/classes/fields.php';
         $db = new Flatfile();
         $db->datadir = $pth['folder']['content'] . 'realblog/';
     }

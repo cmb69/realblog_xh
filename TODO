@@ -1,7 +1,10 @@
-* original used str_ireplace()!
 * keep an eye on compat.php
 * CSRF protection
 * simplify CSS (shall we call for themes?)
-* inline include/fields.php
-* replace images (need license and want PNG)
 * replace mktime() with strtotime()
+* store categories in DB
+* meltemi PM
+* replace $adm with XH_ADM
+* remove folder rss/
+* add CHANGELOG and README
+* add labels for filter checkboxes
