@@ -1766,10 +1766,11 @@ class Realblog_ArticlesAdminView
         global $sn, $plugin_tx;
 
         $url = $sn . '?&realblog&admin=plugin_main&action=plugin_text';
-        $html = '<form method="post" action="' . XH_hsc($url) . '">';
+        $html = '<form id="realblog_filter" method="post" action="'
+            . XH_hsc($url) . '">';
         $states = array('readyforpublishing', 'published', 'archived');
         foreach ($states as $i => $state) {
-            $html .= $this->_renderFilterCheckbox($i + 1, $state) . ' ';
+            $html .= $this->_renderFilterCheckbox($i + 1, $state);
         }
         $html .= '<button>' . $plugin_tx['realblog']['btn_filter'] . '</button>'
             . '</form>';

@@ -324,3 +324,10 @@ padding: 2px 5px;
 .realblog_license {
     text-align: justify;
 }
+
+#realblog_filter {
+    margin: 1em 0;
+}
+#realblog_filter label {
+    margin-right: 1em;
+}
