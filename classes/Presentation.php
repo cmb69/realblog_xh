@@ -526,7 +526,7 @@ class Realblog_ArchiveView
     {
         global $plugin_tx;
 
-        $monthNames = explode(',', $plugin_tx['realblog']['date_month_replace']);
+        $monthNames = explode(',', $plugin_tx['realblog']['date_months']);
         return $monthNames[$month - 1];
     }
 
