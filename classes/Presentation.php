@@ -199,7 +199,6 @@ class Realblog_ArticlesView
      *
      * @return string (X)HTML.
      *
-     * @global bool   Whether we're in admin mode.
      * @global string The script name.
      * @global string The URL of the current page.
      * @global array  The localization of the plugins.
@@ -207,10 +206,10 @@ class Realblog_ArticlesView
      */
     private function _renderArticleHeading($field)
     {
-        global $adm, $sn, $su, $plugin_tx, $page;
+        global $sn, $su, $plugin_tx, $page;
 
         $t = '<h4>';
-        if ($field[REALBLOG_STORY] != '' || $adm) {
+        if ($field[REALBLOG_STORY] != '' || XH_ADM) {
             $t .= '<a href="' . $sn . '?' . $su . '&amp;'
                 . str_replace(' ', '_', $field[REALBLOG_TITLE])
                 . '&amp;realblogaction=view&amp;realblogID='
@@ -219,7 +218,7 @@ class Realblog_ArticlesView
                 . '">';
         }
         $t .= $field[REALBLOG_TITLE];
-        if ($field[REALBLOG_STORY] != '' || $adm) {
+        if ($field[REALBLOG_STORY] != '' || XH_ADM) {
             $t .= '</a>';
         }
         $t .= '</h4>' . "\n";
@@ -770,16 +769,12 @@ class Realblog_ArticleView
      * Renders the links.
      *
      * @return string (X)HTML.
-     *
-     * @global bool Whether we're in admin mode.
      */
     private function _renderLinks()
     {
-        global $adm;
-
         $html = '<div class="realblog_buttons">'
             . $this->_renderOverviewLink();
-        if ($adm) {
+        if (XH_ADM) {
             if ($this->_wantsComments()) {
                 $html .= $this->_renderEditCommentsLink();
             }

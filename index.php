@@ -107,14 +107,14 @@ function Realblog_getPgParameter($name)
 */
 
 $rss_path='./';
-if (!is_writeable($rss_path . 'realblog_rss_feed.xml') && $adm) {
+if (!is_writeable($rss_path . 'realblog_rss_feed.xml') && XH_ADM) {
     $o.= '<div class="cmsimplecore_warning" style="text-align: center;">'
         . '<b>RealBlog:</b> RSS file "./realblog_rss_feed.xml" not writable.'
         . '</div>';
 }
 
 // FIXME: move to admin.php
-if (!$adm) {
+if (!XH_ADM) {
     Realblog_exportRssFeed();
     $plugin = basename(dirname(__FILE__), "/");
 

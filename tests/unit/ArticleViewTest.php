@@ -54,11 +54,10 @@ class ArticleViewTest extends PHPUnit_Framework_TestCase
      * @global string The URL of the current page.
      * @global array  The configuration of the plugins.
      * @global array  The localization of the plugins.
-     * @global bool   Whether we're in admin mode.
      */
     public function setUp()
     {
-        global $sn, $su, $plugin_cf, $plugin_tx, $adm;
+        global $sn, $su, $plugin_cf, $plugin_tx;
 
         $sn = '/xh/';
         $su = 'Blog';
@@ -71,7 +70,7 @@ class ArticleViewTest extends PHPUnit_Framework_TestCase
             'display_date_format' => '%Y-%m-%d',
             'entry_edit' => 'Edit entry'
         );
-        $adm = false;
+        $this->_defineConstant('XH_ADM', false);
         $article = array(
             '1', '1405548000', '1405548000', '1405548000', '1', '',
             'Heading', '<p>Teaser</p>', '<p>Article</p>', '', ''
@@ -124,14 +123,10 @@ class ArticleViewTest extends PHPUnit_Framework_TestCase
      * Tests that the edit entry link is rendered in admin mode.
      *
      * @return void
-     *
-     * @global bool Whether we're in admin mode.
      */
     public function testRendersEditEntryLinkInAdminMode()
     {
-        global $adm;
-
-        $adm = true;
+        $this->_defineConstant('XH_ADM', true);
         $this->_assertRenders(
             array(
                 'tag' => 'a',
@@ -148,14 +143,10 @@ class ArticleViewTest extends PHPUnit_Framework_TestCase
      * Tests that the edit comments link is rendered.
      *
      * @return void
-     *
-     * @global bool Whether we're in admin mode.
      */
     public function testRendersEditCommentsLink()
     {
-        global $adm;
-
-        $adm = true;
+        $this->_defineConstant('XH_ADM', true);
         $this->_assertRenders(
             array(
                 'tag' => 'a',
@@ -228,6 +219,23 @@ class ArticleViewTest extends PHPUnit_Framework_TestCase
     private function _assertRenders($matcher)
     {
         $this->assertTag($matcher, $this->_subject->render());
+    }
+
+    /**
+     * (Re)defines a constant.
+     *
+     * @param string $name  A name.
+     * @param string $value A value.
+     *
+     * @return void
+     */
+    private function _defineConstant($name, $value)
+    {
+        if (!defined($name)) {
+            define($name, $value);
+        } else {
+            runkit_constant_redefine($name, $value);
+        }
     }
 }
 
