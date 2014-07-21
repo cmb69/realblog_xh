@@ -147,7 +147,7 @@ if (!$adm) {
 /**
  * Displays the realblog's topic with status = published.
  *
- * @param array  $options     FIXME
+ * @param array  $showSearch  Whether to show the searchform.
  * @param string $realBlogCat FIXME
  *
  * @return string (X)HTML.
@@ -160,27 +160,9 @@ if (!$adm) {
  * @global int    The ID of the requested blog article.
  * @global int    The number of the current blog page.
  */
-function Realblog_blog($options = null, $realBlogCat = 'all')
+function Realblog_blog($showSearch = false, $realBlogCat = 'all')
 {
     global $title, $s, $h, $plugin_cf, $cal_format, $realblogID, $page;
-
-    $includesearch = 'false';
-    $arguments = Realblog_getArguments($options);
-    if (isset($arguments['showsearch'])) {
-        $argument = strtolower($arguments['showsearch']);
-        if (in_array($argument, array('true', 'false', '1', '0'))) {
-            switch ($argument) {
-            case '0':
-                $includesearch = 'false';
-                break;
-            case '1':
-                $includesearch = 'true';
-                break;
-            default:
-                $includesearch = $argument;
-            }
-        }
-    }
 
     $realblogID = Realblog_getPgParameter('realblogID');
     $page = Realblog_getPgParameter('page');
@@ -189,16 +171,16 @@ function Realblog_blog($options = null, $realBlogCat = 'all')
     $compClause = Realblog_getPgParameter('compClause');
 
     $db = Realblog_connect();
-
+    $t = '';
     if ($realblogaction != 'view') {
         $compClause = new SimpleWhereClause(
             REALBLOG_STATUS, '=', 1, INTEGER_COMPARISON
         );
 
         $cal_format = Realblog_getCalendarDateFormat();
-        if ($includesearch == 'true') {
+        if ($showSearch) {
             $temp = new Realblog_SearchFormView($realblogYear);
-            $t = $temp->render();
+            $t .= $temp->render();
         }
 
         if ($realblogaction == 'search') {
@@ -276,7 +258,7 @@ function Realblog_blog($options = null, $realBlogCat = 'all')
         $record = $db->selectUnique('realblog.txt', REALBLOG_ID, $realblogID);
         if (count($record) > 0) {
             $articleView = new Realblog_ArticleView($realblogID, $record, $page);
-            $t = $articleView->render();
+            $t .= $articleView->render();
             $title .= $h[$s] . " \xE2\x80\x93 " . $record[REALBLOG_TITLE];
         }
     }
@@ -286,7 +268,7 @@ function Realblog_blog($options = null, $realBlogCat = 'all')
 /**
  * Displays the archived realblog topics.
  *
- * @param mixed $options FIXME
+ * @param mixed $showSearch Whether to show the search form.
  *
  * @return string (X)HTML.
  *
@@ -295,29 +277,11 @@ function Realblog_blog($options = null, $realBlogCat = 'all')
  * @global int    The number of the blog page.
  * @global int    The requested blog year.
  */
-function Realblog_archive($options = null)
+function Realblog_archive($showSearch = false)
 {
     global $cal_format, $realblogID, $page, $realblogYear;
 
     $plugin = basename(dirname(__FILE__), '/');
-
-    $includesearch = 'false';
-    $arguments = Realblog_getArguments($options);
-    if (isset($arguments['showsearch'])) {
-        $argument = strtolower($arguments['showsearch']);
-        if (in_array($argument, array('true', 'false', '1', '0'))) {
-            switch ($argument) {
-            case '0':
-                $includesearch = 'false';
-                break;
-            case '1':
-                $includesearch = 'true';
-                break;
-            default:
-                $includesearch = $argument;
-            }
-        }
-    }
 
     $realblogID = Realblog_getPgParameter('realblogID');
     $page = Realblog_getPgParameter('page');
@@ -326,7 +290,7 @@ function Realblog_archive($options = null)
     $compClause = Realblog_getPgParameter('compClause');
 
     $db = Realblog_connect();
-
+    $t = '';
     if ($realblogaction != 'view') {
         $compClause = new SimpleWhereClause(
             REALBLOG_STATUS, '=', 2, INTEGER_COMPARISON
@@ -334,9 +298,9 @@ function Realblog_archive($options = null)
 
         $cal_format = Realblog_getCalendarDateFormat();
 
-        if ($includesearch == 'true') {
+        if ($showSearch) {
             $temp = new Realblog_SearchFormView($realblogYear);
-            $t = $temp->render();
+            $t .= $temp->render();
         }
 
         if ($realblogaction == 'search') {
@@ -381,7 +345,7 @@ function Realblog_archive($options = null)
         $record = $db->selectUnique('realblog.txt', REALBLOG_ID, $realblogID);
         if (count($record) > 0) {
             $articleView = new Realblog_ArticleView($realblogID, $record, $page);
-            $t = $articleView->render();
+            $t .= $articleView->render();
         }
     }
     return $t;
@@ -394,7 +358,7 @@ function Realblog_archive($options = null)
  * Options: realblog_page [required] : this is the page containing the
  *          showrealblog() function
  *
- * @param mixed $options FIXME
+ * @param mixed $pageUrl A URL of a page where the blog is shown.
  *
  * @return string (X)HTML.
  *
@@ -409,113 +373,71 @@ function Realblog_archive($options = null)
  * @global string The current language.
  * @global mixed  FIXME
  */
-function Realblog_link($options)
+function Realblog_link($pageUrl)
 {
     global $pth, $sn, $plugin_tx, $plugin_cf, $u, $s, $c, $h, $sl, $page;
 
-    $includeonfrontpage = 'false';
-    $realblog_page = '';
-    $arguments = Realblog_getArguments($options);
-    if (isset($arguments['realblogpage'])) {
-        $realblog_page = $arguments['realblogpage'];
-    }
-
-    // Check if the specified realblog_page realy exists
-    $page_exists = false;
-    foreach ($u as $key => $value) {
-        if ($realblog_page === $value) {
-            if ($s == $key) {
-                $page_exists = true;
-                break;
-            }
-            // FIXME: fix for Realblog_blog or remove check alltogether
-            if (preg_match('/showrealblog\(.*/is', $c[$key])) {
-                $page_exists = true;
-                break;
-            }
-        }
-    }
-
-    if (!$page_exists) {
+    if (!in_array($pageUrl, $u)) {
         return '';
     }
 
-    if (!empty($realblog_page) || $realblog_page != '') {
-        // Register the current page in a session variable
-        $plugin = basename(dirname(__FILE__), '/');
+    $db = Realblog_connect();
 
-        // set general variables for the plugin
-        $plugin_images_folder = $pth['folder']['plugins'] . $plugin . '/images/';
-
-        $db = Realblog_connect();
-
-        if (@$id == -1 || empty($id) || !isset($id)) {
-            if ($plugin_cf['realblog']['links_visible'] > 0) {
-                $t = '<p class="realbloglink">'
-                    . $plugin_tx['realblog']['links_visible_text'] . '</p>';
-                // Select all published realblog items ordered by DATE
-                // descending within the publishing range
-                $compClause = null;
-                $compClause = new AndWhereClause(
-                    new SimpleWhereClause(
-                        REALBLOG_STATUS, '=', 1, INTEGER_COMPARISON
-                    )
-                );
-                if (strtolower($includeonfrontpage) === 'true') {
-                    $compClause = new OrWhereClause(
-                        new SimpleWhereClause(
-                            REALBLOG_FRONTPAGE, '=', 'on', STRING_COMPARISON
-                        ),
-                        $compClause
-                    );
+    if (@$id == -1 || empty($id) || !isset($id)) {
+        if ($plugin_cf['realblog']['links_visible'] > 0) {
+            $t = '<p class="realbloglink">'
+                . $plugin_tx['realblog']['links_visible_text'] . '</p>';
+            // Select all published realblog items ordered by DATE
+            // descending within the publishing range
+            $compClause = null;
+            $compClause = new AndWhereClause(
+                new SimpleWhereClause(
+                    REALBLOG_STATUS, '=', 1, INTEGER_COMPARISON
+                )
+            );
+            $realbloglist = $db->selectWhere(
+                'realblog.txt', $compClause, -1,
+                array(
+                    new OrderBy(REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON),
+                    new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
+                )
+            );
+            // Show the results
+            $max_visible = $plugin_cf['realblog']['links_visible'];
+            $realblog_counter = 0;
+            if (count($realbloglist) > 0) {
+                if ($max_visible <= 0 || empty($max_visible)) {
+                    $max_visible = count($realbloglist);
                 }
-                $realbloglist = $db->selectWhere(
-                    'realblog.txt', $compClause, -1,
-                    array(
-                        new OrderBy(REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON),
-                        new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
-                    )
-                );
-                // Show the results
-                $max_visible = $plugin_cf[$plugin]['links_visible'];
-                $realblog_counter = 0;
-                if (count($realbloglist) > 0) {
-                    if ($max_visible <= 0 || empty($max_visible)) {
-                        $max_visible = count($realbloglist);
-                    }
-                    $t .= "\n" . '<div class="realblog_tpl_show_box">' . "\n";
-                    foreach ($realbloglist as $index => $record) {
-                        $realblog_counter++;
-                        $t .= "\n" . '<div class="realblog_tpl_show_date">' . "\n"
-                            .strftime(
-                                $plugin_tx[$plugin]['display_date_format'],
-                                $record[REALBLOG_DATE]
-                            )
-                            . "\n" . '</div>';
-                        $t .= "\n" . '<div class="realblog_tpl_show_title">' . "\n"
-                            . '<a href="' . $sn . '?' . $realblog_page
-                            . '&amp;realblogaction=view&amp;realblogID='
-                            . $record[REALBLOG_ID] . '&amp;page=1">'
-                            . $record[REALBLOG_TITLE] .'</a>' . "\n"
-                            . '</div>' . "\n";
-                        // Limit the number of visible realblog items (set in
-                        // the configuration; empty=all realblog)
-                        if ($plugin_cf[$plugin]['links_visible'] > 0) {
-                            if ($realblog_counter == $max_visible) {
-                                break;
-                            }
+                $t .= "\n" . '<div class="realblog_tpl_show_box">' . "\n";
+                foreach ($realbloglist as $index => $record) {
+                    $realblog_counter++;
+                    $t .= "\n" . '<div class="realblog_tpl_show_date">' . "\n"
+                        .strftime(
+                            $plugin_tx['realblog']['display_date_format'],
+                            $record[REALBLOG_DATE]
+                        )
+                        . "\n" . '</div>';
+                    $t .= "\n" . '<div class="realblog_tpl_show_title">' . "\n"
+                        . '<a href="' . $sn . '?' . $pageUrl
+                        . '&amp;realblogaction=view&amp;realblogID='
+                        . $record[REALBLOG_ID] . '&amp;page=1">'
+                        . $record[REALBLOG_TITLE] .'</a>' . "\n"
+                        . '</div>' . "\n";
+                    // Limit the number of visible realblog items (set in
+                    // the configuration; empty=all realblog)
+                    if ($plugin_cf['realblog']['links_visible'] > 0) {
+                        if ($realblog_counter == $max_visible) {
+                            break;
                         }
                     }
-                    $t .= "\n" . '<div style="clear: both;"></div></div>' . "\n";
-                } else {
-                    $t .= $plugin_tx[$plugin]['no_topics'];
                 }
-                //$t.='</div>' . "\n";
+                $t .= "\n" . '<div style="clear: both;"></div></div>' . "\n";
+            } else {
+                $t .= $plugin_tx['realblog']['no_topics'];
             }
+            //$t.='</div>' . "\n";
         }
-    } else {
-        // FIXME
-        $t .= '';
     }
     return $t;
 }
