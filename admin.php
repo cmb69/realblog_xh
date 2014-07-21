@@ -61,6 +61,8 @@ this program; if not, see <http://www.gnu.org/licenses>.
  * @global array The paths of system files and folders.
  * @global string The current language.
  * @global string The (X)HTML fragment to insert in the head element.
+ *
+ * @todo Check files for existance.
  */
 function Realblog_useCalendar()
 {
@@ -89,268 +91,8 @@ if (isset($realblog) && $realblog == 'true') {
     initvar('admin');
     initvar('action');
 
-    Realblog_useCalendar();
-    if ($action == 'delete_realblog' || $action == 'add_realblog'
-        || $action == 'modify_realblog'
-    ) {
-        init_editor(array('realblog_headline_field', 'realblog_story_field'));
-    }
-
-    // set general variables for the plugin
-    // TO DO: check if these folders exist - if not, exit plugin...
-    $plugin_images_folder = $pth['folder']['plugins'] . $plugin . '/images/';
-    $db_name = 'realblog.txt';
-    $o .= print_plugin_admin('on');
-    if ($admin <> 'plugin_main') {
-        $o .= plugin_admin_common($action, $admin, $plugin);
-    }
-    if ($admin == '') {
-        $temp = new Realblog_InfoView();
-        $o .= $temp->render();
-    }
-
-    $db = Realblog_connect();
-
-    if ($admin == 'plugin_main'
-        && is_writable($pth['folder']['content'] . 'realblog/realblog.txt')
-    ) {
-        $cal_format = Realblog_getCalendarDateFormat();
-
-        $realblogID = Realblog_getPgParameter('realblogID');
-        $page = Realblog_getPgParameter('page');
-        $do = Realblog_getPgParameter('do');
-        $filter = Realblog_getPgParameter('filter');
-        $realblog_id = Realblog_getPgParameter('realblog_id');
-        $realblog_date = Realblog_getPgParameter('realblog_date');
-        $realblog_title = Realblog_getPgParameter('realblog_title');
-        $realblog_headline = Realblog_getPgParameter('realblog_headline');
-        $realblog_story = Realblog_getPgParameter('realblog_story');
-        $realblog_frontpage = Realblog_getPgParameter('realblog_frontpage');
-        $realblog_rssfeed = Realblog_getPgParameter('realblog_rssfeed');
-        $realblog_comments = Realblog_getPgParameter('realblog_comments');
-        $realblog_startdate = Realblog_getPgParameter('realblog_startdate');
-        $realblog_enddate = Realblog_getPgParameter('realblog_enddate');
-        $realblog_status = Realblog_getPgParameter('realblog_status');
-        $filter1 = Realblog_getPgParameter('filter1');
-        $filter2 = Realblog_getPgParameter('filter2');
-        $filter3 = Realblog_getPgParameter('filter3');
-        $realblogtopics = Realblog_getPgParameter('realblogtopics');
-        $batchdelete_x = Realblog_getPgParameter('batchdelete_x');
-        $changestatus_x = Realblog_getPgParameter('changestatus_x');
-        $batchchangestatus = Realblog_getPgParameter('batchchangestatus');
-        $new_realblogstatus = Realblog_getPgParameter('new_realblogstatus');
-
-        // perform the appropriate action for the selected record
-        if ($action == 'delete_realblog' || $action == 'add_realblog'
-            || $action == 'modify_realblog'
-        ) {
-            $o .= Realblog_form($realblogID, $action, $page);
-        }
-
-        // add new realblog item to the database or modify the selected realblog item
-        if ($do == 'add' || $do == 'modify') {
-            $realblog_date = Realblog_makeTimestampDates($realblog_date);
-            $realblogitem[REALBLOG_DATE] = $realblog_date;
-            // FIXME: don't stripslashes()
-            $realblogitem[REALBLOG_TITLE] = stripslashes($realblog_title);
-            $realblogitem[REALBLOG_HEADLINE] = stripslashes($realblog_headline);
-            $realblogitem[REALBLOG_STORY] = stripslashes($realblog_story);
-            $realblogitem[REALBLOG_FRONTPAGE] = $realblog_frontpage;
-            $realblogitem[REALBLOG_STARTDATE] = Realblog_makeTimestampDates(
-                $realblog_startdate
-            );
-            $realblogitem[REALBLOG_ENDDATE] = Realblog_makeTimestampDates(
-                $realblog_enddate
-            );
-            $realblogitem[REALBLOG_STATUS] = $realblog_status;
-            $realblogitem[REALBLOG_RSSFEED] = $realblog_rssfeed;
-            $realblogitem[REALBLOG_COMMENTS] = $realblog_comments;
-
-            if ($do == 'add') {
-                $realblogitem[REALBLOG_ID] = '0'; // dummy
-                $newId = $db->insertWithAutoId($db_name, REALBLOG_ID, $realblogitem);
-                $title = $plugin_tx[$plugin]['tooltip_add'];
-                $info = '<h5>' . $plugin_tx[$plugin]['story_added'] . '</h5>';
-                $o .= Realblog_dbconfirm($title, $info, $page);
-            }
-
-            if ($do == 'modify') {
-                $realblogitem[REALBLOG_ID] = $realblog_id;
-                $newId = $db->updateRowById($db_name, REALBLOG_ID, $realblogitem);
-                $title = $plugin_tx[$plugin]['tooltip_modify'];
-                $info = '<h5>' . $plugin_tx[$plugin]['story_modified'] . '</h5>';
-                $o .= Realblog_dbconfirm($title, $info, $page);
-            }
-        }
-
-        // delete the selected realblog item
-        if ($do == 'delete') {
-            $page = $_SESSION['page'];
-            $db->deleteWhere(
-                $db_name,
-                new SimpleWhereClause(REALBLOG_ID, '=', $realblog_id),
-                INTEGER_COMPARISON
-            );
-            $title = $plugin_tx[$plugin]['tooltip_delete'];
-            $info = '<h5>' . $plugin_tx[$plugin]['story_deleted'] . '</h5>';
-            $o .= Realblog_dbconfirm($title, $info, $page);
-        }
-
-        // batch delete of the selected realblog item
-        if ($do == 'delselected') {
-            foreach ($realblogtopics as $key => $delrealblog_id) {
-                $db->deleteWhere(
-                    $db_name,
-                    new SimpleWhereClause(REALBLOG_ID, '=', $delrealblog_id),
-                    INTEGER_COMPARISON
-                );
-            }
-            $title = $plugin_tx[$plugin]['tooltip_deleteall'];
-            $info = $plugin_tx[$plugin]['deleteall_done'];
-            $o .= Realblog_dbconfirm($title, $info, $page);
-        }
-
-        // batch status change of the selected realblog item
-        if ($do == 'batchchangestatus') {
-            if (isset($_SESSION['page'])) {
-                $page = $_SESSION['page'];
-            }
-
-            if ($new_realblogstatus != ''
-                && ($new_realblogstatus == 0 || $new_realblogstatus == 1
-                || $new_realblogstatus == 2)
-            ) {
-                foreach ($realblogtopics as $key => $changerealblog_id) {
-                    $realblogitem[REALBLOG_ID] = $changerealblog_id;
-                    $realblogitem[REALBLOG_STATUS] = $new_realblogstatus;
-                    $db->updateRowById($db_name, REALBLOG_ID, $realblogitem);
-                }
-                $title = $plugin_tx[$plugin]['tooltip_changestatus'];
-                $info = $plugin_tx[$plugin]['changestatus_done'];
-                $o .= Realblog_dbconfirm($title, $info, $page);
-            } else {
-                $title = $plugin_tx[$plugin]['tooltip_changestatus'];
-                $info = $plugin_tx[$plugin]['nochangestatus_done'];
-                $o .= Realblog_dbconfirm($title, $info, $page);
-            }
-        }
-
-        //
-        if ($action === 'plugin_text' || $action=== 'edit') {
-            // delete the selected realblog items
-            if (isset($batchdelete_x)) {
-                $temp = new Realblog_DeleteView();
-                $o = $temp->render(); // FIXME: append to $o ?
-                return $o; // FIXME: why return $o?
-            }
-
-            // batch status change of the selected realblog items
-            if (isset($changestatus_x)) {
-                // session_register ('page'); // removed in php 5.4
-                $_SESSION['page'] = $page;
-                $temp = new Realblog_ChangeStatusView();
-                $o .= $temp->render();
-                return $o; // FIXME: why return $o?
-            }
-
-            if ($filter != 'true') {
-                $compClause = null;
-            } else {
-                if ($filter1 == 'on' && $filter2 == 'on' && $filter3 == 'on'
-                    || $filter1 != 'on' && $filter2 != 'on' && $filter3 != 'on'
-                ) {
-                    $compClause = null;
-                }
-                if ($filter1 == 'on' && $filter2 != 'on' && $filter3 != 'on') {
-                    $compClause = new SimpleWhereClause(REALBLOG_STATUS, "=", 0);
-                }
-                if ($filter1 != 'on' && $filter2 == 'on' && $filter3 != 'on') {
-                    $compClause = new SimpleWhereClause(REALBLOG_STATUS, "=", 1);
-                }
-
-                if ($filter1 != 'on' && $filter2 != 'on' && $filter3 == 'on') {
-                    $compClause = new SimpleWhereClause(REALBLOG_STATUS, "=", 2);
-                }
-                if ($filter1 == 'on' && $filter2 == 'on' && $filter3 != 'on') {
-                    $compClause =new OrWhereClause(
-                        new SimpleWhereClause(
-                            REALBLOG_STATUS, "=", 0, INTEGER_COMPARISON
-                        ),
-                        new SimpleWhereClause(
-                            REALBLOG_STATUS, "=", 1, INTEGER_COMPARISON
-                        )
-                    );
-                }
-                if ($filter1 == 'on' && $filter2 != 'on' && $filter3 == 'on') {
-                    $compClause =new OrWhereClause(
-                        new SimpleWhereClause(
-                            REALBLOG_STATUS, "=", 0, INTEGER_COMPARISON
-                        ),
-                        new SimpleWhereClause(
-                            REALBLOG_STATUS, "=", 2, INTEGER_COMPARISON
-                        )
-                    );
-                }
-                if ($filter1 != 'on' && $filter2 == 'on' && $filter3 == 'on') {
-                    $compClause =new OrWhereClause(
-                        new SimpleWhereClause(
-                            REALBLOG_STATUS, "=", 1, INTEGER_COMPARISON
-                        ),
-                        new SimpleWhereClause(
-                            REALBLOG_STATUS, "=", 2, INTEGER_COMPARISON
-                        )
-                    );
-                }
-            }
-
-            $records =$db->selectWhere(
-                $db_name, $compClause, -1,
-                new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
-            );
-            // Set limit of record in the table
-            $page_record_limit = $plugin_cf[$plugin]['admin_records_page'];
-
-            if ($page_record_limit <= 0) {
-                $page_record_limit=10;
-            }
-            if ($page_record_limit >= 50) {
-                $page_record_limit=32;
-            }
-
-            // Count the total records
-            $db_total_records = count($records);
-            // FIXME: int cast needs other precedence?
-            // Calculate the number of possible pages
-            $page_total = ($db_total_records % $page_record_limit == 0)
-                ? ((int) $db_total_records / $page_record_limit)
-                : ((int) ($db_total_records / $page_record_limit) + 1);
-            // Calculate table paging
-            $o .= '<h1>Realblog &ndash; '
-                . $plugin_tx[$plugin]['story_overview'] . '</h1>';
-
-            if ($page > $page_total) {
-                $page=1;
-            }
-            if ($page == '' || $page <= 0 || $page == 1) {
-                $start_index = 0;
-                $page = 1;
-            } else {
-                $start_index = ($page - 1) * ($page_record_limit);
-            }
-
-            // Display realblog items overview
-            // new table layout - GE 2010 - 11
-
-            $temp = new Realblog_ArticlesAdminView();
-            $o .= $temp->render();
-        }
-    } else {
-        if ($admin == 'plugin_main') {
-            $o .= '<h4>Plugin RealBlog</h4>'
-                . '<p class="cmsimplecore_warning" style="text-align: center;">'
-                . $plugin_tx['realblog']['message_datafile'] . '</p>';
-        }
-    }
+    $temp = new Realblog_AdminController();
+    $temp->dispatch();
 }
 
 /**
@@ -375,8 +117,8 @@ if (isset($realblog) && $realblog == 'true') {
  */
 function Realblog_form($realblogID = null, $action = null, $ret_page = 1)
 {
-    global $pth, $plugin, $plugin_cf, $plugin_tx, $sn, $db_name,
-        $plugin_images_folder, $cf, $tx, $cal_format;
+    global $pth, $plugin, $plugin_cf, $plugin_tx, $sn, $plugin_images_folder,
+        $cf, $tx, $cal_format;
 
     $db = Realblog_connect();
 
@@ -398,7 +140,7 @@ function Realblog_form($realblogID = null, $action = null, $ret_page = 1)
     }
 
     if ($action === 'modify_realblog' || $action === 'delete_realblog') {
-        $record = $db->selectUnique($db_name, REALBLOG_ID, $realblogID);
+        $record = $db->selectUnique('realblog.txt', REALBLOG_ID, $realblogID);
         $realblog_id = $record[REALBLOG_ID];
         $realblog_date = date(
             $plugin_tx[$plugin]['date_format'], $record[REALBLOG_DATE]
