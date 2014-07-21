@@ -3,8 +3,6 @@
 * CSRF protection
 * simplify CSS (shall we call for themes?)
 * inline include/fields.php
-* remove backlinks to ge-webdesign.de
 * replace images (need license and want PNG)
 * replace mktime() with strtotime()
 * use normal arguments for new plugin functions
-* remove obsolete replace parameter for {{{PLUGIN:realblog_rss_adv('replace=true');}}}
