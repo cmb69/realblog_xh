@@ -3,7 +3,6 @@
 * meltemi PM
 * remove folder rss/
 * add CHANGELOG
-* fix bug, where filter with zero results fails
 * fix layout of pagination (CSS?)
 
 * replace mktime() with strtotime()

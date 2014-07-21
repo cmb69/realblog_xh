@@ -1307,7 +1307,7 @@ class Realblog_AdminController
         $page_record_limit = $plugin_cf['realblog']['admin_records_page'];
         $db_total_records = count($records);
         $page_total = ceil($db_total_records / $page_record_limit);
-        $page = min(max((int) $page, 1), $page_total);
+        $page = max(min((int) $page, $page_total), 1);
         $start_index = ($page - 1) * $page_record_limit;
 
         $view = new Realblog_ArticlesAdminView(
