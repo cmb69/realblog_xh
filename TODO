@@ -1,9 +1,11 @@
 * keep an eye on compat.php
 * CSRF protection
-* simplify CSS (shall we call for themes?)
-* replace mktime() with strtotime()
-* store categories in DB
 * meltemi PM
 * remove folder rss/
 * add CHANGELOG
-* add labels for filter checkboxes
+* fix bug, where filter with zero results fails
+* fix layout of pagination (CSS?)
+
+* replace mktime() with strtotime()
+* store categories in DB
+* simplify CSS (shall we call for themes?)

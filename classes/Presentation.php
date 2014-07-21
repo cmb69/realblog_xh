@@ -1760,41 +1760,46 @@ class Realblog_ArticlesAdminView
      *
      * @global string The script name.
      * @global array  The localization of the plugins.
+     */
+    private function _renderFilterForm()
+    {
+        global $sn, $plugin_tx;
+
+        $url = $sn . '?&realblog&admin=plugin_main&action=plugin_text';
+        $html = '<form method="post" action="' . XH_hsc($url) . '">';
+        $states = array('readyforpublishing', 'published', 'archived');
+        foreach ($states as $i => $state) {
+            $html .= $this->_renderFilterCheckbox($i + 1, $state) . ' ';
+        }
+        $html .= '<button>' . $plugin_tx['realblog']['btn_filter'] . '</button>'
+            . '</form>';
+        return $html;
+    }
+
+    /**
+     * Renders a filter checkbox and its label.
+     *
+     * @param int $number  A filter number.
+     * @param string $name A filter name.
+     *
+     * @return string (X)HTML.
+     *
      * @global string Whether filter 1 is enabled.
      * @global string Whether filter 2 is enabled.
      * @global string Whether filter 3 is enabled.
      */
-    private function _renderFilterForm()
+    private function _renderFilterCheckbox($number, $name)
     {
-        global $sn, $plugin_tx, $filter1, $filter2, $filter3;
+        global $plugin_tx, $filter1, $filter2, $filter3;
 
-        $tstfilter1 = ($filter1 == 'on') ? ' checked="checked"' : '';
-        $tstfilter2 = ($filter2 == 'on') ? ' checked="checked"' : '';
-        $tstfilter3 = ($filter3 == 'on') ? ' checked="checked"' : '';
-        return '<div>'
-            . '<form name="selectstatus" method="post" action="' . $sn
-            . '?&amp;realblog&amp;admin=plugin_main&amp;action=plugin_text">'
-            . '<table width="100%">' . '<tr>'
-            . '<td width="35%">'
-            . tag('input type="checkbox" name="filter1" ' . $tstfilter1 . '"')
-            . '&nbsp;' . $plugin_tx['realblog']['readyforpublishing'] . '</td>'
-            . '<td width="30%">'
-            . tag('input type="checkbox" name="filter2"' . $tstfilter2 . '"')
-            . '&nbsp;' . $plugin_tx['realblog']['published'] . '</td>'
-            . '<td width="30%">'
-            . tag('input type="checkbox" name="filter3"' . $tstfilter3 . '"')
-            . '&nbsp;' . $plugin_tx['realblog']['archived'] . '</td>'
-            . '<td width="5%">'
+        $filterVar = 'filter' . $number;
+        $checked = ($$filterVar == 'on') ? ' checked="checked"' : '';
+        return '<label>'
             . tag(
-                'input type="image" align="middle" src="'
-                . $this->_imageFolder . 'filter.png" name="send"'
-                . ' value="Apply filter" title="'
-                . $plugin_tx['realblog']['btn_search']
+                'input type="checkbox" name="filter' . $number . '" ' . $checked
                 . '"'
             )
-            . '</td>'
-            . '</tr>' . '</table>'
-            . '</form>' . "\n" . '</div>';
+            . $plugin_tx['realblog'][$name] . '</label>';
     }
 
     /**
