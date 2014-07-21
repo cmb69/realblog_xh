@@ -1,7 +1,6 @@
 * original used str_ireplace()!
 * keep an eye on compat.php
 * CSRF protection
-* prevent usage from unsupported CMSimple variants/versions
 * simplify CSS (shall we call for themes?)
 * inline include/fields.php
 * remove backlinks to ge-webdesign.de

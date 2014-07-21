@@ -18,10 +18,20 @@
  * @link      http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
 
-if (!function_exists('sv')
-    || preg_match('#/plugins/realblog/admin.php#i', $_SERVER['SCRIPT_NAME'])
+/*
+ * Prevent direct access and usage from unsupported CMSimple_XH versions.
+ */
+if (!defined('CMSIMPLE_XH_VERSION')
+    || strpos(CMSIMPLE_XH_VERSION, 'CMSimple_XH') !== 0
+    || version_compare(CMSIMPLE_XH_VERSION, 'CMSimple_XH 1.6', 'lt')
 ) {
-    die('no direct access');
+    header('HTTP/1.1 403 Forbidden');
+    header('Content-Type: text/plain; charset=UTF-8');
+    die(<<<EOT
+Realblog_XH detected an unsupported CMSimple_XH version.
+Uninstall Realblog_XH or upgrade to a supported CMSimple_XH version!
+EOT
+    );
 }
 
 //////////////////////////////////////////////// HISTORIC LICENSE SECTION START
