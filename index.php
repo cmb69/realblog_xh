@@ -122,10 +122,10 @@ if (!$adm) {
     // current date is within the publishing period
     $compClause = null;
 
-    if (strtolower($plugin_cf[$plugin]['auto_publish']) == 'true') {
+    if ($plugin_cf[$plugin]['auto_publish']) {
         Realblog_autoPublish();
     }
-    if ($plugin_cf['realblog']['auto_archive'] == 'true') {
+    if ($plugin_cf['realblog']['auto_archive']) {
         Realblog_autoArchive();
     }
     $hjs .= tag(
@@ -205,7 +205,7 @@ function Realblog_blog($options = null, $realBlogCat = 'all')
             } else {
                 unset($realblogaction);
             }
-            $temp = $plugin_cf['realblog']['entries_order'] == 'desc'
+            $temp = ($plugin_cf['realblog']['entries_order'] == 'desc')
                 ? DESCENDING : ASCENDING;
             $records = $db->selectWhere(
                 'realblog.txt', $compClause, -1,
@@ -235,7 +235,7 @@ function Realblog_blog($options = null, $realBlogCat = 'all')
                 $compClause = $compRealblogClause;
             }
 
-            $temp = $plugin_cf['realblog']['entries_order'] == 'desc'
+            $temp = ($plugin_cf['realblog']['entries_order'] == 'desc')
                 ? DESCENDING : ASCENDING;
             $records = $db->selectWhere(
                 'realblog.txt', $compClause, -1,

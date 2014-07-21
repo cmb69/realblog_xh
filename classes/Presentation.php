@@ -170,7 +170,7 @@ class Realblog_ArticlesView
             || ($this->_action == "search"
             && strstr($field[REALBLOG_H], '|' . $this->_categories . '|'))
         ) {
-            if ($plugin_cf['realblog']['teaser_multicolumns'] == 'true') {
+            if ($plugin_cf['realblog']['teaser_multicolumns']) {
                 $t .= '<div class="realblog_single_entry_preview">'
                     . '<div class="realblog_single_entry_preview_in">';
             }
@@ -178,14 +178,14 @@ class Realblog_ArticlesView
             $t .= $this->_renderArticleDate($field);
             $t .= "\n" . '<div class="realblog_show_story">' . "\n";
             $t .= evaluate_scripting($field[REALBLOG_HEADLINE]);
-            if ($plugin_cf['realblog']['show_read_more_link'] == 'true'
+            if ($plugin_cf['realblog']['show_read_more_link']
                 && $field[REALBLOG_STORY] != ''
             ) {
                 $t .= $this->_renderArticleFooter($field);
             }
             $t .= '<div style="clear: both;"></div>' . "\n"
                 . '</div>' . "\n";
-            if ($plugin_cf['realblog']['teaser_multicolumns'] == 'true') {
+            if ($plugin_cf['realblog']['teaser_multicolumns']) {
                 $t .= '</div>' . "\n" . '</div>' . "\n";
             }
         }
@@ -267,7 +267,7 @@ class Realblog_ArticlesView
         $t = '<div class="realblog_entry_footer">';
 
         if (function_exists('comments_nr')
-            && $plugin_cf['realblog']['comments_function'] == 'true'
+            && $plugin_cf['realblog']['comments_function']
             && $field[REALBLOG_COMMENTS]
         ) {
             $t .= $this->_renderCommentCount($field);
@@ -342,7 +342,7 @@ class Realblog_ArticlesView
         global $plugin_cf;
 
         return !isset($_REQUEST['realblog_story'])
-            && $plugin_cf['realblog']['show_numberof_entries_' . $place] == 'true';
+            && $plugin_cf['realblog']['show_numberof_entries_' . $place];
     }
 
     /**
@@ -757,7 +757,7 @@ class Realblog_ArticleView
         // output comments in RealBlog
         if ($this->_wantsComments() && $this->_article[REALBLOG_COMMENTS] == 'on') {
             $realblog_comments_id = 'comments' . $this->_id;
-            if ($plugin_cf['realblog']['comments_form_protected'] == 'true') {
+            if ($plugin_cf['realblog']['comments_form_protected']) {
                 $html .= comments($realblog_comments_id, 'protected');
             } else {
                 $html .= comments($realblog_comments_id);
@@ -910,7 +910,7 @@ class Realblog_ArticleView
     {
         global $plugin_cf;
 
-        return $plugin_cf['realblog']['comments_function'] == 'true'
+        return $plugin_cf['realblog']['comments_function']
             && function_exists('comments');
     }
 }
@@ -2289,7 +2289,7 @@ class Realblog_ArticleAdminView
     {
         global $plugin_cf, $plugin_tx;
 
-        if ($plugin_cf['realblog']['auto_publish'] == 'true') {
+        if ($plugin_cf['realblog']['auto_publish']) {
             $html = tag(
                 'input type="text" name="realblog_startdate" id="date2"'
                 . ' value="' . $this->_startDate . '" size="10" maxlength="10"'
@@ -2320,7 +2320,7 @@ class Realblog_ArticleAdminView
     {
         global $plugin_cf, $plugin_tx;
 
-        if ($plugin_cf['realblog']['auto_archive'] == 'true') {
+        if ($plugin_cf['realblog']['auto_archive']) {
             $html = tag(
                 'input type="text" name="realblog_enddate" id="date3"'
                 . ' value="' . $this->_endDate . '" size="10" maxlength="10"'
@@ -2352,10 +2352,10 @@ class Realblog_ArticleAdminView
 
         $html = '<script type="text/javascript">/* <![CDATA[ */'
             . $this->_renderCalendarInitialization(1);
-        if ($plugin_cf['realblog']['auto_publish'] == 'true') {
+        if ($plugin_cf['realblog']['auto_publish']) {
             $html .= $this->_renderCalendarInitialization(2);
         }
-        if ($plugin_cf['realblog']['auto_archive'] == 'true') {
+        if ($plugin_cf['realblog']['auto_archive']) {
             $html .= $this->_renderCalendarInitialization(3);
         }
         $html .= '/* ]]> */</script>';
