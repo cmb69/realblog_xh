@@ -4,7 +4,6 @@
 * replace mktime() with strtotime()
 * store categories in DB
 * meltemi PM
-* replace $adm with XH_ADM
 * remove folder rss/
-* add CHANGELOG and README
+* add CHANGELOG
 * add labels for filter checkboxes
