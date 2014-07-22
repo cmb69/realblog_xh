@@ -1,9 +1,10 @@
 * keep an eye on compat.php
 * meltemi PM
+* check RSS feed
 * remove folder rss/
 * add CHANGELOG
-* fix Realblog_url (problem with urlencode for HTML specialchars)
 * improve page parameter (store in cookie; rename to realblog_page)
+* description as field or auto-generated from teaser
 
 * replace mktime() with strtotime()
 * store categories in DB
@@ -11,3 +12,4 @@
 * make filter form GET (has to wait until supported by CMSimple_XH)
 * make use of advanced search functionality (by date), or get rid of it
 * modify language strings to cater for different grammar (no tinkering)
+

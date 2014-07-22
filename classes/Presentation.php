@@ -778,13 +778,12 @@ class Realblog_ArticleView
      *
      * @return string (X)HTML.
      *
-     * @global string The script name.
      * @global string The URL of the current page.
      * @global array  The localization of the plugins.
      */
     private function _renderOverviewLink()
     {
-        global $sn, $su, $plugin_tx;
+        global $su, $plugin_tx;
 
         if ($this->_article[REALBLOG_STATUS] == 2) {
             $url = Realblog_url(
@@ -880,8 +879,7 @@ class Realblog_ArticleView
             ? $this->_article[REALBLOG_STORY]
             : $this->_article[REALBLOG_HEADLINE];
         return '<div class="realblog_show_story_entry">'
-            // FIXME: stripslashes() ?
-            . stripslashes(evaluate_scripting($story))
+            . evaluate_scripting($story)
             . '</div>';
     }
 
@@ -1213,7 +1211,6 @@ class Realblog_AdminController
      * @global array The paths of system files and folders.
      * @global string The (X)HTML to insert into the contents area.
      * @global string The value of the <var>action</var> GP parameter.
-     * @global string The calendar date format.
      * @global int    The number of the current page.
      * @global string Whether filtering of unpublished articles is enabled.
      * @global string Whether filtering of published articles is enabled.
@@ -1221,12 +1218,11 @@ class Realblog_AdminController
      */
     private function _handleMainAdministration()
     {
-        global $pth, $o, $action, $cal_format, $page, $filter1, $filter2, $filter3;
+        global $pth, $o, $action, $page, $filter1, $filter2, $filter3;
 
         if (!is_writable($pth['folder']['content'] . 'realblog/realblog.txt')) {
             $o .= $this->_renderDatafileError();
         } else {
-            $cal_format = Realblog_getCalendarDateFormat();
             $page = Realblog_getPgParameter('page');
             $filter1 = Realblog_getPgParameter('filter1');
             $filter2 = Realblog_getPgParameter('filter2');
@@ -1288,11 +1284,10 @@ class Realblog_AdminController
      * @global array The configuration of the plugins.
      * @global array The localization of the plugins.
      * @global int   The number of the current page.
-     * @global int   The number of pages.
      */
     private function _renderArticles()
     {
-        global $plugin_cf, $plugin_tx, $page, $page_total;
+        global $plugin_cf, $plugin_tx, $page;
 
         $records = $this->_db->selectWhere(
             'realblog.txt', $this->_getFilterClause(), -1,
@@ -1301,12 +1296,12 @@ class Realblog_AdminController
 
         $page_record_limit = $plugin_cf['realblog']['admin_records_page'];
         $db_total_records = count($records);
-        $page_total = ceil($db_total_records / $page_record_limit);
-        $page = max(min((int) $page, $page_total), 1);
+        $pageCount = ceil($db_total_records / $page_record_limit);
+        $page = max(min((int) $page, $pageCount), 1);
         $start_index = ($page - 1) * $page_record_limit;
 
         $view = new Realblog_ArticlesAdminView(
-            $records, $page_record_limit, $start_index
+            $records, $page_record_limit, $start_index, $pageCount
         );
         return '<h1>Realblog &ndash; '
             . $plugin_tx['realblog']['story_overview'] . '</h1>'
@@ -1698,17 +1693,25 @@ class Realblog_ArticlesAdminView
     private $_startIndex;
 
     /**
+     * The number of pages.
+     *
+     * @var int
+     */
+    private $_pageCount;
+
+    /**
      * Initializes a new instance.
      *
      * @param array $articles        An array of articles.
      * @param int   $articlesPerPage The number of articles per page.
      * @param int   $startIndex      A start index.
+     * @param int   $pageCount       The number of pages.
      *
      * @return void
      *
      * @global array The paths of system files and folders.
      */
-    public function __construct($articles, $articlesPerPage, $startIndex)
+    public function __construct($articles, $articlesPerPage, $startIndex, $pageCount)
     {
         global $pth;
 
@@ -1716,6 +1719,7 @@ class Realblog_ArticlesAdminView
         $this->_articles = $articles;
         $this->_articlesPerPage = (int) $articlesPerPage;
         $this->_startIndex = (int) $startIndex;
+        $this->_pageCount = (int) $pageCount;
     }
 
     /**
@@ -1864,23 +1868,20 @@ class Realblog_ArticlesAdminView
      *
      * @global string The script name.
      * @global array  The localization of the plugins.
-     * @global string Whether the filter form has been submitted.
      * @global string Whether filter 1 is enabled.
      * @global string Whether filter 2 is enabled.
      * @global string Whether filter 3 is enabled.
      * @global string The current page number.
      * @global int    The number of pages.
-     * @global int    The number of articles.
      */
     private function _renderNavigation()
     {
-        global $sn, $plugin_tx, $filter, $filter1, $filter2, $filter3, $page,
-            $page_total;
+        global $sn, $plugin_tx, $filter1, $filter2, $filter3, $page;
 
         $db_total_records = count($this->_articles);
         $tmp = ($db_total_records > 0)
             ? $plugin_tx['realblog']['page_label'] . ' : ' . $page .  ' / '
-                . $page_total
+                . $this->_pageCount
             : '';
         $o = '<div class="realblog_paging_block">'
             . '<div class="realblog_db_info">'
@@ -1888,13 +1889,13 @@ class Realblog_ArticlesAdminView
             . $db_total_records . '</div>'
             . '<div class="realblog_page_info">' . $tmp . '</div>';
 
-        if ($db_total_records > 0 && $page_total > 1) {
-            if ($page_total > $page) {
+        if ($db_total_records > 0 && $this->_pageCount > 1) {
+            if ($this->_pageCount > $page) {
                 $next = $page + 1;
                 $back = ($page > 1) ? ($next - 2) : '1';
             } else {
-                $next = $page_total;
-                $back = $page_total - 1;
+                $next = $this->_pageCount;
+                $back = $this->_pageCount - 1;
             }
             $o .= '<div class="realblog_table_paging">'
                 . '<a href="' . $sn . '?&amp;realblog'
@@ -1903,8 +1904,8 @@ class Realblog_ArticlesAdminView
                 . $filter2 . '&amp;filter3=' . $filter3 . '" title="'
                 . $plugin_tx['realblog']['tooltip_previous'] . '">'
                 . '&#9664;</a>&nbsp;&nbsp;';
-            for ($i = 1; $i <= $page_total; $i++) {
-                $separator = ($i < $page_total) ? ' ' : '';
+            for ($i = 1; $i <= $this->_pageCount; $i++) {
+                $separator = ($i < $this->_pageCount) ? ' ' : '';
                 $o .= '<a href="' . $sn . '?&amp;realblog'
                     . '&amp;admin=plugin_main&amp;action=plugin_text&amp;page='
                     . $i . '&amp;filter1=' . $filter1 . '&amp;filter2='
@@ -2016,21 +2017,21 @@ class Realblog_ArticleAdminView
     /**
      * The date of the article.
      *
-     * @var FIXME
+     * @var int
      */
     private $_realblogDate;
 
     /**
      * The publishing date of the article.
      *
-     * @var FIXME
+     * @var int
      */
     private $_startDate;
 
     /**
      * The archiving date of the article.
      *
-     * @var FIXME
+     * @var int
      */
     private $_endDate;
 
@@ -2084,9 +2085,9 @@ class Realblog_ArticleAdminView
     private $_action;
 
     /**
-     * FIXME
+     * The blog page to return to.
      *
-     * @var FIXME
+     * @var int
      */
     private $_retPage;
 
@@ -2356,12 +2357,10 @@ class Realblog_ArticleAdminView
      * @param string $num A date input number.
      *
      * @return string (X)HTML.
-     *
-     * @global string The date format.
      */
     private function _renderCalendarInitialization($num)
     {
-        global $cal_format;
+        $cal_format = Realblog_getCalendarDateFormat();
 
         return <<<EOT
 Calendar.setup({
