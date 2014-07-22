@@ -45,15 +45,13 @@ define('REALBLOG_COMMENTS', 10);
  * @global int    The current page index.
  * @global array  The headings of the pages.
  * @global array  The configuration of the plugins.
- * @global int    The number of the current blog page.
  */
 function Realblog_blog($showSearch = false, $realBlogCat = 'all')
 {
-    global $title, $s, $h, $plugin_cf, $page;
+    global $title, $s, $h, $plugin_cf;
 
     $realblogID = Realblog_getPgParameter('realblogID');
-    $page = Realblog_getPgParameter('page');
-
+    $page = Realblog_getPage();
     $db = Realblog_connect();
     $t = '';
     if (!isset($realblogID)) {
@@ -151,15 +149,11 @@ function Realblog_blog($showSearch = false, $realBlogCat = 'all')
  * @param mixed $showSearch Whether to show the search form.
  *
  * @return string (X)HTML.
- *
- * @global int    The number of the blog page.
  */
 function Realblog_archive($showSearch = false)
 {
-    global $page;
-
     $realblogID = Realblog_getPgParameter('realblogID');
-    $page = Realblog_getPgParameter('page');
+    $page = Realblog_getPage();
 
     $db = Realblog_connect();
     $t = '';
@@ -279,8 +273,7 @@ function Realblog_link($pageUrl)
                         . "\n" . '</div>';
                     $url = Realblog_url(
                         $pageUrl, $record[REALBLOG_TITLE], array(
-                            'realblogID' => $record[REALBLOG_ID],
-                            'page' => 1
+                            'realblogID' => $record[REALBLOG_ID]
                         )
                     );
                     $t .= '<div class="realblog_tpl_show_title">'
@@ -411,11 +404,10 @@ function Realblog_makeTimestampDates1($tmpdate = null)
  * @global array  The paths of system files and folders.
  * @global array  The configuration of the plugins.
  * @global array  The localization of the plugins.
- * @global mixed  The current blog page.
  */
 function Realblog_exportRssFeed()
 {
-    global $pth, $plugin_cf, $plugin_tx, $page;
+    global $pth, $plugin_cf, $plugin_tx;
 
     if (strtolower($plugin_tx['realblog']['rss_enable']) == 'true') {
         $db = Realblog_connect();
@@ -510,8 +502,7 @@ function Realblog_exportRssFeed()
                         $plugin_tx['realblog']["rss_page"],
                         $record['REALBLOG_TITLE'],
                         array(
-                            'realblogID' => $record[REALBLOG_ID],
-                            'page' => $page // FIXME: page in feed???
+                            'realblogID' => $record[REALBLOG_ID]
                         )
                     );
                     $link = '<link>' . XH_hsc($url) . '</link>' . "\n";
@@ -731,6 +722,25 @@ function Realblog_getPgParameter($name)
     } else {
         return null;
     }
+}
+
+/**
+ * Returns the requested page number, and stores it in a cookie.
+ *
+ * @return int
+ */
+function Realblog_getPage()
+{
+    if (isset($_GET['realblog_page'])) {
+        $page = (int) $_GET['realblog_page'];
+        $_COOKIE['realblog_page'] = $page;
+        setcookie('realblog_page', $page, 0, CMSIMPLE_ROOT);
+    } elseif (isset($_COOKIE['realblog_page'])) {
+        $page = (int) $_COOKIE['realblog_page'];
+    } else {
+        $page = 1;
+    }
+    return $page;
 }
 
 /**
@@ -1214,10 +1224,6 @@ function Realblog_makeTimestampDates($tmpdate = null)
 function Realblog_dbconfirm($title, $info, $page)
 {
     global $plugin_tx, $sn;
-
-    if (!isset($page)) {
-        $page = $_SESSION['page'];
-    }
 
     $t = '<h1>Realblog &ndash; ' . $title . '</h1>';
     $t .= '<form name="confirm" method="post" action="' . $sn . '?&amp;'

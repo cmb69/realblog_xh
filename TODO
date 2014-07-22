@@ -3,8 +3,9 @@
 * check RSS feed
 * remove folder rss/
 * add CHANGELOG
-* improve page parameter (store in cookie; rename to realblog_page)
 * description as field or auto-generated from teaser
+* get rid of SESSION
+* get rid of @ operators
 
 * replace mktime() with strtotime()
 * store categories in DB

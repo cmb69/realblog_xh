@@ -72,19 +72,18 @@ class Realblog_ArticlesView
      * @return string (X)HTML.
      *
      * @global array  The configuration of the plugins.
-     * @global string The number of the current page.
      */
     public function render()
     {
-        global $plugin_cf, $page;
+        global $plugin_cf;
 
         $articleCount = count($this->_articles);
         $pageCount = (int) ceil($articleCount / $this->_articlesPerPage);
-
+        $page = Realblog_getPage();
         if ($page > $pageCount) {
-            $page=1;
+            $page = 1;
         }
-        if ($page == "" || $page <= 0 || $page == 1) {
+        if ($page <= 1) {
             $start_index = 0;
             $page = 1;
         } else {
@@ -190,17 +189,15 @@ class Realblog_ArticlesView
      *
      * @global string The URL of the current page.
      * @global array  The localization of the plugins.
-     * @global string The current page number.
      */
     private function _renderArticleHeading($field)
     {
-        global $su, $plugin_tx, $page;
+        global $su, $plugin_tx;
 
         $t = '<h4>';
         $url = Realblog_url(
             $su, $field[REALBLOG_TITLE], array(
-                'realblogID' => $field[REALBLOG_ID],
-                'page' => $page
+                'realblogID' => $field[REALBLOG_ID]
             )
         );
         if ($field[REALBLOG_STORY] != '' || XH_ADM) {
@@ -246,11 +243,10 @@ class Realblog_ArticlesView
      * @global string The URL of the current page.
      * @global array  The configuration of the plugins.
      * @global array  The localization of the plugins.
-     * @global string The number of the current page.
      */
     private function _renderArticleFooter($field)
     {
-        global $su, $plugin_cf, $plugin_tx, $page;
+        global $su, $plugin_cf, $plugin_tx;
 
         $t = '<div class="realblog_entry_footer">';
 
@@ -262,8 +258,7 @@ class Realblog_ArticlesView
         }
         $url = Realblog_url(
             $su, $field[REALBLOG_TITLE], array(
-                'realblogID' => $field[REALBLOG_ID],
-                'page' => $page
+                'realblogID' => $field[REALBLOG_ID]
             )
         );
         $t .= '<p class="realblog_read_more">'
@@ -352,7 +347,7 @@ class Realblog_ArticlesView
         for ($i = 1; $i <= $pageCount; $i++) {
             $separator = ($i < $pageCount) ? ' ' : '';
             $url = Realblog_url(
-                $su, null, array('page' => $i)
+                $su, null, array('realblog_page' => $i)
             );
             $t .= '<a href="' . XH_hsc($url) . '" title="'
                 . $plugin_tx['realblog']['page_label'] . ' ' . $i . '">['
@@ -380,10 +375,10 @@ class Realblog_ArticlesView
         global $su, $plugin_tx;
 
         $backUrl = Realblog_url(
-            $su, null, array('page' => @$back)
+            $su, null, array('realblog_page' => @$back)
         );
         $nextUrl = Realblog_url(
-            $su, null, array('page' => @$next)
+            $su, null, array('realblog_page' => @$next)
         );
         return '<div class="realblog_page_info">'
             . $plugin_tx['realblog']['page_label'] . ' : '
@@ -610,18 +605,16 @@ class Realblog_ArchiveView
      *
      * @global string The URL of the current page.
      * @global array  The localization of the plugins.
-     * @global int    The number of the current page.
      */
     private function _renderArticleList($articles)
     {
-        global $su, $plugin_tx, $page;
+        global $su, $plugin_tx;
 
         $t = '<ul class="realblog_archive">';
         foreach ($articles as $key => $field) {
             $url = Realblog_url(
                 $su, $field[REALBLOG_TITLE], array(
-                    'realblogID' => $field[REALBLOG_ID],
-                    'page' => $page
+                    'realblogID' => $field[REALBLOG_ID]
                 )
             );
             $t .= '<li>'
@@ -644,11 +637,10 @@ class Realblog_ArchiveView
      *
      * @global string The URL of the current page.
      * @global array  The localization of the plugins.
-     * @global int    The number of the current page.
      */
     private function _renderSearchResults()
     {
-        global $su, $plugin_tx, $page;
+        global $su, $plugin_tx;
 
         $currentMonth = -1;
         $t = '';
@@ -661,8 +653,7 @@ class Realblog_ArchiveView
             }
             $url = Realblog_url(
                 $su, $field[REALBLOG_TITLE], array(
-                    'realblogID' => $field[REALBLOG_ID],
-                    'page' => $page
+                    'realblogID' => $field[REALBLOG_ID]
                 )
             );
             $t .= '<p>'
@@ -792,7 +783,7 @@ class Realblog_ArticleView
             $text = $plugin_tx['realblog']['archiv_back'];
         } else {
             $url = Realblog_url(
-                $su, null, array('page' => $this->_page)
+                $su, null, array('realblog_page' => $this->_page)
             );
             $text = $plugin_tx['realblog']['blog_back'];
         }
@@ -1211,19 +1202,17 @@ class Realblog_AdminController
      * @global array The paths of system files and folders.
      * @global string The (X)HTML to insert into the contents area.
      * @global string The value of the <var>action</var> GP parameter.
-     * @global int    The number of the current page.
      * @global string Whether filtering of unpublished articles is enabled.
      * @global string Whether filtering of published articles is enabled.
      * @global string Whether filtering of archived articles is enabled.
      */
     private function _handleMainAdministration()
     {
-        global $pth, $o, $action, $page, $filter1, $filter2, $filter3;
+        global $pth, $o, $action, $filter1, $filter2, $filter3;
 
         if (!is_writable($pth['folder']['content'] . 'realblog/realblog.txt')) {
             $o .= $this->_renderDatafileError();
         } else {
-            $page = Realblog_getPgParameter('page');
             $filter1 = Realblog_getPgParameter('filter1');
             $filter2 = Realblog_getPgParameter('filter2');
             $filter3 = Realblog_getPgParameter('filter3');
@@ -1283,11 +1272,10 @@ class Realblog_AdminController
      *
      * @global array The configuration of the plugins.
      * @global array The localization of the plugins.
-     * @global int   The number of the current page.
      */
     private function _renderArticles()
     {
-        global $plugin_cf, $plugin_tx, $page;
+        global $plugin_cf, $plugin_tx;
 
         $records = $this->_db->selectWhere(
             'realblog.txt', $this->_getFilterClause(), -1,
@@ -1297,7 +1285,7 @@ class Realblog_AdminController
         $page_record_limit = $plugin_cf['realblog']['admin_records_page'];
         $db_total_records = count($records);
         $pageCount = ceil($db_total_records / $page_record_limit);
-        $page = max(min((int) $page, $pageCount), 1);
+        $page = max(min(Realblog_getPage(), $pageCount), 1);
         $start_index = ($page - 1) * $page_record_limit;
 
         $view = new Realblog_ArticlesAdminView(
@@ -1314,15 +1302,14 @@ class Realblog_AdminController
      * @return string (X)HTML.
      *
      * @global string The value of the <var>action</var> GP parameter.
-     * @global int    The number of the current page.
      */
     private function _renderArticle()
     {
-        global $action, $page;
+        global $action;
 
         init_editor(array('realblog_headline_field', 'realblog_story_field'));
         return Realblog_form(
-            Realblog_getPgParameter('realblogID'), $action, $page
+            Realblog_getPgParameter('realblogID'), $action, Realblog_getPage()
         );
     }
 
@@ -1333,19 +1320,18 @@ class Realblog_AdminController
      *
      * @global string            The page title.
      * @global array             The localization of the plugins.
-     * @global int               The number of the current page.
      * @global XH_CSRFProtection The CSRF protector.
      */
     private function _addArticle()
     {
-        global $title, $plugin_tx, $page, $_XH_csrfProtection;
+        global $title, $plugin_tx, $_XH_csrfProtection;
 
         $_XH_csrfProtection->check();
         $article = $this->_getArticleFromParameters();
         $this->_db->insertWithAutoId('realblog.txt', REALBLOG_ID, $article);
         $title = $plugin_tx['realblog']['tooltip_add'];
         $info = $plugin_tx['realblog']['story_added'];
-        return Realblog_dbconfirm($title, $info, $page);
+        return Realblog_dbconfirm($title, $info, Realblog_getPage());
     }
 
     /**
@@ -1355,19 +1341,18 @@ class Realblog_AdminController
      *
      * @global string            The page title.
      * @global array             The localization of the plugins.
-     * @global int               The number of the current page.
      * @global XH_CSRFProtection The CSRF protector.
      */
     private function _modifyArticle()
     {
-        global $title, $plugin_tx, $page, $_XH_csrfProtection;
+        global $title, $plugin_tx, $_XH_csrfProtection;
 
         $_XH_csrfProtection->check();
         $article = $this->_getArticleFromParameters();
         $this->_db->updateRowById('realblog.txt', REALBLOG_ID, $article);
         $title = $plugin_tx['realblog']['tooltip_modify'];
         $info = $plugin_tx['realblog']['story_modified'];
-        return Realblog_dbconfirm($title, $info, $page);
+        return Realblog_dbconfirm($title, $info, Realblog_getPage());
     }
 
     /**
@@ -1377,15 +1362,13 @@ class Realblog_AdminController
      *
      * @global string            The page title.
      * @global array             The localization of the plugins.
-     * @global int               The number of the current page.
      * @global XH_CSRFProtection The CSRF protector.
      */
     private function _deleteArticle()
     {
-        global $title, $plugin_tx, $page, $_XH_csrfProtection;
+        global $title, $plugin_tx, $_XH_csrfProtection;
 
         $_XH_csrfProtection->check();
-        $page = $_SESSION['page'];
         $id = Realblog_getPgParameter('realblog_id');
         $this->_db->deleteWhere(
             'realblog.txt', new SimpleWhereClause(REALBLOG_ID, '=', $id),
@@ -1393,21 +1376,16 @@ class Realblog_AdminController
         );
         $title = $plugin_tx['realblog']['tooltip_delete'];
         $info = $plugin_tx['realblog']['story_deleted'];
-        return Realblog_dbconfirm($title, $info, $page);
+        return Realblog_dbconfirm($title, $info, Realblog_getPage());
     }
 
     /**
      * Renders the change status confirmation.
      *
      * @return string (X)HTML.
-     *
-     * @global int The number of the current page.
      */
     private function _confirmChangeStatus()
     {
-        global $page;
-
-        $_SESSION['page'] = $page;
         $view = new Realblog_ChangeStatusView();
         return $view->render();
     }
@@ -1419,17 +1397,13 @@ class Realblog_AdminController
      *
      * @global string            The page title.
      * @global array             The localization of the plugins.
-     * @global int               The number of the current page.
      * @global XH_CSRFProtection The CSRF protector.
      */
     private function _changeStatus()
     {
-        global $title, $plugin_tx, $page, $_XH_csrfProtection;
+        global $title, $plugin_tx, $_XH_csrfProtection;
 
         $_XH_csrfProtection->check();
-        if (isset($_SESSION['page'])) {
-            $page = $_SESSION['page'];
-        }
         $ids = Realblog_getPgParameter('realblogtopics');
         $status = Realblog_getPgParameter('new_realblogstatus');
         if (is_numeric($status) && $status >= 0 && $status <= 2) {
@@ -1441,11 +1415,11 @@ class Realblog_AdminController
             }
             $title = $plugin_tx['realblog']['tooltip_changestatus'];
             $info = $plugin_tx['realblog']['changestatus_done'];
-            return Realblog_dbconfirm($title, $info, $page);
+            return Realblog_dbconfirm($title, $info, Realblog_getPage());
         } else {
             $title = $plugin_tx['realblog']['tooltip_changestatus'];
             $info = $plugin_tx['realblog']['nochangestatus_done'];
-            return Realblog_dbconfirm($title, $info, $page);
+            return Realblog_dbconfirm($title, $info, Realblog_getPage());
         }
     }
 
@@ -1467,12 +1441,11 @@ class Realblog_AdminController
      *
      * @global string            The page title.
      * @global array             The localization of the plugins.
-     * @global int               The number of the current page.
      * @global XH_CSRFProtection The CSRF protector.
      */
     private function _deleteArticles()
     {
-        global $title, $plugin_tx, $page, $_XH_csrfProtection;
+        global $title, $plugin_tx, $_XH_csrfProtection;
 
         $_XH_csrfProtection->check();
         $ids = Realblog_getPgParameter('realblogtopics');
@@ -1484,7 +1457,7 @@ class Realblog_AdminController
         }
         $title = $plugin_tx['realblog']['tooltip_deleteall'];
         $info = $plugin_tx['realblog']['deleteall_done'];
-        return Realblog_dbconfirm($title, $info, $page);
+        return Realblog_dbconfirm($title, $info, Realblog_getPage());
     }
 
     /**
@@ -1728,11 +1701,10 @@ class Realblog_ArticlesAdminView
      * @return string (X)HTML.
      *
      * @global string            The script name.
-     * @global string            The current page number.
      */
     public function render()
     {
-        global $sn, $page;
+        global $sn;
 
         $o = $this->_renderFilterForm();
         // Display table header
@@ -1742,7 +1714,7 @@ class Realblog_ArticlesAdminView
             . '<table class="realblog_table" width="100%" cellpadding="0"'
             . ' cellspacing="0">';
         $o .= $this->_renderTableHead();
-
+        $page = Realblog_getPage();
         $end_index = $page * $this->_articlesPerPage - 1;
 
         // Display table lines
@@ -1872,12 +1844,12 @@ class Realblog_ArticlesAdminView
      * @global string Whether filter 2 is enabled.
      * @global string Whether filter 3 is enabled.
      * @global string The current page number.
-     * @global int    The number of pages.
      */
     private function _renderNavigation()
     {
-        global $sn, $plugin_tx, $filter1, $filter2, $filter3, $page;
+        global $sn, $plugin_tx, $filter1, $filter2, $filter3;
 
+        $page = Realblog_getPage();
         $db_total_records = count($this->_articles);
         $tmp = ($db_total_records > 0)
             ? $plugin_tx['realblog']['page_label'] . ' : ' . $page .  ' / '
@@ -1935,12 +1907,12 @@ class Realblog_ArticlesAdminView
      *
      * @global string The script name.
      * @global array  The localization of the plugins.
-     * @global string The current page number.
      */
     private function _renderRow($field)
     {
-        global $sn, $plugin_tx, $page;
+        global $sn, $plugin_tx;
 
+        $page = Realblog_getPage();
         return '<tr>'
             . '<td class="realblog_table_line" align="center">'
             . tag(
@@ -2214,7 +2186,6 @@ class Realblog_ArticleAdminView
 
         $html = '';
         $fields = array(
-            'page' => $this->_retPage,
             'realblog_id' => $this->_realblogId,
             'action' => 'do_' . $this->_getVerb()
         );
@@ -2594,19 +2565,17 @@ abstract class Realblog_ConfirmationView
      *
      * @return string (X)HTML.
      *
-     * @global string            The number of the current page.
      * @global XH_CSRFProtection The CSRF protector.
      */
     protected function renderHiddenFields($do)
     {
-        global $page, $_XH_csrfProtection;
+        global $_XH_csrfProtection;
 
         $html = '';
         foreach ($this->articles as $value) {
             $html .= $this->renderHiddenField('realblogtopics[]', $value);
         }
-        $html .= $this->renderHiddenField('page', $page)
-            . $this->renderHiddenField('action', $do)
+        $html .= $this->renderHiddenField('action', $do)
             . $_XH_csrfProtection->tokenInput();
         return $html;
     }
@@ -2633,11 +2602,10 @@ abstract class Realblog_ConfirmationView
      *
      * @global string The script name.
      * @global array  The localization of the plugins.
-     * @global string The number of the current page.
      */
     protected function renderConfirmationButtons()
     {
-        global $sn, $plugin_tx, $page;
+        global $sn, $plugin_tx;
 
         $html = tag(
             'input type="submit" name="submit" value="'
@@ -2645,7 +2613,7 @@ abstract class Realblog_ConfirmationView
         );
         $html .= '&nbsp;&nbsp;';
         $url = $sn . '?&amp;realblog&amp;admin=plugin_main&amp;action=plugin_text'
-            . '&amp;page=' . $page;
+            . '&amp;page=' . Realblog_getPage();
         $html .= tag(
             'input type="button" name="cancel" value="'
             . $plugin_tx['realblog']['btn_cancel'] . '" onclick="'
@@ -2661,11 +2629,10 @@ abstract class Realblog_ConfirmationView
      *
      * @global string The script name.
      * @global array  The localization of the plugins.
-     * @global string The number of the current page.
      */
     protected function renderNoSelectionInfo()
     {
-        global $sn, $plugin_tx, $page;
+        global $sn, $plugin_tx;
 
         return '<h1>Realblog &ndash; ' . $this->title . '</h1>'
             . '<form name="confirm" method="post" action="' . $sn
@@ -2680,7 +2647,7 @@ abstract class Realblog_ConfirmationView
                 . $plugin_tx['realblog']['btn_ok'] . '" onclick=\''
                 . 'location.href="' . $sn . '?&amp;realblog'
                 . '&amp;admin=plugin_main&amp;action=plugin_text'
-                . '&amp;page=' . $page . '"\''
+                . '&amp;page=' . Realblog_getPage() . '"\''
             )
             . '</td></tr>'
             . '</table></form>';
