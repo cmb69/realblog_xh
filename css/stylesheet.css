@@ -187,10 +187,12 @@ border: 0;
 
 .realblog_db_info {
     float: right;
+    margin-bottom: 1em;
 }
 
 .realblog_page_info {
     float: left;
+    margin-bottom: 1em;
 }
 
 .realblog_table_paging {

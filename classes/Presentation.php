@@ -122,7 +122,7 @@ class Realblog_ArticlesView
         $t .= $this->_renderPagination(
             'bottom', $page, $pageCount, @$back, @$next, $mysearch
         );
-        $t .= '</div>';
+        $t .= '<div style="clear: both"></div></div>';
         return $t;
     }
 
