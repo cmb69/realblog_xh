@@ -2,9 +2,10 @@
 * meltemi PM
 * remove folder rss/
 * add CHANGELOG
-* fix notice when deleting article
-* make filter form GET
 
 * replace mktime() with strtotime()
 * store categories in DB
 * simplify CSS (shall we call for themes?)
+* make filter form GET (has to wait until supported by CMSimple_XH)
+* make use of advanced search functionality (by date), or get rid of it
+* modify language strings to cater for different grammar (no tinkering)

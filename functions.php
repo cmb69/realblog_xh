@@ -57,13 +57,13 @@ function Realblog_searchClause()
     if (!empty($_REQUEST['realblog_title'])) {
         $compClauseTitle = new LikeWhereClause(
             REALBLOG_TITLE, $_REQUEST['realblog_title'],
-            $_REQUEST['title_operator']
+            2 // TODO: $_REQUEST['title_operator']
         );
     }
     if (!empty($_REQUEST['realblog_story'])) {
         $compClauseStory = new LikeWhereClause(
             REALBLOG_STORY, $_REQUEST['realblog_story'],
-            $_REQUEST['story_operator']
+            2 // TODO: $_REQUEST['story_operator']
         );
     }
 
@@ -88,11 +88,10 @@ function Realblog_searchClause()
                 $compClauseTitle, $compClauseStory
             );
             break;
-        case 'OR':
+        default:
             $compClause = new OrWhereClause(
                 $compClauseTitle, $compClauseStory
             );
-            break;
         }
         break;
     case 4:
@@ -105,11 +104,10 @@ function Realblog_searchClause()
                 $compClauseDate2, $compClauseStory
             );
             break;
-        case 'OR':
+        default:
             $compClause = new OrWhereClause(
                 $compClauseDate2, $compClauseStory
             );
-            break;
         }
         break;
     case 6:
@@ -119,11 +117,10 @@ function Realblog_searchClause()
                 $compClauseDate2, $compClauseTitle
             );
             break;
-        case 'OR':
+        default:
             $compClause = new OrWhereClause(
                 $compClauseDate2, $compClauseTitle
             );
-            break;
         }
         break;
     case 7:
@@ -132,17 +129,15 @@ function Realblog_searchClause()
         case 'AND':
             $compClause = new AndWhereClause($compClause, $compClauseTitle);
             break;
-        case 'OR':
+        default:
             $compClause = new OrWhereClause($compClause, $compClauseTitle);
-            break;
         }
         switch ($_REQUEST['operator_2']) {
         case 'AND':
             $compClause = new AndWhereClause($compClause, $compClauseStory);
             break;
-        case 'OR':
+        default:
             $compClause = new OrWhereClause($compClause, $compClauseStory);
-            break;
         }
         break;
     case 8:
@@ -155,11 +150,10 @@ function Realblog_searchClause()
                 $compClauseDate1, $compClauseStory
             );
             break;
-        case 'OR':
+        default:
             $compClause = new OrWhereClause(
                 $compClauseDate1, $compClauseStory
             );
-            break;
         }
         break;
     case 10:
@@ -169,11 +163,10 @@ function Realblog_searchClause()
                 $compClauseDate1, $compClauseTitle
             );
             break;
-        case 'OR':
+        default:
             $compClause = new OrWhereClause(
                 $compClauseDate1, $compClauseTitle
             );
-            break;
         }
         break;
     case 11:
@@ -184,19 +177,17 @@ function Realblog_searchClause()
                 $compClause, $compClauseTitle
             );
             break;
-        case 'OR':
+        default:
             $compClause = new OrWhereClause(
                 $compClause, $compClauseTitle
             );
-            break;
         }
         switch ($_REQUEST['operator_2']) {
         case 'AND':
             $compClause = new AndWhereClause($compClause, $compClauseStory);
             break;
-        case 'OR':
+        default:
             $compClause = new OrWhereClause($compClause, $compClauseStory);
-            break;
         }
         break;
     case 12:
@@ -210,12 +201,11 @@ function Realblog_searchClause()
                 $compClauseStory
             );
             break;
-        case 'OR':
+        default:
             $compClause = new OrWhereClause(
                 new AndWhereClause($compClauseDate1, $compClauseDate2),
                 $compClauseStory
             );
-            break;
         }
         break;
     case 14:
@@ -226,12 +216,11 @@ function Realblog_searchClause()
                 $compClauseTitle
             );
             break;
-        case 'OR':
+        default:
             $compClause = new OrWhereClause(
                 new AndWhereClause($compClauseDate1, $compClauseDate2),
                 $compClauseTitle
             );
-            break;
         }
         break;
     case 15:
@@ -240,17 +229,15 @@ function Realblog_searchClause()
         case 'AND':
             $compClause = new AndWhereClause($compClause, $compClauseTitle);
             break;
-        case 'OR':
+        default:
             $compClause = new OrWhereClause($compClause, $compClauseTitle);
-            break;
         }
         switch ($_REQUEST['operator_2']) {
         case 'AND':
             $compClause = new AndWhereClause($compClause, $compClauseStory);
             break;
-        case 'OR':
+        default:
             $compClause = new OrWhereClause($compClause, $compClauseStory);
-            break;
         }
         break;
     }
@@ -276,16 +263,13 @@ function Realblog_renderSearchResults($what, $count)
     $key = ($what == 'archive') ? 'back_to_archive' : 'search_show_all';
     $title = Realblog_getPgParameter('realblog_title');
     $story = Realblog_getPgParameter('realblog_story');
-    $words = array();
-    if ($title != '') {
-        $words[] = $title;
-    }
-    if ($story != '') {
-        $words[] = $story;
-    }
-    $words = implode(',', $words);
-    return '<p>' . $plugin_tx['realblog']['search_searched_for'] . ' <b>"'
-        . XH_hsc($words) . '"</b></p>'
+    $operator = Realblog_getPgParameter('operator_2');
+    $operator = ($operator == 'AND')
+        ? $plugin_tx['realblog']['search_and']
+        : $plugin_tx['realblog']['search_or'];
+    $words = '"' . $title . '" ' . $operator . ' "' . $story . '"';
+    return '<p>' . $plugin_tx['realblog']['search_searched_for'] . ' <b>'
+        . XH_hsc($words) . '</b></p>'
         . '<p>' . $plugin_tx['realblog']['search_result'] . '<b> '
         . $count . '</b></p>'
         . '<p><a href="' . $sn . '?' . $su . '"><b>'

@@ -946,18 +946,16 @@ class Realblog_SearchFormView
      * @return string (X)HTML.
      *
      * @global string The script name.
-     * @global string The URL of the current page.
      * @global string The (X)HTML fragment to insert into the head element.
      * @global array  The localization of the core.
      * @global array  The localization of the plugins.
      */
     public function render()
     {
-        global $sn, $su, $hjs, $tx, $plugin_tx;
+        global $sn, $hjs, $tx, $plugin_tx;
 
         $hjs .= $this->_renderToggleScript();
-        return '<form name="realblogsearch" method="post" action="' . $sn . "?"
-            . $su . '">'
+        return '<form name="realblogsearch" method="get" action="' . $sn . '">'
             . $this->_renderSearchToggle()
             . '<div id="searchblock" style="display: none">'
             . $this->_renderHiddenInputs()
@@ -973,7 +971,7 @@ class Realblog_SearchFormView
             . $this->_renderInputRow('story')
             . '<tr><td colspan="2" style="text-align: center;">'
             . tag(
-                'input type="submit" name="send" value="'
+                'input type="submit" value="'
                 . $tx['search']['button'] . '"'
             )
             . '</td></tr>'
@@ -1044,10 +1042,15 @@ EOT;
      * Renders the hidden input fields.
      *
      * @return string (X)HTML.
+     *
+     * @global string The URL of the current page.
      */
     private function _renderHiddenInputs()
     {
-        return $this->_renderHiddenInput('realblogaction', 'search')
+        global $su;
+
+        return $this->_renderHiddenInput('selected', $su)
+            . $this->_renderHiddenInput('realblogaction', 'search')
             . $this->_renderHiddenInput('realblogYear', $this->_year);
     }
 
@@ -1082,7 +1085,9 @@ EOT;
         return '<tr><td style="width: 30%;" class="realblog_search_text">'
             . $plugin_tx['realblog']["{$which}_label"] . ' '
             . $plugin_tx['realblog']['search_contains'] . ':' . '</td>'
-            . '<td>' . $this->_renderOperatorSelect("{$which}_operator")
+            . '<td>'
+            // TODO: make the operators available?
+            /*. $this->_renderOperatorSelect("{$which}_operator")*/
             . $this->_renderInput("realblog_$which") . '</td></tr>';
     }
 
