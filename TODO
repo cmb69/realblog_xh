@@ -3,6 +3,7 @@
 * remove folder rss/
 * add CHANGELOG
 * fix Realblog_url (problem with urlencode for HTML specialchars)
+* improve page parameter (store in cookie; rename to realblog_page)
 
 * replace mktime() with strtotime()
 * store categories in DB

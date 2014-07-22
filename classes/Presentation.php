@@ -156,7 +156,7 @@ class Realblog_ArticlesView
         if (strstr($field[REALBLOG_HEADLINE], '|' . $this->_categories . '|')
             || strstr($field[REALBLOG_STORY], '|' . $this->_categories . '|')
             || $this->_categories == 'all'
-            || (Realblog_getPgParameter('operator_2')
+            || (Realblog_getPgParameter('realblog_search')
             && strstr($field[REALBLOG_H], '|' . $this->_categories . '|'))
         ) {
             if ($plugin_cf['realblog']['teaser_multicolumns']) {
@@ -463,7 +463,7 @@ class Realblog_ArchiveView
 
         $t = '';
         $filter_total = 0;
-        if (Realblog_getPgParameter('operator_2')) {
+        if (Realblog_getPgParameter('realblog_search')) {
             $currentYear = date('Y');
             if (!isset($this->_year) || $this->_year <= 0
                 || $this->_year >= $currentYear || empty($this->_year)
@@ -1131,7 +1131,7 @@ EOT;
         $checked = ($which == 'or') ? ' checked="checked"' : '';
         return '<label>'
             . tag(
-                'input type="radio" name="operator_2"'
+                'input type="radio" name="realblog_search"'
                 . ' value="' . strtoupper($which) . '"' . $checked
             )
             . '&nbsp;' . $plugin_tx['realblog']["search_$which"] . '</label>';

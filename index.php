@@ -182,7 +182,7 @@ function Realblog_blog($showSearch = false, $realBlogCat = 'all')
             $t .= $temp->render();
         }
 
-        if (Realblog_getPgParameter('operator_2')) {
+        if (Realblog_getPgParameter('realblog_search')) {
             $compRealblogClause = new SimpleWhereClause(
                 REALBLOG_STATUS, '=', 1, INTEGER_COMPARISON
             );
@@ -296,7 +296,7 @@ function Realblog_archive($showSearch = false)
             $t .= $temp->render();
         }
 
-        if (Realblog_getPgParameter('operator_2')) {
+        if (Realblog_getPgParameter('realblog_search')) {
             $compArchiveClause = new SimpleWhereClause(
                 REALBLOG_STATUS, '=', 2, INTEGER_COMPARISON
             );
