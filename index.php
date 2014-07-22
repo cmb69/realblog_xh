@@ -363,7 +363,6 @@ function Realblog_archive($showSearch = false)
  * @return string (X)HTML.
  *
  * @global array  The paths of system files and folders.
- * @global string The script name.
  * @global array  The localization of the plugins.
  * @global array  The configuration of the plugins.
  * @global array  The URLs of the pages.
@@ -375,7 +374,7 @@ function Realblog_archive($showSearch = false)
  */
 function Realblog_link($pageUrl)
 {
-    global $pth, $sn, $plugin_tx, $plugin_cf, $u, $s, $c, $h, $sl, $page;
+    global $pth, $plugin_tx, $plugin_cf, $u, $s, $c, $h, $sl, $page;
 
     if (!in_array($pageUrl, $u)) {
         return '';
@@ -418,12 +417,16 @@ function Realblog_link($pageUrl)
                             $record[REALBLOG_DATE]
                         )
                         . "\n" . '</div>';
-                    $t .= "\n" . '<div class="realblog_tpl_show_title">' . "\n"
-                        . '<a href="' . $sn . '?' . $pageUrl
-                        . '&amp;realblogaction=view&amp;realblogID='
-                        . $record[REALBLOG_ID] . '&amp;page=1">'
-                        . $record[REALBLOG_TITLE] .'</a>' . "\n"
-                        . '</div>' . "\n";
+                    $url = Realblog_url(
+                        $pageUrl, $record[REALBLOG_TITLE], array(
+                            'realblogaction' => 'view',
+                            'realblogID' => $record[REALBLOG_ID],
+                            'page' => 1
+                        )
+                    );
+                    $t .= '<div class="realblog_tpl_show_title">'
+                        . '<a href="' . XH_hsc($url) . '">'
+                        . $record[REALBLOG_TITLE] .'</a></div>';
                     // Limit the number of visible realblog items (set in
                     // the configuration; empty=all realblog)
                     if ($plugin_cf['realblog']['links_visible'] > 0) {

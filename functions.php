@@ -34,6 +34,30 @@ define('REALBLOG_RSSFEED', 9);
 define('REALBLOG_COMMENTS', 10);
 
 /**
+ * Constructs a front-end URL.
+ *
+ * @param string $pageUrl      A page URL.
+ * @param string $articleTitle An article title.
+ * @param array  $params       A map of names -> values.
+ *
+ * @return string
+ */
+function Realblog_url($pageUrl, $articleTitle = null, $params = array())
+{
+    global $sn;
+
+    $url = $sn . '?' . $pageUrl;
+    if (isset($articleTitle)) {
+        $url .= '&' . urlencode(str_replace(' ', '-', $articleTitle));
+    }
+    ksort($params);
+    foreach ($params as $name => $value) {
+        $url .= '&' . $name . '=' . $value;
+    }
+    return $url;
+}
+
+/**
  * Returns the search clause.
  *
  * @return CompositeWhereClause
@@ -272,7 +296,7 @@ function Realblog_renderSearchResults($what, $count)
         . XH_hsc($words) . '</b></p>'
         . '<p>' . $plugin_tx['realblog']['search_result'] . '<b> '
         . $count . '</b></p>'
-        . '<p><a href="' . $sn . '?' . $su . '"><b>'
+        . '<p><a href="' . XH_hsc(Realblog_url($su)) . '"><b>'
         . $plugin_tx['realblog'][$key] . '</b></a></p>';
 }
 

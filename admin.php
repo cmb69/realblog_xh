@@ -297,12 +297,11 @@ function Realblog_makeTimestampDates($tmpdate = null)
  * @return string (X)HTML.
  *
  * @global array             The localization of the plugins.
- * @global string            The name of the current plugin.
  * @global string            The script name.
  */
 function Realblog_dbconfirm($title, $info, $page)
 {
-    global $plugin_tx, $plugin, $sn;
+    global $plugin_tx, $sn;
 
     if (!isset($page)) {
         $page = $_SESSION['page'];
@@ -311,15 +310,15 @@ function Realblog_dbconfirm($title, $info, $page)
     $t = '<h1>Realblog &ndash; ' . $title . '</h1>';
     $t .= '<div>&nbsp;</div>';
     $t .= '<form name="confirm" method="post" action="' . $sn . '?&amp;'
-        . $plugin . '&amp;admin=plugin_main">';
+        . 'realblog&amp;admin=plugin_main">';
     $t .= '<table width="100%"><tbody>';
     $t .= '<tr><td class="realblog_confirm_info" align="center">'
         . $info . '</td></tr><tr><td>&nbsp;</td></tr>';
     $t .= '<tr><td class="realblog_confirm_button" align="center">'
         . tag(
             'input type="button" name="cancel" value="'
-            . $plugin_tx[$plugin]['btn_ok'] . '" onclick=\'location.href="'
-            . $sn . '?&amp;' . $plugin . '&amp;admin=plugin_main'
+            . $plugin_tx['realblog']['btn_ok'] . '" onclick=\'location.href="'
+            . $sn . '?&amp;realblog&amp;admin=plugin_main'
             . '&amp;action=plugin_text&amp;page=' . $page . '"\''
         )
         . '</td></tr>';

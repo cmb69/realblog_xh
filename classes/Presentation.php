@@ -101,8 +101,6 @@ class Realblog_ArticlesView
         }
         $end_index = min($page * $this->_articlesPerPage - 1, $articleCount);
 
-        $mysearch = '';
-
         if ($articleCount > 0 && $pageCount > 1) {
             if ($pageCount > $page) {
                 $next = $page + 1;
@@ -115,12 +113,12 @@ class Realblog_ArticlesView
 
         $t = "\n" . '<div class="realblog_show_box">' . "\n";
         $t .= $this->_renderPagination(
-            'top', $page, $pageCount, @$back, @$next, $mysearch
+            'top', $page, $pageCount, @$back, @$next
         );
         $t .= "\n" . '<div style="clear:both;"></div>';
         $t .= $this->_renderArticlePreviews($start_index, $end_index);
         $t .= $this->_renderPagination(
-            'bottom', $page, $pageCount, @$back, @$next, $mysearch
+            'bottom', $page, $pageCount, @$back, @$next
         );
         $t .= '<div style="clear: both"></div></div>';
         return $t;
@@ -199,23 +197,25 @@ class Realblog_ArticlesView
      *
      * @return string (X)HTML.
      *
-     * @global string The script name.
      * @global string The URL of the current page.
      * @global array  The localization of the plugins.
      * @global string The current page number.
      */
     private function _renderArticleHeading($field)
     {
-        global $sn, $su, $plugin_tx, $page;
+        global $su, $plugin_tx, $page;
 
         $t = '<h4>';
+        $url = Realblog_url(
+            $su, $field[REALBLOG_TITLE], array(
+                'realblogaction' => 'view',
+                'realblogID' => $field[REALBLOG_ID],
+                'page' => $page
+            )
+        );
         if ($field[REALBLOG_STORY] != '' || XH_ADM) {
-            $t .= '<a href="' . $sn . '?' . $su . '&amp;'
-                . str_replace(' ', '_', $field[REALBLOG_TITLE])
-                . '&amp;realblogaction=view&amp;realblogID='
-                . $field[REALBLOG_ID] . '&amp;page=' . $page
-                . '" title="' . $plugin_tx['realblog']["tooltip_view"]
-                . '">';
+            $t .= '<a href="' . XH_hsc($url) . '" title="'
+                . $plugin_tx['realblog']["tooltip_view"] . '">';
         }
         $t .= $field[REALBLOG_TITLE];
         if ($field[REALBLOG_STORY] != '' || XH_ADM) {
@@ -253,7 +253,6 @@ class Realblog_ArticlesView
      *
      * @return string (X)HTML.
      *
-     * @global string The script name.
      * @global string The URL of the current page.
      * @global array  The configuration of the plugins.
      * @global array  The localization of the plugins.
@@ -261,7 +260,7 @@ class Realblog_ArticlesView
      */
     private function _renderArticleFooter($field)
     {
-        global $sn, $su, $plugin_cf, $plugin_tx, $page;
+        global $su, $plugin_cf, $plugin_tx, $page;
 
         $t = '<div class="realblog_entry_footer">';
 
@@ -271,14 +270,18 @@ class Realblog_ArticlesView
         ) {
             $t .= $this->_renderCommentCount($field);
         }
+        $url = Realblog_url(
+            $su, $field[REALBLOG_TITLE], array(
+                'realblogaction' => 'view',
+                'realblogID' => $field[REALBLOG_ID],
+                'page' => $page
+            )
+        );
         $t .= '<p class="realblog_read_more">'
-            . '<a href="' . $sn . '?' . $su . '&amp;'
-            . str_replace(' ', '_', $field[REALBLOG_TITLE])
-            . '&amp;realblogaction=view&amp;realblogID='
-            . $field[REALBLOG_ID] . '&amp;page=' . $page
-            . '" title="' . $plugin_tx['realblog']["tooltip_view"]
-            . '">' . $plugin_tx['realblog']['read_more']
-            . '</a></p>' . '</div>';
+            . '<a href="' . XH_hsc($url) . '" title="'
+            . $plugin_tx['realblog']["tooltip_view"] . '">'
+            . $plugin_tx['realblog']['read_more'] . '</a></p>'
+            . '</div>';
         return $t;
     }
 
@@ -299,29 +302,27 @@ class Realblog_ArticlesView
     /**
      * Renders the pagination.
      *
-     * @param string $place        A place to render ('top' or 'bottom').
-     * @param string $page         A page number.
-     * @param int    $pageCount    A page count.
-     * @param int    $back         The number of the previous page.
-     * @param int    $next         The number of the next page.
-     * @param string $searchClause A search clause.
+     * @param string $place     A place to render ('top' or 'bottom').
+     * @param string $page      A page number.
+     * @param int    $pageCount A page count.
+     * @param int    $back      The number of the previous page.
+     * @param int    $next      The number of the next page.
      *
      * @return string (X)HTML.
      */
-    private function _renderPagination(
-        $place, $page, $pageCount, $back, $next, $searchClause
-    ) {
+    private function _renderPagination($place, $page, $pageCount, $back, $next)
+    {
         $articleCount = count($this->_articles);
         $t = '';
         if ($articleCount > 0 && $pageCount > 1) {
-            $t .= $this->_renderPageLinks($pageCount, $searchClause);
+            $t .= $this->_renderPageLinks($pageCount);
         }
         if ($this->_wantsNumberOfArticles($place)) {
             $t .= $this->_renderNumberOfArticles();
         }
         if ($articleCount > 0 && $pageCount > 1) {
             $t .= $this->_renderPageOfPages(
-                $page, $pageCount, @$back, @$next, $searchClause
+                $page, $pageCount, @$back, @$next
             );
         }
         return $t;
@@ -347,24 +348,24 @@ class Realblog_ArticlesView
     /**
      * Renders the page links.
      *
-     * @param int    $pageCount    A page count.
-     * @param string $searchClause A search clause.
+     * @param int $pageCount A page count.
      *
      * @return string (X)HTML.
      *
-     * @global string The script name.
      * @global string The URL of the current page.
      * @global array  The localization of the plugins.
      */
-    private function _renderPageLinks($pageCount, $searchClause)
+    private function _renderPageLinks($pageCount)
     {
-        global $sn, $su, $plugin_tx;
+        global $su, $plugin_tx;
 
         $t = '<div class="realblog_table_paging">';
         for ($i = 1; $i <= $pageCount; $i++) {
             $separator = ($i < $pageCount) ? ' ' : '';
-            $t .= '<a href="' . $sn . '?' . $su . '&amp;page=' . $i
-                . $searchClause . '" title="'
+            $url = Realblog_url(
+                $su, null, array('page' => $i)
+            );
+            $t .= '<a href="' . XH_hsc($url) . '" title="'
                 . $plugin_tx['realblog']['page_label'] . ' ' . $i . '">['
                 . $i . ']</a>' . $separator;
         }
@@ -375,31 +376,32 @@ class Realblog_ArticlesView
     /**
      * Renders the page of pages.
      *
-     * @param string $page         The number of the current page.
-     * @param int    $pageCount    A page count.
-     * @param int    $back         The number of the previous page.
-     * @param int    $next         The number of the next page.
-     * @param string $searchClause A search clause.
+     * @param string $page      The number of the current page.
+     * @param int    $pageCount A page count.
+     * @param int    $back      The number of the previous page.
+     * @param int    $next      The number of the next page.
      *
      * @return string (X)HTML.
      *
-     * @global string The script name.
      * @global string The URL of the current page.
      * @global array  The localization of the plugins.
      */
-    private function _renderPageOfPages(
-        $page, $pageCount, $back, $next, $searchClause
-    ) {
-        global $sn, $su, $plugin_tx;
+    private function _renderPageOfPages($page, $pageCount, $back, $next)
+    {
+        global $su, $plugin_tx;
 
+        $backUrl = Realblog_url(
+            $su, null, array('page' => @$back)
+        );
+        $nextUrl = Realblog_url(
+            $su, null, array('page' => @$next)
+        );
         return '<div class="realblog_page_info">'
             . $plugin_tx['realblog']['page_label'] . ' : '
-            . '<a href="' . $sn . '?' . $su . '&amp;page=' . @$back
-            . $searchClause . '" title="'
+            . '<a href="' . XH_hsc($backUrl) . '" title="'
             . $plugin_tx['realblog']['tooltip_previous'] . '">'
             . '&#9664;</a>&nbsp;' . $page . ' / ' . $pageCount
-            . '&nbsp;' . '<a href="' . $sn . '?' . $su
-            . '&amp;page=' . @$next . $searchClause . '" title="'
+            . '&nbsp;' . '<a href="' . XH_hsc($nextUrl) . '" title="'
             . $plugin_tx['realblog']['tooltip_next'] . '">'
             . '&#9654;</a></div>';
     }
@@ -568,23 +570,26 @@ class Realblog_ArchiveView
      *
      * @return string (X)HTML.
      *
-     * @global string The script name.
      * @global string The URL of the current page.
      * @global array  The localization of the plugins.
      */
     private function _renderPagination($back, $next)
     {
-        global $sn, $su, $plugin_tx;
+        global $su, $plugin_tx;
 
+        $url = Realblog_url(
+            $su, null, array('realblogYear' => $back)
+        );
         $t = '<div class="realblog_table_paging">'
-            . '<a href="' . $sn . '?' . $su . '&amp;realblogYear='
-            . $back . '" title="'
+            . '<a href="' . XH_hsc($url) . '" title="'
             . $plugin_tx['realblog']['tooltip_previousyear'] . '">'
             . '&#9664;</a>&nbsp;&nbsp;';
         $t .= '<b>' . $plugin_tx['realblog']['archive_year']
             . $this->_year . '</b>';
-        $t .= '&nbsp;&nbsp;<a href="' . $sn . '?' . $su
-            . '&amp;realblogYear=' . $next . '" title="'
+        $url = Realblog_url(
+            $su, null, array('realblogYear' => $next)
+        );
+        $t .= '&nbsp;&nbsp;<a href="' . XH_hsc($url) . '" title="'
             . $plugin_tx['realblog']['tooltip_nextyear'] . '">'
             . '&#9654;</a>';
         $t .= '</div>';
@@ -622,29 +627,31 @@ class Realblog_ArchiveView
      *
      * @return string (X)HTML.
      *
-     * @global string The script name.
      * @global string The URL of the current page.
      * @global array  The localization of the plugins.
      * @global int    The number of the current page.
      */
     private function _renderArticleList($articles)
     {
-        global $sn, $su, $plugin_tx, $page;
+        global $su, $plugin_tx, $page;
 
         $t = '<ul class="realblog_archive">';
         foreach ($articles as $key => $field) {
+            $url = Realblog_url(
+                $su, $field[REALBLOG_TITLE], array(
+                    'realblogaction' => 'view',
+                    'realblogID' => $field[REALBLOG_ID],
+                    'page' => $page
+                )
+            );
             $t .= '<li>'
                 . date(
                     $plugin_tx['realblog']['date_format'],
                     $field[REALBLOG_DATE]
                 )
-                . '&nbsp;&nbsp;&nbsp;<a href="' . $sn . '?'
-                . $su . '&amp;'
-                . str_replace(' ', '_', $field[REALBLOG_TITLE])
-                . '&amp;realblogaction=view&amp;realblogID='
-                . $field[REALBLOG_ID] . '&amp;page=' . $page
-                . '" title="' . $plugin_tx['realblog']["tooltip_view"]
-                . '">' . $field[REALBLOG_TITLE] . '</a></li>';
+                . '&nbsp;&nbsp;&nbsp;<a href="' . XH_hsc($url) . '" title="'
+                . $plugin_tx['realblog']["tooltip_view"] . '">'
+                . $field[REALBLOG_TITLE] . '</a></li>';
         }
         $t .= '</ul>';
         return $t;
@@ -655,14 +662,13 @@ class Realblog_ArchiveView
      *
      * @return string (X)HTML.
      *
-     * @global string The script name.
      * @global string The URL of the current page.
      * @global array  The localization of the plugins.
      * @global int    The number of the current page.
      */
     private function _renderSearchResults()
     {
-        global $sn, $su, $plugin_tx, $page;
+        global $su, $plugin_tx, $page;
 
         $currentMonth = -1;
         $t = '';
@@ -673,18 +679,21 @@ class Realblog_ArchiveView
                 $t .= '<h4>' . $this->_getMonthName($month) . ' ' . $year . '</h4>';
                 $currentMonth = $month;
             }
+            $url = Realblog_url(
+                $su, $field[REALBLOG_TITLE], array(
+                    'realblogaction' => 'view',
+                    'realblogID' => $field[REALBLOG_ID],
+                    'page' => $page
+                )
+            );
             $t .= '<p>'
                 . date(
                     $plugin_tx['realblog']['date_format'],
                     $field[REALBLOG_DATE]
                 )
-                . '&nbsp;&nbsp;&nbsp;<a href="' . $sn . '?' . $su
-                . '&amp;'
-                . str_replace(' ', '_', $field[REALBLOG_TITLE])
-                . '&amp;realblogaction=view&amp;realblogID='
-                . $field[REALBLOG_ID] . '&amp;page=' . $page
-                . '" title="' . $plugin_tx['realblog']["tooltip_view"]
-                . '">' . $field[REALBLOG_TITLE] . '</a></p>';
+                . '&nbsp;&nbsp;&nbsp;<a href="' . XH_hsc($url) . '" title="'
+                . $plugin_tx['realblog']["tooltip_view"] . '">'
+                . $field[REALBLOG_TITLE] . '</a></p>';
         }
         return $t;
     }
@@ -799,15 +808,18 @@ class Realblog_ArticleView
         global $sn, $su, $plugin_tx;
 
         if ($this->_article[REALBLOG_STATUS] == 2) {
-            $url = $sn . '?' . $su . '&amp;realblogYear='
-                . $_SESSION['realblogYear'];
+            $url = Realblog_url(
+                $su, null, array('realblogYear' => $_SESSION['realblogYear'])
+            );
             $text = $plugin_tx['realblog']['archiv_back'];
         } else {
-            $url = $sn . '?' . $su . '&amp;page=' . $this->_page;
+            $url = Realblog_url(
+                $su, null, array('page' => $this->_page)
+            );
             $text = $plugin_tx['realblog']['blog_back'];
         }
         return '<span class="realblog_button">'
-            . '<a href="' . $url . '">' . $text . '</a></span>';
+            . '<a href="' . XH_hsc($url) . '">' . $text . '</a></span>';
     }
 
     /**
@@ -1846,7 +1858,7 @@ class Realblog_ArticlesAdminView
             )
             . '</td>'
             . '<td class="realblog_table_header" align="center">'
-            . '<a href="' . $sn . '?&amp;' . 'realblog'
+            . '<a href="' . $sn . '?&amp;realblog'
             . '&amp;admin=plugin_main&amp;action=add_realblog">'
             . tag(
                 'img src="' . $this->_imageFolder . 'add.png"'
@@ -1907,7 +1919,7 @@ class Realblog_ArticlesAdminView
                 $back = $page_total - 1;
             }
             $o .= '<div class="realblog_table_paging">'
-                . '<a href="' . $sn . '?&amp;' . 'realblog'
+                . '<a href="' . $sn . '?&amp;realblog'
                 . '&amp;admin=plugin_main&amp;action=plugin_text&amp;page='
                 . $back . '&amp;filter1=' . $filter1 . '&amp;filter2='
                 . $filter2 . '&amp;filter3=' . $filter3 . '" title="'
@@ -1915,14 +1927,14 @@ class Realblog_ArticlesAdminView
                 . '&#9664;</a>&nbsp;&nbsp;';
             for ($i = 1; $i <= $page_total; $i++) {
                 $separator = ($i < $page_total) ? ' ' : '';
-                $o .= '<a href="' . $sn . '?&amp;' . 'realblog'
+                $o .= '<a href="' . $sn . '?&amp;realblog'
                     . '&amp;admin=plugin_main&amp;action=plugin_text&amp;page='
                     . $i . '&amp;filter1=' . $filter1 . '&amp;filter2='
                     . $filter2 . '&amp;filter3=' . $filter3 . '" title="'
                     . $plugin_tx['realblog']['page_label']
                     . ' ' . $i . '">[' . $i . ']</a>' . $separator;
             }
-            $o .= '&nbsp;&nbsp;<a href="' . $sn . '?&amp;' . 'realblog'
+            $o .= '&nbsp;&nbsp;<a href="' . $sn . '?&amp;realblog'
                 . '&amp;admin=plugin_main&amp;action=plugin_text&amp;page='
                 . $next . '&amp;filter1=' . $filter1 . '&amp;filter2='
                 . $filter2 . '&amp;filter3=' . $filter3 . '" title="'
@@ -1959,7 +1971,7 @@ class Realblog_ArticlesAdminView
             . '</td>'
             . '<td class="realblog_table_line" valign="top"'
             . ' align="center">'
-            . '<a href="' . $sn. '?&amp;' . 'realblog'
+            . '<a href="' . $sn. '?&amp;realblog'
             . '&amp;admin=plugin_main&amp;action=delete_realblog'
             . '&amp;realblogID=' . $field[REALBLOG_ID] . '&amp;page='
             . $page . '">'
@@ -1971,7 +1983,7 @@ class Realblog_ArticlesAdminView
             . '</a></td>'
             . '<td class="realblog_table_line" valign="top"'
             . ' align="center">'
-            . '<a href="' . $sn . '?&amp;' . 'realblog'
+            . '<a href="' . $sn . '?&amp;realblog'
             . '&amp;admin=plugin_main&amp;action=modify_realblog'
             . '&amp;realblogID=' . $field[REALBLOG_ID] . '&amp;page='
             . $page . '">'
@@ -2689,7 +2701,7 @@ abstract class Realblog_ConfirmationView
             . tag(
                 'input type="button" name="cancel" value="'
                 . $plugin_tx['realblog']['btn_ok'] . '" onclick=\''
-                . 'location.href="' . $sn . '?&amp;' . 'realblog'
+                . 'location.href="' . $sn . '?&amp;realblog'
                 . '&amp;admin=plugin_main&amp;action=plugin_text'
                 . '&amp;page=' . $page . '"\''
             )

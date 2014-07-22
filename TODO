@@ -2,6 +2,8 @@
 * meltemi PM
 * remove folder rss/
 * add CHANGELOG
+* realblogaction ist entweder view oder search; bei view ist immer realblogID
+  gesetzt; kann vereinfacht werden
 
 * replace mktime() with strtotime()
 * store categories in DB
