@@ -1341,14 +1341,16 @@ class Realblog_AdminController
      *
      * @return string (X)HTML.
      *
-     * @global string The page title.
-     * @global array  The localization of the plugins.
-     * @global int    The number of the current page.
+     * @global string            The page title.
+     * @global array             The localization of the plugins.
+     * @global int               The number of the current page.
+     * @global XH_CSRFProtection The CSRF protector.
      */
     private function _addArticle()
     {
-        global $title, $plugin_tx, $page;
+        global $title, $plugin_tx, $page, $_XH_csrfProtection;
 
+        $_XH_csrfProtection->check();
         $article = $this->_getArticleFromParameters();
         $this->_db->insertWithAutoId('realblog.txt', REALBLOG_ID, $article);
         $title = $plugin_tx['realblog']['tooltip_add'];
@@ -1361,14 +1363,16 @@ class Realblog_AdminController
      *
      * @return string (X)HTML.
      *
-     * @global string The page title.
-     * @global array  The localization of the plugins.
-     * @global int    The number of the current page.
+     * @global string            The page title.
+     * @global array             The localization of the plugins.
+     * @global int               The number of the current page.
+     * @global XH_CSRFProtection The CSRF protector.
      */
     private function _modifyArticle()
     {
-        global $title, $plugin_tx, $page;
+        global $title, $plugin_tx, $page, $_XH_csrfProtection;
 
+        $_XH_csrfProtection->check();
         $article = $this->_getArticleFromParameters();
         $this->_db->updateRowById('realblog.txt', REALBLOG_ID, $article);
         $title = $plugin_tx['realblog']['tooltip_modify'];
@@ -1381,14 +1385,16 @@ class Realblog_AdminController
      *
      * @return string (X)HTML.
      *
-     * @global string The page title.
-     * @global array  The localization of the plugins.
-     * @global int    The number of the current page.
+     * @global string            The page title.
+     * @global array             The localization of the plugins.
+     * @global int               The number of the current page.
+     * @global XH_CSRFProtection The CSRF protector.
      */
     private function _deleteArticle()
     {
-        global $title, $plugin_tx, $page;
+        global $title, $plugin_tx, $page, $_XH_csrfProtection;
 
+        $_XH_csrfProtection->check();
         $page = $_SESSION['page'];
         $id = Realblog_getPgParameter('realblog_id');
         $this->_db->deleteWhere(
@@ -1421,14 +1427,16 @@ class Realblog_AdminController
      *
      * @return string (X)HTML.
      *
-     * @global string The page title.
-     * @global array  The localization of the plugins.
-     * @global int    The number of the current page.
+     * @global string            The page title.
+     * @global array             The localization of the plugins.
+     * @global int               The number of the current page.
+     * @global XH_CSRFProtection The CSRF protector.
      */
     private function _changeStatus()
     {
-        global $title, $plugin_tx, $page;
+        global $title, $plugin_tx, $page, $_XH_csrfProtection;
 
+        $_XH_csrfProtection->check();
         if (isset($_SESSION['page'])) {
             $page = $_SESSION['page'];
         }
@@ -1467,14 +1475,16 @@ class Realblog_AdminController
      *
      * @return string (X)HTML.
      *
-     * @global string The page title.
-     * @global array  The localization of the plugins.
-     * @global int    The number of the current page.
+     * @global string            The page title.
+     * @global array             The localization of the plugins.
+     * @global int               The number of the current page.
+     * @global XH_CSRFProtection The CSRF protector.
      */
     private function _deleteArticles()
     {
-        global $title, $plugin_tx, $page;
+        global $title, $plugin_tx, $page, $_XH_csrfProtection;
 
+        $_XH_csrfProtection->check();
         $ids = Realblog_getPgParameter('realblogtopics');
         foreach ($ids as $id) {
             $this->_db->deleteWhere(
@@ -1718,8 +1728,8 @@ class Realblog_ArticlesAdminView
      *
      * @return string (X)HTML.
      *
-     * @global string The script name.
-     * @global string The current page number.
+     * @global string            The script name.
+     * @global string            The current page number.
      */
     public function render()
     {
@@ -2199,9 +2209,13 @@ class Realblog_ArticleAdminView
      * Renders the hidden fields.
      *
      * @return string (X)HTML.
+     *
+     * @global XH_CSRFProtection The CSRF protector.
      */
     private function _renderHiddenFields()
     {
+        global $_XH_csrfProtection;
+
         $html = '';
         $fields = array(
             'page' => $this->_retPage,
@@ -2211,6 +2225,7 @@ class Realblog_ArticleAdminView
         foreach ($fields as $name => $value) {
             $html .= $this->_renderHiddenField($name, $value);
         }
+        $html .= $_XH_csrfProtection->tokenInput();
         return $html;
     }
 
@@ -2585,18 +2600,20 @@ abstract class Realblog_ConfirmationView
      *
      * @return string (X)HTML.
      *
-     * @global string The number of the current page.
+     * @global string            The number of the current page.
+     * @global XH_CSRFProtection The CSRF protector.
      */
     protected function renderHiddenFields($do)
     {
-        global $page;
+        global $page, $_XH_csrfProtection;
 
         $html = '';
         foreach ($this->articles as $value) {
             $html .= $this->renderHiddenField('realblogtopics[]', $value);
         }
         $html .= $this->renderHiddenField('page', $page)
-            . $this->renderHiddenField('action', $do);
+            . $this->renderHiddenField('action', $do)
+            . $_XH_csrfProtection->tokenInput();
         return $html;
     }
 

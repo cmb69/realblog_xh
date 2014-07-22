@@ -22,10 +22,10 @@
         <include name="*Test.php"/>
     </fileset>
 
-<!--    <fileset id="attack-tests" dir="tests/attack">
+    <fileset id="attack-tests" dir="tests/attack">
         <include name="*Test.php"/>
     </fileset>
--->
+
     <!-- Checks -->
 
     <target name="sniff">
@@ -53,7 +53,7 @@
         </phpunit>
     </target>
 
-<!--    <target name="attack-tests">
+    <target name="attack-tests">
         <fail unless="env.CMSIMPLEDIR" message="CMSIMPLEDIR undefined!"/>
         <phpunit haltonerror="true" haltonfailure="true">
             <formatter type="plain" usefile="false"/>
@@ -62,7 +62,7 @@
             </batchtest>
         </phpunit>
     </target>
--->
+
     <!-- Code coverage -->
 
     <target name="coverage">

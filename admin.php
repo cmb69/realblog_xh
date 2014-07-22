@@ -296,13 +296,12 @@ function Realblog_makeTimestampDates($tmpdate = null)
  *
  * @return string (X)HTML.
  *
- * @global array  The localization of the plugins.
- * @global string The name of the current plugin.
- * @global string The script name.
+ * @global array             The localization of the plugins.
+ * @global string            The name of the current plugin.
+ * @global string            The script name.
  */
 function Realblog_dbconfirm($title, $info, $page)
 {
-    // Display a confirmation
     global $plugin_tx, $plugin, $sn;
 
     if (!isset($page)) {

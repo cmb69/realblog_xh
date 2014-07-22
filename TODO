@@ -1,8 +1,9 @@
 * keep an eye on compat.php
-* CSRF protection
 * meltemi PM
 * remove folder rss/
 * add CHANGELOG
+* fix notice when deleting article
+* make filter form GET
 
 * replace mktime() with strtotime()
 * store categories in DB
