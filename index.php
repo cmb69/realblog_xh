@@ -166,13 +166,12 @@ function Realblog_blog($showSearch = false, $realBlogCat = 'all')
 
     $realblogID = Realblog_getPgParameter('realblogID');
     $page = Realblog_getPgParameter('page');
-    $realblogaction = Realblog_getPgParameter('realblogaction');
     $realblogYear = Realblog_getPgParameter('realblogYear');
     $compClause = Realblog_getPgParameter('compClause');
 
     $db = Realblog_connect();
     $t = '';
-    if ($realblogaction != 'view') {
+    if (!isset($realblogID)) {
         $compClause = new SimpleWhereClause(
             REALBLOG_STATUS, '=', 1, INTEGER_COMPARISON
         );
@@ -183,19 +182,14 @@ function Realblog_blog($showSearch = false, $realBlogCat = 'all')
             $t .= $temp->render();
         }
 
-        if ($realblogaction == 'search') {
+        if (Realblog_getPgParameter('operator_2')) {
             $compRealblogClause = new SimpleWhereClause(
                 REALBLOG_STATUS, '=', 1, INTEGER_COMPARISON
             );
             $compClause = Realblog_searchClause();
-        }
-
-        if ($realblogaction == "search") {
             $articlesPerPage = PHP_INT_MAX;
             if (isset($compClause)) {
                 $compClause = new AndWhereClause($compRealblogClause, $compClause);
-            } else {
-                unset($realblogaction);
             }
             $temp = ($plugin_cf['realblog']['entries_order'] == 'desc')
                 ? DESCENDING : ASCENDING;
@@ -250,7 +244,7 @@ function Realblog_blog($showSearch = false, $realBlogCat = 'all')
         $records = $catRecords;
 
         $temp = new Realblog_ArticlesView(
-            $records, $realBlogCat, $realblogaction, $articlesPerPage
+            $records, $realBlogCat, $articlesPerPage
         );
         $t .= $temp->render();
     } else {
@@ -285,13 +279,12 @@ function Realblog_archive($showSearch = false)
 
     $realblogID = Realblog_getPgParameter('realblogID');
     $page = Realblog_getPgParameter('page');
-    $realblogaction = Realblog_getPgParameter('realblogaction');
     $realblogYear = Realblog_getPgParameter('realblogYear');
     $compClause = Realblog_getPgParameter('compClause');
 
     $db = Realblog_connect();
     $t = '';
-    if ($realblogaction != 'view') {
+    if (!isset($realblogID)) {
         $compClause = new SimpleWhereClause(
             REALBLOG_STATUS, '=', 2, INTEGER_COMPARISON
         );
@@ -303,18 +296,13 @@ function Realblog_archive($showSearch = false)
             $t .= $temp->render();
         }
 
-        if ($realblogaction == 'search') {
+        if (Realblog_getPgParameter('operator_2')) {
             $compArchiveClause = new SimpleWhereClause(
                 REALBLOG_STATUS, '=', 2, INTEGER_COMPARISON
             );
             $compClause = Realblog_searchClause();
-        }
-
-        if ($realblogaction == 'search') {
             if (isset($compClause)) {
                 $compClause = new AndWhereClause($compArchiveClause, $compClause);
-            } else {
-                unset($realblogaction);
             }
             $records = $db->selectWhere(
                 'realblog.txt', $compClause, -1,
@@ -419,7 +407,6 @@ function Realblog_link($pageUrl)
                         . "\n" . '</div>';
                     $url = Realblog_url(
                         $pageUrl, $record[REALBLOG_TITLE], array(
-                            'realblogaction' => 'view',
                             'realblogID' => $record[REALBLOG_ID],
                             'page' => 1
                         )
@@ -670,10 +657,14 @@ function Realblog_exportRssFeed()
                         // FIXME
                         . htmlspecialchars(stripslashes($record[REALBLOG_TITLE]))
                         . '</title>' . "\n";
-                    $link = '<link>' . $plugin_tx[$plugin]["rss_page"]
-                        . '&amp;realblogaction=view&amp;realblogID='
-                        . $record[REALBLOG_ID] . '&amp;page=' . $page . '</link>'
-                        . "\n";
+                    $url = Realblog_url(
+                        $plugin_tx[$plugin]["rss_page"], $record['REALBLOG_TITLE'],
+                        array(
+                            'realblogID' => $record[REALBLOG_ID],
+                            'page' => $page // FIXME: page in feed???
+                        )
+                    );
+                    $link = '<link>' . XH_hsc($url) . '</link>' . "\n";
                     $description = '<description>'
                         // FIXME
                         . preg_replace(

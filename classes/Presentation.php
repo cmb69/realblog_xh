@@ -44,13 +44,6 @@ class Realblog_ArticlesView
     private $_categories;
 
     /**
-     * The realblog action.
-     *
-     * @var FIXME
-     */
-    private $_action;
-
-    /**
      * The number of articles per page.
      *
      * @var int
@@ -62,16 +55,14 @@ class Realblog_ArticlesView
      *
      * @param array  $articles        An array of articles.
      * @param string $categories      FIXME
-     * @param FIXME  $action          FIXME
      * @param int    $articlesPerPage The number of articles per page.
      *
      * @return void
      */
-    public function __construct($articles, $categories, $action, $articlesPerPage)
+    public function __construct($articles, $categories, $articlesPerPage)
     {
         $this->_articles = $articles;
         $this->_categories = (string) $categories;
-        $this->_action = $action;
         $this->_articlesPerPage = (int) $articlesPerPage;
     }
 
@@ -165,7 +156,7 @@ class Realblog_ArticlesView
         if (strstr($field[REALBLOG_HEADLINE], '|' . $this->_categories . '|')
             || strstr($field[REALBLOG_STORY], '|' . $this->_categories . '|')
             || $this->_categories == 'all'
-            || ($this->_action == "search"
+            || (Realblog_getPgParameter('operator_2')
             && strstr($field[REALBLOG_H], '|' . $this->_categories . '|'))
         ) {
             if ($plugin_cf['realblog']['teaser_multicolumns']) {
@@ -208,7 +199,6 @@ class Realblog_ArticlesView
         $t = '<h4>';
         $url = Realblog_url(
             $su, $field[REALBLOG_TITLE], array(
-                'realblogaction' => 'view',
                 'realblogID' => $field[REALBLOG_ID],
                 'page' => $page
             )
@@ -272,7 +262,6 @@ class Realblog_ArticlesView
         }
         $url = Realblog_url(
             $su, $field[REALBLOG_TITLE], array(
-                'realblogaction' => 'view',
                 'realblogID' => $field[REALBLOG_ID],
                 'page' => $page
             )
@@ -442,13 +431,6 @@ class Realblog_ArchiveView
     private $_articles;
 
     /**
-     * The action.
-     *
-     * @var string
-     */
-    private $_action;
-
-    /**
      * The requested year.
      *
      * @var int
@@ -465,7 +447,6 @@ class Realblog_ArchiveView
     public function __construct($articles)
     {
         $this->_articles = $articles;
-        $this->_action = Realblog_getPgParameter('realblogaction');
         $this->_year = Realblog_getPgParameter('realblogYear');
     }
 
@@ -482,7 +463,7 @@ class Realblog_ArchiveView
 
         $t = '';
         $filter_total = 0;
-        if ($this->_action != 'search') {
+        if (Realblog_getPgParameter('operator_2')) {
             $currentYear = date('Y');
             if (!isset($this->_year) || $this->_year <= 0
                 || $this->_year >= $currentYear || empty($this->_year)
@@ -639,7 +620,6 @@ class Realblog_ArchiveView
         foreach ($articles as $key => $field) {
             $url = Realblog_url(
                 $su, $field[REALBLOG_TITLE], array(
-                    'realblogaction' => 'view',
                     'realblogID' => $field[REALBLOG_ID],
                     'page' => $page
                 )
@@ -681,7 +661,6 @@ class Realblog_ArchiveView
             }
             $url = Realblog_url(
                 $su, $field[REALBLOG_TITLE], array(
-                    'realblogaction' => 'view',
                     'realblogID' => $field[REALBLOG_ID],
                     'page' => $page
                 )
@@ -1062,7 +1041,6 @@ EOT;
         global $su;
 
         return $this->_renderHiddenInput('selected', $su)
-            . $this->_renderHiddenInput('realblogaction', 'search')
             . $this->_renderHiddenInput('realblogYear', $this->_year);
     }
 

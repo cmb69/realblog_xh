@@ -2,8 +2,7 @@
 * meltemi PM
 * remove folder rss/
 * add CHANGELOG
-* realblogaction ist entweder view oder search; bei view ist immer realblogID
-  gesetzt; kann vereinfacht werden
+* fix Realblog_url (problem with urlencode for HTML specialchars)
 
 * replace mktime() with strtotime()
 * store categories in DB
