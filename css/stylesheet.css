@@ -143,9 +143,10 @@ font-size: 0.8em;
 /* BACKEND select entry table */
 
 .realblog_table {
-width: 100%;
-table-layout: auto;
-border: 1px solid;
+    width: 100%;
+    table-layout: auto;
+    border: 1px solid;
+    border-collapse: collapse;
 }
 
 td.realblog_table_header {
@@ -162,11 +163,7 @@ border: 1px solid #075FB9;
 }
 
 .realblog_table_line {
-background: #ddd;
-font-family: arial, sans-serif;
-font-size: 14px;
-text-decoration: none;
-padding: 4px;
+    padding: 0.3em;
 }
 
 .realblog_onoff {
@@ -175,36 +172,25 @@ font-weight: 700;
 }
 
 td.realblog_table_title {
-background: #fff;
-font-family: arial, sans-serif;
-font-size: 14px;
-font-weight: 300;
-line-height: 1.6em;
-border-bottom: 1px solid;
-padding: 0 6px;
-}
-
-td.realblog_table_title span {
-color: #900;
+    padding: 0.3em 1em;
+    border-bottom: 1px solid;
 }
 
 .realblog_table_line img, .realblog_table_header img {
 border: 0;
 }
 
-.realblog_paging_block {}
+.realblog_paging_block {
+    overflow: hidden;
+    padding-top: 1em;
+}
 
 .realblog_db_info {
-    text-align: right;
-    font-weight: 700;
-    padding-top: 10px;
+    float: right;
 }
 
 .realblog_page_info {
-float: left;
-text-align: left;
-font-weight: 700;
-padding: 10px 0 0 0;
+    float: left;
 }
 
 .realblog_table_paging {

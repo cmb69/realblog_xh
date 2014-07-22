@@ -1738,9 +1738,7 @@ class Realblog_ArticlesAdminView
 
         // Display table lines
         for ($i = $this->_startIndex; $i <= $end_index; $i++) {
-            if ($i > count($this->_articles) - 1) {
-                $o .= $this->_renderEmptyRow();
-            } else {
+            if ($i <= count($this->_articles) - 1) {
                 $field = $this->_articles[$i];
                 $o .= $this->_renderRow($field);
             }
@@ -1748,7 +1746,7 @@ class Realblog_ArticlesAdminView
 
         $o .= '</table></div>';
         $o .= tag('input type="hidden" name="page" value="' . $page . '"')
-            . '</form><div>&nbsp;</div>';
+            . '</form>';
         $o .= $this->_renderNavigation();
         return $o;
     }
@@ -1780,8 +1778,8 @@ class Realblog_ArticlesAdminView
     /**
      * Renders a filter checkbox and its label.
      *
-     * @param int $number  A filter number.
-     * @param string $name A filter name.
+     * @param int    $number A filter number.
+     * @param string $name   A filter name.
      *
      * @return string (X)HTML.
      *
@@ -1883,8 +1881,7 @@ class Realblog_ArticlesAdminView
             . '<div class="realblog_db_info">'
             . $plugin_tx['realblog']['record_count'] . ' : '
             . $db_total_records . '</div>'
-            . '<div class="realblog_page_info">&nbsp;&nbsp;&nbsp;' . $tmp
-            . '</div>';
+            . '<div class="realblog_page_info">' . $tmp . '</div>';
 
         if ($db_total_records > 0 && $page_total > 1) {
             if ($page_total > $page) {
@@ -1990,26 +1987,6 @@ class Realblog_ArticlesAdminView
             . '<td colspan="8" valign="top"'
             . ' class="realblog_table_title"><span>'
             . $field[REALBLOG_TITLE] . '</span></td></tr>';
-    }
-
-    /**
-     * Renders an empty row.
-     *
-     * @return string (X)HTML.
-     *
-     * @todo Simply remove this?
-     */
-    private function _renderEmptyRow()
-    {
-        $html = '<tr>';
-        for ($i = 0; $i < 5; $i++) {
-            $html .= '<td class="realblog_table_line" align="center">&nbsp;</td>';
-        }
-        for ($i = 0; $i < 3; $i++) {
-            $html .= '<td class="realblog_table_line">&nbsp;</td>';
-        }
-        $html .= '</tr>';
-        return $html;
     }
 }
 
