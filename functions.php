@@ -61,7 +61,7 @@ function Realblog_blog($showSearch = false, $realBlogCat = 'all')
 
         if ($showSearch) {
             $temp = new Realblog_SearchFormView(
-                Realblog_getPgParameter('realblogYear')
+                Realblog_getYear()
             );
             $t .= $temp->render();
         }
@@ -164,7 +164,7 @@ function Realblog_archive($showSearch = false)
 
         if ($showSearch) {
             $temp = new Realblog_SearchFormView(
-                Realblog_getPgParameter('realblogYear')
+                Realblog_getYear()
             );
             $t .= $temp->render();
         }
@@ -743,6 +743,25 @@ function Realblog_getPage()
         $page = 1;
     }
     return $page;
+}
+
+/**
+ * Returns the requested year, and storess it in a cookie.
+ *
+ * @return int
+ */
+function Realblog_getYear()
+{
+    if (isset($_GET['realblog_year'])) {
+        $year = (int) $_GET['realblog_year'];
+        $_COOKIE['realblog_year'] = $year;
+        setcookie('realblog_year', $year, 0, CMSIMPLE_ROOT);
+    } elseif (isset($_COOKIE['realblog_year'])) {
+        $year = (int) $_COOKIE['realblog_year'];
+    } else {
+        $year = date('Y');
+    }
+    return $year;
 }
 
 /**

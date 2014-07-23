@@ -442,7 +442,7 @@ class Realblog_ArchiveView
     public function __construct($articles)
     {
         $this->_articles = $articles;
-        $this->_year = Realblog_getPgParameter('realblogYear');
+        $this->_year = Realblog_getYear();
     }
 
     /**
@@ -468,7 +468,6 @@ class Realblog_ArchiveView
             } else {
                 $currentMonth = 12;
             }
-            $_SESSION['realblogYear'] = $this->_year;
             $next = min($this->_year + 1, $currentYear);
             $back = $this->_year - 1;
             $t .= $this->_renderPagination($back, $next);
@@ -554,7 +553,7 @@ class Realblog_ArchiveView
         global $su, $plugin_tx;
 
         $url = Realblog_url(
-            $su, null, array('realblogYear' => $back)
+            $su, null, array('realblog_year' => $back)
         );
         $t = '<div class="realblog_table_paging">'
             . '<a href="' . XH_hsc($url) . '" title="'
@@ -563,7 +562,7 @@ class Realblog_ArchiveView
         $t .= '<b>' . $plugin_tx['realblog']['archive_year']
             . $this->_year . '</b>';
         $url = Realblog_url(
-            $su, null, array('realblogYear' => $next)
+            $su, null, array('realblog_year' => $next)
         );
         $t .= '&nbsp;&nbsp;<a href="' . XH_hsc($url) . '" title="'
             . $plugin_tx['realblog']['tooltip_nextyear'] . '">'
@@ -778,7 +777,7 @@ class Realblog_ArticleView
 
         if ($this->_article[REALBLOG_STATUS] == 2) {
             $url = Realblog_url(
-                $su, null, array('realblogYear' => $_SESSION['realblogYear'])
+                $su, null, array('realblog_year' => Realblog_getYear())
             );
             $text = $plugin_tx['realblog']['archiv_back'];
         } else {
@@ -1029,8 +1028,7 @@ EOT;
     {
         global $su;
 
-        return $this->_renderHiddenInput('selected', $su)
-            . $this->_renderHiddenInput('realblogYear', $this->_year);
+        return $this->_renderHiddenInput('selected', $su);
     }
 
     /**
