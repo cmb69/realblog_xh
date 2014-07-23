@@ -458,7 +458,7 @@ class Realblog_ArchiveView
 
         $t = '';
         $filter_total = 0;
-        if (Realblog_getPgParameter('realblog_search')) {
+        if (!Realblog_getPgParameter('realblog_search')) {
             $currentYear = date('Y');
             if (!isset($this->_year) || $this->_year <= 0
                 || $this->_year >= $currentYear || empty($this->_year)
