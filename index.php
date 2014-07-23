@@ -71,13 +71,6 @@ require_once $pth['folder']['plugin_classes'] . 'Presentation.php';
  */
 require_once $pth['folder']['plugin'] . 'compat.php';
 
-/*
- * Start session.
- */
-if (session_id() == '') {
-    session_start();
-}
-
 /**
  * The plugin version.
  */

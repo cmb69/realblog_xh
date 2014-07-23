@@ -4,7 +4,6 @@
 * remove folder rss/
 * add CHANGELOG
 * description as field or auto-generated from teaser
-* get rid of SESSION
 * get rid of @ operators
 * Realblog_url(): change param names (meltemi)
 
