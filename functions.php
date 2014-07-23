@@ -237,7 +237,7 @@ function Realblog_link($pageUrl)
 
     $db = Realblog_connect();
 
-    if (@$id == -1 || empty($id) || !isset($id)) {
+    if (!isset($id) || $id <= 0) {
         if ($plugin_cf['realblog']['links_visible'] > 0) {
             $t = '<p class="realbloglink">'
                 . $plugin_tx['realblog']['links_visible_text'] . '</p>';
@@ -412,7 +412,8 @@ function Realblog_exportRssFeed()
     if (strtolower($plugin_tx['realblog']['rss_enable']) == 'true') {
         $db = Realblog_connect();
 
-        if ($fp = @fopen('./' . "realblog_rss_feed.xml", "w+")) {
+        // FIXME: w+ ?
+        if ($fp = fopen('./realblog_rss_feed.xml', 'w+')) {
             fputs(
                 $fp,
                 '<?xml version="1.0" encoding="'
@@ -1118,18 +1119,14 @@ function Realblog_form($realblogID = null, $action = null, $ret_page = 1)
         $realblog_status = $record[REALBLOG_STATUS];
         $realblog_rssfeed = $record[REALBLOG_RSSFEED];
         $realblog_comments = $record[REALBLOG_COMMENTS];
-        $status = array();
-        $status[$realblog_status] = 'selected';
-        $checked = ($realblog_frontpage == 'on') ? 'CHECKED' : '';
         $rsschecked = ($realblog_rssfeed == 'on') ? 'CHECKED' : '';
         $commentschecked = ($realblog_comments == 'on') ? 'CHECKED' : '';
     }
 
-    // Display realblog item form
     $temp = new Realblog_ArticleAdminView(
-        @$realblog_id, $realblog_date, $realblog_startdate, $realblog_enddate,
-        @$status, @$commentschecked, @$rsschecked, @$realblog_title,
-        @$realblog_headline, @$realblog_story, $action, $ret_page
+        $realblog_id, $realblog_date, $realblog_startdate, $realblog_enddate,
+        $realblog_status, $commentschecked, $rsschecked, $realblog_title,
+        $realblog_headline, $realblog_story, $action, $ret_page
     );
     return $temp->render();
 }

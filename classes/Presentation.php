@@ -306,7 +306,7 @@ class Realblog_ArticlesView
         }
         if ($articleCount > 0 && $pageCount > 1) {
             $t .= $this->_renderPageOfPages(
-                $page, $pageCount, @$back, @$next
+                $page, $pageCount, $back, $next
             );
         }
         return $t;
@@ -375,10 +375,10 @@ class Realblog_ArticlesView
         global $su, $plugin_tx;
 
         $backUrl = Realblog_url(
-            $su, null, array('realblog_page' => @$back)
+            $su, null, array('realblog_page' => $back)
         );
         $nextUrl = Realblog_url(
-            $su, null, array('realblog_page' => @$next)
+            $su, null, array('realblog_page' => $next)
         );
         return '<div class="realblog_page_info">'
             . $plugin_tx['realblog']['page_label'] . ' : '
@@ -2163,7 +2163,7 @@ class Realblog_ArticleAdminView
         $t .= '</table>';
         $t .= '<h4>' . $plugin_tx['realblog']['title_label'] . '</h4>';
         $t .= tag(
-            'input type="text" value="' . @$this->_realblogTitle
+            'input type="text" value="' . $this->_realblogTitle
             . '" name="realblog_title" size="70"'
         );
         $t .= $this->_renderHeadline() . $this->_renderStory()
@@ -2361,7 +2361,8 @@ EOT;
         $states = array('readyforpublishing', 'published', 'archived', 'backuped');
         $html = '<select name="realblog_status">';
         foreach ($states as $i => $state) {
-            $html .= '<option value="' . $i . '" ' . @$this->_status[$i] . '>'
+            $selected = ($i == $this->_status) ? 'selected="selected"' : '';
+            $html .= '<option value="' . $i . '" ' . $selected . '>'
                 . $plugin_tx['realblog'][$state] . '</option>';
         }
         $html .= '</select>';
@@ -2382,7 +2383,7 @@ EOT;
         return '<label>'
             . tag(
                 'input type="checkbox" name="realblog_comments" '
-                . @$this->_commentsChecked
+                . $this->_commentsChecked
             )
             . '&nbsp;<span>' . $plugin_tx['realblog']['comment_label']
             . '</span></label>';
@@ -2424,7 +2425,7 @@ EOT;
             . '{{{PLUGIN:rbCat(\'|the_category|\');}}}'
             . '<textarea class="realblog_headline_field" name="realblog_headline"'
             . ' id="realblog_headline" rows="6" cols="60">'
-            . XH_hsc(@$this->_headline) . '</textarea>';
+            . XH_hsc($this->_headline) . '</textarea>';
     }
 
     /**
@@ -2443,7 +2444,7 @@ EOT;
             . '{{{PLUGIN:CommentsMembersOnly();}}}'
             . '<textarea class="realblog_story_field"'
              . ' name="realblog_story" id="realblog_story" rows="30" cols="80">'
-             . XH_hsc(@$this->_story) . '</textarea>';
+             . XH_hsc($this->_story) . '</textarea>';
     }
 
     /**
@@ -2782,7 +2783,7 @@ class Realblog_ChangeStatusView extends Realblog_ConfirmationView
         $html = '<select name="new_realblogstatus">';
         foreach ($states as $i => $state) {
             $value = $i - 1;
-            $html .= '<option value="' . $value . '" ' . @$this->_status[$i] . '>'
+            $html .= '<option value="' . $value . '" ' . $this->_status[$i] . '>'
                 . $plugin_tx['realblog'][$state] . '</option>';
         }
         $html .= '</select>';
