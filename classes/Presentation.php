@@ -1978,74 +1978,11 @@ class Realblog_ArticlesAdminView
 class Realblog_ArticleAdminView
 {
     /**
-     * The id of the current article.
+     * The article record.
      *
-     * @var string
+     * @var array
      */
-    private $_realblogId;
-
-    /**
-     * The date of the article.
-     *
-     * @var int
-     */
-    private $_realblogDate;
-
-    /**
-     * The publishing date of the article.
-     *
-     * @var int
-     */
-    private $_startDate;
-
-    /**
-     * The archiving date of the article.
-     *
-     * @var int
-     */
-    private $_endDate;
-
-    /**
-     * The status of the article.
-     *
-     * @var int
-     */
-    private $_status;
-
-    /**
-     * FIXME
-     *
-     * @var FIXME
-     */
-    private $_commentsChecked;
-
-    /**
-     * FIXME
-     *
-     * @var FIXME
-     */
-    private $_rssChecked;
-
-    /**
-     * The title of the article.
-     *
-     * @var string
-     */
-    private $_realBlogTitle;
-
-    /**
-     * The headline (teaser) of the article.
-     *
-     * @var string
-     */
-    private $_headline;
-
-    /**
-     * The story (body) of the article.
-     *
-     * @var string
-     */
-    private $_story;
+    private $_record;
 
     /**
      * The requested action.
@@ -2071,40 +2008,18 @@ class Realblog_ArticleAdminView
     /**
      * Initializes a new instance.
      *
-     * @param string $realblogId      The id of the current article.
-     * @param FIXME  $realblogDate    The date of the article.
-     * @param FIXME  $startDate       The publishing date of the article.
-     * @param FIXME  $endDate         The archiving date of the article.
-     * @param int    $status          The status of the article.
-     * @param FIXME  $commentsChecked FIXME.
-     * @param FIXME  $rssChecked      FIXME.
-     * @param string $realBlogTitle   The title of the article.
-     * @param string $headline        The teaser of the article.
-     * @param string $story           The body of the article.
-     * @param string $action          The requested action.
-     * @param FIXME  $ret_page        FIXME.
+     * @param array  $record   An article record.
+     * @param string $action   The requested action.
+     * @param FIXME  $ret_page FIXME.
      *
      * @return void
      *
      * @global array The paths of system files and folders.
      */
-    public function __construct(
-        $realblogId, $realblogDate, $startDate, $endDate, $status,
-        $commentsChecked, $rssChecked, $realBlogTitle, $headline, $story,
-        $action, $ret_page
-    ) {
+    public function __construct($record, $action, $ret_page) {
         global $pth;
 
-        $this->_realblogId = $realblogId;
-        $this->_realblogDate = $realblogDate;
-        $this->_startDate = $startDate;
-        $this->_endDate = $endDate;
-        $this->_status = $status;
-        $this->_commentsChecked = $commentsChecked;
-        $this->_rssChecked = $rssChecked;
-        $this->_realblogTitle = $realBlogTitle;
-        $this->_headline = $headline;
-        $this->_story = $story;
+        $this->_record = $record;
         $this->_action = $action;
         $this->_retPage = $ret_page;
         $this->_imageFolder = $pth['folder']['plugins'] . 'realblog/images/';
@@ -2163,7 +2078,7 @@ class Realblog_ArticleAdminView
         $t .= '</table>';
         $t .= '<h4>' . $plugin_tx['realblog']['title_label'] . '</h4>';
         $t .= tag(
-            'input type="text" value="' . $this->_realblogTitle
+            'input type="text" value="' . $this->_record[REALBLOG_TITLE]
             . '" name="realblog_title" size="70"'
         );
         $t .= $this->_renderHeadline() . $this->_renderStory()
@@ -2184,7 +2099,7 @@ class Realblog_ArticleAdminView
 
         $html = '';
         $fields = array(
-            'realblog_id' => $this->_realblogId,
+            'realblog_id' => $this->_record[REALBLOG_ID],
             'action' => 'do_' . $this->_getVerb()
         );
         foreach ($fields as $name => $value) {
@@ -2222,7 +2137,7 @@ class Realblog_ArticleAdminView
 
         $html = tag(
             'input type="text" name="realblog_date" id="date1" value="'
-            . $this->_realblogDate . '" size="10" maxlength="10"'
+            . $this->_record[REALBLOG_DATE] . '" size="10" maxlength="10"'
             . ' onfocus="this.blur()"'
         );
         $html .= '&nbsp;'
@@ -2250,7 +2165,7 @@ class Realblog_ArticleAdminView
         if ($plugin_cf['realblog']['auto_publish']) {
             $html = tag(
                 'input type="text" name="realblog_startdate" id="date2"'
-                . ' value="' . $this->_startDate . '" size="10" maxlength="10"'
+                . ' value="' . $this->_record[REALBLOG_STARTDATE] . '" size="10" maxlength="10"'
                 . ' onfocus="this.blur()"'
             );
             $html .= '&nbsp;'
@@ -2281,7 +2196,7 @@ class Realblog_ArticleAdminView
         if ($plugin_cf['realblog']['auto_archive']) {
             $html = tag(
                 'input type="text" name="realblog_enddate" id="date3"'
-                . ' value="' . $this->_endDate . '" size="10" maxlength="10"'
+                . ' value="' . $this->_record[REALBLOG_ENDDATE] . '" size="10" maxlength="10"'
                 . ' onfocus="this.blur()"'
             );
             $html .= '&nbsp;'
@@ -2361,7 +2276,7 @@ EOT;
         $states = array('readyforpublishing', 'published', 'archived', 'backuped');
         $html = '<select name="realblog_status">';
         foreach ($states as $i => $state) {
-            $selected = ($i == $this->_status) ? 'selected="selected"' : '';
+            $selected = ($i == $this->_record[REALBLOG_STATUS]) ? 'selected="selected"' : '';
             $html .= '<option value="' . $i . '" ' . $selected . '>'
                 . $plugin_tx['realblog'][$state] . '</option>';
         }
@@ -2380,10 +2295,12 @@ EOT;
     {
         global $plugin_tx;
 
+        $checked = ($this->_record[REALBLOG_COMMENTS] == 'on')
+            ? 'checked="checked"' : '';
         return '<label>'
             . tag(
                 'input type="checkbox" name="realblog_comments" '
-                . $this->_commentsChecked
+                . $checked
             )
             . '&nbsp;<span>' . $plugin_tx['realblog']['comment_label']
             . '</span></label>';
@@ -2400,10 +2317,12 @@ EOT;
     {
         global $plugin_tx;
 
+        $checked = ($this->_record[REALBLOG_RSSFEED] == 'on')
+            ? 'checked="checked"' : '';
         return '<label>'
             . tag(
                 'input type="checkbox" name="realblog_rssfeed" '
-                . @$this->_rssChecked
+                . $checked
             )
             . '&nbsp;<span>' . $plugin_tx['realblog']['rss_label']
             . '</span></label>';
@@ -2425,7 +2344,7 @@ EOT;
             . '{{{PLUGIN:rbCat(\'|the_category|\');}}}'
             . '<textarea class="realblog_headline_field" name="realblog_headline"'
             . ' id="realblog_headline" rows="6" cols="60">'
-            . XH_hsc($this->_headline) . '</textarea>';
+            . XH_hsc($this->_record[REALBLOG_HEADLINE]) . '</textarea>';
     }
 
     /**
@@ -2444,7 +2363,7 @@ EOT;
             . '{{{PLUGIN:CommentsMembersOnly();}}}'
             . '<textarea class="realblog_story_field"'
              . ' name="realblog_story" id="realblog_story" rows="30" cols="80">'
-             . XH_hsc($this->_story) . '</textarea>';
+             . XH_hsc($this->_record[REALBLOG_STORY]) . '</textarea>';
     }
 
     /**

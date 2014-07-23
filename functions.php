@@ -1082,52 +1082,42 @@ function Realblog_form($realblogID = null, $action = null, $ret_page = 1)
     global $plugin_cf, $plugin_tx;
 
     $db = Realblog_connect();
-
-    switch ($action){
-    case 'add_realblog':
+    if ($action == 'add_realblog') {
+        $record = array(
+            REALBLOG_ID => 0,
+            REALBLOG_DATE => date($plugin_tx['realblog']['date_format']),
+            REALBLOG_STARTDATE => date($plugin_tx['realblog']['date_format']),
+            REALBLOG_ENDDATE => date($plugin_tx['realblog']['date_format']),
+            REALBLOG_STATUS => 0,
+            REALBLOG_FRONTPAGE => '',
+            REALBLOG_TITLE => '',
+            REALBLOG_HEADLINE => '',
+            REALBLOG_STORY => '',
+            REALBLOG_RSSFEED => '',
+            REALBLOG_COMMENTS => ''
+        );
         $title = $plugin_tx['realblog']['tooltip_add'];
-        $realblog_date = date($plugin_tx['realblog']['date_format']);
-        $realblog_startdate = date($plugin_tx['realblog']['date_format']);
-        $realblog_enddate = date($plugin_tx['realblog']['date_format']);
-        break;
-    case 'modify_realblog':
-        $title = $plugin_tx['realblog']['tooltip_modify'] . ' [ID: '
-            . $realblogID . ']';
-        break;
-    case 'delete_realblog':
-        $title = $plugin_tx['realblog']['tooltip_delete'] . ' [ID: '
-            . $realblogID . ']';
-        break;
-    }
-
-    if ($action === 'modify_realblog' || $action === 'delete_realblog') {
+    } else {
         $record = $db->selectUnique('realblog.txt', REALBLOG_ID, $realblogID);
         $realblog_id = $record[REALBLOG_ID];
-        $realblog_date = date(
+        $record[REALBLOG_DATE] = date(
             $plugin_tx['realblog']['date_format'], $record[REALBLOG_DATE]
         );
-        $realblog_title = $record[REALBLOG_TITLE];
-        $realblog_headline = $record[REALBLOG_HEADLINE];
-        $realblog_story = $record[REALBLOG_STORY];
-        $realblog_frontpage = $record[REALBLOG_FRONTPAGE];
-        $realblog_startdate = date(
+        $record[REALBLOG_STARTDATE] = date(
             $plugin_tx['realblog']['date_format'], $record[REALBLOG_STARTDATE]
         );
-        $realblog_enddate = date(
+        $record[REALBLOG_ENDDATE] = date(
             $plugin_tx['realblog']['date_format'], $record[REALBLOG_ENDDATE]
         );
-        $realblog_status = $record[REALBLOG_STATUS];
-        $realblog_rssfeed = $record[REALBLOG_RSSFEED];
-        $realblog_comments = $record[REALBLOG_COMMENTS];
-        $rsschecked = ($realblog_rssfeed == 'on') ? 'CHECKED' : '';
-        $commentschecked = ($realblog_comments == 'on') ? 'CHECKED' : '';
+        if ($action == 'modify_realblog') {
+            $title = $plugin_tx['realblog']['tooltip_modify'] . ' [ID: '
+                . $realblogID . ']';
+        } elseif ($action == 'delete_realblog') {
+            $title = $plugin_tx['realblog']['tooltip_delete'] . ' [ID: '
+                . $realblogID . ']';
+        }
     }
-
-    $temp = new Realblog_ArticleAdminView(
-        $realblog_id, $realblog_date, $realblog_startdate, $realblog_enddate,
-        $realblog_status, $commentschecked, $rsschecked, $realblog_title,
-        $realblog_headline, $realblog_story, $action, $ret_page
-    );
+    $temp = new Realblog_ArticleAdminView($record, $action, $ret_page);
     return $temp->render();
 }
 
