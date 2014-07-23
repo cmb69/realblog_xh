@@ -104,7 +104,7 @@ class ArticleViewTest extends PHPUnit_Framework_TestCase
             array(
                 'tag' => 'a',
                 'attributes' => array(
-                    'href' => '/xh/?Blog&page=1'
+                    'href' => '/xh/?Blog&realblog_page=1'
                 ),
                 'content' => 'Overview',
                 'parent' => array(

@@ -592,7 +592,9 @@ function Realblog_getCalendarDateFormat()
             if (count($my_date_format1) > 1) {
                 $date_separator1 = '.';
             } else {
-                $my_date_format1 = explode('-', $plugin_tx['realblog']['date_format']);
+                $my_date_format1 = explode(
+                    '-', $plugin_tx['realblog']['date_format']
+                );
                 if (count($my_date_format1) > 1) {
                     $date_separator1 = '-';
                 }
