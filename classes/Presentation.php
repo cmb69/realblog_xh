@@ -1869,7 +1869,7 @@ class Realblog_ArticlesAdminView
             }
             $o .= '<div class="realblog_table_paging">'
                 . '<a href="' . $sn . '?&amp;realblog'
-                . '&amp;admin=plugin_main&amp;action=plugin_text&amp;page='
+                . '&amp;admin=plugin_main&amp;action=plugin_text&amp;realblog_page='
                 . $back . '&amp;filter1=' . $filter1 . '&amp;filter2='
                 . $filter2 . '&amp;filter3=' . $filter3 . '" title="'
                 . $plugin_tx['realblog']['tooltip_previous'] . '">'
@@ -1877,14 +1877,14 @@ class Realblog_ArticlesAdminView
             for ($i = 1; $i <= $this->_pageCount; $i++) {
                 $separator = ($i < $this->_pageCount) ? ' ' : '';
                 $o .= '<a href="' . $sn . '?&amp;realblog'
-                    . '&amp;admin=plugin_main&amp;action=plugin_text&amp;page='
+                    . '&amp;admin=plugin_main&amp;action=plugin_text&amp;realblog_page='
                     . $i . '&amp;filter1=' . $filter1 . '&amp;filter2='
                     . $filter2 . '&amp;filter3=' . $filter3 . '" title="'
                     . $plugin_tx['realblog']['page_label']
                     . ' ' . $i . '">[' . $i . ']</a>' . $separator;
             }
             $o .= '&nbsp;&nbsp;<a href="' . $sn . '?&amp;realblog'
-                . '&amp;admin=plugin_main&amp;action=plugin_text&amp;page='
+                . '&amp;admin=plugin_main&amp;action=plugin_text&amp;realblog_page='
                 . $next . '&amp;filter1=' . $filter1 . '&amp;filter2='
                 . $filter2 . '&amp;filter3=' . $filter3 . '" title="'
                 . $plugin_tx['realblog']['tooltip_next']
@@ -2388,8 +2388,7 @@ EOT;
                 'input type="button" name="cancel" value="'
                 . $plugin_tx['realblog']['btn_cancel'] . '" onclick="'
                 . 'location.href=&quot;' . $sn . '?&amp;realblog&amp;'
-                . 'admin=plugin_main&amp;action=plugin_text&page='
-                . $this->_retPage . '&quot;"'
+                . 'admin=plugin_main&amp;action=plugin_text' . '&quot;"'
             )
             . '</p>';
     }
