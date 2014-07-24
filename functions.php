@@ -799,13 +799,17 @@ function Realblog_url($pageUrl, $articleTitle = null, $params = array())
 {
     global $sn;
 
+    $replacePairs = array(
+        //'realblogID' => 'id',
+        //'realblog_page' => 'page'
+    );
     $url = $sn . '?' . $pageUrl;
     if (isset($articleTitle)) {
         $url .= '&' . urlencode(str_replace(' ', '-', $articleTitle));
     }
     ksort($params);
     foreach ($params as $name => $value) {
-        $url .= '&' . $name . '=' . $value;
+        $url .= '&' . strtr($name, $replacePairs) . '=' . $value;
     }
     return $url;
 }
@@ -819,28 +823,30 @@ function Realblog_url($pageUrl, $articleTitle = null, $params = array())
  */
 function Realblog_searchClause()
 {
-    if (!empty($_REQUEST['realblog_from_date'])) {
+    if (Realblog_getPgParameter('realblog_from_date') != '') {
         $compClauseDate1 = new SimpleWhereClause(
-            REALBLOG_DATE, $_REQUEST['date_operator_1'],
-            Realblog_makeTimestampDates1($_REQUEST['realblog_from_date'])
+            REALBLOG_DATE, Realblog_getPgParameter('date_operator_1'),
+            Realblog_makeTimestampDates1(
+                Realblog_getPgParameter('realblog_from_date')
+            )
         );
     }
-    if (!empty($_REQUEST['realblog_to_date'])) {
+    if (Realblog_getPgParameter('realblog_to_date') != '') {
         $compClauseDate2 = new SimpleWhereClause(
-            REALBLOG_DATE, $_REQUEST['date_operator_2'],
-            Realblog_makeTimestampDates1($_REQUEST['realblog_to_date'])
+            REALBLOG_DATE, Realblog_getPgParameter('date_operator_2'),
+            Realblog_makeTimestampDates1(Realblog_getPgParameter('realblog_to_date'))
         );
     }
-    if (!empty($_REQUEST['realblog_title'])) {
+    if (Realblog_getPgParameter('realblog_title') != '') {
         $compClauseTitle = new LikeWhereClause(
-            REALBLOG_TITLE, $_REQUEST['realblog_title'],
-            2 // TODO: $_REQUEST['title_operator']
+            REALBLOG_TITLE, Realblog_getPgParameter('realblog_title'),
+            2 // TODO: Realblog_getPgParameter('title_operator')
         );
     }
-    if (!empty($_REQUEST['realblog_story'])) {
+    if (Realblog_getPgParameter('realblog_story') != '') {
         $compClauseStory = new LikeWhereClause(
-            REALBLOG_STORY, $_REQUEST['realblog_story'],
-            2 // TODO: $_REQUEST['story_operator']
+            REALBLOG_STORY, Realblog_getPgParameter('realblog_story'),
+            2 // TODO: Realblog_getPgParameter('story_operator')
         );
     }
 
@@ -859,7 +865,7 @@ function Realblog_searchClause()
         $compClause = $compClauseTitle;
         break;
     case 3:
-        switch ($_REQUEST['realblog_search']) {
+        switch (Realblog_getPgParameter('realblog_search')) {
         case 'AND':
             $compClause = new AndWhereClause(
                 $compClauseTitle, $compClauseStory
@@ -875,7 +881,7 @@ function Realblog_searchClause()
         $compClause = $compClauseDate2;
         break;
     case 5:
-        switch ($_REQUEST['realblog_search']) {
+        switch (Realblog_getPgParameter('realblog_search')) {
         case 'AND':
             $compClause = new AndWhereClause(
                 $compClauseDate2, $compClauseStory
@@ -888,7 +894,7 @@ function Realblog_searchClause()
         }
         break;
     case 6:
-        switch ($_REQUEST['operator_1']) {
+        switch (Realblog_getPgParameter('operator_1')) {
         case 'AND':
             $compClause = new AndWhereClause(
                 $compClauseDate2, $compClauseTitle
@@ -902,14 +908,14 @@ function Realblog_searchClause()
         break;
     case 7:
         $compClause = $compClauseDate2;
-        switch ($_REQUEST['operator_1']) {
+        switch (Realblog_getPgParameter('operator_1')) {
         case 'AND':
             $compClause = new AndWhereClause($compClause, $compClauseTitle);
             break;
         default:
             $compClause = new OrWhereClause($compClause, $compClauseTitle);
         }
-        switch ($_REQUEST['realblog_search']) {
+        switch (Realblog_getPgParameter('realblog_search')) {
         case 'AND':
             $compClause = new AndWhereClause($compClause, $compClauseStory);
             break;
@@ -921,7 +927,7 @@ function Realblog_searchClause()
         $compClause = $compClauseDate1;
         break;
     case 9:
-        switch ($_REQUEST['realblog_search']) {
+        switch (Realblog_getPgParameter('realblog_search')) {
         case 'AND':
             $compClause = new AndWhereClause(
                 $compClauseDate1, $compClauseStory
@@ -934,7 +940,7 @@ function Realblog_searchClause()
         }
         break;
     case 10:
-        switch ($_REQUEST['operator_1']) {
+        switch (Realblog_getPgParameter('operator_1')) {
         case 'AND':
             $compClause = new AndWhereClause(
                 $compClauseDate1, $compClauseTitle
@@ -948,7 +954,7 @@ function Realblog_searchClause()
         break;
     case 11:
         $compClause = $compClauseDate1;
-        switch ($_REQUEST['operator_1']) {
+        switch (Realblog_getPgParameter('operator_1')) {
         case 'AND':
             $compClause = new AndWhereClause(
                 $compClause, $compClauseTitle
@@ -959,7 +965,7 @@ function Realblog_searchClause()
                 $compClause, $compClauseTitle
             );
         }
-        switch ($_REQUEST['realblog_search']) {
+        switch (Realblog_getPgParameter('realblog_search')) {
         case 'AND':
             $compClause = new AndWhereClause($compClause, $compClauseStory);
             break;
@@ -971,7 +977,7 @@ function Realblog_searchClause()
         $compClause = new AndWhereClause($compClauseDate1, $compClauseDate2);
         break;
     case 13:
-        switch ($_REQUEST['realblog_search']) {
+        switch (Realblog_getPgParameter('realblog_search')) {
         case 'AND':
             $compClause = new AndWhereClause(
                 new AndWhereClause($compClauseDate1, $compClauseDate2),
@@ -986,7 +992,7 @@ function Realblog_searchClause()
         }
         break;
     case 14:
-        switch ($_REQUEST['operator_1']) {
+        switch (Realblog_getPgParameter('operator_1')) {
         case 'AND':
             $compClause = new AndWhereClause(
                 new AndWhereClause($compClauseDate1, $compClauseDate2),
@@ -1002,14 +1008,14 @@ function Realblog_searchClause()
         break;
     case 15:
         $compClause = new AndWhereClause($compClauseDate1, $compClauseDate2);
-        switch ($_REQUEST['operator_1']) {
+        switch (Realblog_getPgParameter('operator_1')) {
         case 'AND':
             $compClause = new AndWhereClause($compClause, $compClauseTitle);
             break;
         default:
             $compClause = new OrWhereClause($compClause, $compClauseTitle);
         }
-        switch ($_REQUEST['realblog_search']) {
+        switch (Realblog_getPgParameter('realblog_search')) {
         case 'AND':
             $compClause = new AndWhereClause($compClause, $compClauseStory);
             break;

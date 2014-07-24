@@ -45,7 +45,7 @@ class SearchClauseTest extends PHPUnit_Framework_TestCase
      */
     public function testSearchTitleOnly()
     {
-        $_REQUEST = array(
+        $_GET = array(
             'realblog_title' => 'foo',
             'title_operator' => '2',
             'realblog_search' => 'OR',
@@ -62,7 +62,7 @@ class SearchClauseTest extends PHPUnit_Framework_TestCase
      */
     public function testSearchStoryOnly()
     {
-        $_REQUEST = array(
+        $_GET = array(
             'realblog_title' => '',
             'title_operator' => '2',
             'realblog_search' => 'OR',
@@ -79,7 +79,7 @@ class SearchClauseTest extends PHPUnit_Framework_TestCase
      */
     public function testSearchTitleOrStory()
     {
-        $_REQUEST = array(
+        $_GET = array(
             'realblog_title' => 'foo',
             'title_operator' => '2',
             'realblog_search' => 'OR',
@@ -96,7 +96,7 @@ class SearchClauseTest extends PHPUnit_Framework_TestCase
      */
     public function testSearchTitleAndStory()
     {
-        $_REQUEST = array(
+        $_GET = array(
             'realblog_title' => 'foo',
             'title_operator' => '2',
             'realblog_search' => 'AND',

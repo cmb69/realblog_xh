@@ -325,7 +325,7 @@ class Realblog_ArticlesView
     {
         global $plugin_cf;
 
-        return !isset($_REQUEST['realblog_story'])
+        return is_null(Realblog_getPgParameter('realblog_story'))
             && $plugin_cf['realblog']['show_numberof_entries_' . $place];
     }
 
