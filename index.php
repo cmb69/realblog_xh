@@ -77,22 +77,36 @@ require_once $pth['folder']['plugin'] . 'compat.php';
 define('REALBLOG_VERSION', '@REALBLOG_VERSION@');
 
 /*
- * Generate RSS feed, auto publish and archive articles.
+ * Auto publish articles.
  */
-if (!XH_ADM) {
-    if ($plugin_cf['realblog']['auto_publish']) {
-        Realblog_autoPublish();
-    }
-    if ($plugin_cf['realblog']['auto_archive']) {
-        Realblog_autoArchive();
-    }
-    if ($plugin_cf['realblog']['rss_enabled']) {
-        Realblog_exportRssFeed();
-        $hjs .= tag(
-            'link rel="alternate" type="application/rss+xml" title="'
-            . sitename(). '" href="./realblog_rss_feed.xml"'
-        );
-    }
+if ($plugin_cf['realblog']['auto_publish']) {
+    Realblog_autoPublish();
+}
+
+/*
+ * Auto archive articles.
+ */
+if ($plugin_cf['realblog']['auto_archive']) {
+    Realblog_autoArchive();
+}
+
+/*
+ * Write alternate RSS link to head element.
+ */
+if ($plugin_cf['realblog']['rss_enabled']) {
+    $hjs .= tag(
+        'link rel="alternate" type="application/rss+xml"'
+        . ' href="./?realblog_feed=rss"'
+    );
+}
+
+/*
+ * Deliver RSS feed.
+ */
+if ($plugin_cf['realblog']['rss_enabled']
+    && isset($_GET['realblog_feed']) && $_GET['realblog_feed'] == 'rss'
+) {
+    Realblog_deliverFeed();
 }
 
 ?>

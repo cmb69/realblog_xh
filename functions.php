@@ -404,16 +404,13 @@ function Realblog_makeTimestampDates1($tmpdate = null)
 }
 
 /**
- * Generates the RSS feed.
+ * Delivers the RSS feed.
  *
  * @return void
- *
- * @global array  The configuration of the plugins.
  */
-function Realblog_exportRssFeed()
+function Realblog_deliverFeed()
 {
-    global $plugin_cf;
-
+    header('Content-Type: application/rss+xml; charset=UTF-8');
     $db = Realblog_connect();
     $articles = $db->selectWhere(
         'realblog.txt',
@@ -427,11 +424,12 @@ function Realblog_exportRssFeed()
         )
     );
     $view = new Realblog_RSSFeed($articles);
-    file_put_contents('./realblog_rss_feed.xml', $view->render());
+    echo $view->render();
+    exit();
 }
 
 /**
- * Returns a graphical hyperlink to the newsfeed file.
+ * Returns a graphical hyperlink to the RSS feed.
  *
  * @return string (X)HTML.
  *
@@ -442,7 +440,7 @@ function Realblog_feedLink()
 {
     global $pth, $plugin_tx;
 
-    return '<a href="./realblog_rss_feed.xml">'
+    return '<a href="./?realblog_feed=rss">'
         . tag(
             'img src="' . $pth['folder']['plugins'] . 'realblog/images/rss.png"'
             . ' alt="' . $plugin_tx['realblog']['rss_tooltip'] . '" title="'

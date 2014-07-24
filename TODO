@@ -1,7 +1,6 @@
 * keep an eye on compat.php
-* check RSS feed
-* remove folder rss/
 * add CHANGELOG
+* remove underlining from pagination links
 
 * replace mktime() with strtotime()
 * store categories in DB
