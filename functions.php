@@ -45,10 +45,11 @@ define('REALBLOG_COMMENTS', 10);
  * @global int    The current page index.
  * @global array  The headings of the pages.
  * @global array  The configuration of the plugins.
+ * @global string The value of the page's meta description.
  */
 function Realblog_blog($showSearch = false, $realBlogCat = 'all')
 {
-    global $title, $s, $h, $plugin_cf;
+    global $title, $s, $h, $plugin_cf, $description;
 
     $realblogID = Realblog_getPgParameter('realblogID');
     $page = Realblog_getPage();
@@ -135,6 +136,7 @@ function Realblog_blog($showSearch = false, $realBlogCat = 'all')
         // Display the realblogitem for the given ID
         $record = $db->selectUnique('realblog.txt', REALBLOG_ID, $realblogID);
         if (count($record) > 0) {
+            $description = Realblog_getDescription($record);
             $articleView = new Realblog_ArticleView($realblogID, $record, $page);
             $t .= $articleView->render();
             $title .= $h[$s] . " \xE2\x80\x93 " . $record[REALBLOG_TITLE];
@@ -149,9 +151,13 @@ function Realblog_blog($showSearch = false, $realBlogCat = 'all')
  * @param mixed $showSearch Whether to show the search form.
  *
  * @return string (X)HTML.
+ *
+ * @global string The value of the page's meta description.
  */
 function Realblog_archive($showSearch = false)
 {
+    global $description;
+
     $realblogID = Realblog_getPgParameter('realblogID');
     $page = Realblog_getPage();
 
@@ -205,6 +211,7 @@ function Realblog_archive($showSearch = false)
         // Display the realblogitem for the given ID
         $record = $db->selectUnique('realblog.txt', REALBLOG_ID, $realblogID);
         if (count($record) > 0) {
+            $description = Realblog_getDescription($record);
             $articleView = new Realblog_ArticleView($realblogID, $record, $page);
             $t .= $articleView->render();
         }
@@ -687,6 +694,16 @@ function Realblog_autoArchive()
         $realblogitem[REALBLOG_STATUS] = 2;
         $db->updateRowById('realblog.txt', REALBLOG_ID, $realblogitem);
     }
+}
+
+function Realblog_getDescription($article)
+{
+    return utf8_substr(
+        html_entity_decode(
+            strip_tags($article[REALBLOG_HEADLINE]), ENT_COMPAT, 'UTF-8'
+        ),
+        0, 150
+    );
 }
 
 /**
