@@ -1074,12 +1074,15 @@ function Realblog_useCalendar()
  *
  * @return string (X)HTML.
  *
+ * @global string The page title.
  * @global array  The configuration of the plugins.
  * @global array  The localization of the plugins.
+ *
+ * @todo Should $title by global'd; otherwise remove.
  */
 function Realblog_form($realblogID = null, $action = null, $ret_page = 1)
 {
-    global $plugin_cf, $plugin_tx;
+    global $title, $plugin_cf, $plugin_tx;
 
     $db = Realblog_connect();
     if ($action == 'add_realblog') {
