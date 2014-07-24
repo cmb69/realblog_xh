@@ -2682,7 +2682,144 @@ class Realblog_ChangeStatusView extends Realblog_ConfirmationView
         $html .= '</select>';
         return $html;
     }
+}
 
+/**
+ * The RSS feed view.
+ *
+ * @category CMSimple_XH
+ * @package  Realblog
+ * @author   Christoph M. Becker <cmbecker69@gmx.de>
+ * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
+ * @link     http://3-magi.net/?CMSimple_XH/Realblog_XH
+ */
+class Realblog_RSSFeed
+{
+    /**
+     * The article records.
+     *
+     * @var array
+     */
+    private $_articles;
+
+    /**
+     * Initializes a new instance.
+     *
+     * @param array $articles An array of article records.
+     *
+     * @return void
+     */
+    public function __construct($articles)
+    {
+        $this->_articles = (array) $articles;
+    }
+
+    /**
+     * Renders the RSS feed view.
+     *
+     * @return string XML.
+     *
+     * @global array The configuration of the plugins.
+     * @global array The localization of the plugins.
+     */
+    public function render()
+    {
+        global $plugin_cf, $plugin_tx;
+
+        $xml = '<?xml version="1.0" encoding="'
+            // FIXME: hard code
+            . strtolower($plugin_cf['realblog']['rss_encoding'])
+            . '"?>'
+            . '<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"'
+            . ' xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"'
+            . ' xmlns:admin="http://webns.net/mvcb/"'
+            . ' xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"'
+            . ' xmlns:content="http://purl.org/rss/1.0/modules/content/">'
+            . '<channel>'
+            . $this->_renderHead()
+            . $this->_renderItems()
+            . '</channel></rss>';
+        return $xml;
+    }
+
+    /**
+     * Renders the RSS feed head.
+     *
+     * @return string XML.
+     *
+     * @global array The localization of the plugins.
+     */
+    private function _renderHead()
+    {
+        global $plugin_tx;
+
+        return '<title>' . $plugin_tx['realblog']['rss_title'] . '</title>'
+            . '<link>' . $plugin_tx['realblog']['rss_page'] . '</link>'
+            . '<description>' . $plugin_tx['realblog']['rss_description']
+            . '</description>'
+            . '<language>' . $plugin_tx['realblog']['rss_language'] . '</language>'
+            . '<copyright>' . $plugin_cf['realblog']['rss_copyright']
+            . '</copyright>'
+            . '<managingEditor>' . $plugin_cf['realblog']['rss_editor']
+            . '</managingEditor>'
+            . $this->_renderImage();
+    }
+
+    /**
+     * Renders the feed image.
+     *
+     * @return string XML.
+     *
+     * @global array The localization of the plugins.
+     */
+    private function _renderImage()
+    {
+        global $plugin_tx;
+
+        return '<image>'
+            . '<title>' . $plugin_tx['realblog']['rss_title'] . '</title>'
+            . '<url>' . $plugin_cf['realblog']['rss_logo'] . '</url>'
+            . '<link>' . $plugin_tx['realblog']['rss_page'] . '</link>'
+            // FIXME: don't hard code
+            . '<width>65</width>'
+            . '<height>35</height>'
+            . '<description>' . $plugin_tx['realblog']['rss_description']
+            . '</description>'
+            . '</image>';
+    }
+
+    /**
+     * Renders the feed items.
+     *
+     * @return string XML.
+     *
+     * @global array The localization of the plugins.
+     */
+    private function _renderItems()
+    {
+        global $plugin_tx;
+
+        $xml = '';
+        foreach ($this->_articles as $article) {
+            $url = Realblog_url(
+                $plugin_tx['realblog']["rss_page"],
+                $article['REALBLOG_TITLE'],
+                array(
+                    'realblogID' => $article[REALBLOG_ID]
+                )
+            );
+            $xml .= '<item>'
+                . '<title>' . XH_hsc($article[REALBLOG_TITLE]) . '</title>'
+                . '<link>' . XH_hsc($url) . '</link>'
+                . '<description>'
+                . XH_hsc(evaluate_scripting($article[REALBLOG_HEADLINE]))
+                . '</description>'
+                . '<pubDate>' . date('r', $article[REALBLOG_DATE])
+                . '</pubDate>'
+                . '</item>';
+        }
+        return $xml;
+    }
 }
 
 ?>

@@ -408,128 +408,28 @@ function Realblog_makeTimestampDates1($tmpdate = null)
  *
  * @return void
  *
- * @global array  The paths of system files and folders.
- * @global array  The configuration of the plugins.
  * @global array  The localization of the plugins.
  */
 function Realblog_exportRssFeed()
 {
-    global $pth, $plugin_cf, $plugin_tx;
+    global $plugin_tx;
 
+    // FIXME: Make that a config option
     if (strtolower($plugin_tx['realblog']['rss_enable']) == 'true') {
         $db = Realblog_connect();
-
-        // FIXME: w+ ?
-        if ($fp = fopen('./realblog_rss_feed.xml', 'w+')) {
-            fputs(
-                $fp,
-                '<?xml version="1.0" encoding="'
-                . strtolower($plugin_cf['realblog']['rss_encoding'])
-                . '"?>' . "\n"
-            );
-            fputs(
-                $fp,
-                '<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"'
-                . ' xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"'
-                . ' xmlns:admin="http://webns.net/mvcb/"'
-                . ' xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"'
-                . ' xmlns:content="http://purl.org/rss/1.0/modules/content/">'
-                . "\n"
-            );
-            fputs($fp, '<channel>' . "\n");
-            fputs(
-                $fp,
-                '<title>' . $plugin_tx['realblog']['rss_title'] . '</title>' . "\n"
-            );
-            fputs(
-                $fp,
-                '<link>' . $plugin_tx['realblog']['rss_page'] . '</link>' . "\n"
-            );
-            fputs(
-                $fp,
-                '<description>' . $plugin_tx['realblog']['rss_description']
-                . '</description>' . "\n"
-            );
-            fputs(
-                $fp,
-                '<language>' . $plugin_tx['realblog']['rss_language'] . '</language>'
-                . "\n"
-            );
-            fputs(
-                $fp,
-                '<copyright>' . $plugin_cf['realblog']['rss_copyright']
-                . '</copyright>' . "\n"
-            );
-            fputs(
-                $fp,
-                '<managingEditor>' . $plugin_cf['realblog']['rss_editor']
-                . '</managingEditor>' . "\n"
-            );
-            fputs(
-                $fp,
-                '<image>' . "\n"
-            );
-            fputs(
-                $fp,
-                '<title>' . $plugin_tx['realblog']['rss_title'] . '</title>' . "\n"
-            );
-            fputs(
-                $fp,
-                '<url>' . $plugin_cf['realblog']['rss_logo'] . '</url>' . "\n"
-            );
-            fputs(
-                $fp,
-                '<link>' . $plugin_tx['realblog']['rss_page'] . '</link>' . "\n"
-            );
-            fputs($fp, '<width>65</width>'. "\n");
-            fputs($fp, '<height>35</height>' . "\n");
-            fputs(
-                $fp,
-                '<description>' . $plugin_tx['realblog']['rss_description']
-                . '</description>' . "\n"
-            );
-            fputs($fp, '</image>' . "\n");
-            $compClause = new SimpleWhereClause(
+        $articles = $db->selectWhere(
+            'realblog.txt',
+            new SimpleWhereClause(
                 REALBLOG_RSSFEED, "=", "on", STRING_COMPARISON
-            );
-            $realbloglist = $db->selectWhere(
-                'realblog.txt', $compClause, -1,
-                array(
-                    new OrderBy(REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON),
-                    new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
-                )
-            );
-            // Show the RSS realblog items
-            if (count($realbloglist) > 0) {
-                foreach ($realbloglist as $index => $record) {
-                    fputs($fp, '<item>' . "\n");
-                    $title = '<title>'
-                        . XH_hsc($record[REALBLOG_TITLE])
-                        . '</title>' . "\n";
-                    $url = Realblog_url(
-                        $plugin_tx['realblog']["rss_page"],
-                        $record['REALBLOG_TITLE'],
-                        array(
-                            'realblogID' => $record[REALBLOG_ID]
-                        )
-                    );
-                    $link = '<link>' . XH_hsc($url) . '</link>' . "\n";
-                    $description = '<description>'
-                        . XH_hsc(evaluate_scripting($record[REALBLOG_HEADLINE]))
-                        . '</description>' . "\n";
-                    $pubDate = '<pubDate>' . date('r', $record[REALBLOG_DATE])
-                        . '</pubDate>' . "\n";
-                    fputs($fp, $title);
-                    fputs($fp, $link);
-                    fputs($fp, $description);
-                    fputs($fp, $pubDate);
-                    fputs($fp, '</item>' . "\n");
-                }
-            }
-            fputs($fp, '</channel>' . "\n");
-            fputs($fp, '</rss>' . "\n");
-            fclose($fp);
-        }
+            ),
+            -1,
+            array(
+                new OrderBy(REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON),
+                new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
+            )
+        );
+        $view = new Realblog_RSSFeed($articles);
+        file_put_contents('./realblog_rss_feed.xml', $view->render());
     }
 }
 
