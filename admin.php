@@ -63,12 +63,6 @@ this program; if not, see <http://www.gnu.org/licenses>.
 */
 ////////////////////////////////////////////////// HISTORIC LICENSE SECTION END
 
-if (!is_writeable('./realblog_rss_feed.xml')) {
-    $o .= '<div class="cmsimplecore_warning" style="text-align: center;">'
-        . '<b>RealBlog:</b> RSS file "./realblog_rss_feed.xml" not writable.'
-        . '</div>';
-}
-
 /*
  * Handle plugin administration.
  */
