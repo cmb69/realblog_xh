@@ -5,7 +5,6 @@
 * add CHANGELOG
 * description as field or auto-generated from teaser
 * Realblog_url(): change param names (meltemi)
-* remove global filter variables
 
 * replace mktime() with strtotime()
 * store categories in DB

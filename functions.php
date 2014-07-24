@@ -747,7 +747,7 @@ function Realblog_getPage()
 }
 
 /**
- * Returns the requested year, and storess it in a cookie.
+ * Returns the requested year, and stores it in a cookie.
  *
  * @return int
  */
@@ -763,6 +763,27 @@ function Realblog_getYear()
         $year = date('Y');
     }
     return $year;
+}
+
+/**
+ * Returns a requested filter, and stores it in a cookie.
+ *
+ * @param int $num A filter number (1-3).
+ *
+ * @return bool
+ */
+function Realblog_getFilter($num)
+{
+    if (isset($_POST["realblog_filter$num"])) {
+        $filter = ($_POST["realblog_filter$num"] == 'on');
+        $_COOKIE["realblog_filter$num"] = $filter ? 'on' : '';
+        setcookie("realblog_filter$num", $filter ? 'on' : '', 0, CMSIMPLE_ROOT);
+    } elseif (isset($_COOKIE["realblog_filter$num"])) {
+        $filter = ($_COOKIE["realblog_filter$num"] == 'on');
+    } else {
+        $filter = false;
+    }
+    return $filter;
 }
 
 /**

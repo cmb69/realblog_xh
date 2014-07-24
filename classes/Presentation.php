@@ -457,7 +457,6 @@ class Realblog_ArchiveView
         global $plugin_tx;
 
         $t = '';
-        $filter_total = 0;
         if (!Realblog_getPgParameter('realblog_search')) {
             $currentYear = date('Y');
             if (!isset($this->_year) || $this->_year <= 0
@@ -1200,20 +1199,14 @@ class Realblog_AdminController
      * @global array The paths of system files and folders.
      * @global string The (X)HTML to insert into the contents area.
      * @global string The value of the <var>action</var> GP parameter.
-     * @global string Whether filtering of unpublished articles is enabled.
-     * @global string Whether filtering of published articles is enabled.
-     * @global string Whether filtering of archived articles is enabled.
      */
     private function _handleMainAdministration()
     {
-        global $pth, $o, $action, $filter1, $filter2, $filter3;
+        global $pth, $o, $action;
 
         if (!is_writable($pth['folder']['content'] . 'realblog/realblog.txt')) {
             $o .= $this->_renderDatafileError();
         } else {
-            $filter1 = Realblog_getPgParameter('filter1');
-            $filter2 = Realblog_getPgParameter('filter2');
-            $filter3 = Realblog_getPgParameter('filter3');
             $this->_dispatchOnAction($action);
         }
     }
@@ -1513,18 +1506,12 @@ class Realblog_AdminController
      * Returns the current filter clause.
      *
      * @return WhereClause
-     *
-     * @global string Whether filtering of unpublished articles is enabled.
-     * @global string Whether filtering of published articles is enabled.
-     * @global string Whether filtering of archived articles is enabled.
      */
     private function _getFilterClause()
     {
-        global $filter1, $filter2, $filter3;
-
         $filterClause = null;
-        foreach (array($filter1, $filter2, $filter3) as $i => $value) {
-            if ($value == 'on') {
+        foreach (range(0, 2) as $i) {
+            if (Realblog_getFilter($i + 1)) {
                 if (isset($filterClause)) {
                     $filterClause = new OrWhereClause(
                         $filterClause,
@@ -1761,20 +1748,17 @@ class Realblog_ArticlesAdminView
      * @param string $name   A filter name.
      *
      * @return string (X)HTML.
-     *
-     * @global string Whether filter 1 is enabled.
-     * @global string Whether filter 2 is enabled.
-     * @global string Whether filter 3 is enabled.
      */
     private function _renderFilterCheckbox($number, $name)
     {
-        global $plugin_tx, $filter1, $filter2, $filter3;
+        global $plugin_tx;
 
-        $filterVar = 'filter' . $number;
-        $checked = ($$filterVar == 'on') ? ' checked="checked"' : '';
+        $filterName = 'realblog_filter' . $number;
+        $checked = Realblog_getFilter($number) ? ' checked="checked"' : '';
         return '<label>'
+            . tag('input type="hidden" name="' . $filterName . '" value=""')
             . tag(
-                'input type="checkbox" name="filter' . $number . '" ' . $checked
+                'input type="checkbox" name="' . $filterName . '" ' . $checked
                 . '"'
             )
             . $plugin_tx['realblog'][$name] . '</label>';
@@ -1838,14 +1822,10 @@ class Realblog_ArticlesAdminView
      *
      * @global string The script name.
      * @global array  The localization of the plugins.
-     * @global string Whether filter 1 is enabled.
-     * @global string Whether filter 2 is enabled.
-     * @global string Whether filter 3 is enabled.
-     * @global string The current page number.
      */
     private function _renderNavigation()
     {
-        global $sn, $plugin_tx, $filter1, $filter2, $filter3;
+        global $sn, $plugin_tx;
 
         $page = Realblog_getPage();
         $db_total_records = count($this->_articles);
@@ -1870,26 +1850,19 @@ class Realblog_ArticlesAdminView
             $o .= '<div class="realblog_table_paging">'
                 . '<a href="' . $sn . '?&amp;realblog'
                 . '&amp;admin=plugin_main&amp;action=plugin_text&amp;realblog_page='
-                . $back . '&amp;filter1=' . $filter1 . '&amp;filter2='
-                . $filter2 . '&amp;filter3=' . $filter3 . '" title="'
-                . $plugin_tx['realblog']['tooltip_previous'] . '">'
-                . '&#9664;</a>&nbsp;&nbsp;';
+                . $back . '" title="' . $plugin_tx['realblog']['tooltip_previous']
+                . '">&#9664;</a>&nbsp;&nbsp;';
             for ($i = 1; $i <= $this->_pageCount; $i++) {
                 $separator = ($i < $this->_pageCount) ? ' ' : '';
-                $o .= '<a href="' . $sn . '?&amp;realblog'
-                    . '&amp;admin=plugin_main&amp;action=plugin_text&amp;realblog_page='
-                    . $i . '&amp;filter1=' . $filter1 . '&amp;filter2='
-                    . $filter2 . '&amp;filter3=' . $filter3 . '" title="'
-                    . $plugin_tx['realblog']['page_label']
+                $o .= '<a href="' . $sn . '?&amp;realblog&amp;admin=plugin_main'
+                    . '&amp;action=plugin_text&amp;realblog_page=' . $i
+                    . '" title="' . $plugin_tx['realblog']['page_label']
                     . ' ' . $i . '">[' . $i . ']</a>' . $separator;
             }
             $o .= '&nbsp;&nbsp;<a href="' . $sn . '?&amp;realblog'
                 . '&amp;admin=plugin_main&amp;action=plugin_text&amp;realblog_page='
-                . $next . '&amp;filter1=' . $filter1 . '&amp;filter2='
-                . $filter2 . '&amp;filter3=' . $filter3 . '" title="'
-                . $plugin_tx['realblog']['tooltip_next']
-                . '">'
-                . '&#9654;</a>';
+                . $next . '" title="' . $plugin_tx['realblog']['tooltip_next']
+                . '">&#9654;</a>';
             $o .= '</div>';
         }
         $o .= '</div>';
@@ -2016,7 +1989,8 @@ class Realblog_ArticleAdminView
      *
      * @global array The paths of system files and folders.
      */
-    public function __construct($record, $action, $ret_page) {
+    public function __construct($record, $action, $ret_page)
+    {
         global $pth;
 
         $this->_record = $record;
@@ -2165,8 +2139,8 @@ class Realblog_ArticleAdminView
         if ($plugin_cf['realblog']['auto_publish']) {
             $html = tag(
                 'input type="text" name="realblog_startdate" id="date2"'
-                . ' value="' . $this->_record[REALBLOG_STARTDATE] . '" size="10" maxlength="10"'
-                . ' onfocus="this.blur()"'
+                . ' value="' . $this->_record[REALBLOG_STARTDATE]
+                . '" size="10" maxlength="10"' . ' onfocus="this.blur()"'
             );
             $html .= '&nbsp;'
                 . tag(
@@ -2196,8 +2170,8 @@ class Realblog_ArticleAdminView
         if ($plugin_cf['realblog']['auto_archive']) {
             $html = tag(
                 'input type="text" name="realblog_enddate" id="date3"'
-                . ' value="' . $this->_record[REALBLOG_ENDDATE] . '" size="10" maxlength="10"'
-                . ' onfocus="this.blur()"'
+                . ' value="' . $this->_record[REALBLOG_ENDDATE]
+                . '" size="10" maxlength="10"' . ' onfocus="this.blur()"'
             );
             $html .= '&nbsp;'
                 . tag(
@@ -2276,7 +2250,8 @@ EOT;
         $states = array('readyforpublishing', 'published', 'archived', 'backuped');
         $html = '<select name="realblog_status">';
         foreach ($states as $i => $state) {
-            $selected = ($i == $this->_record[REALBLOG_STATUS]) ? 'selected="selected"' : '';
+            $selected = ($i == $this->_record[REALBLOG_STATUS])
+                ? 'selected="selected"' : '';
             $html .= '<option value="' . $i . '" ' . $selected . '>'
                 . $plugin_tx['realblog'][$state] . '</option>';
         }
