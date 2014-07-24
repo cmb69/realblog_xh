@@ -696,6 +696,13 @@ function Realblog_autoArchive()
     }
 }
 
+/**
+ * Returns the meta description for an article.
+ *
+ * @param array $article An article record.
+ *
+ * @return string
+ */
 function Realblog_getDescription($article)
 {
     return utf8_substr(
