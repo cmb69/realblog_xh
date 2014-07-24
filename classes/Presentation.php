@@ -2726,16 +2726,8 @@ class Realblog_RSSFeed
     {
         global $plugin_cf, $plugin_tx;
 
-        $xml = '<?xml version="1.0" encoding="'
-            // FIXME: hard code
-            . strtolower($plugin_cf['realblog']['rss_encoding'])
-            . '"?>'
-            . '<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/"'
-            . ' xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"'
-            . ' xmlns:admin="http://webns.net/mvcb/"'
-            . ' xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"'
-            . ' xmlns:content="http://purl.org/rss/1.0/modules/content/">'
-            . '<channel>'
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>'
+            . '<rss version="2.0"><channel>'
             . $this->_renderHead()
             . $this->_renderItems()
             . '</channel></rss>';
@@ -2747,22 +2739,27 @@ class Realblog_RSSFeed
      *
      * @return string XML.
      *
+     * @global array The configuration of the plugins.
      * @global array The localization of the plugins.
      */
     private function _renderHead()
     {
-        global $plugin_tx;
+        global $plugin_cf, $plugin_tx;
 
-        return '<title>' . $plugin_tx['realblog']['rss_title'] . '</title>'
-            . '<link>' . $plugin_tx['realblog']['rss_page'] . '</link>'
+        $xml = '<title>' . $plugin_tx['realblog']['rss_title'] . '</title>'
             . '<description>' . $plugin_tx['realblog']['rss_description']
             . '</description>'
+            . '<link>' . CMSIMPLE_URL . '?' . $plugin_tx['realblog']['rss_page']
+            . '</link>'
             . '<language>' . $plugin_tx['realblog']['rss_language'] . '</language>'
-            . '<copyright>' . $plugin_cf['realblog']['rss_copyright']
+            . '<copyright>' . $plugin_tx['realblog']['rss_copyright']
             . '</copyright>'
             . '<managingEditor>' . $plugin_cf['realblog']['rss_editor']
-            . '</managingEditor>'
-            . $this->_renderImage();
+            . '</managingEditor>';
+        if ($plugin_cf['realblog']['rss_logo']) {
+            $xml .= $this->_renderImage();
+        }
+        return $xml;
     }
 
     /**
@@ -2770,21 +2767,25 @@ class Realblog_RSSFeed
      *
      * @return string XML.
      *
+     * @global array The paths of system files and folders.
+     * @global array The configuration of the plugins.
      * @global array The localization of the plugins.
      */
     private function _renderImage()
     {
-        global $plugin_tx;
+        global $pth, $plugin_cf, $plugin_tx;
 
+        $url = preg_replace(
+            array('/\/[^\/]+\/\.\.\//', '/\/\.\//'),
+            '/',
+            CMSIMPLE_URL . $pth['folder']['images']
+            . $plugin_cf['realblog']['rss_logo']
+        );
         return '<image>'
+            . '<url>' . $url . '</url>'
+            . '<link>' . CMSIMPLE_URL . $plugin_tx['realblog']['rss_page']
+            . '</link>'
             . '<title>' . $plugin_tx['realblog']['rss_title'] . '</title>'
-            . '<url>' . $plugin_cf['realblog']['rss_logo'] . '</url>'
-            . '<link>' . $plugin_tx['realblog']['rss_page'] . '</link>'
-            // FIXME: don't hard code
-            . '<width>65</width>'
-            . '<height>35</height>'
-            . '<description>' . $plugin_tx['realblog']['rss_description']
-            . '</description>'
             . '</image>';
     }
 
@@ -2793,20 +2794,24 @@ class Realblog_RSSFeed
      *
      * @return string XML.
      *
+     * @global string The script name.
      * @global array The localization of the plugins.
      */
     private function _renderItems()
     {
-        global $plugin_tx;
+        global $sn, $plugin_tx;
 
         $xml = '';
         foreach ($this->_articles as $article) {
-            $url = Realblog_url(
-                $plugin_tx['realblog']["rss_page"],
-                $article['REALBLOG_TITLE'],
-                array(
-                    'realblogID' => $article[REALBLOG_ID]
-                )
+            $url = CMSIMPLE_URL . substr(
+                Realblog_url(
+                    $plugin_tx['realblog']["rss_page"],
+                    $article['REALBLOG_TITLE'],
+                    array(
+                        'realblogID' => $article[REALBLOG_ID]
+                    )
+                ),
+                strlen($sn)
             );
             $xml .= '<item>'
                 . '<title>' . XH_hsc($article[REALBLOG_TITLE]) . '</title>'

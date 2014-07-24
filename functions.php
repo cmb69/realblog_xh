@@ -408,29 +408,26 @@ function Realblog_makeTimestampDates1($tmpdate = null)
  *
  * @return void
  *
- * @global array  The localization of the plugins.
+ * @global array  The configuration of the plugins.
  */
 function Realblog_exportRssFeed()
 {
-    global $plugin_tx;
+    global $plugin_cf;
 
-    // FIXME: Make that a config option
-    if (strtolower($plugin_tx['realblog']['rss_enable']) == 'true') {
-        $db = Realblog_connect();
-        $articles = $db->selectWhere(
-            'realblog.txt',
-            new SimpleWhereClause(
-                REALBLOG_RSSFEED, "=", "on", STRING_COMPARISON
-            ),
-            -1,
-            array(
-                new OrderBy(REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON),
-                new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
-            )
-        );
-        $view = new Realblog_RSSFeed($articles);
-        file_put_contents('./realblog_rss_feed.xml', $view->render());
-    }
+    $db = Realblog_connect();
+    $articles = $db->selectWhere(
+        'realblog.txt',
+        new SimpleWhereClause(
+            REALBLOG_RSSFEED, "=", "on", STRING_COMPARISON
+        ),
+        -1,
+        array(
+            new OrderBy(REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON),
+            new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
+        )
+    );
+    $view = new Realblog_RSSFeed($articles);
+    file_put_contents('./realblog_rss_feed.xml', $view->render());
 }
 
 /**

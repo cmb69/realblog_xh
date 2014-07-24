@@ -80,18 +80,19 @@ define('REALBLOG_VERSION', '@REALBLOG_VERSION@');
  * Generate RSS feed, auto publish and archive articles.
  */
 if (!XH_ADM) {
-    Realblog_exportRssFeed();
     if ($plugin_cf['realblog']['auto_publish']) {
         Realblog_autoPublish();
     }
     if ($plugin_cf['realblog']['auto_archive']) {
         Realblog_autoArchive();
     }
-    // FIXME: don't, if not $plugin_tx['realblog']['rss_enable']
-    $hjs .= tag(
-        'link rel="alternate" type="application/rss+xml" title="'
-        . sitename(). '" href="./realblog_rss_feed.xml"'
-    ) . "\n";
+    if ($plugin_cf['realblog']['rss_enabled']) {
+        Realblog_exportRssFeed();
+        $hjs .= tag(
+            'link rel="alternate" type="application/rss+xml" title="'
+            . sitename(). '" href="./realblog_rss_feed.xml"'
+        );
+    }
 }
 
 ?>
