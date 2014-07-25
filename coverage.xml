@@ -9,6 +9,9 @@
     <filter>
         <whitelist addUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">classes</directory>
+            <exclude>
+                <file>classes/flatfile.php</file>
+            </exclude>
             <file>index.php</file>
             <file>admin.php</file>
             <file>functions.php</file>

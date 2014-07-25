@@ -1,9 +1,8 @@
 * manuals
 * add CHANGELOG
-* FIXMEs
-* make search form accessible
-* remove flatfile from coverage report
 
+* make search form accessible
+* fix FIXMEs
 * keep an eye on compat.php
 * replace mktime() with strtotime() ?
 * store categories in DB
