@@ -64,6 +64,13 @@ this program; if not, see <http://www.gnu.org/licenses>.
 ////////////////////////////////////////////////// HISTORIC LICENSE SECTION END
 
 /*
+ * Register plugin menu items.
+ */
+if (function_exists('XH_registerStandardPluginMenuItems')) {
+    XH_registerStandardPluginMenuItems(true);
+}
+
+/*
  * Handle plugin administration.
  */
 if (isset($realblog) && $realblog == 'true') {

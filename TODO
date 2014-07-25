@@ -1,6 +1,6 @@
 * keep an eye on compat.php
 * add CHANGELOG
-* add XH_registerStandardPluginMenuItems()
+* fix namespacing in stylesheet
 
 * replace mktime() with strtotime()
 * store categories in DB
