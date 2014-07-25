@@ -1,8 +1,8 @@
-* keep an eye on compat.php
+* manuals
 * add CHANGELOG
-* test valid HTML
-* fix auto-publishing/archiving (when turned on, all is done)
+* FIXMEs
 
+* keep an eye on compat.php
 * replace mktime() with strtotime()
 * store categories in DB
 * simplify CSS (shall we call for themes?)

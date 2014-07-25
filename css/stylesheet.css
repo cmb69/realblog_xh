@@ -39,6 +39,9 @@ padding: 6px 0;
 .realblog_fields_block #date1 {
 margin-bottom: 12px;
 }
+.realblog_fields_block table {
+    width: 100%;
+}
 
 .realblog_date_label {
     font-weight: bold;
@@ -73,6 +76,13 @@ padding-bottom: 12px;
     color: #fff;
     padding: 0.5em 0;
     font-weight: bold;
+    text-align: center;
+}
+.realblog_table_header button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
 }
 
 .realblog_table_details {
@@ -81,11 +91,11 @@ border: 1px solid #075FB9;
 
 .realblog_table_line {
     padding: 0.3em;
+    text-align: center;
 }
-
-.realblog_onoff {
-color: #070;
-font-weight: 700;
+.realblog_table_line:nth-child(4), .realblog_table_line:nth-child(6),
+.realblog_table_line:nth-child(7), .realblog_table_line:nth-child(8) {
+    font-weight: bold;
 }
 
 .realblog_table_title {

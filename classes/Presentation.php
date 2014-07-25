@@ -1687,36 +1687,31 @@ class Realblog_ArticlesAdminView
      *
      * @return string (X)HTML.
      *
-     * @global string            The script name.
+     * @global string The script name.
      */
     public function render()
     {
         global $sn;
 
-        $o = $this->_renderFilterForm();
-        // Display table header
-        $o .= "\n" . '<div>' . "\n"
-            . '<form method="post" action="' . $sn . '?&amp;' . 'realblog'
-            . '&amp;admin=plugin_main">' . "\n"
-            . '<table class="realblog_table" width="100%" cellpadding="0"'
-            . ' cellspacing="0">';
-        $o .= $this->_renderTableHead();
+        $html = $this->_renderFilterForm()
+            . '<form method="post" action="' . $sn
+            . '?&amp;realblog&amp;admin=plugin_main">'
+            . '<table class="realblog_table">'
+            . $this->_renderTableHead();
         $page = Realblog_getPage();
-        $end_index = $page * $this->_articlesPerPage - 1;
-
-        // Display table lines
-        for ($i = $this->_startIndex; $i <= $end_index; $i++) {
+        $endIndex = $page * $this->_articlesPerPage - 1;
+        for ($i = $this->_startIndex; $i <= $endIndex; $i++) {
             if ($i <= count($this->_articles) - 1) {
                 $field = $this->_articles[$i];
-                $o .= $this->_renderRow($field);
+                $html .= $this->_renderRow($field);
             }
         }
 
-        $o .= '</table></div>';
-        $o .= tag('input type="hidden" name="page" value="' . $page . '"')
-            . '</form>';
-        $o .= $this->_renderNavigation();
-        return $o;
+        $html .= '</table>'
+            . tag('input type="hidden" name="page" value="' . $page . '"')
+            . '</form>'
+            . $this->_renderNavigation();
+        return $html;
     }
 
     /**
@@ -1757,11 +1752,10 @@ class Realblog_ArticlesAdminView
 
         $filterName = 'realblog_filter' . $number;
         $checked = Realblog_getFilter($number) ? ' checked="checked"' : '';
-        return '<label>'
-            . tag('input type="hidden" name="' . $filterName . '" value=""')
+        return tag('input type="hidden" name="' . $filterName . '" value=""')
+            . '<label>'
             . tag(
                 'input type="checkbox" name="' . $filterName . '" ' . $checked
-                . '"'
             )
             . $plugin_tx['realblog'][$name] . '</label>';
     }
@@ -1779,41 +1773,43 @@ class Realblog_ArticlesAdminView
         global $sn, $plugin_tx;
 
         return '<tr>'
-            . '<td class="realblog_table_header" align="center">'
+            . '<td class="realblog_table_header">'
+            . '<button name="action" value="batchdelete"  title="'
+            . $plugin_tx['realblog']['tooltip_deleteall'] . '">'
             . tag(
-                'input type="image" align="middle" src="'
-                . $this->_imageFolder . 'delete.png" name="action"'
-                . ' value="batchdelete" title="'
+                'img src="' . $this->_imageFolder  . 'delete.png" alt="'
                 . $plugin_tx['realblog']['tooltip_deleteall'] . '"'
             )
-            . '</td>'
-            . '<td class="realblog_table_header" align="center">'
+            . '</button></td>'
+            . '<td class="realblog_table_header">'
+            . '<button name="action" value="change_status"  title="'
+            . $plugin_tx['realblog']['tooltip_changestatus'] . '">'
             . tag(
-                'input type="image" align="middle" src="' . $this->_imageFolder
-                . 'change-status.png" name="action" value="change_status"'
-                . ' title="' . $plugin_tx['realblog']['tooltip_changestatus']
-                . '"'
+                'img src="' . $this->_imageFolder  . 'change-status.png" alt="'
+                . $plugin_tx['realblog']['tooltip_changestatus'] . '"'
             )
-            . '</td>'
-            . '<td class="realblog_table_header" align="center">'
+            . '</button></td>'
+
+            . '<td class="realblog_table_header">'
             . '<a href="' . $sn . '?&amp;realblog'
-            . '&amp;admin=plugin_main&amp;action=add_realblog">'
+            . '&amp;admin=plugin_main&amp;action=add_realblog" title="'
+            . $plugin_tx['realblog']['tooltip_add'] . '">'
             . tag(
                 'img src="' . $this->_imageFolder . 'add.png"'
-                . ' align="middle" title="'
-                . $plugin_tx['realblog']['tooltip_add'] . '" alt=""'
+                . ' alt="'
+                . $plugin_tx['realblog']['tooltip_add'] . '"'
             )
-            . '</a></td>' . "\n"
-            . '<td class="realblog_table_header" align="center">'
-            . $plugin_tx['realblog']['id_label'] . '</td>' . "\n"
-            . '<td class="realblog_table_header" align="center">'
-            . $plugin_tx['realblog']['date_label'] . '</td>' . "\n"
-            . '<td class="realblog_table_header" align="center">'
-            . 'Status' . '</td>' . "\n"
-            . '<td class="realblog_table_header" align="center">RSS Feed'
-            . '</td>' . "\n"
-            . '<td class="realblog_table_header" align="center">'
-            . $plugin_tx['realblog']['comments_onoff'] . '</td>' . "\n"
+            . '</a></td>'
+            . '<td class="realblog_table_header">'
+            . $plugin_tx['realblog']['id_label'] . '</td>'
+            . '<td class="realblog_table_header">'
+            . $plugin_tx['realblog']['date_label'] . '</td>'
+            // FIXME: i18n
+            . '<td class="realblog_table_header">' . 'Status' . '</td>'
+            // FIXME: i18n
+            . '<td class="realblog_table_header">' . 'RSS Feed' . '</td>'
+            . '<td class="realblog_table_header">'
+            . $plugin_tx['realblog']['comments_onoff'] . '</td>'
             . '</tr>';
     }
 
@@ -1835,12 +1831,11 @@ class Realblog_ArticlesAdminView
             ? $plugin_tx['realblog']['page_label'] . ' : ' . $page .  '/'
                 . $this->_pageCount
             : '';
-        $o = '<div class="realblog_paging_block">'
+        $html = '<div class="realblog_paging_block">'
             . '<div class="realblog_db_info">'
             . $plugin_tx['realblog']['record_count'] . ' : '
             . $db_total_records . '</div>'
             . '<div class="realblog_page_info">' . $tmp . '</div>';
-
         if ($db_total_records > 0 && $this->_pageCount > 1) {
             if ($this->_pageCount > $page) {
                 $next = $page + 1;
@@ -1849,26 +1844,26 @@ class Realblog_ArticlesAdminView
                 $next = $this->_pageCount;
                 $back = $this->_pageCount - 1;
             }
-            $o .= '<div class="realblog_table_paging">'
+            $html .= '<div class="realblog_table_paging">'
                 . '<a href="' . $sn . '?&amp;realblog'
                 . '&amp;admin=plugin_main&amp;action=plugin_text&amp;realblog_page='
                 . $back . '" title="' . $plugin_tx['realblog']['tooltip_previous']
                 . '">&#9664;</a>&nbsp;&nbsp;';
             for ($i = 1; $i <= $this->_pageCount; $i++) {
                 $separator = ($i < $this->_pageCount) ? ' ' : '';
-                $o .= '<a href="' . $sn . '?&amp;realblog&amp;admin=plugin_main'
+                $html .= '<a href="' . $sn . '?&amp;realblog&amp;admin=plugin_main'
                     . '&amp;action=plugin_text&amp;realblog_page=' . $i
                     . '" title="' . $plugin_tx['realblog']['page_label']
                     . ' ' . $i . '">[' . $i . ']</a>' . $separator;
             }
-            $o .= '&nbsp;&nbsp;<a href="' . $sn . '?&amp;realblog'
+            $html .= '&nbsp;&nbsp;<a href="' . $sn . '?&amp;realblog'
                 . '&amp;admin=plugin_main&amp;action=plugin_text&amp;realblog_page='
                 . $next . '" title="' . $plugin_tx['realblog']['tooltip_next']
-                . '">&#9654;</a>';
-            $o .= '</div>';
+                . '">&#9654;</a>'
+                . '</div>';
         }
-        $o .= '</div>';
-        return $o;
+        $html .= '</div>';
+        return $html;
     }
 
     /**
@@ -1887,57 +1882,45 @@ class Realblog_ArticlesAdminView
 
         $page = Realblog_getPage();
         return '<tr>'
-            . '<td class="realblog_table_line" align="center">'
+            . '<td class="realblog_table_line">'
             . tag(
                 'input type="checkbox" name="realblogtopics[]"'
                 . ' value="' . $field[REALBLOG_ID] . '"'
             )
             . '</td>'
-            . '<td class="realblog_table_line" valign="top"'
-            . ' align="center">'
-            . '<a href="' . $sn. '?&amp;realblog'
-            . '&amp;admin=plugin_main&amp;action=delete_realblog'
-            . '&amp;realblogID=' . $field[REALBLOG_ID] . '&amp;page='
-            . $page . '">'
+            . '<td class="realblog_table_line">'
+            . '<a href="' . $sn. '?&amp;realblog&amp;admin=plugin_main'
+            . '&amp;action=delete_realblog&amp;realblogID=' . $field[REALBLOG_ID]
+            . '&amp;page=' . $page . '">'
             . tag(
-                'img src="' . $this->_imageFolder . 'delete.png"'
-                . ' align="center" title="'
-                . $plugin_tx['realblog']['tooltip_delete'] . '" alt=""'
+                'img src="' . $this->_imageFolder . 'delete.png"' . ' title="'
+                . $plugin_tx['realblog']['tooltip_delete'] . '" alt="'
+                . $plugin_tx['realblog']['tooltip_delete'] . '"'
             )
             . '</a></td>'
-            . '<td class="realblog_table_line" valign="top"'
-            . ' align="center">'
-            . '<a href="' . $sn . '?&amp;realblog'
-            . '&amp;admin=plugin_main&amp;action=modify_realblog'
-            . '&amp;realblogID=' . $field[REALBLOG_ID] . '&amp;page='
-            . $page . '">'
+            . '<td class="realblog_table_line">'
+            . '<a href="' . $sn . '?&amp;realblog&amp;admin=plugin_main'
+            . '&amp;action=modify_realblog&amp;realblogID=' . $field[REALBLOG_ID]
+            . '&amp;page=' . $page . '">'
             . tag(
-                'img src="' . $this->_imageFolder . 'edit.png"'
-                . ' align="center" title="'
-                . $plugin_tx['realblog']['tooltip_modify'] . '" alt=""'
+                'img src="' . $this->_imageFolder . 'edit.png"' . ' title="'
+                . $plugin_tx['realblog']['tooltip_modify'] . '" alt="'
+                . $plugin_tx['realblog']['tooltip_modify'] . '"'
             )
             . '</a></td>'
-            . '<td class="realblog_table_line" valign="top"'
-            . ' align="center"><b>' . $field[REALBLOG_ID] . '</b></td>'
-            . '<td valign="top" style="text-align: center;"'
-            . ' class="realblog_table_line">'
+            . '<td class="realblog_table_line">' . $field[REALBLOG_ID] . '</td>'
+            . '<td class="realblog_table_line">'
             . date(
                 $plugin_tx['realblog']['date_format'], $field[REALBLOG_DATE]
             )
-            . '</td>' . "\n"
-            . '<td class="realblog_table_line" valign="top"'
-            . ' style="text-align: center;"><b>'
-            . $field[REALBLOG_STATUS] . '</b></td>' . "\n"
-            . '<td class="realblog_table_line realblog_onoff"'
-            . ' valign="top" style="text-align: center;">'
-            . $field[REALBLOG_RSSFEED] . '</td>' . "\n"
-            . '<td class="realblog_table_line realblog_onoff"'
-            . ' valign="top" style="text-align: center;">'
-            . $field[REALBLOG_COMMENTS] . '</td>' . "\n"
-            . '</tr>' . "\n" . '<tr>' . "\n"
-            . '<td colspan="8" valign="top"'
-            . ' class="realblog_table_title"><span>'
-            . $field[REALBLOG_TITLE] . '</span></td></tr>';
+            . '</td>'
+            . '<td class="realblog_table_line">' . $field[REALBLOG_STATUS] . '</td>'
+            . '<td class="realblog_table_line">' . $field[REALBLOG_RSSFEED] . '</td>'
+            . '<td class="realblog_table_line">' . $field[REALBLOG_COMMENTS]
+            . '</td>'
+            . '</tr>'
+            . '<tr><td colspan="8" class="realblog_table_title">'
+            . $field[REALBLOG_TITLE] . '</td></tr>';
     }
 }
 
@@ -2014,52 +1997,36 @@ class Realblog_ArticleAdminView
     {
         global $sn, $plugin_tx, $title;
 
-        $t = '<div class="realblog_fields_block"><h1>Realblog &ndash; '
-            . $title . '</h1>';
-        $t .= '<form name="realblog" method="post" action="' . $sn . '?&amp;'
+        return '<div class="realblog_fields_block"><h1>Realblog &ndash; '
+            . $title . '</h1>'
+            . '<form name="realblog" method="post" action="' . $sn . '?&amp;'
             . 'realblog' . '&amp;admin=plugin_main">'
-            . $this->_renderHiddenFields();
-        $t .= '<table width="100%">';
-        $t .= '<tr><td width="30%"><span class="realblog_date_label">'
+            . $this->_renderHiddenFields()
+            . '<table>'
+            . '<tr><td><span class="realblog_date_label">'
             . $plugin_tx['realblog']['date_label'] . '</span></td>'
-            . '<td width="5%">&nbsp;</td><td width="30%">'
-            . '<span class="realblog_date_label">'
+            . '<td><span class="realblog_date_label">'
             . $plugin_tx['realblog']['startdate_label'] . '</span></td>'
-            . '<td width="5%">&nbsp;</td><td width="30%">'
-            . '<span class="realblog_date_label">'
-            . $plugin_tx['realblog']['enddate_label'] . '</span></td></tr><tr>';
-        $t .= '<td width="30%" valign="top">'
-            . $this->_renderDate()
-            . '</td><td width="5%">&nbsp;</td>';
-        $t .= '<td width="30%" valign="top">' . $this->_renderPublishingDate();
-        $t .= '</td><td width="5%">&nbsp;</td>';
-        $t .= '<td width="30%" valign="top">' . $this->_renderArchiveDate()
-            . '</td></tr><tr>';
-
-        $t .= $this->_renderCalendarScript();
-
-        $t .= '<td width="30%"><span class="realblog_date_label">'
+            . '<td><span class="realblog_date_label">'
+            . $plugin_tx['realblog']['enddate_label'] . '</span></td></tr><tr>'
+            . '<td>' . $this->_renderDate() . '</td>'
+            . '<td>' . $this->_renderPublishingDate() . '</td>'
+            . '<td>' . $this->_renderArchiveDate() . '</td></tr><tr>'
+            . $this->_renderCalendarScript()
+            . '<td><span class="realblog_date_label">'
             . $plugin_tx['realblog']['status_label'] . '</span></td>'
-            . '<td width="5%">&nbsp;</td>'
-            . '<td width="30%">&nbsp;</span></td>'
-            . '<td width="5%">&nbsp;</td>'
-            . '<td width="30%"><span>&nbsp;</span></td></tr>'
-            . '<tr>';
-        $t .= '<td width="30%" valign="top">' . $this->_renderStatusSelect()
-            . '</td>';
-        $t .= '<td width="5%">&nbsp;</td><td width="30%" valign="top">'
-            . $this->_renderCommentsCheckbox() . '</td>';
-        $t .= '<td width="5%">&nbsp;</td><td width="30%" valign="top">'
-            . $this->_renderFeedCheckbox() . '</td></tr>';
-        $t .= '</table>';
-        $t .= '<h4>' . $plugin_tx['realblog']['title_label'] . '</h4>';
-        $t .= tag(
-            'input type="text" value="' . $this->_record[REALBLOG_TITLE]
-            . '" name="realblog_title" size="70"'
-        );
-        $t .= $this->_renderHeadline() . $this->_renderStory()
+            . '<td></td><td></td></tr><tr>'
+            . '<td>' . $this->_renderStatusSelect() . '</td>'
+            . '<td>' . $this->_renderCommentsCheckbox() . '</td>'
+            . '<td>' . $this->_renderFeedCheckbox() . '</td></tr>'
+            . '</table>'
+            . '<h4>' . $plugin_tx['realblog']['title_label'] . '</h4>'
+            . tag(
+                'input type="text" value="' . $this->_record[REALBLOG_TITLE]
+                . '" name="realblog_title" size="70"'
+            )
+            . $this->_renderHeadline() . $this->_renderStory()
             . $this->_renderSubmitButtons() . '</form>' . '</div>';
-        return $t;
     }
 
     /**
@@ -2336,8 +2303,8 @@ EOT;
             . '<p><b>Script for copy &amp; paste:</b></p>'
             . '{{{PLUGIN:CommentsMembersOnly();}}}'
             . '<textarea class="realblog_story_field"'
-             . ' name="realblog_story" id="realblog_story" rows="30" cols="80">'
-             . XH_hsc($this->_record[REALBLOG_STORY]) . '</textarea>';
+            . ' name="realblog_story" id="realblog_story" rows="30" cols="80">'
+            . XH_hsc($this->_record[REALBLOG_STORY]) . '</textarea>';
     }
 
     /**
