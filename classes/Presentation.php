@@ -2632,7 +2632,7 @@ class Realblog_ChangeStatusView extends Realblog_ConfirmationView
         $html = '<select name="new_realblogstatus">';
         foreach ($states as $i => $state) {
             $value = $i - 1;
-            $html .= '<option value="' . $value . '" ' . $this->_status[$i] . '>'
+            $html .= '<option value="' . $value . '">'
                 . $plugin_tx['realblog'][$state] . '</option>';
         }
         $html .= '</select>';
