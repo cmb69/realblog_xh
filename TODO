@@ -2,6 +2,7 @@
 * add CHANGELOG
 * FIXMEs
 * fix bug in change-status dialog
+* make search form accessible
 
 * keep an eye on compat.php
 * replace mktime() with strtotime()

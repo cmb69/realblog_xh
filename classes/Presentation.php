@@ -969,15 +969,16 @@ class Realblog_SearchFormView
     {
         global $pth, $tx, $plugin_tx;
 
-        $src = $pth['folder']['plugins'] . 'realblog/images/btn_expand.gif';
-        // FIXME: javascript protocol
-        return '<a href="javascript:realblog_showSearch()">'
-            . tag(
-                'img id="realblog_search_toggle" class="realblog_search_toggle"'
-                . ' alt="searchbuttonimg" src="' . $src . '" title="'
-                . $plugin_tx['realblog']['tooltip_showsearch'] . '"'
-            )
-            . '</a><b>' . $tx['search']['button'] . '</b>';
+        $tag = <<<EOT
+img id="realblog_search_toggle" class="realblog_search_toggle"
+src="{$pth['folder']['plugins']}realblog/images/btn_expand.gif"
+alt="{$plugin_tx['realblog']['tooltip_showsearch']}"
+title="{$plugin_tx['realblog']['tooltip_showsearch']}"
+onclick="realblog_showSearch()"
+EOT;
+        return tag($tag)
+            . '<span class="realblog_search_caption">'
+            . $tx['search']['button'] . '</span>';
     }
 
     /**
@@ -1298,9 +1299,7 @@ class Realblog_AdminController
         global $action;
 
         init_editor(array('realblog_headline_field', 'realblog_story_field'));
-        return Realblog_form(
-            Realblog_getPgParameter('realblogID'), $action, Realblog_getPage()
-        );
+        return Realblog_form(Realblog_getPgParameter('realblogID'), $action);
     }
 
     /**
@@ -1968,19 +1967,17 @@ class Realblog_ArticleAdminView
      *
      * @param array  $record   An article record.
      * @param string $action   The requested action.
-     * @param FIXME  $ret_page FIXME.
      *
      * @return void
      *
      * @global array The paths of system files and folders.
      */
-    public function __construct($record, $action, $ret_page)
+    public function __construct($record, $action)
     {
         global $pth;
 
         $this->_record = $record;
         $this->_action = $action;
-        $this->_retPage = $ret_page;
         $this->_imageFolder = $pth['folder']['plugins'] . 'realblog/images/';
     }
 

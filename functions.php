@@ -1012,21 +1012,18 @@ function Realblog_useCalendar()
 }
 
 /**
- * FIXME: ???
+ * Renders the article form.
  *
- * @param string $realblogID The article ID.
- * @param string $action     FIXME
- * @param int    $ret_page   FIXME
+ * @param string $realblogID An article ID.
+ * @param string $action     An action.
  *
  * @return string (X)HTML.
  *
  * @global string The page title.
  * @global array  The configuration of the plugins.
  * @global array  The localization of the plugins.
- *
- * @todo Should $title by global'd; otherwise remove.
  */
-function Realblog_form($realblogID = null, $action = null, $ret_page = 1)
+function Realblog_form($id, $action)
 {
     global $title, $plugin_cf, $plugin_tx;
 
@@ -1049,7 +1046,7 @@ function Realblog_form($realblogID = null, $action = null, $ret_page = 1)
         );
         $title = $plugin_tx['realblog']['tooltip_add'];
     } else {
-        $record = $db->selectUnique('realblog.txt', REALBLOG_ID, $realblogID);
+        $record = $db->selectUnique('realblog.txt', REALBLOG_ID, $id);
         $realblog_id = $record[REALBLOG_ID];
         $record[REALBLOG_DATE] = date(
             $plugin_tx['realblog']['date_format'], $record[REALBLOG_DATE]
@@ -1062,14 +1059,14 @@ function Realblog_form($realblogID = null, $action = null, $ret_page = 1)
         );
         if ($action == 'modify_realblog') {
             $title = $plugin_tx['realblog']['tooltip_modify'] . ' [ID: '
-                . $realblogID . ']';
+                . $id . ']';
         } elseif ($action == 'delete_realblog') {
             $title = $plugin_tx['realblog']['tooltip_delete'] . ' [ID: '
-                . $realblogID . ']';
+                . $id . ']';
         }
     }
-    $temp = new Realblog_ArticleAdminView($record, $action, $ret_page);
-    return $temp->render();
+    $view = new Realblog_ArticleAdminView($record, $action);
+    return $view->render();
 }
 
 /**
@@ -1087,44 +1084,44 @@ function Realblog_makeTimestampDates($tmpdate = null)
 {
     global $plugin_tx;
 
-    $my_date_format = explode('/', $plugin_tx['realblog']['date_format']);
-    if (count($my_date_format) > 1) {
-        $date_separator = '/';
+    $dateParts = explode('/', $plugin_tx['realblog']['date_format']);
+    if (count($dateParts) > 1) {
+        $dateSeparator = '/';
     } else {
-        $my_date_format = explode('.', $plugin_tx['realblog']['date_format']);
-        if (count($my_date_format) > 1) {
-            $date_separator = '.';
+        $dateParts = explode('.', $plugin_tx['realblog']['date_format']);
+        if (count($dateParts) > 1) {
+            $dateSeparator = '.';
         } else {
-            $my_date_format = explode('-', $plugin_tx['realblog']['date_format']);
-            if (count($my_date_format) > 1) {
-                $date_separator = '-';
+            $dateParts = explode('-', $plugin_tx['realblog']['date_format']);
+            if (count($dateParts) > 1) {
+                $dateSeparator = '-';
             }
         }
     }
 
-    for ($aCounter=0; $aCounter <= 2; $aCounter++) {
-        switch ($my_date_format[$aCounter]) {
+    for ($i = 0; $i <= 2; $i++) {
+        switch ($dateParts[$i]) {
         case 'd':
-            $dayposition = $aCounter;
-            $my_detected_date_format[$dayposition] = $my_date_format[$aCounter];
+            $dayposition = $i;
+            $my_detected_date_format[$dayposition] = $dateParts[$i];
             $cal_date_format[$dayposition] = 'DD';
             $regex[$dayposition] = '([0-9]{1,2})';
             break;
         case 'm':
-            $monthposition = $aCounter;
-            $my_detected_date_format[$monthposition] = $my_date_format[$aCounter];
+            $monthposition = $i;
+            $my_detected_date_format[$monthposition] = $dateParts[$i];
             $cal_date_format[$monthposition] = 'MM';
             $regex[$monthposition] = '([0-9]{1,2})';
             break;
         case 'y':
-            $yearposition = $aCounter;
-            $my_detected_date_format[$yearposition] = $my_date_format[$aCounter];
+            $yearposition = $i;
+            $my_detected_date_format[$yearposition] = $dateParts[$i];
             $cal_date_format[$yearposition] = 'YY';
             $regex[$yearposition] = '([0-9]{2})';
             break;
         case 'Y':
-            $yearposition = $aCounter;
-            $my_detected_date_format[$yearposition] = $my_date_format[$aCounter];
+            $yearposition = $i;
+            $my_detected_date_format[$yearposition] = $dateParts[$i];
             $cal_date_format[$yearposition] = 'YYYY';
             $regex[$yearposition] = '([0-9]{4})';
             break;
@@ -1133,7 +1130,7 @@ function Realblog_makeTimestampDates($tmpdate = null)
 
     foreach ($my_detected_date_format as $key => $value) {
         if ($key < (count($my_detected_date_format) - 1)) {
-            @$date_format .= $value . $date_separator;
+            @$date_format .= $value . $dateSeparator;
         } else {
             $date_format.=$value;
         }
@@ -1141,7 +1138,7 @@ function Realblog_makeTimestampDates($tmpdate = null)
 
     foreach ($regex as $key => $value) {
         if ($key < (count($regex) - 1)) {
-            @$regex_format .= $value . $date_separator;
+            @$regex_format .= $value . $dateSeparator;
         } else {
             $regex_format .= $value;
         }
@@ -1151,13 +1148,13 @@ function Realblog_makeTimestampDates($tmpdate = null)
         $tmpdate = date($plugin_tx['realblog']['date_format']);
     }
 
-    if ($date_separator == '.') {
+    if ($dateSeparator == '.') {
         $dateArr = explode('.', $tmpdate);
     }
-    if ($date_separator == '/') {
+    if ($dateSeparator == '/') {
         $dateArr = explode('/', $tmpdate);
     }
-    if ($date_separator == '-') {
+    if ($dateSeparator == '-') {
         $dateArr = explode('-', $tmpdate);
     }
     $m = $dateArr[$monthposition];
