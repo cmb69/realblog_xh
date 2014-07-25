@@ -19,10 +19,10 @@
  */
 
 /**
- * Displays the realblog's topic with status = published.
+ * Renders the published articles.
  *
- * @param array  $options     FIXME
- * @param string $realBlogCat FIXME
+ * @param string $options     An option string (options: showsearch).
+ * @param string $realBlogCat A category.
  *
  * @return string (X)HTML.
  */
@@ -46,9 +46,9 @@ function showrealblog($options = null, $realBlogCat = 'all')
 }
 
 /**
- * Displays the archived realblog topics.
+ * Renders the archived articles.
  *
- * @param mixed $options FIXME
+ * @param string $options An option string (options: showsearch).
  *
  * @return string (X)HTML.
  */
@@ -73,13 +73,9 @@ function showrealblogarchive($options = null)
 }
 
 /**
- * Displays the realblog topics with a link to the blog page from the template.
+ * Renders the published topics with a link to the blog page from the template.
  *
- * A page calling #cmsimple $output.=showrealblog();# must exist.
- * Options: realblog_page [required] : this is the page containing the
- *          showrealblog() function
- *
- * @param mixed $options FIXME
+ * @param string $options An option string (options: realblogpage).
  *
  * @return string (X)HTML.
  */
@@ -94,7 +90,7 @@ function realbloglink($options)
 }
 
 /**
- * Returns a graphical hyperlink to the newsfeed file.
+ * Renders a hyperlink to the newsfeed.
  *
  * @return string (X)HTML.
  */

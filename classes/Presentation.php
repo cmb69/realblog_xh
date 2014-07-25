@@ -1473,7 +1473,7 @@ class Realblog_AdminController
     {
         $article = array();
         $article[REALBLOG_ID] = Realblog_getPgParameter('realblog_id');
-        $article[REALBLOG_DATE] = Realblog_makeTimestampDates(
+        $article[REALBLOG_DATE] = Realblog_stringToTime(
             Realblog_getPgParameter('realblog_date')
         );
         $article[REALBLOG_TITLE] = stsl(
@@ -1488,12 +1488,12 @@ class Realblog_AdminController
         $article[REALBLOG_FRONTPAGE] = Realblog_getPgParameter(
             'realblog_frontpage'
         );
-        $article[REALBLOG_STARTDATE] = Realblog_makeTimestampDates(
+        $article[REALBLOG_STARTDATE] = Realblog_stringToTime(
             Realblog_getPgParameter('realblog_startdate')
         );
         $enddate = Realblog_getPgParameter('realblog_enddate');
         if (isset($endate)) {
-            $article[REALBLOG_ENDDATE] = Realblog_makeTimestampDates($enddate);
+            $article[REALBLOG_ENDDATE] = Realblog_stringToTime($enddate);
         } else {
             $article[REALBLOG_ENDDATE] = 2147483647;
         }
@@ -1949,13 +1949,6 @@ class Realblog_ArticleAdminView
     private $_action;
 
     /**
-     * The blog page to return to.
-     *
-     * @var int
-     */
-    private $_retPage;
-
-    /**
      * The paths of the plugin image folder.
      *
      * @var string
@@ -1965,8 +1958,8 @@ class Realblog_ArticleAdminView
     /**
      * Initializes a new instance.
      *
-     * @param array  $record   An article record.
-     * @param string $action   The requested action.
+     * @param array  $record An article record.
+     * @param string $action An action.
      *
      * @return void
      *
@@ -2181,12 +2174,12 @@ class Realblog_ArticleAdminView
      */
     private function _renderCalendarInitialization($num)
     {
-        $cal_format = Realblog_getCalendarDateFormat();
+        $calFormat = Realblog_getCalendarDateFormat();
 
         return <<<EOT
 Calendar.setup({
     inputField: "date$num",
-    ifFormat: "$cal_format",
+    ifFormat: "$calFormat",
     button: "trig_date$num",
     align: "Br",
     singleClick: true,

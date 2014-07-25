@@ -3,9 +3,10 @@
 * FIXMEs
 * fix bug in change-status dialog
 * make search form accessible
+* remove flatfile from coverage report
 
 * keep an eye on compat.php
-* replace mktime() with strtotime()
+* replace mktime() with strtotime() ?
 * store categories in DB
 * simplify CSS (shall we call for themes?)
 * make filter form GET (has to wait until supported by CMSimple_XH)
