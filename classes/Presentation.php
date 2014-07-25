@@ -1804,10 +1804,10 @@ class Realblog_ArticlesAdminView
             . $plugin_tx['realblog']['id_label'] . '</td>'
             . '<td class="realblog_table_header">'
             . $plugin_tx['realblog']['date_label'] . '</td>'
-            // FIXME: i18n
-            . '<td class="realblog_table_header">' . 'Status' . '</td>'
-            // FIXME: i18n
-            . '<td class="realblog_table_header">' . 'RSS Feed' . '</td>'
+            . '<td class="realblog_table_header">'
+            . $plugin_tx['realblog']['label_status'] . '</td>'
+            . '<td class="realblog_table_header">'
+            . $plugin_tx['realblog']['label_rss'] . '</td>'
             . '<td class="realblog_table_header">'
             . $plugin_tx['realblog']['comments_onoff'] . '</td>'
             . '</tr>';
@@ -2014,7 +2014,7 @@ class Realblog_ArticleAdminView
             . '<td>' . $this->_renderArchiveDate() . '</td></tr><tr>'
             . $this->_renderCalendarScript()
             . '<td><span class="realblog_date_label">'
-            . $plugin_tx['realblog']['status_label'] . '</span></td>'
+            . $plugin_tx['realblog']['label_status'] . '</span></td>'
             . '<td></td><td></td></tr><tr>'
             . '<td>' . $this->_renderStatusSelect() . '</td>'
             . '<td>' . $this->_renderCommentsCheckbox() . '</td>'
@@ -2265,7 +2265,7 @@ EOT;
                 'input type="checkbox" name="realblog_rssfeed" '
                 . $checked
             )
-            . '&nbsp;<span>' . $plugin_tx['realblog']['rss_label']
+            . '&nbsp;<span>' . $plugin_tx['realblog']['label_rss']
             . '</span></label>';
     }
 
@@ -2637,7 +2637,7 @@ class Realblog_ChangeStatusView extends Realblog_ConfirmationView
         global $plugin_tx;
 
         $states = array(
-            'entry_status', 'readyforpublishing', 'published', 'archived'
+            'label_status', 'readyforpublishing', 'published', 'archived'
         );
         $html = '<select name="new_realblogstatus">';
         foreach ($states as $i => $state) {

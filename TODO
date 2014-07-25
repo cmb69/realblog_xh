@@ -1,6 +1,7 @@
 * manuals
 * add CHANGELOG
 * FIXMEs
+* fix bug in change-status dialog
 
 * keep an eye on compat.php
 * replace mktime() with strtotime()
