@@ -1,7 +1,7 @@
 <?php
 
 $plugin_cf['realblog']['admin_records_page']="16";
-$plugin_cf['realblog']['auto_archive']="true";
+$plugin_cf['realblog']['auto_archive']="";
 $plugin_cf['realblog']['auto_publish']="";
 $plugin_cf['realblog']['comments_function']="true";
 $plugin_cf['realblog']['comments_form_protected']="";
