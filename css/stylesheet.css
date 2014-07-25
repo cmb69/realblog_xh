@@ -195,14 +195,16 @@ border: 0;
     margin-bottom: 1em;
 }
 
-.realblog_table_paging {
-clear: both;
-text-align: center;
-padding: 6px 0 0 0;
+.realblog_page_info a {
+    text-decoration: none;
 }
 
-div.realblog_table_paging img, div.realblog_page_info img {
-border: 0;
+.realblog_table_paging {
+    clear: both;
+    text-align: center;
+}
+.realblog_table_paging a {
+    text-decoration: none;
 }
 
 /* entries overwiew */

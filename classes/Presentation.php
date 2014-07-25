@@ -384,7 +384,7 @@ class Realblog_ArticlesView
             . $plugin_tx['realblog']['page_label'] . ' : '
             . '<a href="' . XH_hsc($backUrl) . '" title="'
             . $plugin_tx['realblog']['tooltip_previous'] . '">'
-            . '&#9664;</a>&nbsp;' . $page . ' / ' . $pageCount
+            . '&#9664;</a>&nbsp;' . $page . '/' . $pageCount
             . '&nbsp;' . '<a href="' . XH_hsc($nextUrl) . '" title="'
             . $plugin_tx['realblog']['tooltip_next'] . '">'
             . '&#9654;</a></div>';
@@ -1830,7 +1830,7 @@ class Realblog_ArticlesAdminView
         $page = Realblog_getPage();
         $db_total_records = count($this->_articles);
         $tmp = ($db_total_records > 0)
-            ? $plugin_tx['realblog']['page_label'] . ' : ' . $page .  ' / '
+            ? $plugin_tx['realblog']['page_label'] . ' : ' . $page .  '/'
                 . $this->_pageCount
             : '';
         $o = '<div class="realblog_paging_block">'
