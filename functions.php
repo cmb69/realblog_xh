@@ -1036,7 +1036,9 @@ function Realblog_form($realblogID = null, $action = null, $ret_page = 1)
             REALBLOG_ID => 0,
             REALBLOG_DATE => date($plugin_tx['realblog']['date_format']),
             REALBLOG_STARTDATE => date($plugin_tx['realblog']['date_format']),
-            REALBLOG_ENDDATE => date($plugin_tx['realblog']['date_format']),
+            REALBLOG_ENDDATE => date(
+                $plugin_tx['realblog']['date_format'], 2147483647
+            ),
             REALBLOG_STATUS => 0,
             REALBLOG_FRONTPAGE => '',
             REALBLOG_TITLE => '',
