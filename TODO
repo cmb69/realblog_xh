@@ -1,6 +1,7 @@
 * keep an eye on compat.php
 * add CHANGELOG
-* fix namespacing in stylesheet
+* test valid HTML
+* fix auto-publishing/archiving (when turned on, all is done)
 
 * replace mktime() with strtotime()
 * store categories in DB
@@ -10,3 +11,4 @@
 * modify language strings to cater for different grammar (no tinkering)
 * change admin GP parameter names
 * unify pagination in front- and back-end
+* check alt attributes

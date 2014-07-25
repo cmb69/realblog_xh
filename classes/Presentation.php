@@ -125,7 +125,7 @@ class Realblog_ArticlesView
     private function _renderArticlePreviews($start, $end)
     {
         $articleCount = count($this->_articles);
-        $t = '<div id="realblog_entries_preview">';
+        $t = '<div id="realblog_entries_preview" class="realblog_entries_preview">';
         for ($i = $start; $i <= $end; $i++) {
             if ($i > $articleCount - 1) {
                 $t .= '';
@@ -970,15 +970,14 @@ class Realblog_SearchFormView
         global $pth, $tx, $plugin_tx;
 
         $src = $pth['folder']['plugins'] . 'realblog/images/btn_expand.gif';
-        return '<div id="enablesearch">'
-            // FIXME: javascript protocol
-            . '<a href="javascript:realblog_showSearch()">'
+        // FIXME: javascript protocol
+        return '<a href="javascript:realblog_showSearch()">'
             . tag(
-                'img id="btn_img" alt="searchbuttonimg" src="' . $src
-                . '" title="' . $plugin_tx['realblog']['tooltip_showsearch']
-                . '" style="border: 0"'
+                'img id="realblog_search_toggle" class="realblog_search_toggle"'
+                . ' alt="searchbuttonimg" src="' . $src . '" title="'
+                . $plugin_tx['realblog']['tooltip_showsearch'] . '"'
             )
-            . '</a>&nbsp;<b>' . $tx['search']['button'] . '</b></div>';
+            . '</a><b>' . $tx['search']['button'] . '</b>';
     }
 
     /**
@@ -1000,7 +999,7 @@ class Realblog_SearchFormView
 <script type="text/javascript">/* <![CDATA[ */
 function realblog_showSearch() {
     var searchblock = document.getElementById("searchblock"),
-        toggle = document.getElementById("btn_img");
+        toggle = document.getElementById("realblog_search_toggle");
 
     if (searchblock.style.display == "none") {
         toggle.title = "{$plugin_tx['realblog']['tooltip_hidesearch']}";
@@ -1730,8 +1729,8 @@ class Realblog_ArticlesAdminView
         global $sn, $plugin_tx;
 
         $url = $sn . '?&realblog&admin=plugin_main&action=plugin_text';
-        $html = '<form id="realblog_filter" method="post" action="'
-            . XH_hsc($url) . '">';
+        $html = '<form class="realblog_filter" method="post"'
+            . ' action="' . XH_hsc($url) . '">';
         $states = array('readyforpublishing', 'published', 'archived');
         foreach ($states as $i => $state) {
             $html .= $this->_renderFilterCheckbox($i + 1, $state);
@@ -2117,8 +2116,7 @@ class Realblog_ArticleAdminView
         $html .= '&nbsp;'
             . tag(
                 'img src="' . $this->_imageFolder . 'calendar.png"'
-                . ' style="margin-left:1px;margin-bottom:-3px;"'
-                . ' id="trig_date1" title="'
+                . ' id="trig_date1" class="realblog_date_selector" title="'
                 . $plugin_tx['realblog']['tooltip_datepicker'] . '" alt=""'
             );
         return $html;
@@ -2145,8 +2143,7 @@ class Realblog_ArticleAdminView
             $html .= '&nbsp;'
                 . tag(
                     'img src="' . $this->_imageFolder . 'calendar.png"'
-                    . ' style="margin-left:1px;margin-bottom:-3px;"'
-                    . ' id="trig_date2" title="'
+                    . ' id="trig_date2" class="realblog_date_selector" title="'
                     . $plugin_tx['realblog']['tooltip_datepicker'] . '" alt=""'
                 );
         } else {
@@ -2176,8 +2173,7 @@ class Realblog_ArticleAdminView
             $html .= '&nbsp;'
                 . tag(
                     'img src="' . $this->_imageFolder . 'calendar.png"'
-                    . ' style="margin-left:1px;margin-bottom:-3px;"'
-                    . ' id="trig_date3" title="'
+                    . ' id="trig_date3" class="realblog_date_selector" title="'
                     . $plugin_tx['realblog']['tooltip_datepicker'] . '" alt=""'
                 );
         } else {
