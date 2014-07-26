@@ -1,6 +1,5 @@
 * manuals
 * add CHANGELOG
-* create realblog.txt, if not exists
 
 * deprecate old plugin calls
 * make search form accessible

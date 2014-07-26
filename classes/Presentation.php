@@ -1204,7 +1204,15 @@ class Realblog_AdminController
     {
         global $pth, $o, $action;
 
-        if (!is_writable($pth['folder']['content'] . 'realblog/realblog.txt')) {
+        $filename = $pth['folder']['content'] . 'realblog/realblog.txt';
+        if (!file_exists($filename)) {
+            mkdir($pth['folder']['content'] . 'realblog');
+            file_put_contents($filename, '');
+            chmod($filename, 0644);
+            file_put_contents($filename . '.lock', '');
+            chmod($filename . '.lock', 0644);
+        }
+        if (!is_writable($filename)) {
             $o .= $this->_renderDatafileError();
         } else {
             $this->_dispatchOnAction($action);
