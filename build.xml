@@ -74,7 +74,7 @@
     <target name="php-doc">
         <phpdoc title="Realblog_XH Developer Documentation" destdir="doc/php"
                 output="HTML:Smarty:HandS" defaultpackagename="Realblog"
-                defaultcategoryname="CMSimple_XH">
+                defaultcategoryname="CMSimple_XH" parseprivate="true">
             <fileset refid="php-sources"/>
             <projdocfileset dir=".">
                <include name="README"/>
