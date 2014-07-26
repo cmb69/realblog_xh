@@ -12,14 +12,33 @@
 <h1>Realblog_XH – a CMSimple_XH Plugin</h1>
 <img src="../realblog.png" style="float:left; margin-right:16px" alt="Ring file
 with pencil">
-<p></p>
+<p>Realblog_XH facilitates presenting a blog on your CMSimple_XH website. It
+offers the basic blogging features, such as an displaying a chronological
+overview of the posts, an optional monthly archive, automatic scheduled
+publishing and archiving of posts, searching contents, an RSS feed and very
+simplistic categorization. Separately written teasers are supported. Teasers and
+articles may contain arbitrary CMSimple_XH scripting.</p>
+<p>Each blog post can be made commentable individually, what requires an
+external comment plugin. Currently only <a
+href="http://www.ge-webdesign.de/cmsimpleplugins/?Eigene_Plugins/Comments">Comments</a>
+is supported.</p>
+<p>For multilingual websites, each language will have its own blog; besides
+that, Realblog_XH doesn't have any multilingual capabilities.</p>
 
 <ul id="nav">
 <li><a href="#notice">Important Notice</a></li>
 <li><a href="#requirements">Requirements</a></li>
 <li><a href="#installation">Installation</a></li>
 <li><a href="#settings">Settings</a></li>
-<li><a href="#usage">Usage</a></li>
+<li><a href="#usage">Usage</a>
+<ul>
+<li><a href="#usage-administration">Administration</a></li>
+<li><a href="#usage-categories">Categories</a></li>
+<li><a href="#usage-archive">Archive</a></li>
+<li><a href="#usage-rss">RSS feed</a></li>
+</ul>
+</li>
+<li><a href="#bc">Backward compatibility</a></li>
 <li><a href="#limitations">Limitations</a></li>
 <li><a href="#license">License</a></li>
 <li><a href="#credits">Credits</a></li>
@@ -70,9 +89,68 @@ available), or customize them according to your needs.</p>
 <div class="toplink"><a href="#">back to top</a></div>
 
 <h2 id="usage">Usage</h2>
+<p>To display the blog on a CMSimple_XH page, write:</p>
+<pre>{{{Realblog_blog();}}}</pre>
+<p>To also display the search form, write:</p>
+<pre>{{{Realblog_blog();}}}</pre>
+<div class="toplink"><a href="#">back to top</a></div>
+
+<h3 id="usage-administration">Administration</h3>
+<p>In the main plugin adminstration you can manage the blog posts. You can
+create, edit and delete posts, change their status, etc. The administration is
+meant to be pretty much self explaining.</p>
+<div class="toplink"><a href="#">back to top</a></div>
+
+<h3 id="usage-categories">Categories</h3>
+<p>Realblog_XH currently has only very basic support for categories. To define
+the categories a post belongs to, you have put a plugin call in the teaser
+or the actual article:</p>
+<pre>{{{rbCat('|Category 1|Category 2|');}}}</pre>
+<p>Note that you can define as many categories as you like, and that all
+categories have to be surrounded by vertical bars.</p>
+<p>It is not possible for visitors to filter for categories, but you can prepare
+separate CMSimple_XH pages for each category, and display the respective posts
+on these pages by passing a second argument to Realblog_blog():</p>
+<pre>{{{Realblog_blog(false, 'Category 1');}}}</pre>
+<div class="toplink"><a href="#">back to top</a></div>
+
+<h3 id="usage-archive">Archive</h3>
+<p>To display the blog archive on a CMSimple_XH page, write:</p>
+<pre>{{{Realblog_archive();}}}</pre>
+<p>To also display the search form, write:</p>
+<pre>{{{Realblog_blog(true);}}}</pre>
+<p>Note that the blog archive must <em>not</em> be on the same page as the
+actual blog.</p>
+<div class="toplink"><a href="#">back to top</a></div>
+
+<h3 id="usage-rss">RSS feed</h3>
+<p>If enabled in the configuration, Realblog_XH automatically offers an RSS feed
+with the published blog posts. Optionally, you can display an RSS feed icon that
+links to the feed in the template:</p>
+<pre>&lt;?php echo Realblog_feedLink();?&gt;</pre>
+<p>Besides some feed related settings in the configuration, there are some
+settings in the language file in the section "RSS". Most important is "page",
+where you have to enter the URL of the page on which the main blog is shown.
+It's best to navigate to this page and copy and paste everything after the
+question mark up to, but not including, the first ampersand (&amp;), if any,
+from the browser's address bar.</p>
+<div class="toplink"><a href="#">back to top</a></div>
+
+<h2 id="bc">Backward compatibility</h3>
+<p>Realblog_XH is mostly backward compatible to Realblog 2.8, so you can reuse
+its data files (realblog.txt) and use its plugin calls. However, the old plugin
+calls are deprecated, and may be removed in the future.</p>
+<p>The RSS feed files (realblog_rss_feed.xml) are not used anymore&mdash;instead
+the feeds are built dynamically. You should delete the old files, so that news
+readers will not grab the old contents.</p>
 <div class="toplink"><a href="#">back to top</a></div>
 
 <h2 id="limitations">Limitations</h2>
+<p>There is a soft limit on the amount of posts and their size that Realblog_XH
+can handle, similar to the soft limit on the size of CMSimple_XH's content.htm.
+Most likely you'll never reach this limit if you're writing just one or two
+posts per week, but if you're planning to do heavy blogging, you are better off
+using a database driven blogging software.</p>
 <div class="toplink"><a href="#">back to top</a></div>
 
 <h2 id="license">License</h2>

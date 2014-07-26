@@ -12,14 +12,34 @@
 <h1>Realblog_XH - ein CMSimple_XH Plugin</h1>
 <img src="../realblog.png" style="float:left; margin-right:16px" alt="Ringbuch
 mit Bleistift">
-<p></p>
+<p>Realblog_XH ermöglicht die Präsentation eines Blogs auf Ihrer CMSimple_XH
+website. Das Plugin bietet die grundlegenden Blog-Funktionalitäten, wie die
+Anzeige einer chronologisch geordneten Übersicht der Beiträge, ein optionales
+monatliches Archiv, automatisches zeitgesteuertes Veröffentlichen und
+Archivieren von Beiträgen, die Suche in den Blog-Inhalten, einen RSS-Feed und
+eine primitive Kategorisierung. Separat geschriebene Teaser weden unterstützt.
+Teaser und Artikel können beliebiges CMSimple_XH Skripting enthalten.</p>
+<p>Jeder Blog-Beitrag kann individuell kommentierbar gemacht werden, was ein
+externes Kommentar-Plugin erfordert. Derzeit wird nur <a
+href="http://www.ge-webdesign.de/cmsimpleplugins/?Eigene_Plugins/Comments">Comments</a>
+unterstützt.</p>
+<p>Auf mehrsprachigen Websites hat jede Sprache ihren eigenen Blog; darüber
+hinaus hat Realblog_XH keine mehrsprachigen Fähigkeiten.</p>
 
 <ul id="nav">
 <li><a href="#notice">Wichtiger Hinweis</a></li>
 <li><a href="#requirements">Voraussetzungen</a></li>
 <li><a href="#installation">Installation</a></li>
 <li><a href="#settings">Einstellungen</a></li>
-<li><a href="#usage">Verwendung</a></li>
+<li><a href="#usage">Verwendung</a>
+<ul>
+<li><a href="#usage-administration">Administration</a></li>
+<li><a href="#usage-categories">Kategorien</a></li>
+<li><a href="#usage-archive">Archiv</a></li>
+<li><a href="#usage-rss">RSS-Feed</a></li>
+</ul>
+</li>
+<li><a href="#bc">Abwärtskompatibilität</a></li>
 <li><a href="#limitations">Beschränkungen</a></li>
 <li><a href="#license">Lizenz</a></li>
 <li><a href="#credits">Danksagung</a></li>
@@ -73,9 +93,73 @@ anpassen.</p>
 <div class="toplink"><a href="#">zum Seitenanfang</a></div>
 
 <h2 id="usage">Verwendung</h2>
+<p>Um den Blog auf einer CMSimple_XH Seite anzuzeigen, schreiben Sie:</p>
+<pre>{{{Realblog_blog();}}}</pre>
+<p>Um ebenfalls das Suchformular anzuzeigen, schreiben Sie:</p>
+<pre>{{{Realblog_blog();}}}</pre>
+<div class="toplink"><a href="#">zum Seitenanfang</a></div>
+
+<h3 id="usage-administration">Administration</h3>
+<p>In der Hauptadministration des Plugins können Sie die Blog-Beiträge
+verwalten. Sie können Beiträge erzeugen, bearbeiten und löschen, ihren Status
+ändern usw. Die Administration sollte weitgehend selbst erklärend sein.</p>
+<div class="toplink"><a href="#">zum Seitenanfang</a></div>
+
+<h3 id="usage-categories">Kategorien</h3>
+<p>Realblog_XH hat derzeit nur eine primitive Unterstützung von Kategorien. Um
+die Kategorien zu definieren, zu denen ein Beitrag gehört, müssen Sie einen
+Pluginaufruf in den Teaser oder den eigentlich Artikel schreiben:</p>
+<pre>{{{rbCat('|Kategorie 1|Kategorie 2|');}}}</pre>
+<p>Beachten Sie, dass Sie beliebig viele Kategorien definieren können, und dass
+alle Kategorien von senkrechten Strichen umgeben sein müssen.</p>
+<p>Es ist Besuchern nicht möglich nach Kategorien zu filtern, aber Sie können
+separate CMSimple_XH Seiten für jede Kategorie anlegen, und die entsprechenden
+Beiträge auf diesen Seiten anzeigen lassen, wenn Sie ein zweites Argument an
+Realblog_blog() übergeben:</p>
+<pre>{{{Realblog_blog(false, 'Kategorie 1');}}}</pre>
+<div class="toplink"><a href="#">zum Seitenanfang</a></div>
+
+<h3 id="usage-archive">Archiv</h3>
+<p>Um das Blog-Archiv auf einer CMSimple_XH Seite anzuzeigen, schreiben Sie:</p>
+<pre>{{{Realblog_archive();}}}</pre>
+<p>Um ebenfalls das Suchformular anzuzeigen, schreiben Sie:</p>
+<pre>{{{Realblog_blog(true);}}}</pre>
+<p>Beachten Sie, dass das Blog-Archiv <em>nicht</em> auf der selben Seite
+angezeigt werden darf wie der eigentliche Blog.</p>
+<div class="toplink"><a href="#">zum Seitenanfang</a></div>
+
+<h3 id="usage-rss">RSS-Feed</h3>
+<p>Wenn die entsprechende Option konfiguriert ist, bietet Realblog_XH
+automatisch einen RSS-Feed mit den veröffentlichten Blog-Beiträgen an. Optional
+können Sie ein RSS-Feed-Icon, das auf den Feed verlinkt, im Template anzeigen
+lassen:</p>
+<pre>&lt;?php echo Realblog_feedLink();?&gt;</pre>
+<p>Abgesehen von einigen Einstellung bzgl. des Feeds in der Konfiguration gibt
+es einige Einstellungen in der Sprachdatei im Abschnitt "RSS". Die wichtigste
+ist "page", wo Sie die URL der Seite, auf der der Hauptblog angezeigt wird,
+eintragen müssen. Am besten navigieren Sie zu dieser Seite, und kopieren alles
+nach dem Fragezeichen bis zum (exklusive) ersten Kaufmanns-Und (&amp;), oder bis
+zum Ende, falls in der URL kein Kaufmanns-Und enthalten ist, aus der
+Adressleiste des Browsers.</p>
+<div class="toplink"><a href="#">zum Seitenanfang</a></div>
+
+<h2 id="bc">Abwärtskompatibilität</h3>
+<p>Realblog_XH ist weitgehend abwärtskompatibel zu Realblog 2.8, so dass Sie
+dessen Datendateien (realblog.txt) und Pluginaufrufe weiter verwenden können.
+Allerdings gelten diese Pluginaufrufe als veraltet, und können in einer späteren
+Version entfernt werden.</p>
+<p>Die RSS-Feed-Dateien (realblog_rss_feed.xml) werden nicht mehr verwendet
+&ndash; statt dessen werden die Feeds dynamisch generiert. Sie sollten die alten
+Dateien löschen, so dass News-Reader nicht die alten Inhalte aufschnappen.</p>
 <div class="toplink"><a href="#">zum Seitenanfang</a></div>
 
 <h2><a name="limitations">Beschränkungen</a></h2>
+<p>Es gibt eine weiche Obergrenze der Anzahl der Beiträge und deren Größe die
+Realblog_XH verwalten kann, ähnlich wie die weiche Obergrenze der Größe von
+CMSimple_XH's content.htm. Wahrscheinlich werden Sie diese Grenze nie erreichen,
+wenn Sie nur ein oder zwei Beiträge pro Woche schreiben, aber wenn Sie vorhaben
+viel zu bloggen, dann sind Sie mit einer Datenbank gestützten Blog-Software
+besser bedient.</p>
 <div class="toplink"><a href="#">zum Seitenanfang</a></div>
 
 <h2 id="license">Lizenz</h2>
