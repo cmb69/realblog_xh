@@ -1,5 +1,3 @@
-* add CHANGELOG
-
 * deprecate old plugin calls
 * make search form accessible
 * fix FIXMEs

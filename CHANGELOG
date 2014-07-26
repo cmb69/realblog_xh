@@ -1,0 +1,19 @@
+Version 3.0beta1 -- released 2014-07-26
+* fixed CSRF vulnerabilities in the back-end
+* fixed XSS vulnerability in front-end
+* fixed bug, where the locator was wrong for article pages (reported by meltemi)
+* fixed several minor bugs and flaws
+* removed powered by links
+* changed license to GPLv3 or higher
+* improved search and filter forms, as well as back-end post overview
+* simplified and unified front-end URLs
+* cleaned up config.php and added metaconfig.php
+* slightly cleaned up language files
+* slightly cleaned up stylesheet
+* switched to ad-hoc generation of RSS feeds
+* updated German manual and added English translation
+* added meta description for article views, auto-generated from teaser (sugg. by
+  meltemi)
+* added support for integrated plugin menu
+* improved QA (Phing, PHPDoc, PHPCompatInfo, PHPCodeSniffer, PHPUnit)
+* comprehensive internal clean up and refactoring
