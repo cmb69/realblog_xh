@@ -117,6 +117,7 @@ function Realblog_blog($showSearch = false, $realBlogCat = 'all')
             );
         }
 
+        $catRecords = array();
         foreach ($records as $catRecordsTemp) {
             if (strpos($catRecordsTemp[REALBLOG_HEADLINE], '|' . $realBlogCat . '|')
                 || strpos($catRecordsTemp[REALBLOG_STORY], '|' . $realBlogCat . '|')
