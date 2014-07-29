@@ -1496,12 +1496,15 @@ class Realblog_AdminController
         $article[REALBLOG_FRONTPAGE] = Realblog_getPgParameter(
             'realblog_frontpage'
         );
-        $article[REALBLOG_STARTDATE] = Realblog_stringToTime(
-            Realblog_getPgParameter('realblog_startdate')
-        );
-        $enddate = Realblog_getPgParameter('realblog_enddate');
-        if (isset($endate)) {
-            $article[REALBLOG_ENDDATE] = Realblog_stringToTime($enddate);
+        $startDate = Realblog_getPgParameter('realblog_startdate');
+        if (isset($startDate)) {
+            $article[REALBLOG_STARTDATE] = Realblog_stringToTime($startDate);
+        } else {
+            $article[REALBLOG_STARTDATE] = 0;
+        }
+        $endDate = Realblog_getPgParameter('realblog_enddate');
+        if (isset($endDate)) {
+            $article[REALBLOG_ENDDATE] = Realblog_stringToTime($endDate);
         } else {
             $article[REALBLOG_ENDDATE] = 2147483647;
         }

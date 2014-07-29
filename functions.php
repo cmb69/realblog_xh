@@ -391,62 +391,53 @@ function Realblog_getCalendarDateFormat()
 }
 
 /**
- * Changes status to published when current date is within the publishing period.
+ * Changes status to published when publishing date is reached.
  *
  * @return void
  */
 function Realblog_autoPublish()
 {
-    $db = Realblog_connect();
-    $today = strtotime('midnight');
-    $compClause = new AndWhereClause(
-        new SimpleWhereClause(REALBLOG_STATUS, '<=', 0, INTEGER_COMPARISON),
-        new AndWhereClause(
-            new SimpleWhereClause(REALBLOG_STARTDATE, '<=', $today),
-            new SimpleWhereClause(REALBLOG_ENDDATE, '>=', $today)
-        )
-    );
-    $records = $db->selectWhere('realblog.txt', $compClause, -1);
-
-    foreach ($records as $key => $field) {
-        $realblogitem[REALBLOG_ID] = $field[REALBLOG_ID];
-        $realblogitem[REALBLOG_STATUS] = 1;
-        $db->updateRowById('realblog.txt', REALBLOG_ID, $realblogitem);
-    }
+    Realblog_changeStatus(REALBLOG_STARTDATE, 1);
 }
 
 /**
- * Change realblog status from published to archived when publishing period
- * is ended.
+ * Changes status to archived when archive date is reached.
  *
  * @return void
- *
- * @global array The configuration of the plugins.
  */
 function Realblog_autoArchive()
 {
-    global $plugin_cf;
+    Realblog_changeStatus(REALBLOG_ENDDATE, 2);
+}
 
+/**
+ * Changes the status according to the value of a certain field.
+ *
+ * @param int $field  A field number.
+ * @param int $status A status code.
+ *
+ * @return void
+ */
+function Realblog_changeStatus($field, $status)
+{
     $db = Realblog_connect();
-    $compClause = new AndWhereClause(
-        new SimpleWhereClause(REALBLOG_STATUS, '<=', 1),
-        new SimpleWhereClause(REALBLOG_ENDDATE, '<', time(), INTEGER_COMPARISON)
-    );
-
-    $order = ($plugin_cf['realblog']['entries_order'] == 'desc')
-        ? DESCENDING : ASCENDING;
     $records = $db->selectWhere(
-        'realblog.txt', $compClause, -1,
-        array(
-            new OrderBy(REALBLOG_DATE, $order, INTEGER_COMPARISON),
-            new OrderBy(REALBLOG_ID, $order, INTEGER_COMPARISON)
+        'realblog.txt',
+        new AndWhereClause(
+            new SimpleWhereClause(REALBLOG_STATUS, '<', $status, INTEGER_COMPARISON),
+            new SimpleWhereClause(
+                $field, '<=', strtotime('midnight'), INTEGER_COMPARISON
+            )
         )
     );
-
-    foreach ($records as $key => $field) {
-        $realblogitem[REALBLOG_ID] = $field[REALBLOG_ID];
-        $realblogitem[REALBLOG_STATUS] = 2;
-        $db->updateRowById('realblog.txt', REALBLOG_ID, $realblogitem);
+    foreach ($records as $record) {
+        $db->updateRowById(
+            'realblog.txt', REALBLOG_ID,
+            array(
+                REALBLOG_ID => $record[REALBLOG_ID],
+                REALBLOG_STATUS => $status
+            )
+        );
     }
 }
 
@@ -909,7 +900,7 @@ function Realblog_form($id, $action)
             $plugin_tx['realblog']['date_format'], $record[REALBLOG_DATE]
         );
         $record[REALBLOG_STARTDATE] = date(
-            $plugin_tx['realblog']['date_format'], $record[REALBLOG_STARTDATE]
+            $plugin_tx['realblog']['date_format'], (int) $record[REALBLOG_STARTDATE]
         );
         $record[REALBLOG_ENDDATE] = date(
             $plugin_tx['realblog']['date_format'], $record[REALBLOG_ENDDATE]
