@@ -63,6 +63,8 @@
         </phpunit>
     </target>
 
+    <target name="tests" depends="unit-tests,attack-tests"/>
+
     <!-- Code coverage -->
 
     <target name="coverage">
