@@ -1,3 +1,8 @@
+Version 3.0beta2 -- released 2014-08-07
+* fixed bugs wrt. auto publishing and archiving
+* fixed issues with some templates, where blog and archive were pushed down the
+  page (reported by pmschulze)
+
 Version 3.0beta1 -- released 2014-07-26
 * fixed CSRF vulnerabilities in the back-end
 * fixed XSS vulnerability in front-end
