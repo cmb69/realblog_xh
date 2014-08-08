@@ -574,7 +574,7 @@ function Realblog_url($pageUrl, $articleTitle = null, $params = array())
     );
     $url = $sn . '?' . $pageUrl;
     if (isset($articleTitle)) {
-        $url .= '&' . urlencode(str_replace(' ', '-', $articleTitle));
+        $url .= '&' . uenc($articleTitle);
     }
     ksort($params);
     foreach ($params as $name => $value) {
