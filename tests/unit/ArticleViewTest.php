@@ -62,7 +62,7 @@ class ArticleViewTest extends PHPUnit_Framework_TestCase
         $sn = '/xh/';
         $su = 'Blog';
         $plugin_cf['realblog'] = array(
-            'comments_function' => 'true'
+            'comments_plugin' => ''
         );
         $plugin_tx['realblog'] = array(
             'blog_back' => 'Overview',
@@ -135,26 +135,6 @@ class ArticleViewTest extends PHPUnit_Framework_TestCase
                         . '&action=modify_realblog&realblogID=1'
                 ),
                 'content' => 'Edit entry'
-            )
-        );
-    }
-
-    /**
-     * Tests that the edit comments link is rendered.
-     *
-     * @return void
-     */
-    public function testRendersEditCommentsLink()
-    {
-        $this->_defineConstant('XH_ADM', true);
-        $this->_assertRenders(
-            array(
-                'tag' => 'a',
-                'attributes' => array(
-                    'href' => '/xh/?&comments&admin=plugin_main'
-                        . '&action=plugin_text&selected=comments1.txt'
-                ),
-                'content' => 'Edit comments'
             )
         );
     }

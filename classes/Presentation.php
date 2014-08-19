@@ -250,8 +250,9 @@ class Realblog_ArticlesView
 
         $t = '<div class="realblog_entry_footer">';
 
-        if (function_exists('comments_nr')
-            && $plugin_cf['realblog']['comments_function']
+        $pcf = $plugin_cf['realblog'];
+        if ($pcf['comments_plugin']
+            && class_exists($pcf['comments_plugin'] . '_RealblogBridge')
             && $field[REALBLOG_COMMENTS]
         ) {
             $t .= $this->_renderCommentCount($field);
@@ -275,12 +276,20 @@ class Realblog_ArticlesView
      * @param array $field An article record.
      *
      * @return string (X)HTML.
+     *
+     * @global array The configuration of the plugins.
+     * @global array The localization of the plugins.
      */
     private function _renderCommentCount($field)
     {
+        global $plugin_cf, $plugin_tx;
+
+        $bridge = $plugin_cf['realblog']['comments_plugin'] . '_RealblogBridge';
         $commentsId = 'comments' . $field[REALBLOG_ID];
+        $count = $bridge::count($commentsId);
+        $key = 'message_comments' . XH_numberSuffix($count);
         return '<p class="realblog_number_of_comments">'
-            . comments_nr($commentsId) . '</p>';
+            . sprintf($plugin_tx['realblog'][$key], $count) . '</p>';
     }
 
     /**
@@ -733,10 +742,11 @@ class Realblog_ArticleView
         // output comments in RealBlog
         if ($this->_wantsComments() && $this->_article[REALBLOG_COMMENTS] == 'on') {
             $realblog_comments_id = 'comments' . $this->_id;
+            $bridge = $plugin_cf['realblog']['comments_plugin'] . '_RealblogBridge';
             if ($plugin_cf['realblog']['comments_form_protected']) {
-                $html .= comments($realblog_comments_id, 'protected');
+                $html .= $bridge::handle($realblog_comments_id);
             } else {
-                $html .= comments($realblog_comments_id);
+                $html .= $bridge::handle($realblog_comments_id);
             }
         }
         return $html;
@@ -814,17 +824,21 @@ class Realblog_ArticleView
      * @return string (X)HTML.
      *
      * @global string The script name.
+     * @global array  The configuration of the plugins.
      * @global array  The localization of the plugins.
      */
     private function _renderEditCommentsLink()
     {
-        global $sn, $plugin_tx;
+        global $sn, $plugin_cf, $plugin_tx;
 
-        return '<span class="realblog_button">'
-            . '<a href="' . $sn . '?&amp;comments&amp;admin=plugin_main'
-            . '&amp;action=plugin_text&amp;selected=comments'
-            . $this->_id . '.txt">'
-            . $plugin_tx['realblog']['comment_edit'] . '</a></span>';
+        $bridge = $plugin_cf['realblog']['comments_plugin'] . '_RealblogBridge';
+        $url = $bridge::getEditUrl('realblog' . $this->_id);
+        if ($url) {
+            return '<span class="realblog_button"><a href="' . XH_hsc($url) . '">'
+                . $plugin_tx['realblog']['comment_edit'] . '</a></span>';
+        } else {
+            return '';
+        }
     }
 
     /**
@@ -883,8 +897,9 @@ class Realblog_ArticleView
     {
         global $plugin_cf;
 
-        return $plugin_cf['realblog']['comments_function']
-            && function_exists('comments');
+        $pcf = $plugin_cf['realblog'];
+        return $pcf['comments_plugin']
+            && class_exists($pcf['comments_plugin'] . '_RealblogBridge');
     }
 }
 
