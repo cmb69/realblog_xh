@@ -18,11 +18,9 @@ Anzeige einer chronologisch geordneten Übersicht der Beiträge, ein optionales
 monatliches Archiv, automatisches zeitgesteuertes Veröffentlichen und
 Archivieren von Beiträgen, die Suche in den Blog-Inhalten, einen RSS-Feed und
 eine primitive Kategorisierung. Separat geschriebene Teaser weden unterstützt.
-Teaser und Artikel können beliebiges CMSimple_XH Skripting enthalten.</p>
-<p>Jeder Blog-Beitrag kann individuell kommentierbar gemacht werden, was ein
-externes Kommentar-Plugin erfordert. Derzeit wird nur <a
-href="http://www.ge-webdesign.de/cmsimpleplugins/?Eigene_Plugins/Comments">Comments</a>
-unterstützt.</p>
+Teaser und Artikel können beliebiges CMSimple_XH Skripting enthalten. Jeder
+Blog-Beitrag kann individuell kommentierbar gemacht werden, was ein kompatibles
+Kommentar-Plugin erfordert.</p>
 <p>Auf mehrsprachigen Websites hat jede Sprache ihren eigenen Blog; darüber
 hinaus hat Realblog_XH keine mehrsprachigen Fähigkeiten.</p>
 
@@ -37,6 +35,7 @@ hinaus hat Realblog_XH keine mehrsprachigen Fähigkeiten.</p>
 <li><a href="#usage-categories">Kategorien</a></li>
 <li><a href="#usage-archive">Archiv</a></li>
 <li><a href="#usage-rss">RSS-Feed</a></li>
+<li><a href="#usage-comments">Kommentare</a></li>
 </ul>
 </li>
 <li><a href="#bc">Abwärtskompatibilität</a></li>
@@ -142,6 +141,18 @@ nach dem Fragezeichen bis zum (exklusive) ersten Kaufmanns-Und (&amp;), oder bis
 zum Ende, falls in der URL kein Kaufmanns-Und enthalten ist, aus der
 Adressleiste des Browsers.</p>
 <div class="toplink"><a href="#">zum Seitenanfang</a></div>
+
+<h3 id="usage-comments">Kommentare</h3>
+<p>Um eine Kommentar-Möglichkeit zu Ihrem Blog hinzuzufügen, müssen Sie ein
+kompatibles Kommentar-Plugin installieren, und dessen Namen in der Konfiguration
+von Realblog_XH eintragen.</p>
+<p>Hinweis für Implementierer: um mit Realblog_XH kompatibel zu sein, müssen Sie
+eine Klasse mit dem Namen %IHRPLUGIN%_RealblogBridge definieren, die das
+Interface Realblog_CommentsBridge implementiert, das in
+plugins/realblog/classes/CommentsBridge.php definiert und dokumentiert ist.
+Stellen Sie sicher, dass diese Klasse und ihre Abhängigkeiten geladen sind, wenn
+Realblog_XH sie braucht.</p>
+<div class="toplink"><a href="#">back to top</a></div>
 
 <h2 id="bc">Abwärtskompatibilität</h3>
 <p>Realblog_XH ist weitgehend abwärtskompatibel zu Realblog 2.8, so dass Sie
