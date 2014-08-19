@@ -14,3 +14,4 @@
 * change admin GP parameter names
 * unify pagination in front- and back-end
 * check alt attributes
+* replace flatfile DB

@@ -1,3 +1,9 @@
+Version 3.0beta3 -- released 2014-08-19
+* used uenc() for encoding the title of the article in the URL (sugg. by
+  oldnema)
+* fixed erroneous plugin calls in English and German manuals (reported by stoa)
+* implemented API for comments plugins
+
 Version 3.0beta2 -- released 2014-08-07
 * fixed bugs wrt. auto publishing and archiving
 * fixed issues with some templates, where blog and archive were pushed down the
