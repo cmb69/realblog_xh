@@ -104,6 +104,5 @@ $plugin_tx['realblog']['cf_show_numberof_entries_bottom']="Die Anzahl der Artike
 $plugin_tx['realblog']['cf_show_numberof_entries_top']="Die Anzahl der Artikel oberhalb der Artikelvorschau anzeigen?.";
 $plugin_tx['realblog']['cf_show_read_more_link']="Den Link zum Artikel und die Anzahl der Kommentare im Teaser anzeigen?";
 $plugin_tx['realblog']['cf_teaser_multicolumns']="Die Artikelvorschau (Teaser) in mehreren Spalten angezeigen?";
-$plugin_tx['realblog']['cf_comments_form_protected']="Das Kommentar-Formular für Besucher und Mitglieder der Gruppe für neu registrierte Mitglieder verstecken? Erfordert die Plugins MembersArea und Comments.";
 
 ?>

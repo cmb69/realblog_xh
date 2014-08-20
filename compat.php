@@ -110,17 +110,16 @@ function rbCat()
 }
 
 /**
- * Restricts access to the comments form to members.
+ * Dummy function for compatibility reasons.
  *
  * @return void
  *
- * @global array The configuration of the plugins.
+ * @deprecated since 3.0beta4
  */
 function commentsMembersOnly()
 {
-    global $plugin_cf;
-
-    $plugin_cf['realblog']['comments_form_protected'] = 'true';
+    // should be E_USER_DEPRECATED, but that requires PHP >= 5.3 or XH >= 1.6.3
+    trigger_error('Function ' . __FUNCTION__ . '() is deprecated', E_USER_NOTICE);
 }
 
 ?>

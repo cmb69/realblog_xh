@@ -743,15 +743,7 @@ class Realblog_ArticleView
         if ($this->_wantsComments() && $this->_article[REALBLOG_COMMENTS] == 'on') {
             $realblog_comments_id = 'comments' . $this->_id;
             $bridge = $plugin_cf['realblog']['comments_plugin'] . '_RealblogBridge';
-            if ($plugin_cf['realblog']['comments_form_protected']) {
-                $html .= call_user_func(
-                    array($bridge, handle), $realblog_comments_id
-                );
-            } else {
-                $html .= call_user_func(
-                    array($bridge, handle), $realblog_comments_id
-                );
-            }
+            $html .= call_user_func(array($bridge, handle), $realblog_comments_id);
         }
         return $html;
     }

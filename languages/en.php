@@ -104,6 +104,5 @@ $plugin_tx['realblog']['cf_show_numberof_entries_bottom']="Show the number of en
 $plugin_tx['realblog']['cf_show_numberof_entries_top']="Show the number of entries above the entries preview?";
 $plugin_tx['realblog']['cf_show_read_more_link']="Display the \"read more\" link and the number of comments in the teaser?";
 $plugin_tx['realblog']['cf_teaser_multicolumns']="Display the article preview (teasers) in multiple columns?";
-$plugin_tx['realblog']['cf_comments_form_protected']="Hide the comment form for visitors and members of the group for newly registered members? Requires the plugins MembersArea and Comments.";
 
 ?>
