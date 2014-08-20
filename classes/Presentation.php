@@ -286,7 +286,7 @@ class Realblog_ArticlesView
 
         $bridge = $plugin_cf['realblog']['comments_plugin'] . '_RealblogBridge';
         $commentsId = 'comments' . $field[REALBLOG_ID];
-        $count = $bridge::count($commentsId);
+        $count = call_user_func(array($bridge, count), $commentsId);
         $key = 'message_comments' . XH_numberSuffix($count);
         return '<p class="realblog_number_of_comments">'
             . sprintf($plugin_tx['realblog'][$key], $count) . '</p>';
@@ -744,9 +744,13 @@ class Realblog_ArticleView
             $realblog_comments_id = 'comments' . $this->_id;
             $bridge = $plugin_cf['realblog']['comments_plugin'] . '_RealblogBridge';
             if ($plugin_cf['realblog']['comments_form_protected']) {
-                $html .= $bridge::handle($realblog_comments_id);
+                $html .= call_user_func(
+                    array($bridge, handle), $realblog_comments_id
+                );
             } else {
-                $html .= $bridge::handle($realblog_comments_id);
+                $html .= call_user_func(
+                    array($bridge, handle), $realblog_comments_id
+                );
             }
         }
         return $html;
@@ -832,7 +836,7 @@ class Realblog_ArticleView
         global $sn, $plugin_cf, $plugin_tx;
 
         $bridge = $plugin_cf['realblog']['comments_plugin'] . '_RealblogBridge';
-        $url = $bridge::getEditUrl('realblog' . $this->_id);
+        $url = call_user_func(array($bridge, getEditUrl), 'realblog' . $this->_id);
         if ($url) {
             return '<span class="realblog_button"><a href="' . XH_hsc($url) . '">'
                 . $plugin_tx['realblog']['comment_edit'] . '</a></span>';
