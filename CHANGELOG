@@ -1,3 +1,7 @@
+Version 3.0beta4 -- released 2014-08-20
+* fixed incompatibility with PHP < 5.3 (reported by stoa)
+* removed ineffective protection of comments form
+
 Version 3.0beta3 -- released 2014-08-19
 * used uenc() for encoding the title of the article in the URL (sugg. by
   oldnema)
