@@ -1,3 +1,4 @@
+* get rid of @ operators in unit tests (need to replace assertTag())
 * get rid of "minimum-stability": "dev" in composer.json
 * get rid of hard-coded <div style="clear:both">
 * allow external links instead of articles (sugg. by pmschulze)

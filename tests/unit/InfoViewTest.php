@@ -61,7 +61,7 @@ class InfoViewTest extends PHPUnit_Framework_TestCase
      */
     public function testRendersHeading()
     {
-        $this->assertTag(
+        @$this->assertTag(
             array(
                 'tag' => 'h1',
                 'content' => 'Realblog'
@@ -77,7 +77,7 @@ class InfoViewTest extends PHPUnit_Framework_TestCase
      */
     public function testRendersLogo()
     {
-        $this->assertTag(
+        @$this->assertTag(
             array(
                 'tag' => 'img',
                 'attributes' => array(
@@ -97,7 +97,7 @@ class InfoViewTest extends PHPUnit_Framework_TestCase
      */
     public function testRendersVersion()
     {
-        $this->assertTag(
+        @$this->assertTag(
             array(
                 'tag' => 'p',
                 'content' => 'Version: ' . REALBLOG_VERSION
@@ -113,7 +113,7 @@ class InfoViewTest extends PHPUnit_Framework_TestCase
      */
     public function testRendersCopyright()
     {
-        $this->assertTag(
+        @$this->assertTag(
             array(
                 'tag' => 'p',
                 'content' => "Copyright \xC2\xA9 2014",
@@ -137,7 +137,7 @@ class InfoViewTest extends PHPUnit_Framework_TestCase
      */
     public function testRendersLicense()
     {
-        $this->assertTag(
+        @$this->assertTag(
             array(
                 'tag' => 'p',
                 'attributes' => array('class' => 'realblog_license'),
