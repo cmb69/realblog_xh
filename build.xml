@@ -37,9 +37,7 @@
     </target>
 
     <target name="compat">
-        <exec command="phpcompatinfo --configuration phpcompatinfo.xml print
-                                     --exclude-pattern realblog ."
-              logoutput="true"/>
+        <exec command="phpcompatinfo analyser:run ." logoutput="true"/>
     </target>
 
     <!-- Tests -->
@@ -118,7 +116,7 @@
                 <exclude name="build.xml"/>
                 <exclude name="composer.*"/>
                 <exclude name="coverage.xml"/>
-                <exclude name="phpcompatinfo.xml"/>
+                <exclude name="phpcompatinfo.json"/>
                 <exclude name="realblog.komodoproject"/>
                 <exclude name="TODO"/>
             </fileset>
