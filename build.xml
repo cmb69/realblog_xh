@@ -109,7 +109,7 @@
                 <exclude name="build.xml"/>
                 <exclude name="composer.*"/>
                 <exclude name="coverage.xml"/>
-                <exclude name="phpcompatinfo.json"/>
+                <exclude name="phpcompatinfo.*"/>
                 <exclude name="realblog.komodoproject"/>
                 <exclude name="TODO"/>
             </fileset>
