@@ -2169,7 +2169,7 @@ class Realblog_ArticleAdminView
      *
      * @return string (X)HTML.
      *
-     * @return array The configuration of the plugins.
+     * @global array The configuration of the plugins.
      */
     private function _renderCalendarScript()
     {

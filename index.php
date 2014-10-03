@@ -63,7 +63,14 @@ this program; if not, see <http://www.gnu.org/licenses>.
 */
 ////////////////////////////////////////////////// HISTORIC LICENSE SECTION END
 
+/**
+ * General utility functions.
+ */
 require_once $pth['folder']['plugin'] . 'functions.php';
+
+/**
+ * The presentation layer.
+ */
 require_once $pth['folder']['plugin_classes'] . 'Presentation.php';
 
 /**

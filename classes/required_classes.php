@@ -18,6 +18,9 @@
  * @link      http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
 
+/**
+ * The bridge to a comments plugin.
+ */
 require_once $pth['folder']['plugin_classes'] . 'CommentsBridge.php';
 
 ?>
