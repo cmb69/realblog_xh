@@ -226,10 +226,7 @@ class Realblog_ArticlesView
         global $plugin_tx;
 
         return '<div class="realblog_show_date">'
-            . strftime(
-                $plugin_tx['realblog']['display_date_format'],
-                $field[REALBLOG_DATE]
-            )
+            . date($plugin_tx['realblog']['date_format'], $field[REALBLOG_DATE])
             . '</div>';
     }
 
@@ -625,10 +622,7 @@ class Realblog_ArchiveView
                 )
             );
             $t .= '<li>'
-                . date(
-                    $plugin_tx['realblog']['date_format'],
-                    $field[REALBLOG_DATE]
-                )
+                . date($plugin_tx['realblog']['date_format'], $field[REALBLOG_DATE])
                 . '&nbsp;&nbsp;&nbsp;<a href="' . XH_hsc($url) . '" title="'
                 . $plugin_tx['realblog']["tooltip_view"] . '">'
                 . $field[REALBLOG_TITLE] . '</a></li>';
@@ -664,10 +658,7 @@ class Realblog_ArchiveView
                 )
             );
             $t .= '<p>'
-                . date(
-                    $plugin_tx['realblog']['date_format'],
-                    $field[REALBLOG_DATE]
-                )
+                . date($plugin_tx['realblog']['date_format'], $field[REALBLOG_DATE])
                 . '&nbsp;&nbsp;&nbsp;<a href="' . XH_hsc($url) . '" title="'
                 . $plugin_tx['realblog']["tooltip_view"] . '">'
                 . $field[REALBLOG_TITLE] . '</a></p>';
@@ -860,8 +851,8 @@ class Realblog_ArticleView
     {
         global $plugin_tx;
 
-        $date = strftime(
-            $plugin_tx['realblog']['display_date_format'],
+        $date = date(
+            $plugin_tx['realblog']['date_format'],
             $this->_article[REALBLOG_DATE]
         );
         return '<div class="realblog_show_date">' . $date . '</div>';
@@ -1931,9 +1922,7 @@ class Realblog_ArticlesAdminView
             . '</a></td>'
             . '<td class="realblog_table_line">' . $field[REALBLOG_ID] . '</td>'
             . '<td class="realblog_table_line">'
-            . date(
-                $plugin_tx['realblog']['date_format'], $field[REALBLOG_DATE]
-            )
+            . date($plugin_tx['realblog']['date_format'], $field[REALBLOG_DATE])
             . '</td>'
             . '<td class="realblog_table_line">' . $field[REALBLOG_STATUS] . '</td>'
             . '<td class="realblog_table_line">' . $field[REALBLOG_RSSFEED] . '</td>'

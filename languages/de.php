@@ -25,7 +25,6 @@ $plugin_tx['realblog']['date_format']="d.m.Y";
 $plugin_tx['realblog']['date_label']="Datum";
 $plugin_tx['realblog']['date_months']="Januar,Februar,März,April,Mai,Juni,Juli,August,September,Oktober,November,Dezember";
 $plugin_tx['realblog']['deleteall_done']="Die gewählten Artikel wurden gelöscht.";
-$plugin_tx['realblog']['display_date_format']="%d.%m.%Y";
 $plugin_tx['realblog']['enddate_hint']="Auto Archivierung deaktiviert";
 $plugin_tx['realblog']['enddate_label']="Archivierung";
 $plugin_tx['realblog']['entry_edit']="Artikel bearbeiten";

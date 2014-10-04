@@ -274,8 +274,8 @@ function Realblog_link($pageUrl)
                 foreach ($realbloglist as $index => $record) {
                     $realblog_counter++;
                     $t .= "\n" . '<div class="realblog_tpl_show_date">' . "\n"
-                        .strftime(
-                            $plugin_tx['realblog']['display_date_format'],
+                        . date(
+                            $plugin_tx['realblog']['date_format'],
                             $record[REALBLOG_DATE]
                         )
                         . "\n" . '</div>';

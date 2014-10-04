@@ -67,7 +67,6 @@ class ArticleViewTest extends PHPUnit_Framework_TestCase
         $plugin_tx['realblog'] = array(
             'blog_back' => 'Overview',
             'comment_edit' => 'Edit comments',
-            'display_date_format' => '%Y-%m-%d',
             'entry_edit' => 'Edit entry'
         );
         $this->_defineConstant('XH_ADM', false);

@@ -25,7 +25,6 @@ $plugin_tx['realblog']['date_format']="d.m.Y";
 $plugin_tx['realblog']['date_label']="date";
 $plugin_tx['realblog']['date_months']="January,February,March,April,May,June,July,August,September,October,November,December";
 $plugin_tx['realblog']['deleteall_done']="Selected entries was deleted.";
-$plugin_tx['realblog']['display_date_format']="%Y-%m-%d";
 $plugin_tx['realblog']['enddate_hint']="auto archiving disabled";
 $plugin_tx['realblog']['enddate_label']="archiving";
 $plugin_tx['realblog']['entry_edit']="edit entry";

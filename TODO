@@ -1,4 +1,3 @@
-* unify date() and strftime()
 * get rid of @ operators in unit tests (need to replace assertTag())
 * get rid of hard-coded <div style="clear:both">
 * allow external links instead of articles (sugg. by pmschulze)

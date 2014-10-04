@@ -25,7 +25,6 @@ $plugin_tx['realblog']['date_format']="d.m.Y";
 $plugin_tx['realblog']['date_label']="Dátum";
 $plugin_tx['realblog']['date_months']="Január,Február,Marec,Apríl,Máj,Jún,Júl,August,September,Október,November,December";
 $plugin_tx['realblog']['deleteall_done']="Vybraté súbory boli vymazané.";
-$plugin_tx['realblog']['display_date_format']="%Y-%m-%d";
 $plugin_tx['realblog']['enddate_hint']="autoarchivácia vypnutá";
 $plugin_tx['realblog']['enddate_label']="archivovať od";
 $plugin_tx['realblog']['entry_edit']="upraviť článok";
