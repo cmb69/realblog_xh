@@ -2091,9 +2091,10 @@ class Realblog_ArticleAdminView
         global $plugin_tx;
 
         $html = tag(
-            'input type="text" name="realblog_date" id="date1" value="'
-            . $this->_record[REALBLOG_DATE] . '" size="10" maxlength="10"'
-            . ' onfocus="this.blur()"'
+            'input type="date" name="realblog_date" id="date1" required="required"'
+            . ' value="' . $this->_record[REALBLOG_DATE] . '" size="10"'
+            . ' maxlength="10"'
+            . ' onfocus="if (!REALBLOG.hasNativeDatePicker) this.blur()"'
         );
         $html .= '&nbsp;'
             . tag(
@@ -2118,9 +2119,10 @@ class Realblog_ArticleAdminView
 
         if ($plugin_cf['realblog']['auto_publish']) {
             $html = tag(
-                'input type="text" name="realblog_startdate" id="date2"'
-                . ' value="' . $this->_record[REALBLOG_STARTDATE]
-                . '" size="10" maxlength="10"' . ' onfocus="this.blur()"'
+                'input type="date" name="realblog_startdate" id="date2"'
+                . ' required="required" value="'
+                . $this->_record[REALBLOG_STARTDATE] . '" size="10" maxlength="10"'
+                . ' onfocus="if (!REALBLOG.hasNativeDatePicker) this.blur()"'
             );
             $html .= '&nbsp;'
                 . tag(
@@ -2148,9 +2150,10 @@ class Realblog_ArticleAdminView
 
         if ($plugin_cf['realblog']['auto_archive']) {
             $html = tag(
-                'input type="text" name="realblog_enddate" id="date3"'
-                . ' value="' . $this->_record[REALBLOG_ENDDATE]
-                . '" size="10" maxlength="10"' . ' onfocus="this.blur()"'
+                'input type="date" name="realblog_enddate" id="date3"'
+                . ' required="required" value="'
+                . $this->_record[REALBLOG_ENDDATE] . '" size="10" maxlength="10"'
+                . ' onfocus="if (!REALBLOG.hasNativeDatePicker) this.blur()"'
             );
             $html .= '&nbsp;'
                 . tag(
@@ -2196,21 +2199,23 @@ class Realblog_ArticleAdminView
      */
     private function _renderCalendarInitialization($num)
     {
-        $calFormat = Realblog_getCalendarDateFormat();
-
         return <<<EOT
-Calendar.setup({
-    inputField: "date$num",
-    ifFormat: "$calFormat",
-    button: "trig_date$num",
-    align: "Br",
-    singleClick: true,
-    firstDay: 1,
-    weekNumbers: false,
-    electric: false,
-    showsTime: false,
-    timeFormat: "24"
-});
+if (REALBLOG.hasNativeDatePicker) {
+    document.getElementById("trig_date$num").style.display = "none";
+} else {
+    Calendar.setup({
+        inputField: "date$num",
+        ifFormat: "%Y-%m-%d",
+        button: "trig_date$num",
+        align: "Br",
+        singleClick: true,
+        firstDay: 1,
+        weekNumbers: false,
+        electric: false,
+        showsTime: false,
+        timeFormat: "24"
+    });
+}
 EOT;
     }
 

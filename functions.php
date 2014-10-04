@@ -375,22 +375,6 @@ function Realblog_connect()
 }
 
 /**
- * Returns the date format for the datepicker.js script.
- *
- * @return string
- *
- * @global array The localization of the plugins.
- */
-function Realblog_getCalendarDateFormat()
-{
-    global $plugin_tx;
-
-    return preg_replace(
-        '/(d|m|y|Y)/', '%$1', $plugin_tx['realblog']['date_format']
-    );
-}
-
-/**
  * Changes status to published when publishing date is reached.
  *
  * @return void
@@ -830,7 +814,7 @@ function Realblog_renderSearchResults($what, $count)
  *
  * @return void
  *
- * @global array The paths of system files and folders.
+ * @global array  The paths of system files and folders.
  * @global string The current language.
  * @global string The (X)HTML fragment to insert in the head element.
  *
@@ -840,23 +824,32 @@ function Realblog_useCalendar()
 {
     global $pth, $sl, $hjs;
 
-    $hjs .= tag(
-        'link rel="stylesheet" type="text/css" media="all" href="'
-        . $pth['folder']['plugins'] . 'realblog/jscalendar/calendar-system.css"'
-    );
-    $hjs .= '<script type="text/javascript" src="' . $pth['folder']['plugins']
-        . 'realblog/jscalendar/calendar.js"></script>';
-    $filename = $pth['folder']['plugins'] . 'realblog/jscalendar/lang/calendar-'
-        . $sl . '.js';
-    if (file_exists($filename)) {
-        $hjs .= '<script type="text/javascript" src="' . $pth['folder']['plugins']
-            . 'realblog/jscalendar/lang/calendar-' . $sl . '.js"></script>';
-    } else {
-        $hjs .= '<script type="text/javascript" src="' . $pth['folder']['plugins']
-            . 'realblog/jscalendar/lang/calendar-en.js"></script>';
+    $calendarFolder = $pth['folder']['plugins'] . 'realblog/jscalendar/';
+    $stylesheet = $calendarFolder . 'calendar-system.css';
+    $mainScript = $calendarFolder . 'calendar.js';
+    $languageScript = $calendarFolder . 'lang/calendar-' . $sl . '.js';
+    if (!file_exists($languageScript)) {
+        $languageScript = $calendarFolder . 'lang/calendar-en.js';
     }
-    $hjs .= '<script type="text/javascript" src="' . $pth['folder']['plugins']
-        . 'realblog/jscalendar/calendar-setup.js"></script>';
+    $setupScript = $calendarFolder . 'calendar-setup.js';
+    $hjs .= <<<EOT
+<script type="text/javascript">/* <![CDATA[ */
+var REALBLOG = REALBLOG || {};
+(function () {
+    var input = document.createElement("input");
+    input.setAttribute("type", "date");
+    REALBLOG.hasNativeDatePicker = (input.type == "date");
+    if (!REALBLOG.hasNativeDatePicker) {
+        document.write(
+            '<link rel="stylesheet" type="text/css" href="$stylesheet">' +
+            '<script type="text/javascript" src="$mainScript"><\/script>' +
+            '<script type="text/javascript" src="$languageScript"><\/script>' +
+            '<script type="text/javascript" src="$setupScript"><\/script>'
+        );
+    }
+}());
+/* ]]> */</script>
+EOT;
 }
 
 /**
@@ -879,11 +872,9 @@ function Realblog_form($id, $action)
     if ($action == 'add_realblog') {
         $record = array(
             REALBLOG_ID => 0,
-            REALBLOG_DATE => date($plugin_tx['realblog']['date_format']),
-            REALBLOG_STARTDATE => date($plugin_tx['realblog']['date_format']),
-            REALBLOG_ENDDATE => date(
-                $plugin_tx['realblog']['date_format'], 2147483647
-            ),
+            REALBLOG_DATE => date('Y-m-d'),
+            REALBLOG_STARTDATE => date('Y-m-d'),
+            REALBLOG_ENDDATE => date('Y-m-d', 2147483647),
             REALBLOG_STATUS => 0,
             REALBLOG_FRONTPAGE => '',
             REALBLOG_TITLE => '',
@@ -896,15 +887,11 @@ function Realblog_form($id, $action)
     } else {
         $record = $db->selectUnique('realblog.txt', REALBLOG_ID, $id);
         $realblog_id = $record[REALBLOG_ID];
-        $record[REALBLOG_DATE] = date(
-            $plugin_tx['realblog']['date_format'], $record[REALBLOG_DATE]
-        );
+        $record[REALBLOG_DATE] = date('Y-m-d', $record[REALBLOG_DATE]);
         $record[REALBLOG_STARTDATE] = date(
-            $plugin_tx['realblog']['date_format'], (int) $record[REALBLOG_STARTDATE]
+            'Y-m-d', (int) $record[REALBLOG_STARTDATE]
         );
-        $record[REALBLOG_ENDDATE] = date(
-            $plugin_tx['realblog']['date_format'], $record[REALBLOG_ENDDATE]
-        );
+        $record[REALBLOG_ENDDATE] = date('Y-m-d', $record[REALBLOG_ENDDATE]);
         if ($action == 'modify_realblog') {
             $title = $plugin_tx['realblog']['tooltip_modify'] . ' [ID: '
                 . $id . ']';
@@ -920,42 +907,14 @@ function Realblog_form($id, $action)
 /**
  * Parses a date string and returns a timestamp.
  *
- * @param mixed $date A date string.
+ * @param mixed $date A date string in ISO format.
  *
  * @return int
- *
- * @global array The localization of the plugins.
  */
 function Realblog_stringToTime($date)
 {
-    global $plugin_tx;
-
-    if (strpos($plugin_tx['realblog']['date_format'], '/') !== false) {
-        $separator = '/';
-    } elseif (strpos($plugin_tx['realblog']['date_format'], '.') !== false) {
-        $separator = '.';
-    } elseif (strpos($plugin_tx['realblog']['date_format'], '-') !== false) {
-        $separator = '-';
-    }
-    $parts = explode($separator, $plugin_tx['realblog']['date_format']);
-    for ($i = 0; $i < count($parts); $i++) {
-        switch ($parts[$i]) {
-        case 'd':
-            $day = $i;
-            break;
-        case 'm':
-            $month = $i;
-            break;
-        case 'y':
-        case 'Y':
-            $year = $i;
-            break;
-        }
-    }
-    $parts = explode($separator, $date);
-    return mktime(
-        0, 0, 0, $parts[$month], $parts[$day], $parts[$year]
-    );
+    $parts = explode('-', $date);
+    return mktime(0, 0, 0, $parts[1], $parts[2], $parts[0]);
 }
 
 /**

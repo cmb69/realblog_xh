@@ -29,39 +29,6 @@ require_once './functions.php';
 class FunctionsTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * Tests Realblog_calendarDateFormat().
-     *
-     * @param string $format   A date format.
-     * @param string $expected An expected result format.
-     *
-     * @return void
-     *
-     * @dataProvider dataForCalendarDateFormat
-     */
-    public function testCalendarDateFormat($format, $expected)
-    {
-        global $plugin_tx;
-
-        $plugin_tx['realblog']['date_format'] = $format;
-        $this->assertEquals($expected, Realblog_getCalendarDateFormat());
-    }
-
-    /**
-     * Returns test data for calendarDateFormat().
-     *
-     * @return array
-     */
-    public function dataForCalendarDateFormat()
-    {
-        return array(
-            array('d.m.Y', '%d.%m.%Y'),
-            array('Y-m-d', '%Y-%m-%d'),
-            array('m/d/Y', '%m/%d/%Y'),
-            array('d.m.y', '%d.%m.%y')
-        );
-    }
-
-    /**
      * Tests that the search clause is null.
      *
      * @return void
@@ -125,7 +92,6 @@ class FunctionsTest extends PHPUnit_Framework_TestCase
     {
         global $plugin_tx;
 
-        $plugin_tx['realblog']['date_format'] = $format;
         $this->assertEquals($timestamp, Realblog_stringToTime($date));
     }
 
@@ -137,10 +103,7 @@ class FunctionsTest extends PHPUnit_Framework_TestCase
     public function dataForStringToTime()
     {
         return array(
-            array('d.m.Y', '25.7.2014', 1406239200),
-            array('Y-m-d', '2014-07-25', 1406239200),
-            array('m/d/Y', '7/25/2014', 1406239200),
-            array('d.m.y', '25.7.14', 1406239200)
+            array('Y-m-d', '2014-07-25', 1406239200)
         );
     }
 }
