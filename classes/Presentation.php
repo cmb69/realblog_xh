@@ -2287,8 +2287,13 @@ EOT;
         global $plugin_tx;
 
         return '<h4>' . $plugin_tx['realblog']['headline_label'] . '</h4>'
-            . '<p><b>Script for copy &amp; paste:</b></p>'
-            . '{{{PLUGIN:rbCat(\'|the_category|\');}}}'
+            . '<p>' . $plugin_tx['realblog']['label_template']
+            . tag(
+                'input type="text" value="{{{rbCat(\'|category1|category2|\');}}}"'
+                . ' readonly="readonly" onclick="this.select()"'
+                . ' style="margin-left: 0.5em"'
+            )
+            . '</p>'
             . '<textarea class="realblog_headline_field" name="realblog_headline"'
             . ' id="realblog_headline" rows="6" cols="60">'
             . XH_hsc($this->_record[REALBLOG_HEADLINE]) . '</textarea>';
@@ -2306,8 +2311,6 @@ EOT;
         global $plugin_tx;
 
         return '<h4>' . $plugin_tx['realblog']['story_label'] . '</h4>'
-            . '<p><b>Script for copy &amp; paste:</b></p>'
-            . '{{{PLUGIN:CommentsMembersOnly();}}}'
             . '<textarea class="realblog_story_field"'
             . ' name="realblog_story" id="realblog_story" rows="30" cols="80">'
             . XH_hsc($this->_record[REALBLOG_STORY]) . '</textarea>';

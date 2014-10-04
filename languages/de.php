@@ -33,6 +33,7 @@ $plugin_tx['realblog']['headline_label']="Teaser";
 $plugin_tx['realblog']['id_label']="ID";
 $plugin_tx['realblog']['label_rss']="RSS-Feed";
 $plugin_tx['realblog']['label_status']="Status";
+$plugin_tx['realblog']['label_template']="Vorlage (copy &amp; paste):";
 $plugin_tx['realblog']['links_visible_text']="Aktuelle Artikel im Blog:";
 $plugin_tx['realblog']['menu_main']="Artikel";
 $plugin_tx['realblog']['message_comments_1']="Dieser Artikel wurde %d mal kommentiert.";
