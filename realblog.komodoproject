@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Komodo Project File - DO NOT EDIT -->
 <project id="9d13bbf6-518d-4771-b5cd-fc290028fa74" kpf_version="5" name="realblog.komodoproject">
+<preference-set idref="9d13bbf6-518d-4771-b5cd-fc290028fa74" id="project" preftype="project">
+  <string relative="path" id="import_dirname"></string>
+  <string id="import_exclude_matches">*.*~;*.bak;*.tmp;CVS;.#*;*.pyo;*.pyc;.svn;_svn;.git;.hg;.bzr;*%25*;tmp*.html;.DS_Store;*.swp;*.kpf;*.komodoproject;.komodotools;__pycache__;doc;jscalendar;tests;vendor</string>
+</preference-set>
 </project>
