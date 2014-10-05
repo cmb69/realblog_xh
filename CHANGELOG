@@ -1,3 +1,8 @@
+Version 3.0beta5 -- released 2014-10-05
+* removed language setting display_date_format (using date_format throughout)
+* replaced JS date picker with native date picker if available
+* added Slovak translation (contributed by Tata)
+
 Version 3.0beta4 -- released 2014-08-20
 * fixed incompatibility with PHP < 5.3 (reported by stoa)
 * removed ineffective protection of comments form
