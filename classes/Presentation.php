@@ -2081,8 +2081,7 @@ class Realblog_ArticleAdminView
 
         $html = tag(
             'input type="date" name="realblog_date" id="date1" required="required"'
-            . ' value="' . $this->_record[REALBLOG_DATE] . '" size="10"'
-            . ' maxlength="10"'
+            . ' value="' . $this->_record[REALBLOG_DATE] . '"'
             . ' onfocus="if (!REALBLOG.hasNativeDatePicker) this.blur()"'
         );
         $html .= '&nbsp;'
@@ -2110,7 +2109,7 @@ class Realblog_ArticleAdminView
             $html = tag(
                 'input type="date" name="realblog_startdate" id="date2"'
                 . ' required="required" value="'
-                . $this->_record[REALBLOG_STARTDATE] . '" size="10" maxlength="10"'
+                . $this->_record[REALBLOG_STARTDATE] . '"'
                 . ' onfocus="if (!REALBLOG.hasNativeDatePicker) this.blur()"'
             );
             $html .= '&nbsp;'
@@ -2141,7 +2140,7 @@ class Realblog_ArticleAdminView
             $html = tag(
                 'input type="date" name="realblog_enddate" id="date3"'
                 . ' required="required" value="'
-                . $this->_record[REALBLOG_ENDDATE] . '" size="10" maxlength="10"'
+                . $this->_record[REALBLOG_ENDDATE] . '"'
                 . ' onfocus="if (!REALBLOG.hasNativeDatePicker) this.blur()"'
             );
             $html .= '&nbsp;'
