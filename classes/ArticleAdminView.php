@@ -86,7 +86,7 @@ class Realblog_ArticleAdminView
             . $title . '</h1>'
             . '<form name="realblog" method="post" action="' . $sn . '?&amp;'
             . 'realblog' . '&amp;admin=plugin_main">'
-            . $this->_renderHiddenFields()
+            . $this->renderHiddenFields()
             . '<table>'
             . '<tr><td><span class="realblog_date_label">'
             . $plugin_tx['realblog']['date_label'] . '</span></td>'
@@ -94,24 +94,24 @@ class Realblog_ArticleAdminView
             . $plugin_tx['realblog']['startdate_label'] . '</span></td>'
             . '<td><span class="realblog_date_label">'
             . $plugin_tx['realblog']['enddate_label'] . '</span></td></tr><tr>'
-            . '<td>' . $this->_renderDate() . '</td>'
-            . '<td>' . $this->_renderPublishingDate() . '</td>'
-            . '<td>' . $this->_renderArchiveDate() . '</td></tr><tr>'
-            . $this->_renderCalendarScript()
+            . '<td>' . $this->renderDate() . '</td>'
+            . '<td>' . $this->renderPublishingDate() . '</td>'
+            . '<td>' . $this->renderArchiveDate() . '</td></tr><tr>'
+            . $this->renderCalendarScript()
             . '<td><span class="realblog_date_label">'
             . $plugin_tx['realblog']['label_status'] . '</span></td>'
             . '<td></td><td></td></tr><tr>'
-            . '<td>' . $this->_renderStatusSelect() . '</td>'
-            . '<td>' . $this->_renderCommentsCheckbox() . '</td>'
-            . '<td>' . $this->_renderFeedCheckbox() . '</td></tr>'
+            . '<td>' . $this->renderStatusSelect() . '</td>'
+            . '<td>' . $this->renderCommentsCheckbox() . '</td>'
+            . '<td>' . $this->renderFeedCheckbox() . '</td></tr>'
             . '</table>'
             . '<h4>' . $plugin_tx['realblog']['title_label'] . '</h4>'
             . tag(
                 'input type="text" value="' . $this->_record[REALBLOG_TITLE]
                 . '" name="realblog_title" size="70"'
             )
-            . $this->_renderHeadline() . $this->_renderStory()
-            . $this->_renderSubmitButtons() . '</form>' . '</div>';
+            . $this->renderHeadline() . $this->renderStory()
+            . $this->renderSubmitButtons() . '</form>' . '</div>';
     }
 
     /**
@@ -121,17 +121,17 @@ class Realblog_ArticleAdminView
      *
      * @global XH_CSRFProtection The CSRF protector.
      */
-    private function _renderHiddenFields()
+    protected function renderHiddenFields()
     {
         global $_XH_csrfProtection;
 
         $html = '';
         $fields = array(
             'realblog_id' => $this->_record[REALBLOG_ID],
-            'action' => 'do_' . $this->_getVerb()
+            'action' => 'do_' . $this->getVerb()
         );
         foreach ($fields as $name => $value) {
-            $html .= $this->_renderHiddenField($name, $value);
+            $html .= $this->renderHiddenField($name, $value);
         }
         $html .= $_XH_csrfProtection->tokenInput();
         return $html;
@@ -145,7 +145,7 @@ class Realblog_ArticleAdminView
      *
      * @return string (X)HTML.
      */
-    private function _renderHiddenField($name, $value)
+    protected function renderHiddenField($name, $value)
     {
         return tag(
             'input type="hidden" name="' . $name . '" value="' . $value . '"'
@@ -159,7 +159,7 @@ class Realblog_ArticleAdminView
      *
      * @global array The localization of the plugins.
      */
-    private function _renderDate()
+    protected function renderDate()
     {
         global $plugin_tx;
 
@@ -185,7 +185,7 @@ class Realblog_ArticleAdminView
      * @global array The configuration of the plugins.
      * @global array The localization of the plugins.
      */
-    private function _renderPublishingDate()
+    protected function renderPublishingDate()
     {
         global $plugin_cf, $plugin_tx;
 
@@ -216,7 +216,7 @@ class Realblog_ArticleAdminView
      * @global array The configuration of the plugins.
      * @global array The localization of the plugins.
      */
-    private function _renderArchiveDate()
+    protected function renderArchiveDate()
     {
         global $plugin_cf, $plugin_tx;
 
@@ -246,17 +246,17 @@ class Realblog_ArticleAdminView
      *
      * @global array The configuration of the plugins.
      */
-    private function _renderCalendarScript()
+    protected function renderCalendarScript()
     {
         global $plugin_cf;
 
         $html = '<script type="text/javascript">/* <![CDATA[ */'
-            . $this->_renderCalendarInitialization(1);
+            . $this->renderCalendarInitialization(1);
         if ($plugin_cf['realblog']['auto_publish']) {
-            $html .= $this->_renderCalendarInitialization(2);
+            $html .= $this->renderCalendarInitialization(2);
         }
         if ($plugin_cf['realblog']['auto_archive']) {
-            $html .= $this->_renderCalendarInitialization(3);
+            $html .= $this->renderCalendarInitialization(3);
         }
         $html .= '/* ]]> */</script>';
         return $html;
@@ -269,7 +269,7 @@ class Realblog_ArticleAdminView
      *
      * @return string (X)HTML.
      */
-    private function _renderCalendarInitialization($num)
+    protected function renderCalendarInitialization($num)
     {
         return <<<EOT
 if (REALBLOG.hasNativeDatePicker) {
@@ -298,7 +298,7 @@ EOT;
      *
      * @global array The localization of the plugins.
      */
-    private function _renderStatusSelect()
+    protected function renderStatusSelect()
     {
         global $plugin_tx;
 
@@ -321,7 +321,7 @@ EOT;
      *
      * @global array The localization of the plugins.
      */
-    private function _renderCommentsCheckbox()
+    protected function renderCommentsCheckbox()
     {
         global $plugin_tx;
 
@@ -343,7 +343,7 @@ EOT;
      *
      * @global array The localization of the plugins.
      */
-    private function _renderFeedCheckbox()
+    protected function renderFeedCheckbox()
     {
         global $plugin_tx;
 
@@ -365,7 +365,7 @@ EOT;
      *
      * @global array The localization of the plugins.
      */
-    private function _renderHeadline()
+    protected function renderHeadline()
     {
         global $plugin_tx;
 
@@ -389,7 +389,7 @@ EOT;
      *
      * @global array The localization of the plugins.
      */
-    private function _renderStory()
+    protected function renderStory()
     {
         global $plugin_tx;
 
@@ -407,14 +407,14 @@ EOT;
      * @global string The script name.
      * @global array  The localization of the plugins.
      */
-    private function _renderSubmitButtons()
+    protected function renderSubmitButtons()
     {
         global $sn, $plugin_tx;
 
         return '<p style="text-align: center">'
             . tag(
                 'input type="submit" name="save" value="'
-                . $plugin_tx['realblog']['btn_' . $this->_getVerb()] . '"'
+                . $plugin_tx['realblog']['btn_' . $this->getVerb()] . '"'
             )
             . '&nbsp;&nbsp;&nbsp;'
             . tag(
@@ -431,7 +431,7 @@ EOT;
      *
      * @return string
      */
-    private function _getVerb()
+    protected function getVerb()
     {
         switch ($this->_action) {
         case 'add_realblog':

@@ -64,7 +64,7 @@ class Realblog_ChangeStatusView extends Realblog_ConfirmationView
             . $this->renderHiddenFields('do_batchchangestatus')
             . '<table width="100%">'
             . '<tr><td width="100%" align="center">'
-            . $this->_renderStatusSelect() . '</td></tr>'
+            . $this->renderStatusSelect() . '</td></tr>'
             . '<tr><td class="realblog_confirm_info" align="center">'
             . $plugin_tx['realblog']['confirm_changestatus']
             . '</td></tr>'
@@ -82,7 +82,7 @@ class Realblog_ChangeStatusView extends Realblog_ConfirmationView
      *
      * @global array The localization of the plugins.
      */
-    private function _renderStatusSelect()
+    protected function renderStatusSelect()
     {
         global $plugin_tx;
 

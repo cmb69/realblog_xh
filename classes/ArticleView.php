@@ -78,11 +78,11 @@ class Realblog_ArticleView
         global $plugin_cf;
 
         $html = '<div class="realblog_show_box">'
-            . $this->_renderLinks() . $this->_renderHeading()
-            . $this->_renderDate() . $this->_renderStory()
-            . $this->_renderLinks() . '</div>';
+            . $this->renderLinks() . $this->renderHeading()
+            . $this->renderDate() . $this->renderStory()
+            . $this->renderLinks() . '</div>';
         // output comments in RealBlog
-        if ($this->_wantsComments() && $this->_article[REALBLOG_COMMENTS] == 'on') {
+        if ($this->wantsComments() && $this->_article[REALBLOG_COMMENTS] == 'on') {
             $realblog_comments_id = 'comments' . $this->_id;
             $bridge = $plugin_cf['realblog']['comments_plugin'] . '_RealblogBridge';
             $html .= call_user_func(array($bridge, handle), $realblog_comments_id);
@@ -95,15 +95,15 @@ class Realblog_ArticleView
      *
      * @return string (X)HTML.
      */
-    private function _renderLinks()
+    protected function renderLinks()
     {
         $html = '<div class="realblog_buttons">'
-            . $this->_renderOverviewLink();
+            . $this->renderOverviewLink();
         if (XH_ADM) {
-            if ($this->_wantsComments()) {
-                $html .= $this->_renderEditCommentsLink();
+            if ($this->wantsComments()) {
+                $html .= $this->renderEditCommentsLink();
             }
-            $html .= $this->_renderEditEntryLink();
+            $html .= $this->renderEditEntryLink();
         }
         $html .= '<div style="clear: both;"></div>'
             . '</div>';
@@ -119,7 +119,7 @@ class Realblog_ArticleView
      * @global array               The localization of the plugins.
      * @global Realblog_Controller The plugin controller.
      */
-    private function _renderOverviewLink()
+    protected function renderOverviewLink()
     {
         global $su, $plugin_tx, $_Realblog_controller;
 
@@ -146,7 +146,7 @@ class Realblog_ArticleView
      * @global string The script name.
      * @global array  The localization of the plugins.
      */
-    private function _renderEditEntryLink()
+    protected function renderEditEntryLink()
     {
         global $sn, $plugin_tx;
 
@@ -166,7 +166,7 @@ class Realblog_ArticleView
      * @global array  The configuration of the plugins.
      * @global array  The localization of the plugins.
      */
-    private function _renderEditCommentsLink()
+    protected function renderEditCommentsLink()
     {
         global $sn, $plugin_cf, $plugin_tx;
 
@@ -187,7 +187,7 @@ class Realblog_ArticleView
      *
      * @todo Heed $cf[menu][levels].
      */
-    private function _renderHeading()
+    protected function renderHeading()
     {
         return '<h4>' . $this->_article[REALBLOG_TITLE] . '</h4>';
     }
@@ -199,7 +199,7 @@ class Realblog_ArticleView
      *
      * @global array The localization of the plugins.
      */
-    private function _renderDate()
+    protected function renderDate()
     {
         global $plugin_tx;
 
@@ -215,7 +215,7 @@ class Realblog_ArticleView
      *
      * @return string (X)HTML.
      */
-    private function _renderStory()
+    protected function renderStory()
     {
         $story = $this->_article[REALBLOG_STORY] != ''
             ? $this->_article[REALBLOG_STORY]
@@ -232,7 +232,7 @@ class Realblog_ArticleView
      *
      * @global array The configuration of the plugins.
      */
-    private function _wantsComments()
+    protected function wantsComments()
     {
         global $plugin_cf;
 

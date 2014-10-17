@@ -85,18 +85,18 @@ class Realblog_ArchiveView
             }
             $next = min($this->_year + 1, $currentYear);
             $back = $this->_year - 1;
-            $t .= $this->_renderPagination($back, $next);
-            $generalrealbloglist = $this->_selectArticlesInPeriod(
+            $t .= $this->renderPagination($back, $next);
+            $generalrealbloglist = $this->selectArticlesInPeriod(
                 mktime(0, 0, 0, 1, 1, $this->_year),
                 mktime(0, 0, 0, 1, 1, $this->_year + 1)
             );
-            $t .= $this->_renderMonthlyArticleLists($currentMonth);
+            $t .= $this->renderMonthlyArticleLists($currentMonth);
             if (count($generalrealbloglist) == 0) {
                 $t .= $plugin_tx['realblog']['no_topics'];
             }
         } else {
             if (count($this->_articles) > 0) {
-                $t .= $this->_renderSearchResults();
+                $t .= $this->renderSearchResults();
             } else {
                 $t .= $plugin_tx['realblog']['no_topics'];
             }
@@ -113,7 +113,7 @@ class Realblog_ArchiveView
      *
      * @global array The localization of the plugins.
      */
-    private function _getMonthName($month)
+    protected function getMonthName($month)
     {
         global $plugin_tx;
 
@@ -131,7 +131,7 @@ class Realblog_ArchiveView
      *
      * @global Realblog_Controller The plugin controller.
      */
-    private function _selectArticlesInPeriod($start, $end)
+    protected function selectArticlesInPeriod($start, $end)
     {
         global $_Realblog_controller;
 
@@ -168,7 +168,7 @@ class Realblog_ArchiveView
      * @global array  The localization of the plugins.
      * @global Realblog_Controller The plugin controller.
      */
-    private function _renderPagination($back, $next)
+    protected function renderPagination($back, $next)
     {
         global $su, $plugin_tx, $_Realblog_controller;
 
@@ -198,18 +198,18 @@ class Realblog_ArchiveView
      *
      * @return string (X)HTML.
      */
-    private function _renderMonthlyArticleLists($currentMonth)
+    protected function renderMonthlyArticleLists($currentMonth)
     {
         $t = '';
         for ($month = $currentMonth; $month >= 1; $month--) {
-            $realbloglist = $this->_selectArticlesInPeriod(
+            $realbloglist = $this->selectArticlesInPeriod(
                 mktime(0, 0, 0, $month, 1, $this->_year),
                 mktime(0, 0, 0, $month + 1, 1, $this->_year)
             );
-            $monthName = $this->_getMonthName($month);
+            $monthName = $this->getMonthName($month);
             if (count($realbloglist) > 0) {
                 $t .= '<h4>' . $monthName . ' ' . $this->_year . '</h4>'
-                    . $this->_renderArticleList($realbloglist);
+                    . $this->renderArticleList($realbloglist);
             }
         }
         return $t;
@@ -226,7 +226,7 @@ class Realblog_ArchiveView
      * @global array               The localization of the plugins.
      * @global Realblog_Controller The plugin controller.
      */
-    private function _renderArticleList($articles)
+    protected function renderArticleList($articles)
     {
         global $su, $plugin_tx, $_Realblog_controller;
 
@@ -256,7 +256,7 @@ class Realblog_ArchiveView
      * @global array               The localization of the plugins.
      * @global Realblog_Controller The plugin controller.
      */
-    private function _renderSearchResults()
+    protected function renderSearchResults()
     {
         global $su, $plugin_tx, $_Realblog_controller;
 
@@ -266,7 +266,7 @@ class Realblog_ArchiveView
             $month = date('n', $field[REALBLOG_DATE]);
             $year = date('Y', $field[REALBLOG_DATE]);
             if ($month != $currentMonth) {
-                $t .= '<h4>' . $this->_getMonthName($month) . ' ' . $year . '</h4>';
+                $t .= '<h4>' . $this->getMonthName($month) . ' ' . $year . '</h4>';
                 $currentMonth = $month;
             }
             $url = $_Realblog_controller->url(

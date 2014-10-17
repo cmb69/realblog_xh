@@ -37,9 +37,9 @@ class Realblog_InfoView
     public function render()
     {
         return '<h1>Realblog</h1>'
-            . $this->_renderLogo()
+            . $this->renderLogo()
             . '<p>Version: ' . REALBLOG_VERSION . '</p>'
-            . $this->_renderCopyright() . $this->_renderLicense();
+            . $this->renderCopyright() . $this->renderLicense();
     }
 
     /**
@@ -50,7 +50,7 @@ class Realblog_InfoView
      * @global array The paths of system files and folders.
      * @global array The localization of the plugins.
      */
-    private function _renderLogo()
+    protected function renderLogo()
     {
         global $pth, $plugin_tx;
 
@@ -66,7 +66,7 @@ class Realblog_InfoView
      *
      * @return string (X)HTML.
      */
-    private function _renderCopyright()
+    protected function renderCopyright()
     {
         return '<p>Copyright &copy; 2006-2010 Jan Kanters' . tag('br')
             . 'Copyright &copy; 2010-2014 '
@@ -82,7 +82,7 @@ class Realblog_InfoView
      *
      * @return string (X)HTML.
      */
-    private function _renderLicense()
+    protected function renderLicense()
     {
         return <<<EOT
 <p class="realblog_license">This program is free software: you can redistribute

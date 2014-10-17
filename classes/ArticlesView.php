@@ -103,12 +103,12 @@ class Realblog_ArticlesView
         }
 
         $t = "\n" . '<div class="realblog_show_box">' . "\n";
-        $t .= $this->_renderPagination(
+        $t .= $this->renderPagination(
             'top', $page, $pageCount, @$back, @$next
         );
         $t .= "\n" . '<div style="clear:both;"></div>';
-        $t .= $this->_renderArticlePreviews($start_index, $end_index);
-        $t .= $this->_renderPagination(
+        $t .= $this->renderArticlePreviews($start_index, $end_index);
+        $t .= $this->renderPagination(
             'bottom', $page, $pageCount, @$back, @$next
         );
         $t .= '<div style="clear: both"></div></div>';
@@ -123,7 +123,7 @@ class Realblog_ArticlesView
      *
      * @return string (X)HTML.
      */
-    private function _renderArticlePreviews($start, $end)
+    protected function renderArticlePreviews($start, $end)
     {
         $articleCount = count($this->_articles);
         $t = '<div id="realblog_entries_preview" class="realblog_entries_preview">';
@@ -132,7 +132,7 @@ class Realblog_ArticlesView
                 $t .= '';
             } else {
                 $field = $this->_articles[$i];
-                $t .= $this->_renderArticlePreview($field);
+                $t .= $this->renderArticlePreview($field);
             }
         }
         $t .= '<div style="clear: both;"></div>' . '</div>';
@@ -149,7 +149,7 @@ class Realblog_ArticlesView
      * @global array The configuration of the plugins.
      * @global Realblog_Controller The plugin controller.
      */
-    private function _renderArticlePreview($field)
+    protected function renderArticlePreview($field)
     {
         global $plugin_cf, $_Realblog_controller;
 
@@ -164,14 +164,14 @@ class Realblog_ArticlesView
                 $t .= '<div class="realblog_single_entry_preview">'
                     . '<div class="realblog_single_entry_preview_in">';
             }
-            $t .= $this->_renderArticleHeading($field);
-            $t .= $this->_renderArticleDate($field);
+            $t .= $this->renderArticleHeading($field);
+            $t .= $this->renderArticleDate($field);
             $t .= "\n" . '<div class="realblog_show_story">' . "\n";
             $t .= evaluate_scripting($field[REALBLOG_HEADLINE]);
             if ($plugin_cf['realblog']['show_read_more_link']
                 && $field[REALBLOG_STORY] != ''
             ) {
-                $t .= $this->_renderArticleFooter($field);
+                $t .= $this->renderArticleFooter($field);
             }
             $t .= '<div style="clear: both;"></div>' . "\n"
                 . '</div>' . "\n";
@@ -193,7 +193,7 @@ class Realblog_ArticlesView
      * @global array               The localization of the plugins.
      * @global Realblog_Controller The plugin controller.
      */
-    private function _renderArticleHeading($field)
+    protected function renderArticleHeading($field)
     {
         global $su, $plugin_tx, $_Realblog_controller;
 
@@ -224,7 +224,7 @@ class Realblog_ArticlesView
      *
      * @global array The localization of the plugins.
      */
-    private function _renderArticleDate($field)
+    protected function renderArticleDate($field)
     {
         global $plugin_tx;
 
@@ -245,7 +245,7 @@ class Realblog_ArticlesView
      * @global array  The localization of the plugins.
      * @global Realblog_Controller The plugin controller.
      */
-    private function _renderArticleFooter($field)
+    protected function renderArticleFooter($field)
     {
         global $su, $plugin_cf, $plugin_tx, $_Realblog_controller;
 
@@ -256,7 +256,7 @@ class Realblog_ArticlesView
             && class_exists($pcf['comments_plugin'] . '_RealblogBridge')
             && $field[REALBLOG_COMMENTS]
         ) {
-            $t .= $this->_renderCommentCount($field);
+            $t .= $this->renderCommentCount($field);
         }
         $url = $_Realblog_controller->url(
             $su, $field[REALBLOG_TITLE], array(
@@ -281,7 +281,7 @@ class Realblog_ArticlesView
      * @global array The configuration of the plugins.
      * @global array The localization of the plugins.
      */
-    private function _renderCommentCount($field)
+    protected function renderCommentCount($field)
     {
         global $plugin_cf, $plugin_tx;
 
@@ -304,18 +304,18 @@ class Realblog_ArticlesView
      *
      * @return string (X)HTML.
      */
-    private function _renderPagination($place, $page, $pageCount, $back, $next)
+    protected function renderPagination($place, $page, $pageCount, $back, $next)
     {
         $articleCount = count($this->_articles);
         $t = '';
         if ($articleCount > 0 && $pageCount > 1) {
-            $t .= $this->_renderPageLinks($pageCount);
+            $t .= $this->renderPageLinks($pageCount);
         }
-        if ($this->_wantsNumberOfArticles($place)) {
-            $t .= $this->_renderNumberOfArticles();
+        if ($this->wantsNumberOfArticles($place)) {
+            $t .= $this->renderNumberOfArticles();
         }
         if ($articleCount > 0 && $pageCount > 1) {
-            $t .= $this->_renderPageOfPages(
+            $t .= $this->renderPageOfPages(
                 $page, $pageCount, $back, $next
             );
         }
@@ -332,7 +332,7 @@ class Realblog_ArticlesView
      * @global array               The configuration of the plugins.
      * @global Realblog_Controller The plugin controller.
      */
-    private function _wantsNumberOfArticles($place)
+    protected function wantsNumberOfArticles($place)
     {
         global $plugin_cf, $_Realblog_controller;
 
@@ -351,7 +351,7 @@ class Realblog_ArticlesView
      * @global array               The localization of the plugins.
      * @global Realblog_Controller The plugin controller.
      */
-    private function _renderPageLinks($pageCount)
+    protected function renderPageLinks($pageCount)
     {
         global $su, $plugin_tx, $_Realblog_controller;
 
@@ -383,7 +383,7 @@ class Realblog_ArticlesView
      * @global array               The localization of the plugins.
      * @global Realblog_Controller The plugin controller.
      */
-    private function _renderPageOfPages($page, $pageCount, $back, $next)
+    protected function renderPageOfPages($page, $pageCount, $back, $next)
     {
         global $su, $plugin_tx, $_Realblog_controller;
 
@@ -410,7 +410,7 @@ class Realblog_ArticlesView
      *
      * @global array The localization of the plugins.
      */
-    private function _renderNumberOfArticles()
+    protected function renderNumberOfArticles()
     {
         global $plugin_tx;
 

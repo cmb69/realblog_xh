@@ -68,10 +68,10 @@ class Realblog_AdminController
         $o .= print_plugin_admin('on');
         switch ($admin) {
         case '':
-            $o .= $this->_renderInfoView();
+            $o .= $this->renderInfoView();
             break;
         case 'plugin_main':
-            $this->_handleMainAdministration();
+            $this->handleMainAdministration();
             break;
         default:
             $o .= plugin_admin_common($action, $admin, 'realblog');
@@ -83,7 +83,7 @@ class Realblog_AdminController
      *
      * @return string (X)HTML.
      */
-    private function _renderInfoView()
+    protected function renderInfoView()
     {
         $view = new Realblog_InfoView();
         return $view->render();
@@ -98,7 +98,7 @@ class Realblog_AdminController
      * @global string The (X)HTML to insert into the contents area.
      * @global string The value of the <var>action</var> GP parameter.
      */
-    private function _handleMainAdministration()
+    protected function handleMainAdministration()
     {
         global $pth, $o, $action;
 
@@ -111,9 +111,9 @@ class Realblog_AdminController
             chmod($filename . '.lock', 0644);
         }
         if (!is_writable($filename)) {
-            $o .= $this->_renderDatafileError();
+            $o .= $this->renderDatafileError();
         } else {
-            $this->_dispatchOnAction($action);
+            $this->dispatchOnAction($action);
         }
     }
 
@@ -126,7 +126,7 @@ class Realblog_AdminController
      *
      * @global string The (X)HTML to insert into the contents area.
      */
-    private function _dispatchOnAction($action)
+    protected function dispatchOnAction($action)
     {
         global $o;
 
@@ -134,31 +134,31 @@ class Realblog_AdminController
         case 'add_realblog':
         case 'modify_realblog':
         case 'delete_realblog':
-            $o .= $this->_renderArticle();
+            $o .= $this->renderArticle();
             break;
         case 'do_add':
-            $o .= $this->_addArticle();
+            $o .= $this->addArticle();
             break;
         case 'do_modify':
-            $o .= $this->_modifyArticle();
+            $o .= $this->modifyArticle();
             break;
         case 'do_delete':
-            $o .= $this->_deleteArticle();
+            $o .= $this->deleteArticle();
             break;
         case 'batchdelete':
-            $o .= $this->_confirmDelete();
+            $o .= $this->confirmDelete();
             break;
         case 'do_delselected':
-            $o .= $this->_deleteArticles();
+            $o .= $this->deleteArticles();
             break;
         case 'change_status':
-            $o .= $this->_confirmChangeStatus();
+            $o .= $this->confirmChangeStatus();
             break;
         case 'do_batchchangestatus':
-            $o .= $this->_changeStatus();
+            $o .= $this->changeStatus();
             break;
         default:
-            $o .= $this->_renderArticles();
+            $o .= $this->renderArticles();
         }
     }
 
@@ -171,12 +171,12 @@ class Realblog_AdminController
      * @global array               The localization of the plugins.
      * @global Realblog_Controller The plugin controller.
      */
-    private function _renderArticles()
+    protected function renderArticles()
     {
         global $plugin_cf, $plugin_tx, $_Realblog_controller;
 
         $records = $this->_db->selectWhere(
-            'realblog.txt', $this->_getFilterClause(), -1,
+            'realblog.txt', $this->getFilterClause(), -1,
             new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
         );
 
@@ -202,7 +202,7 @@ class Realblog_AdminController
      * @global string              The value of the <var>action</var> GP parameter.
      * @global Realblog_Controller The plugin controller.
      */
-    private function _renderArticle()
+    protected function renderArticle()
     {
         global $action, $_Realblog_controller;
 
@@ -222,12 +222,12 @@ class Realblog_AdminController
      * @global XH_CSRFProtection   The CSRF protector.
      * @global Realblog_Controller The plugin controller.
      */
-    private function _addArticle()
+    protected function addArticle()
     {
         global $title, $plugin_tx, $_XH_csrfProtection, $_Realblog_Controller;
 
         $_XH_csrfProtection->check();
-        $article = $this->_getArticleFromParameters();
+        $article = $this->getArticleFromParameters();
         $this->_db->insertWithAutoId('realblog.txt', REALBLOG_ID, $article);
         $title = $plugin_tx['realblog']['tooltip_add'];
         $info = $plugin_tx['realblog']['story_added'];
@@ -244,12 +244,12 @@ class Realblog_AdminController
      * @global XH_CSRFProtection   The CSRF protector.
      * @global Realblog_Controller The plugin controller.
      */
-    private function _modifyArticle()
+    protected function modifyArticle()
     {
         global $title, $plugin_tx, $_XH_csrfProtection, $_Realblog_controller;
 
         $_XH_csrfProtection->check();
-        $article = $this->_getArticleFromParameters();
+        $article = $this->getArticleFromParameters();
         $this->_db->updateRowById('realblog.txt', REALBLOG_ID, $article);
         $title = $plugin_tx['realblog']['tooltip_modify'];
         $info = $plugin_tx['realblog']['story_modified'];
@@ -266,7 +266,7 @@ class Realblog_AdminController
      * @global XH_CSRFProtection   The CSRF protector.
      * @global Realblog_Controller The plugin controller.
      */
-    private function _deleteArticle()
+    protected function deleteArticle()
     {
         global $title, $plugin_tx, $_XH_csrfProtection, $_Realblog_controller;
 
@@ -286,7 +286,7 @@ class Realblog_AdminController
      *
      * @return string (X)HTML.
      */
-    private function _confirmChangeStatus()
+    protected function confirmChangeStatus()
     {
         $view = new Realblog_ChangeStatusView();
         return $view->render();
@@ -302,7 +302,7 @@ class Realblog_AdminController
      * @global XH_CSRFProtection   The CSRF protector.
      * @global Realblog_Controller The plugin controller.
      */
-    private function _changeStatus()
+    protected function changeStatus()
     {
         global $title, $plugin_tx, $_XH_csrfProtection, $_Realblog_controller;
 
@@ -331,7 +331,7 @@ class Realblog_AdminController
      *
      * @return string (X)HTML.
      */
-    private function _confirmDelete()
+    protected function confirmDelete()
     {
         $view = new Realblog_DeleteView();
         return $view->render();
@@ -347,7 +347,7 @@ class Realblog_AdminController
      * @global XH_CSRFProtection   The CSRF protector.
      * @global Realblog_Controller The plugin controller.
      */
-    private function _deleteArticles()
+    protected function deleteArticles()
     {
         global $title, $plugin_tx, $_XH_csrfProtection, $_Realblog_controller;
 
@@ -371,7 +371,7 @@ class Realblog_AdminController
      *
      * @global array The localization of the plugins.
      */
-    private function _renderDatafileError()
+    protected function renderDatafileError()
     {
         global $plugin_tx;
 
@@ -386,7 +386,7 @@ class Realblog_AdminController
      *
      * @global Realblog_Controller The plugin controller.
      */
-    private function _getArticleFromParameters()
+    protected function getArticleFromParameters()
     {
         global $_Realblog_controller;
 
@@ -437,7 +437,7 @@ class Realblog_AdminController
      *
      * @global Realblog_Controller The plugin controller.
      */
-    private function _getFilterClause()
+    protected function getFilterClause()
     {
         global $_Realblog_controller;
 

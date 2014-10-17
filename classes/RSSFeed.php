@@ -62,8 +62,8 @@ class Realblog_RSSFeed
 
         $xml = '<?xml version="1.0" encoding="UTF-8"?>'
             . '<rss version="2.0"><channel>'
-            . $this->_renderHead()
-            . $this->_renderItems()
+            . $this->renderHead()
+            . $this->renderItems()
             . '</channel></rss>';
         return $xml;
     }
@@ -76,7 +76,7 @@ class Realblog_RSSFeed
      * @global array The configuration of the plugins.
      * @global array The localization of the plugins.
      */
-    private function _renderHead()
+    protected function renderHead()
     {
         global $plugin_cf, $plugin_tx;
 
@@ -91,7 +91,7 @@ class Realblog_RSSFeed
             . '<managingEditor>' . $plugin_cf['realblog']['rss_editor']
             . '</managingEditor>';
         if ($plugin_cf['realblog']['rss_logo']) {
-            $xml .= $this->_renderImage();
+            $xml .= $this->renderImage();
         }
         return $xml;
     }
@@ -105,7 +105,7 @@ class Realblog_RSSFeed
      * @global array The configuration of the plugins.
      * @global array The localization of the plugins.
      */
-    private function _renderImage()
+    protected function renderImage()
     {
         global $pth, $plugin_cf, $plugin_tx;
 
@@ -132,7 +132,7 @@ class Realblog_RSSFeed
      * @global array               The localization of the plugins.
      * @global Realblog_Controller The plugin controller.
      */
-    private function _renderItems()
+    protected function renderItems()
     {
         global $sn, $plugin_tx, $_Realblog_controller;
 

@@ -62,21 +62,21 @@ class Realblog_SearchFormView
     {
         global $sn, $hjs, $tx, $plugin_tx;
 
-        $hjs .= $this->_renderToggleScript();
+        $hjs .= $this->renderToggleScript();
         return '<form name="realblogsearch" method="get" action="' . $sn . '">'
-            . $this->_renderSearchToggle()
+            . $this->renderSearchToggle()
             . '<div id="searchblock" style="display: none">'
-            . $this->_renderHiddenInputs()
+            . $this->renderHiddenInputs()
             . '<p class="realblog_search_hint">'
             . $plugin_tx['realblog']['search_hint'] . '</p>'
             . '<table style="width: 100%;">'
-            . $this->_renderInputRow('title')
+            . $this->renderInputRow('title')
             . '<tr>'
             . '<td style="width: 30%;">&nbsp;</td>'
-            . '<td>' . $this->_renderOperatorRadio('and') . '&nbsp;&nbsp;&nbsp;'
-            . $this->_renderOperatorRadio('or') . '</td>'
+            . '<td>' . $this->renderOperatorRadio('and') . '&nbsp;&nbsp;&nbsp;'
+            . $this->renderOperatorRadio('or') . '</td>'
             . '</tr>'
-            . $this->_renderInputRow('story')
+            . $this->renderInputRow('story')
             . '<tr><td colspan="2" style="text-align: center;">'
             . tag(
                 'input type="submit" value="'
@@ -95,7 +95,7 @@ class Realblog_SearchFormView
      * @global array The localization of the core.
      * @global array The localization of the plugins.
      */
-    private function _renderSearchToggle()
+    protected function renderSearchToggle()
     {
         global $pth, $tx, $plugin_tx;
 
@@ -121,7 +121,7 @@ EOT;
      *
      * @todo Escape JS strings.
      */
-    private function _renderToggleScript()
+    protected function renderToggleScript()
     {
         global $pth, $plugin_tx;
 
@@ -153,11 +153,11 @@ EOT;
      *
      * @global string The URL of the current page.
      */
-    private function _renderHiddenInputs()
+    protected function renderHiddenInputs()
     {
         global $su;
 
-        return $this->_renderHiddenInput('selected', $su);
+        return $this->renderHiddenInput('selected', $su);
     }
 
     /**
@@ -168,7 +168,7 @@ EOT;
      *
      * @return string (X)HTML.
      */
-    private function _renderHiddenInput($name, $value)
+    protected function renderHiddenInput($name, $value)
     {
         return tag(
             'input type="hidden" name="' . $name . '" value="' . $value . '"'
@@ -184,7 +184,7 @@ EOT;
      *
      * @global array The localization of the plugins.
      */
-    private function _renderInputRow($which)
+    protected function renderInputRow($which)
     {
         global $plugin_tx;
 
@@ -193,8 +193,8 @@ EOT;
             . $plugin_tx['realblog']['search_contains'] . ':' . '</td>'
             . '<td>'
             // TODO: make the operators available?
-            /*. $this->_renderOperatorSelect("{$which}_operator")*/
-            . $this->_renderInput("realblog_$which") . '</td></tr>';
+            /*. $this->renderOperatorSelect("{$which}_operator")*/
+            . $this->renderInput("realblog_$which") . '</td></tr>';
     }
 
     /**
@@ -204,7 +204,7 @@ EOT;
      *
      * @return string (X)HTML.
      */
-    private function _renderInput($name)
+    protected function renderInput($name)
     {
         return tag(
             'input type="text" name="' . $name . '" size="35"'
@@ -221,7 +221,7 @@ EOT;
      *
      * @global array The localization of the plugins.
      */
-    private function _renderOperatorSelect($name)
+    protected function renderOperatorSelect($name)
     {
         global $plugin_tx;
 
@@ -240,7 +240,7 @@ EOT;
      *
      * @global array The localiaztion of the plugins.
      */
-    private function _renderOperatorRadio($which)
+    protected function renderOperatorRadio($which)
     {
         global $plugin_tx;
 

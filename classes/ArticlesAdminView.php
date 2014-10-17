@@ -99,24 +99,24 @@ class Realblog_ArticlesAdminView
     {
         global $sn, $_Realblog_controller;
 
-        $html = $this->_renderFilterForm()
+        $html = $this->renderFilterForm()
             . '<form method="post" action="' . $sn
             . '?&amp;realblog&amp;admin=plugin_main">'
             . '<table class="realblog_table">'
-            . $this->_renderTableHead();
+            . $this->renderTableHead();
         $page = $_Realblog_controller->getPage();
         $endIndex = $page * $this->_articlesPerPage - 1;
         for ($i = $this->_startIndex; $i <= $endIndex; $i++) {
             if ($i <= count($this->_articles) - 1) {
                 $field = $this->_articles[$i];
-                $html .= $this->_renderRow($field);
+                $html .= $this->renderRow($field);
             }
         }
 
         $html .= '</table>'
             . tag('input type="hidden" name="page" value="' . $page . '"')
             . '</form>'
-            . $this->_renderNavigation();
+            . $this->renderNavigation();
         return $html;
     }
 
@@ -128,7 +128,7 @@ class Realblog_ArticlesAdminView
      * @global string The script name.
      * @global array  The localization of the plugins.
      */
-    private function _renderFilterForm()
+    protected function renderFilterForm()
     {
         global $sn, $plugin_tx;
 
@@ -137,7 +137,7 @@ class Realblog_ArticlesAdminView
             . ' action="' . XH_hsc($url) . '">';
         $states = array('readyforpublishing', 'published', 'archived');
         foreach ($states as $i => $state) {
-            $html .= $this->_renderFilterCheckbox($i + 1, $state);
+            $html .= $this->renderFilterCheckbox($i + 1, $state);
         }
         $html .= '<button>' . $plugin_tx['realblog']['btn_filter'] . '</button>'
             . '</form>';
@@ -154,7 +154,7 @@ class Realblog_ArticlesAdminView
      *
      * @global Realblog_Controller The plugin controller.
      */
-    private function _renderFilterCheckbox($number, $name)
+    protected function renderFilterCheckbox($number, $name)
     {
         global $plugin_tx, $_Realblog_controller;
 
@@ -178,7 +178,7 @@ class Realblog_ArticlesAdminView
      * @global string The script name.
      * @global array  The localization of the plugins.
      */
-    private function _renderTableHead()
+    protected function renderTableHead()
     {
         global $sn, $plugin_tx;
 
@@ -232,7 +232,7 @@ class Realblog_ArticlesAdminView
      * @global array  The localization of the plugins.
      * @global Realblog_Controller The plugin controller.
      */
-    private function _renderNavigation()
+    protected function renderNavigation()
     {
         global $sn, $plugin_tx, $_Realblog_controller;
 
@@ -288,7 +288,7 @@ class Realblog_ArticlesAdminView
      * @global array  The localization of the plugins.
      * @global Realblog_Controller The plugin controller.
      */
-    private function _renderRow($field)
+    protected function renderRow($field)
     {
         global $sn, $plugin_tx, $_Realblog_controller;
 
