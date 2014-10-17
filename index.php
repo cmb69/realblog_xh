@@ -69,11 +69,6 @@ this program; if not, see <http://www.gnu.org/licenses>.
 require_once $pth['folder']['plugin'] . 'functions.php';
 
 /**
- * The presentation layer.
- */
-require_once $pth['folder']['plugin_classes'] . 'Presentation.php';
-
-/**
  * Backward compatibility.
  */
 require_once $pth['folder']['plugin'] . 'compat.php';

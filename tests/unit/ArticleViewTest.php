@@ -16,7 +16,7 @@
 
 require_once '../../cmsimple/functions.php';
 require_once './functions.php';
-require_once './classes/Presentation.php';
+require_once './classes/ArticleView.php';
 
 /**
  * A dummy.

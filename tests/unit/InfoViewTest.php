@@ -16,7 +16,7 @@
 
 require_once './vendor/autoload.php';
 require_once '../../cmsimple/functions.php';
-require_once './classes/Presentation.php';
+require_once './classes/InfoView.php';
 
 /**
  * Testing the info view.

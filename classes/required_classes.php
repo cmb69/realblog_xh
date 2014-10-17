@@ -19,8 +19,23 @@
  */
 
 /**
- * The bridge to a comments plugin.
+ * Autoloads a plugin class.
+ *
+ * @param string $class A class name.
+ *
+ * @return void
  */
-require_once $pth['folder']['plugin_classes'] . 'CommentsBridge.php';
+function Realblog_autoload($class)
+{
+    global $pth;
+
+    $parts = explode('_', $class, 2);
+    if ($parts[0] == 'Realblog') {
+        include_once $pth['folder']['plugins'] . 'realblog/classes/'
+            . $parts[1] . '.php';
+    }
+}
+
+spl_autoload_register('Realblog_autoload');
 
 ?>
