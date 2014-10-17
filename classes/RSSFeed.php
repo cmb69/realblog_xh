@@ -34,7 +34,7 @@ class Realblog_RSSFeed
      *
      * @var array
      */
-    private $_articles;
+    protected $articles;
 
     /**
      * Initializes a new instance.
@@ -45,7 +45,7 @@ class Realblog_RSSFeed
      */
     public function __construct($articles)
     {
-        $this->_articles = (array) $articles;
+        $this->articles = (array) $articles;
     }
 
     /**
@@ -137,7 +137,7 @@ class Realblog_RSSFeed
         global $sn, $plugin_tx, $_Realblog_controller;
 
         $xml = '';
-        foreach ($this->_articles as $article) {
+        foreach ($this->articles as $article) {
             $url = CMSIMPLE_URL . substr(
                 $_Realblog_controller->url(
                     $plugin_tx['realblog']["rss_page"],

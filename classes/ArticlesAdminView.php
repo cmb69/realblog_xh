@@ -34,35 +34,35 @@ class Realblog_ArticlesAdminView
      *
      * @var string
      */
-    private $_imageFolder;
+    protected $imageFolder;
 
     /**
      * The articles.
      *
      * @var array
      */
-    private $_articles;
+    protected $articles;
 
     /**
      * The number of articles per page.
      *
      * @var int
      */
-    private $_articlesPerPage;
+    protected $articlesPerPage;
 
     /**
      * The start index.
      *
      * @var int
      */
-    private $_startIndex;
+    protected $startIndex;
 
     /**
      * The number of pages.
      *
      * @var int
      */
-    private $_pageCount;
+    protected $pageCount;
 
     /**
      * Initializes a new instance.
@@ -80,11 +80,11 @@ class Realblog_ArticlesAdminView
     {
         global $pth;
 
-        $this->_imageFolder =  $pth['folder']['plugins'] . 'realblog/images/';
-        $this->_articles = $articles;
-        $this->_articlesPerPage = (int) $articlesPerPage;
-        $this->_startIndex = (int) $startIndex;
-        $this->_pageCount = (int) $pageCount;
+        $this->imageFolder =  $pth['folder']['plugins'] . 'realblog/images/';
+        $this->articles = $articles;
+        $this->articlesPerPage = (int) $articlesPerPage;
+        $this->startIndex = (int) $startIndex;
+        $this->pageCount = (int) $pageCount;
     }
 
     /**
@@ -105,10 +105,10 @@ class Realblog_ArticlesAdminView
             . '<table class="realblog_table">'
             . $this->renderTableHead();
         $page = $_Realblog_controller->getPage();
-        $endIndex = $page * $this->_articlesPerPage - 1;
-        for ($i = $this->_startIndex; $i <= $endIndex; $i++) {
-            if ($i <= count($this->_articles) - 1) {
-                $field = $this->_articles[$i];
+        $endIndex = $page * $this->articlesPerPage - 1;
+        for ($i = $this->startIndex; $i <= $endIndex; $i++) {
+            if ($i <= count($this->articles) - 1) {
+                $field = $this->articles[$i];
                 $html .= $this->renderRow($field);
             }
         }
@@ -187,7 +187,7 @@ class Realblog_ArticlesAdminView
             . '<button name="action" value="batchdelete"  title="'
             . $plugin_tx['realblog']['tooltip_deleteall'] . '">'
             . tag(
-                'img src="' . $this->_imageFolder  . 'delete.png" alt="'
+                'img src="' . $this->imageFolder  . 'delete.png" alt="'
                 . $plugin_tx['realblog']['tooltip_deleteall'] . '"'
             )
             . '</button></td>'
@@ -195,7 +195,7 @@ class Realblog_ArticlesAdminView
             . '<button name="action" value="change_status"  title="'
             . $plugin_tx['realblog']['tooltip_changestatus'] . '">'
             . tag(
-                'img src="' . $this->_imageFolder  . 'change-status.png" alt="'
+                'img src="' . $this->imageFolder  . 'change-status.png" alt="'
                 . $plugin_tx['realblog']['tooltip_changestatus'] . '"'
             )
             . '</button></td>'
@@ -205,7 +205,7 @@ class Realblog_ArticlesAdminView
             . '&amp;admin=plugin_main&amp;action=add_realblog" title="'
             . $plugin_tx['realblog']['tooltip_add'] . '">'
             . tag(
-                'img src="' . $this->_imageFolder . 'add.png"'
+                'img src="' . $this->imageFolder . 'add.png"'
                 . ' alt="'
                 . $plugin_tx['realblog']['tooltip_add'] . '"'
             )
@@ -237,31 +237,31 @@ class Realblog_ArticlesAdminView
         global $sn, $plugin_tx, $_Realblog_controller;
 
         $page = $_Realblog_controller->getPage();
-        $db_total_records = count($this->_articles);
+        $db_total_records = count($this->articles);
         $tmp = ($db_total_records > 0)
             ? $plugin_tx['realblog']['page_label'] . ' : ' . $page .  '/'
-                . $this->_pageCount
+                . $this->pageCount
             : '';
         $html = '<div class="realblog_paging_block">'
             . '<div class="realblog_db_info">'
             . $plugin_tx['realblog']['record_count'] . ' : '
             . $db_total_records . '</div>'
             . '<div class="realblog_page_info">' . $tmp . '</div>';
-        if ($db_total_records > 0 && $this->_pageCount > 1) {
-            if ($this->_pageCount > $page) {
+        if ($db_total_records > 0 && $this->pageCount > 1) {
+            if ($this->pageCount > $page) {
                 $next = $page + 1;
                 $back = ($page > 1) ? ($next - 2) : '1';
             } else {
-                $next = $this->_pageCount;
-                $back = $this->_pageCount - 1;
+                $next = $this->pageCount;
+                $back = $this->pageCount - 1;
             }
             $html .= '<div class="realblog_table_paging">'
                 . '<a href="' . $sn . '?&amp;realblog'
                 . '&amp;admin=plugin_main&amp;action=plugin_text&amp;realblog_page='
                 . $back . '" title="' . $plugin_tx['realblog']['tooltip_previous']
                 . '">&#9664;</a>&nbsp;&nbsp;';
-            for ($i = 1; $i <= $this->_pageCount; $i++) {
-                $separator = ($i < $this->_pageCount) ? ' ' : '';
+            for ($i = 1; $i <= $this->pageCount; $i++) {
+                $separator = ($i < $this->pageCount) ? ' ' : '';
                 $html .= '<a href="' . $sn . '?&amp;realblog&amp;admin=plugin_main'
                     . '&amp;action=plugin_text&amp;realblog_page=' . $i
                     . '" title="' . $plugin_tx['realblog']['page_label']
@@ -305,7 +305,7 @@ class Realblog_ArticlesAdminView
             . '&amp;action=delete_realblog&amp;realblogID=' . $field[REALBLOG_ID]
             . '&amp;page=' . $page . '">'
             . tag(
-                'img src="' . $this->_imageFolder . 'delete.png"' . ' title="'
+                'img src="' . $this->imageFolder . 'delete.png"' . ' title="'
                 . $plugin_tx['realblog']['tooltip_delete'] . '" alt="'
                 . $plugin_tx['realblog']['tooltip_delete'] . '"'
             )
@@ -315,7 +315,7 @@ class Realblog_ArticlesAdminView
             . '&amp;action=modify_realblog&amp;realblogID=' . $field[REALBLOG_ID]
             . '&amp;page=' . $page . '">'
             . tag(
-                'img src="' . $this->_imageFolder . 'edit.png"' . ' title="'
+                'img src="' . $this->imageFolder . 'edit.png"' . ' title="'
                 . $plugin_tx['realblog']['tooltip_modify'] . '" alt="'
                 . $plugin_tx['realblog']['tooltip_modify'] . '"'
             )

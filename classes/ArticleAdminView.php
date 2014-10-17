@@ -34,21 +34,21 @@ class Realblog_ArticleAdminView
      *
      * @var array
      */
-    private $_record;
+    protected $record;
 
     /**
      * The requested action.
      *
      * @var string
      */
-    private $_action;
+    protected $action;
 
     /**
      * The paths of the plugin image folder.
      *
      * @var string
      */
-    private $_imageFolder;
+    protected $imageFolder;
 
     /**
      * Initializes a new instance.
@@ -64,9 +64,9 @@ class Realblog_ArticleAdminView
     {
         global $pth;
 
-        $this->_record = $record;
-        $this->_action = $action;
-        $this->_imageFolder = $pth['folder']['plugins'] . 'realblog/images/';
+        $this->record = $record;
+        $this->action = $action;
+        $this->imageFolder = $pth['folder']['plugins'] . 'realblog/images/';
     }
 
     /**
@@ -107,7 +107,7 @@ class Realblog_ArticleAdminView
             . '</table>'
             . '<h4>' . $plugin_tx['realblog']['title_label'] . '</h4>'
             . tag(
-                'input type="text" value="' . $this->_record[REALBLOG_TITLE]
+                'input type="text" value="' . $this->record[REALBLOG_TITLE]
                 . '" name="realblog_title" size="70"'
             )
             . $this->renderHeadline() . $this->renderStory()
@@ -127,7 +127,7 @@ class Realblog_ArticleAdminView
 
         $html = '';
         $fields = array(
-            'realblog_id' => $this->_record[REALBLOG_ID],
+            'realblog_id' => $this->record[REALBLOG_ID],
             'action' => 'do_' . $this->getVerb()
         );
         foreach ($fields as $name => $value) {
@@ -165,12 +165,12 @@ class Realblog_ArticleAdminView
 
         $html = tag(
             'input type="date" name="realblog_date" id="date1" required="required"'
-            . ' value="' . $this->_record[REALBLOG_DATE] . '"'
+            . ' value="' . $this->record[REALBLOG_DATE] . '"'
             . ' onfocus="if (!REALBLOG.hasNativeDatePicker) this.blur()"'
         );
         $html .= '&nbsp;'
             . tag(
-                'img src="' . $this->_imageFolder . 'calendar.png"'
+                'img src="' . $this->imageFolder . 'calendar.png"'
                 . ' id="trig_date1" class="realblog_date_selector" title="'
                 . $plugin_tx['realblog']['tooltip_datepicker'] . '" alt=""'
             );
@@ -193,12 +193,12 @@ class Realblog_ArticleAdminView
             $html = tag(
                 'input type="date" name="realblog_startdate" id="date2"'
                 . ' required="required" value="'
-                . $this->_record[REALBLOG_STARTDATE] . '"'
+                . $this->record[REALBLOG_STARTDATE] . '"'
                 . ' onfocus="if (!REALBLOG.hasNativeDatePicker) this.blur()"'
             );
             $html .= '&nbsp;'
                 . tag(
-                    'img src="' . $this->_imageFolder . 'calendar.png"'
+                    'img src="' . $this->imageFolder . 'calendar.png"'
                     . ' id="trig_date2" class="realblog_date_selector" title="'
                     . $plugin_tx['realblog']['tooltip_datepicker'] . '" alt=""'
                 );
@@ -224,12 +224,12 @@ class Realblog_ArticleAdminView
             $html = tag(
                 'input type="date" name="realblog_enddate" id="date3"'
                 . ' required="required" value="'
-                . $this->_record[REALBLOG_ENDDATE] . '"'
+                . $this->record[REALBLOG_ENDDATE] . '"'
                 . ' onfocus="if (!REALBLOG.hasNativeDatePicker) this.blur()"'
             );
             $html .= '&nbsp;'
                 . tag(
-                    'img src="' . $this->_imageFolder . 'calendar.png"'
+                    'img src="' . $this->imageFolder . 'calendar.png"'
                     . ' id="trig_date3" class="realblog_date_selector" title="'
                     . $plugin_tx['realblog']['tooltip_datepicker'] . '" alt=""'
                 );
@@ -305,7 +305,7 @@ EOT;
         $states = array('readyforpublishing', 'published', 'archived', 'backuped');
         $html = '<select name="realblog_status">';
         foreach ($states as $i => $state) {
-            $selected = ($i == $this->_record[REALBLOG_STATUS])
+            $selected = ($i == $this->record[REALBLOG_STATUS])
                 ? 'selected="selected"' : '';
             $html .= '<option value="' . $i . '" ' . $selected . '>'
                 . $plugin_tx['realblog'][$state] . '</option>';
@@ -325,7 +325,7 @@ EOT;
     {
         global $plugin_tx;
 
-        $checked = ($this->_record[REALBLOG_COMMENTS] == 'on')
+        $checked = ($this->record[REALBLOG_COMMENTS] == 'on')
             ? 'checked="checked"' : '';
         return '<label>'
             . tag(
@@ -347,7 +347,7 @@ EOT;
     {
         global $plugin_tx;
 
-        $checked = ($this->_record[REALBLOG_RSSFEED] == 'on')
+        $checked = ($this->record[REALBLOG_RSSFEED] == 'on')
             ? 'checked="checked"' : '';
         return '<label>'
             . tag(
@@ -379,7 +379,7 @@ EOT;
             . '</p>'
             . '<textarea class="realblog_headline_field" name="realblog_headline"'
             . ' id="realblog_headline" rows="6" cols="60">'
-            . XH_hsc($this->_record[REALBLOG_HEADLINE]) . '</textarea>';
+            . XH_hsc($this->record[REALBLOG_HEADLINE]) . '</textarea>';
     }
 
     /**
@@ -396,7 +396,7 @@ EOT;
         return '<h4>' . $plugin_tx['realblog']['story_label'] . '</h4>'
             . '<textarea class="realblog_story_field"'
             . ' name="realblog_story" id="realblog_story" rows="30" cols="80">'
-            . XH_hsc($this->_record[REALBLOG_STORY]) . '</textarea>';
+            . XH_hsc($this->record[REALBLOG_STORY]) . '</textarea>';
     }
 
     /**
@@ -433,7 +433,7 @@ EOT;
      */
     protected function getVerb()
     {
-        switch ($this->_action) {
+        switch ($this->action) {
         case 'add_realblog':
             return 'add';
         case 'modify_realblog':

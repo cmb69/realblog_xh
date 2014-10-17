@@ -34,7 +34,7 @@ class Realblog_SearchFormView
      *
      * @var int
      */
-    private $_year;
+    protected $year;
 
     /**
      * Initializes a new instance.
@@ -45,7 +45,7 @@ class Realblog_SearchFormView
      */
     public function __construct($year)
     {
-        $this->_year = (int) $year;
+        $this->year = (int) $year;
     }
 
     /**

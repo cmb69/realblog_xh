@@ -34,21 +34,21 @@ class Realblog_ArticlesView
      *
      * @var array
      */
-    private $_articles;
+    protected $articles;
 
     /**
      * The categories.
      *
      * @var string
      */
-    private $_categories;
+    protected $categories;
 
     /**
      * The number of articles per page.
      *
      * @var int
      */
-    private $_articlesPerPage;
+    protected $articlesPerPage;
 
     /**
      * Initializes a new instance.
@@ -61,9 +61,9 @@ class Realblog_ArticlesView
      */
     public function __construct($articles, $categories, $articlesPerPage)
     {
-        $this->_articles = $articles;
-        $this->_categories = (string) $categories;
-        $this->_articlesPerPage = (int) $articlesPerPage;
+        $this->articles = $articles;
+        $this->categories = (string) $categories;
+        $this->articlesPerPage = (int) $articlesPerPage;
     }
 
     /**
@@ -78,8 +78,8 @@ class Realblog_ArticlesView
     {
         global $plugin_cf, $_Realblog_controller;
 
-        $articleCount = count($this->_articles);
-        $pageCount = (int) ceil($articleCount / $this->_articlesPerPage);
+        $articleCount = count($this->articles);
+        $pageCount = (int) ceil($articleCount / $this->articlesPerPage);
         $page = $_Realblog_controller->getPage();
         if ($page > $pageCount) {
             $page = 1;
@@ -88,9 +88,9 @@ class Realblog_ArticlesView
             $start_index = 0;
             $page = 1;
         } else {
-            $start_index = ($page - 1) * $this->_articlesPerPage;
+            $start_index = ($page - 1) * $this->articlesPerPage;
         }
-        $end_index = min($page * $this->_articlesPerPage - 1, $articleCount);
+        $end_index = min($page * $this->articlesPerPage - 1, $articleCount);
 
         if ($articleCount > 0 && $pageCount > 1) {
             if ($pageCount > $page) {
@@ -125,13 +125,13 @@ class Realblog_ArticlesView
      */
     protected function renderArticlePreviews($start, $end)
     {
-        $articleCount = count($this->_articles);
+        $articleCount = count($this->articles);
         $t = '<div id="realblog_entries_preview" class="realblog_entries_preview">';
         for ($i = $start; $i <= $end; $i++) {
             if ($i > $articleCount - 1) {
                 $t .= '';
             } else {
-                $field = $this->_articles[$i];
+                $field = $this->articles[$i];
                 $t .= $this->renderArticlePreview($field);
             }
         }
@@ -154,11 +154,11 @@ class Realblog_ArticlesView
         global $plugin_cf, $_Realblog_controller;
 
         $t = '';
-        if (strstr($field[REALBLOG_HEADLINE], '|' . $this->_categories . '|')
-            || strstr($field[REALBLOG_STORY], '|' . $this->_categories . '|')
-            || $this->_categories == 'all'
+        if (strstr($field[REALBLOG_HEADLINE], '|' . $this->categories . '|')
+            || strstr($field[REALBLOG_STORY], '|' . $this->categories . '|')
+            || $this->categories == 'all'
             || ($_Realblog_controller->getPgParameter('realblog_search')
-            && strstr($field[REALBLOG_H], '|' . $this->_categories . '|'))
+            && strstr($field[REALBLOG_H], '|' . $this->categories . '|'))
         ) {
             if ($plugin_cf['realblog']['teaser_multicolumns']) {
                 $t .= '<div class="realblog_single_entry_preview">'
@@ -306,7 +306,7 @@ class Realblog_ArticlesView
      */
     protected function renderPagination($place, $page, $pageCount, $back, $next)
     {
-        $articleCount = count($this->_articles);
+        $articleCount = count($this->articles);
         $t = '';
         if ($articleCount > 0 && $pageCount > 1) {
             $t .= $this->renderPageLinks($pageCount);
@@ -416,7 +416,7 @@ class Realblog_ArticlesView
 
         return '<div class="realblog_db_info">'
             . $plugin_tx['realblog']['record_count'] . ' : '
-            . count($this->_articles) . '</div>';
+            . count($this->articles) . '</div>';
     }
 }
 

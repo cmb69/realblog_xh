@@ -34,21 +34,21 @@ class Realblog_ArticleView
      *
      * @var int
      */
-    private $_id;
+    protected $id;
 
     /**
      * The article record.
      *
      * @var array
      */
-    private $_article;
+    protected $article;
 
     /**
      * The article page. Most likely this is always 1.
      *
      * @var int
      */
-    private $_page;
+    protected $page;
 
     /**
      * Initializes a new instance.
@@ -61,9 +61,9 @@ class Realblog_ArticleView
      */
     public function __construct($id, $article, $page)
     {
-        $this->_id = (int) $id;
-        $this->_article = (array) $article;
-        $this->_page = (int) $page;
+        $this->id = (int) $id;
+        $this->article = (array) $article;
+        $this->page = (int) $page;
     }
 
     /**
@@ -82,8 +82,8 @@ class Realblog_ArticleView
             . $this->renderDate() . $this->renderStory()
             . $this->renderLinks() . '</div>';
         // output comments in RealBlog
-        if ($this->wantsComments() && $this->_article[REALBLOG_COMMENTS] == 'on') {
-            $realblog_comments_id = 'comments' . $this->_id;
+        if ($this->wantsComments() && $this->article[REALBLOG_COMMENTS] == 'on') {
+            $realblog_comments_id = 'comments' . $this->id;
             $bridge = $plugin_cf['realblog']['comments_plugin'] . '_RealblogBridge';
             $html .= call_user_func(array($bridge, handle), $realblog_comments_id);
         }
@@ -123,14 +123,14 @@ class Realblog_ArticleView
     {
         global $su, $plugin_tx, $_Realblog_controller;
 
-        if ($this->_article[REALBLOG_STATUS] == 2) {
+        if ($this->article[REALBLOG_STATUS] == 2) {
             $url = $_Realblog_controller->url(
                 $su, null, array('realblog_year' => $_Realblog_controller->getYear())
             );
             $text = $plugin_tx['realblog']['archiv_back'];
         } else {
             $url = $_Realblog_controller->url(
-                $su, null, array('realblog_page' => $this->_page)
+                $su, null, array('realblog_page' => $this->page)
             );
             $text = $plugin_tx['realblog']['blog_back'];
         }
@@ -153,7 +153,7 @@ class Realblog_ArticleView
         return '<span class="realblog_button">'
             . '<a href="' . $sn . '?&amp;realblog&amp;admin=plugin_main'
             . '&amp;action=modify_realblog&amp;realblogID='
-            . $this->_id . '">'
+            . $this->id . '">'
             . $plugin_tx['realblog']['entry_edit'] . '</a></span>';
     }
 
@@ -171,7 +171,7 @@ class Realblog_ArticleView
         global $sn, $plugin_cf, $plugin_tx;
 
         $bridge = $plugin_cf['realblog']['comments_plugin'] . '_RealblogBridge';
-        $url = call_user_func(array($bridge, getEditUrl), 'realblog' . $this->_id);
+        $url = call_user_func(array($bridge, getEditUrl), 'realblog' . $this->id);
         if ($url) {
             return '<span class="realblog_button"><a href="' . XH_hsc($url) . '">'
                 . $plugin_tx['realblog']['comment_edit'] . '</a></span>';
@@ -189,7 +189,7 @@ class Realblog_ArticleView
      */
     protected function renderHeading()
     {
-        return '<h4>' . $this->_article[REALBLOG_TITLE] . '</h4>';
+        return '<h4>' . $this->article[REALBLOG_TITLE] . '</h4>';
     }
 
     /**
@@ -205,7 +205,7 @@ class Realblog_ArticleView
 
         $date = date(
             $plugin_tx['realblog']['date_format'],
-            $this->_article[REALBLOG_DATE]
+            $this->article[REALBLOG_DATE]
         );
         return '<div class="realblog_show_date">' . $date . '</div>';
     }
@@ -217,9 +217,9 @@ class Realblog_ArticleView
      */
     protected function renderStory()
     {
-        $story = $this->_article[REALBLOG_STORY] != ''
-            ? $this->_article[REALBLOG_STORY]
-            : $this->_article[REALBLOG_HEADLINE];
+        $story = $this->article[REALBLOG_STORY] != ''
+            ? $this->article[REALBLOG_STORY]
+            : $this->article[REALBLOG_HEADLINE];
         return '<div class="realblog_show_story_entry">'
             . evaluate_scripting($story)
             . '</div>';

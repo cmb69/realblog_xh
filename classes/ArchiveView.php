@@ -34,14 +34,14 @@ class Realblog_ArchiveView
      *
      * @var array
      */
-    private $_articles;
+    protected $articles;
 
     /**
      * The requested year.
      *
      * @var int
      */
-    private $_year;
+    protected $year;
 
     /**
      * Initializes a new instance.
@@ -56,8 +56,8 @@ class Realblog_ArchiveView
     {
         global $_Realblog_controller;
 
-        $this->_articles = $articles;
-        $this->_year = $_Realblog_controller->getYear();
+        $this->articles = $articles;
+        $this->year = $_Realblog_controller->getYear();
     }
 
     /**
@@ -75,27 +75,27 @@ class Realblog_ArchiveView
         $t = '';
         if (!$_Realblog_controller->getPgParameter('realblog_search')) {
             $currentYear = date('Y');
-            if (!isset($this->_year) || $this->_year <= 0
-                || $this->_year >= $currentYear || empty($this->_year)
+            if (!isset($this->year) || $this->year <= 0
+                || $this->year >= $currentYear || empty($this->year)
             ) {
-                $this->_year = $currentYear;
+                $this->year = $currentYear;
                 $currentMonth = date('n');
             } else {
                 $currentMonth = 12;
             }
-            $next = min($this->_year + 1, $currentYear);
-            $back = $this->_year - 1;
+            $next = min($this->year + 1, $currentYear);
+            $back = $this->year - 1;
             $t .= $this->renderPagination($back, $next);
             $generalrealbloglist = $this->selectArticlesInPeriod(
-                mktime(0, 0, 0, 1, 1, $this->_year),
-                mktime(0, 0, 0, 1, 1, $this->_year + 1)
+                mktime(0, 0, 0, 1, 1, $this->year),
+                mktime(0, 0, 0, 1, 1, $this->year + 1)
             );
             $t .= $this->renderMonthlyArticleLists($currentMonth);
             if (count($generalrealbloglist) == 0) {
                 $t .= $plugin_tx['realblog']['no_topics'];
             }
         } else {
-            if (count($this->_articles) > 0) {
+            if (count($this->articles) > 0) {
                 $t .= $this->renderSearchResults();
             } else {
                 $t .= $plugin_tx['realblog']['no_topics'];
@@ -180,7 +180,7 @@ class Realblog_ArchiveView
             . $plugin_tx['realblog']['tooltip_previousyear'] . '">'
             . '&#9664;</a>&nbsp;&nbsp;';
         $t .= '<b>' . $plugin_tx['realblog']['archive_year']
-            . $this->_year . '</b>';
+            . $this->year . '</b>';
         $url = $_Realblog_controller->url(
             $su, null, array('realblog_year' => $next)
         );
@@ -203,12 +203,12 @@ class Realblog_ArchiveView
         $t = '';
         for ($month = $currentMonth; $month >= 1; $month--) {
             $realbloglist = $this->selectArticlesInPeriod(
-                mktime(0, 0, 0, $month, 1, $this->_year),
-                mktime(0, 0, 0, $month + 1, 1, $this->_year)
+                mktime(0, 0, 0, $month, 1, $this->year),
+                mktime(0, 0, 0, $month + 1, 1, $this->year)
             );
             $monthName = $this->getMonthName($month);
             if (count($realbloglist) > 0) {
-                $t .= '<h4>' . $monthName . ' ' . $this->_year . '</h4>'
+                $t .= '<h4>' . $monthName . ' ' . $this->year . '</h4>'
                     . $this->renderArticleList($realbloglist);
             }
         }
@@ -262,7 +262,7 @@ class Realblog_ArchiveView
 
         $currentMonth = -1;
         $t = '';
-        foreach ($this->_articles as $key => $field) {
+        foreach ($this->articles as $key => $field) {
             $month = date('n', $field[REALBLOG_DATE]);
             $year = date('Y', $field[REALBLOG_DATE]);
             if ($month != $currentMonth) {

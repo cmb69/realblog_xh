@@ -34,7 +34,7 @@ class Realblog_AdminController
      *
      * @var Flatfile
      */
-    private $_db;
+    protected $db;
 
     /**
      * Initializes a new instance.
@@ -47,7 +47,7 @@ class Realblog_AdminController
     {
         global $_Realblog_controller;
 
-        $this->_db = $_Realblog_controller->connect();
+        $this->db = $_Realblog_controller->connect();
     }
 
     /**
@@ -175,7 +175,7 @@ class Realblog_AdminController
     {
         global $plugin_cf, $plugin_tx, $_Realblog_controller;
 
-        $records = $this->_db->selectWhere(
+        $records = $this->db->selectWhere(
             'realblog.txt', $this->getFilterClause(), -1,
             new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
         );
@@ -228,7 +228,7 @@ class Realblog_AdminController
 
         $_XH_csrfProtection->check();
         $article = $this->getArticleFromParameters();
-        $this->_db->insertWithAutoId('realblog.txt', REALBLOG_ID, $article);
+        $this->db->insertWithAutoId('realblog.txt', REALBLOG_ID, $article);
         $title = $plugin_tx['realblog']['tooltip_add'];
         $info = $plugin_tx['realblog']['story_added'];
         return $this->dbconfirm($title, $info, $_Realblog_controller->getPage());
@@ -250,7 +250,7 @@ class Realblog_AdminController
 
         $_XH_csrfProtection->check();
         $article = $this->getArticleFromParameters();
-        $this->_db->updateRowById('realblog.txt', REALBLOG_ID, $article);
+        $this->db->updateRowById('realblog.txt', REALBLOG_ID, $article);
         $title = $plugin_tx['realblog']['tooltip_modify'];
         $info = $plugin_tx['realblog']['story_modified'];
         return $this->dbconfirm($title, $info, $_Realblog_controller->getPage());
@@ -272,7 +272,7 @@ class Realblog_AdminController
 
         $_XH_csrfProtection->check();
         $id = $_Realblog_controller->getPgParameter('realblog_id');
-        $this->_db->deleteWhere(
+        $this->db->deleteWhere(
             'realblog.txt', new SimpleWhereClause(REALBLOG_ID, '=', $id),
             INTEGER_COMPARISON
         );
@@ -314,7 +314,7 @@ class Realblog_AdminController
                 $article = array();
                 $article[REALBLOG_ID] = $id;
                 $article[REALBLOG_STATUS] = $status;
-                $this->_db->updateRowById('realblog.txt', REALBLOG_ID, $article);
+                $this->db->updateRowById('realblog.txt', REALBLOG_ID, $article);
             }
             $title = $plugin_tx['realblog']['tooltip_changestatus'];
             $info = $plugin_tx['realblog']['changestatus_done'];
@@ -354,7 +354,7 @@ class Realblog_AdminController
         $_XH_csrfProtection->check();
         $ids = $_Realblog_controller->getPgParameter('realblogtopics');
         foreach ($ids as $id) {
-            $this->_db->deleteWhere(
+            $this->db->deleteWhere(
                 'realblog.txt', new SimpleWhereClause(REALBLOG_ID, '=', $id),
                 INTEGER_COMPARISON
             );
