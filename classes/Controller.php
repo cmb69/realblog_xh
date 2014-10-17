@@ -448,7 +448,7 @@ class Realblog_Controller
      *
      * @staticvar Flatfile $db The database object.
      */
-    function connect()
+    public function connect()
     {
         global $pth;
         static $db = null;
@@ -538,7 +538,7 @@ class Realblog_Controller
      *
      * @return string
      */
-    function getPgParameter($name)
+    public function getPgParameter($name)
     {
         if (isset($_POST[$name])) {
             return $_POST[$name];
@@ -554,7 +554,7 @@ class Realblog_Controller
      *
      * @return int
      */
-    function getPage()
+    public function getPage()
     {
         if (isset($_GET['realblog_page'])) {
             $page = (int) $_GET['realblog_page'];
@@ -573,7 +573,7 @@ class Realblog_Controller
      *
      * @return int
      */
-    function getYear()
+    public function getYear()
     {
         if (isset($_GET['realblog_year'])) {
             $year = (int) $_GET['realblog_year'];
@@ -594,7 +594,7 @@ class Realblog_Controller
      *
      * @return bool
      */
-    function getFilter($num)
+    public function getFilter($num)
     {
         if (isset($_POST["realblog_filter$num"])) {
             $filter = ($_POST["realblog_filter$num"] == 'on');
@@ -617,7 +617,7 @@ class Realblog_Controller
      *
      * @return string
      */
-    function url($pageUrl, $articleTitle = null, $params = array())
+    public function url($pageUrl, $articleTitle = null, $params = array())
     {
         global $sn;
 
@@ -643,7 +643,7 @@ class Realblog_Controller
      *
      * @todo realblog_from_date and realblog_to_date are unused!
      */
-    function searchClause()
+    public function searchClause()
     {
         if ($this->getPgParameter('realblog_from_date') != '') {
             $compClauseDate1 = new SimpleWhereClause(
@@ -885,7 +885,7 @@ class Realblog_Controller
      *
      * @return int
      */
-    function stringToTime($date)
+    public function stringToTime($date)
     {
         $parts = explode('-', $date);
         return mktime(0, 0, 0, $parts[1], $parts[2], $parts[0]);
