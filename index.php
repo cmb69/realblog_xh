@@ -66,7 +66,7 @@ this program; if not, see <http://www.gnu.org/licenses>.
 /**
  * General utility functions.
  */
-require_once $pth['folder']['plugin'] . 'functions.php';
+require_once $pth['folder']['plugin'] . 'constants.php';
 
 /**
  * Backward compatibility.
@@ -78,37 +78,80 @@ require_once $pth['folder']['plugin'] . 'compat.php';
  */
 define('REALBLOG_VERSION', '@REALBLOG_VERSION@');
 
-/*
- * Auto publish articles.
+/**
+ * The plugin controller.
+ *
+ * @var Realblog_Controller
  */
-if ($plugin_cf['realblog']['auto_publish']) {
-    Realblog_autoPublish();
+$_Realblog_controller = new Realblog_Controller();
+
+/**
+ * Displays the realblog's topic with status = published.
+ *
+ * @param array  $showSearch  Whether to show the searchform.
+ * @param string $realBlogCat FIXME
+ *
+ * @return string (X)HTML.
+ *
+ * @global Realblog_Controller The plugin controller.
+ */
+function Realblog_blog($showSearch = false, $realBlogCat = 'all')
+{
+    global $_Realblog_controller;
+
+    return $_Realblog_controller->blog($showSearch, $realBlogCat);
 }
 
-/*
- * Auto archive articles.
+/**
+ * Displays the archived realblog topics.
+ *
+ * @param mixed $showSearch Whether to show the search form.
+ *
+ * @return string (X)HTML.
+ *
+ * @global Realblog_Controller The plugin controller.
  */
-if ($plugin_cf['realblog']['auto_archive']) {
-    Realblog_autoArchive();
+function Realblog_archive($showSearch = false)
+{
+    global $_Realblog_controller;
+
+    return $_Realblog_controller->archive($showSearch);
 }
 
-/*
- * Write alternate RSS link to head element.
+/**
+ * Displays the realblog topics with a link to the blog page from the template.
+ *
+ * A page calling #cmsimple $output.=showrealblog();# must exist.
+ * Options: realblog_page [required] : this is the page containing the
+ *          showrealblog() function
+ *
+ * @param mixed $pageUrl A URL of a page where the blog is shown.
+ *
+ * @return string (X)HTML.
+ *
+ * @global Realblog_Controller The plugin controller.
  */
-if ($plugin_cf['realblog']['rss_enabled']) {
-    $hjs .= tag(
-        'link rel="alternate" type="application/rss+xml"'
-        . ' href="./?realblog_feed=rss"'
-    );
+function Realblog_link($pageUrl)
+{
+    global $_Realblog_controller;
+
+    return $_Realblog_controller->link($pageUrl);
 }
 
-/*
- * Deliver RSS feed.
+/**
+ * Returns a graphical hyperlink to the RSS feed.
+ *
+ * @return string (X)HTML.
+ *
+ * @global Realblog_Controller The plugin controller.
  */
-if ($plugin_cf['realblog']['rss_enabled']
-    && isset($_GET['realblog_feed']) && $_GET['realblog_feed'] == 'rss'
-) {
-    Realblog_deliverFeed();
+function Realblog_feedLink()
+{
+    global $_Realblog_controller;
+
+    return $_Realblog_controller->feedLink();
 }
+
+$_Realblog_controller->init();
 
 ?>

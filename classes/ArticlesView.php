@@ -71,15 +71,16 @@ class Realblog_ArticlesView
      *
      * @return string (X)HTML.
      *
-     * @global array  The configuration of the plugins.
+     * @global array               The configuration of the plugins.
+     * @global Realblog_Controller The plugin controller.
      */
     public function render()
     {
-        global $plugin_cf;
+        global $plugin_cf, $_Realblog_controller;
 
         $articleCount = count($this->_articles);
         $pageCount = (int) ceil($articleCount / $this->_articlesPerPage);
-        $page = Realblog_getPage();
+        $page = $_Realblog_controller->getPage();
         if ($page > $pageCount) {
             $page = 1;
         }
@@ -146,16 +147,17 @@ class Realblog_ArticlesView
      * @return string (X)HTML.
      *
      * @global array The configuration of the plugins.
+     * @global Realblog_Controller The plugin controller.
      */
     private function _renderArticlePreview($field)
     {
-        global $plugin_cf;
+        global $plugin_cf, $_Realblog_controller;
 
         $t = '';
         if (strstr($field[REALBLOG_HEADLINE], '|' . $this->_categories . '|')
             || strstr($field[REALBLOG_STORY], '|' . $this->_categories . '|')
             || $this->_categories == 'all'
-            || (Realblog_getPgParameter('realblog_search')
+            || ($_Realblog_controller->getPgParameter('realblog_search')
             && strstr($field[REALBLOG_H], '|' . $this->_categories . '|'))
         ) {
             if ($plugin_cf['realblog']['teaser_multicolumns']) {
@@ -187,15 +189,16 @@ class Realblog_ArticlesView
      *
      * @return string (X)HTML.
      *
-     * @global string The URL of the current page.
-     * @global array  The localization of the plugins.
+     * @global string              The URL of the current page.
+     * @global array               The localization of the plugins.
+     * @global Realblog_Controller The plugin controller.
      */
     private function _renderArticleHeading($field)
     {
-        global $su, $plugin_tx;
+        global $su, $plugin_tx, $_Realblog_controller;
 
         $t = '<h4>';
-        $url = Realblog_url(
+        $url = $_Realblog_controller->url(
             $su, $field[REALBLOG_TITLE], array(
                 'realblogID' => $field[REALBLOG_ID]
             )
@@ -240,10 +243,11 @@ class Realblog_ArticlesView
      * @global string The URL of the current page.
      * @global array  The configuration of the plugins.
      * @global array  The localization of the plugins.
+     * @global Realblog_Controller The plugin controller.
      */
     private function _renderArticleFooter($field)
     {
-        global $su, $plugin_cf, $plugin_tx;
+        global $su, $plugin_cf, $plugin_tx, $_Realblog_controller;
 
         $t = '<div class="realblog_entry_footer">';
 
@@ -254,7 +258,7 @@ class Realblog_ArticlesView
         ) {
             $t .= $this->_renderCommentCount($field);
         }
-        $url = Realblog_url(
+        $url = $_Realblog_controller->url(
             $su, $field[REALBLOG_TITLE], array(
                 'realblogID' => $field[REALBLOG_ID]
             )
@@ -325,13 +329,14 @@ class Realblog_ArticlesView
      *
      * @return bool
      *
-     * @global array The configuration of the plugins.
+     * @global array               The configuration of the plugins.
+     * @global Realblog_Controller The plugin controller.
      */
     private function _wantsNumberOfArticles($place)
     {
-        global $plugin_cf;
+        global $plugin_cf, $_Realblog_controller;
 
-        return is_null(Realblog_getPgParameter('realblog_story'))
+        return is_null($_Realblog_controller->getPgParameter('realblog_story'))
             && $plugin_cf['realblog']['show_numberof_entries_' . $place];
     }
 
@@ -342,17 +347,18 @@ class Realblog_ArticlesView
      *
      * @return string (X)HTML.
      *
-     * @global string The URL of the current page.
-     * @global array  The localization of the plugins.
+     * @global string              The URL of the current page.
+     * @global array               The localization of the plugins.
+     * @global Realblog_Controller The plugin controller.
      */
     private function _renderPageLinks($pageCount)
     {
-        global $su, $plugin_tx;
+        global $su, $plugin_tx, $_Realblog_controller;
 
         $t = '<div class="realblog_table_paging">';
         for ($i = 1; $i <= $pageCount; $i++) {
             $separator = ($i < $pageCount) ? ' ' : '';
-            $url = Realblog_url(
+            $url = $_Realblog_controller->url(
                 $su, null, array('realblog_page' => $i)
             );
             $t .= '<a href="' . XH_hsc($url) . '" title="'
@@ -373,17 +379,18 @@ class Realblog_ArticlesView
      *
      * @return string (X)HTML.
      *
-     * @global string The URL of the current page.
-     * @global array  The localization of the plugins.
+     * @global string              The URL of the current page.
+     * @global array               The localization of the plugins.
+     * @global Realblog_Controller The plugin controller.
      */
     private function _renderPageOfPages($page, $pageCount, $back, $next)
     {
-        global $su, $plugin_tx;
+        global $su, $plugin_tx, $_Realblog_controller;
 
-        $backUrl = Realblog_url(
+        $backUrl = $_Realblog_controller->url(
             $su, null, array('realblog_page' => $back)
         );
-        $nextUrl = Realblog_url(
+        $nextUrl = $_Realblog_controller->url(
             $su, null, array('realblog_page' => $next)
         );
         return '<div class="realblog_page_info">'

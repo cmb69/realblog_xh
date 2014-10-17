@@ -6,7 +6,6 @@
         <include name="classes/*.php"/>
         <exclude name="classes/flatfile.php"/>
         <include name="index.php"/>
-        <include name="admin.php"/>
         <include name="functions.php"/>
     </fileset>
 

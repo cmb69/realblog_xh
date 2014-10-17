@@ -40,10 +40,14 @@ class Realblog_AdminController
      * Initializes a new instance.
      *
      * @return void
+     *
+     * @global Realblog_Controller The plugin controller.
      */
     public function __construct()
     {
-        $this->_db = Realblog_connect();
+        global $_Realblog_controller;
+
+        $this->_db = $_Realblog_controller->connect();
     }
 
     /**
@@ -59,7 +63,7 @@ class Realblog_AdminController
     {
         global $admin, $action, $o;
 
-        Realblog_useCalendar();
+        $this->useCalendar();
 
         $o .= print_plugin_admin('on');
         switch ($admin) {
@@ -163,12 +167,13 @@ class Realblog_AdminController
      *
      * @return string (X)HTML.
      *
-     * @global array The configuration of the plugins.
-     * @global array The localization of the plugins.
+     * @global array               The configuration of the plugins.
+     * @global array               The localization of the plugins.
+     * @global Realblog_Controller The plugin controller.
      */
     private function _renderArticles()
     {
-        global $plugin_cf, $plugin_tx;
+        global $plugin_cf, $plugin_tx, $_Realblog_controller;
 
         $records = $this->_db->selectWhere(
             'realblog.txt', $this->_getFilterClause(), -1,
@@ -178,7 +183,7 @@ class Realblog_AdminController
         $page_record_limit = $plugin_cf['realblog']['admin_records_page'];
         $db_total_records = count($records);
         $pageCount = ceil($db_total_records / $page_record_limit);
-        $page = max(min(Realblog_getPage(), $pageCount), 1);
+        $page = max(min($_Realblog_controller->getPage(), $pageCount), 1);
         $start_index = ($page - 1) * $page_record_limit;
 
         $view = new Realblog_ArticlesAdminView(
@@ -194,14 +199,17 @@ class Realblog_AdminController
      *
      * @return string (X)HTML.
      *
-     * @global string The value of the <var>action</var> GP parameter.
+     * @global string              The value of the <var>action</var> GP parameter.
+     * @global Realblog_Controller The plugin controller.
      */
     private function _renderArticle()
     {
-        global $action;
+        global $action, $_Realblog_controller;
 
         init_editor(array('realblog_headline_field', 'realblog_story_field'));
-        return Realblog_form(Realblog_getPgParameter('realblogID'), $action);
+        return $this->form(
+            $_Realblog_controller->getPgParameter('realblogID'), $action
+        );
     }
 
     /**
@@ -209,20 +217,21 @@ class Realblog_AdminController
      *
      * @return string (X)HTML.
      *
-     * @global string            The page title.
-     * @global array             The localization of the plugins.
-     * @global XH_CSRFProtection The CSRF protector.
+     * @global string              The page title.
+     * @global array               The localization of the plugins.
+     * @global XH_CSRFProtection   The CSRF protector.
+     * @global Realblog_Controller The plugin controller.
      */
     private function _addArticle()
     {
-        global $title, $plugin_tx, $_XH_csrfProtection;
+        global $title, $plugin_tx, $_XH_csrfProtection, $_Realblog_Controller;
 
         $_XH_csrfProtection->check();
         $article = $this->_getArticleFromParameters();
         $this->_db->insertWithAutoId('realblog.txt', REALBLOG_ID, $article);
         $title = $plugin_tx['realblog']['tooltip_add'];
         $info = $plugin_tx['realblog']['story_added'];
-        return Realblog_dbconfirm($title, $info, Realblog_getPage());
+        return $this->dbconfirm($title, $info, $_Realblog_controller->getPage());
     }
 
     /**
@@ -230,20 +239,21 @@ class Realblog_AdminController
      *
      * @return string (X)HTML.
      *
-     * @global string            The page title.
-     * @global array             The localization of the plugins.
-     * @global XH_CSRFProtection The CSRF protector.
+     * @global string              The page title.
+     * @global array               The localization of the plugins.
+     * @global XH_CSRFProtection   The CSRF protector.
+     * @global Realblog_Controller The plugin controller.
      */
     private function _modifyArticle()
     {
-        global $title, $plugin_tx, $_XH_csrfProtection;
+        global $title, $plugin_tx, $_XH_csrfProtection, $_Realblog_controller;
 
         $_XH_csrfProtection->check();
         $article = $this->_getArticleFromParameters();
         $this->_db->updateRowById('realblog.txt', REALBLOG_ID, $article);
         $title = $plugin_tx['realblog']['tooltip_modify'];
         $info = $plugin_tx['realblog']['story_modified'];
-        return Realblog_dbconfirm($title, $info, Realblog_getPage());
+        return $this->dbconfirm($title, $info, $_Realblog_controller->getPage());
     }
 
     /**
@@ -251,23 +261,24 @@ class Realblog_AdminController
      *
      * @return string (X)HTML.
      *
-     * @global string            The page title.
-     * @global array             The localization of the plugins.
-     * @global XH_CSRFProtection The CSRF protector.
+     * @global string              The page title.
+     * @global array               The localization of the plugins.
+     * @global XH_CSRFProtection   The CSRF protector.
+     * @global Realblog_Controller The plugin controller.
      */
     private function _deleteArticle()
     {
-        global $title, $plugin_tx, $_XH_csrfProtection;
+        global $title, $plugin_tx, $_XH_csrfProtection, $_Realblog_controller;
 
         $_XH_csrfProtection->check();
-        $id = Realblog_getPgParameter('realblog_id');
+        $id = $_Realblog_controller->getPgParameter('realblog_id');
         $this->_db->deleteWhere(
             'realblog.txt', new SimpleWhereClause(REALBLOG_ID, '=', $id),
             INTEGER_COMPARISON
         );
         $title = $plugin_tx['realblog']['tooltip_delete'];
         $info = $plugin_tx['realblog']['story_deleted'];
-        return Realblog_dbconfirm($title, $info, Realblog_getPage());
+        return $this->dbconfirm($title, $info, $_Realblog_controller->getPage());
     }
 
     /**
@@ -286,17 +297,18 @@ class Realblog_AdminController
      *
      * @return string (X)HTML.
      *
-     * @global string            The page title.
-     * @global array             The localization of the plugins.
-     * @global XH_CSRFProtection The CSRF protector.
+     * @global string              The page title.
+     * @global array               The localization of the plugins.
+     * @global XH_CSRFProtection   The CSRF protector.
+     * @global Realblog_Controller The plugin controller.
      */
     private function _changeStatus()
     {
-        global $title, $plugin_tx, $_XH_csrfProtection;
+        global $title, $plugin_tx, $_XH_csrfProtection, $_Realblog_controller;
 
         $_XH_csrfProtection->check();
-        $ids = Realblog_getPgParameter('realblogtopics');
-        $status = Realblog_getPgParameter('new_realblogstatus');
+        $ids = $_Realblog_controller->getPgParameter('realblogtopics');
+        $status = $_Realblog_controller->getPgParameter('new_realblogstatus');
         if (is_numeric($status) && $status >= 0 && $status <= 2) {
             foreach ($ids as $id) {
                 $article = array();
@@ -306,11 +318,11 @@ class Realblog_AdminController
             }
             $title = $plugin_tx['realblog']['tooltip_changestatus'];
             $info = $plugin_tx['realblog']['changestatus_done'];
-            return Realblog_dbconfirm($title, $info, Realblog_getPage());
+            return $this->dbconfirm($title, $info, $_Realblog_controller->getPage());
         } else {
             $title = $plugin_tx['realblog']['tooltip_changestatus'];
             $info = $plugin_tx['realblog']['nochangestatus_done'];
-            return Realblog_dbconfirm($title, $info, Realblog_getPage());
+            return $this->dbconfirm($title, $info, $_Realblog_controller->getPage());
         }
     }
 
@@ -330,16 +342,17 @@ class Realblog_AdminController
      *
      * @return string (X)HTML.
      *
-     * @global string            The page title.
-     * @global array             The localization of the plugins.
-     * @global XH_CSRFProtection The CSRF protector.
+     * @global string              The page title.
+     * @global array               The localization of the plugins.
+     * @global XH_CSRFProtection   The CSRF protector.
+     * @global Realblog_Controller The plugin controller.
      */
     private function _deleteArticles()
     {
-        global $title, $plugin_tx, $_XH_csrfProtection;
+        global $title, $plugin_tx, $_XH_csrfProtection, $_Realblog_controller;
 
         $_XH_csrfProtection->check();
-        $ids = Realblog_getPgParameter('realblogtopics');
+        $ids = $_Realblog_controller->getPgParameter('realblogtopics');
         foreach ($ids as $id) {
             $this->_db->deleteWhere(
                 'realblog.txt', new SimpleWhereClause(REALBLOG_ID, '=', $id),
@@ -348,7 +361,7 @@ class Realblog_AdminController
         }
         $title = $plugin_tx['realblog']['tooltip_deleteall'];
         $info = $plugin_tx['realblog']['deleteall_done'];
-        return Realblog_dbconfirm($title, $info, Realblog_getPage());
+        return $this->dbconfirm($title, $info, $_Realblog_controller->getPage());
     }
 
     /**
@@ -370,41 +383,50 @@ class Realblog_AdminController
      * Returns an article record created from G/P parameters.
      *
      * @return array
+     *
+     * @global Realblog_Controller The plugin controller.
      */
     private function _getArticleFromParameters()
     {
+        global $_Realblog_controller;
+
         $article = array();
-        $article[REALBLOG_ID] = Realblog_getPgParameter('realblog_id');
-        $article[REALBLOG_DATE] = Realblog_stringToTime(
-            Realblog_getPgParameter('realblog_date')
+        $article[REALBLOG_ID] = $_Realblog_controller->getPgParameter('realblog_id');
+        $article[REALBLOG_DATE] = $_Realblog_controller->stringToTime(
+            $_Realblog_controller->getPgParameter('realblog_date')
         );
         $article[REALBLOG_TITLE] = stsl(
-            Realblog_getPgParameter('realblog_title')
+            $_Realblog_controller->getPgParameter('realblog_title')
         );
         $article[REALBLOG_HEADLINE] = stsl(
-            Realblog_getPgParameter('realblog_headline')
+            $_Realblog_controller->getPgParameter('realblog_headline')
         );
         $article[REALBLOG_STORY] = stsl(
-            Realblog_getPgParameter('realblog_story')
+            $_Realblog_controller->getPgParameter('realblog_story')
         );
-        $article[REALBLOG_FRONTPAGE] = Realblog_getPgParameter(
+        $article[REALBLOG_FRONTPAGE] = $_Realblog_controller->getPgParameter(
             'realblog_frontpage'
         );
-        $startDate = Realblog_getPgParameter('realblog_startdate');
+        $startDate = $_Realblog_controller->getPgParameter('realblog_startdate');
         if (isset($startDate)) {
-            $article[REALBLOG_STARTDATE] = Realblog_stringToTime($startDate);
+            $article[REALBLOG_STARTDATE]
+                = $_Realblog_controller->stringToTime($startDate);
         } else {
             $article[REALBLOG_STARTDATE] = 0;
         }
-        $endDate = Realblog_getPgParameter('realblog_enddate');
+        $endDate = $_Realblog_controller->getPgParameter('realblog_enddate');
         if (isset($endDate)) {
-            $article[REALBLOG_ENDDATE] = Realblog_stringToTime($endDate);
+            $article[REALBLOG_ENDDATE]
+                = $_Realblog_controller->stringToTime($endDate);
         } else {
             $article[REALBLOG_ENDDATE] = 2147483647;
         }
-        $article[REALBLOG_STATUS] = Realblog_getPgParameter('realblog_status');
-        $article[REALBLOG_RSSFEED] = Realblog_getPgParameter('realblog_rssfeed');
-        $article[REALBLOG_COMMENTS] = Realblog_getPgParameter('realblog_comments');
+        $article[REALBLOG_STATUS]
+            = $_Realblog_controller->getPgParameter('realblog_status');
+        $article[REALBLOG_RSSFEED]
+            = $_Realblog_controller->getPgParameter('realblog_rssfeed');
+        $article[REALBLOG_COMMENTS]
+            = $_Realblog_controller->getPgParameter('realblog_comments');
         return $article;
     }
 
@@ -412,12 +434,16 @@ class Realblog_AdminController
      * Returns the current filter clause.
      *
      * @return WhereClause
+     *
+     * @global Realblog_Controller The plugin controller.
      */
     private function _getFilterClause()
     {
+        global $_Realblog_controller;
+
         $filterClause = null;
         foreach (range(0, 2) as $i) {
-            if (Realblog_getFilter($i + 1)) {
+            if ($_Realblog_controller->getFilter($i + 1)) {
                 if (isset($filterClause)) {
                     $filterClause = new OrWhereClause(
                         $filterClause,
@@ -432,6 +458,137 @@ class Realblog_AdminController
         }
         return $filterClause;
     }
+    /**
+     * Writes the required references to the head element.
+     *
+     * @return void
+     *
+     * @global array  The paths of system files and folders.
+     * @global string The current language.
+     * @global string The (X)HTML fragment to insert in the head element.
+     *
+     * @todo Check files for existance.
+     */
+    protected function useCalendar()
+    {
+        global $pth, $sl, $hjs;
+
+        $calendarFolder = $pth['folder']['plugins'] . 'realblog/jscalendar/';
+        $stylesheet = $calendarFolder . 'calendar-system.css';
+        $mainScript = $calendarFolder . 'calendar.js';
+        $languageScript = $calendarFolder . 'lang/calendar-' . $sl . '.js';
+        if (!file_exists($languageScript)) {
+            $languageScript = $calendarFolder . 'lang/calendar-en.js';
+        }
+        $setupScript = $calendarFolder . 'calendar-setup.js';
+        $hjs .= <<<EOT
+<script type="text/javascript">/* <![CDATA[ */
+var REALBLOG = REALBLOG || {};
+(function () {
+    var input = document.createElement("input");
+    input.setAttribute("type", "date");
+    REALBLOG.hasNativeDatePicker = (input.type == "date");
+    if (!REALBLOG.hasNativeDatePicker) {
+        document.write(
+            '<link rel="stylesheet" type="text/css" href="$stylesheet">' +
+            '<script type="text/javascript" src="$mainScript"><\/script>' +
+            '<script type="text/javascript" src="$languageScript"><\/script>' +
+            '<script type="text/javascript" src="$setupScript"><\/script>'
+        );
+    }
+}());
+/* ]]> */</script>
+EOT;
+    }
+
+    /**
+     * Renders the article form.
+     *
+     * @param string $id     An article ID.
+     * @param string $action An action.
+     *
+     * @return string (X)HTML.
+     *
+     * @global string              The page title.
+     * @global array               The configuration of the plugins.
+     * @global array               The localization of the plugins.
+     * @global Realblog_Controller The plugin controller.
+     */
+    protected function form($id, $action)
+    {
+        global $title, $plugin_cf, $plugin_tx, $_Realblog_controller;
+
+        $db = $_Realblog_controller->connect();
+        if ($action == 'add_realblog') {
+            $record = array(
+                REALBLOG_ID => 0,
+                REALBLOG_DATE => date('Y-m-d'),
+                REALBLOG_STARTDATE => date('Y-m-d'),
+                REALBLOG_ENDDATE => date('Y-m-d', 2147483647),
+                REALBLOG_STATUS => 0,
+                REALBLOG_FRONTPAGE => '',
+                REALBLOG_TITLE => '',
+                REALBLOG_HEADLINE => '',
+                REALBLOG_STORY => '',
+                REALBLOG_RSSFEED => '',
+                REALBLOG_COMMENTS => ''
+            );
+            $title = $plugin_tx['realblog']['tooltip_add'];
+        } else {
+            $record = $db->selectUnique('realblog.txt', REALBLOG_ID, $id);
+            $realblog_id = $record[REALBLOG_ID];
+            $record[REALBLOG_DATE] = date('Y-m-d', $record[REALBLOG_DATE]);
+            $record[REALBLOG_STARTDATE] = date(
+                'Y-m-d', (int) $record[REALBLOG_STARTDATE]
+            );
+            $record[REALBLOG_ENDDATE] = date('Y-m-d', $record[REALBLOG_ENDDATE]);
+            if ($action == 'modify_realblog') {
+                $title = $plugin_tx['realblog']['tooltip_modify'] . ' [ID: '
+                    . $id . ']';
+            } elseif ($action == 'delete_realblog') {
+                $title = $plugin_tx['realblog']['tooltip_delete'] . ' [ID: '
+                    . $id . ']';
+            }
+        }
+        $view = new Realblog_ArticleAdminView($record, $action);
+        return $view->render();
+    }
+
+    /**
+     * Displays a confirmation.
+     *
+     * @param string $title A title.
+     * @param string $info  An info message.
+     * @param int    $page  A blog page to return to.
+     *
+     * @return string (X)HTML.
+     *
+     * @global array             The localization of the plugins.
+     * @global string            The script name.
+     */
+    protected function dbconfirm($title, $info, $page)
+    {
+        global $plugin_tx, $sn;
+
+        $t = '<h1>Realblog &ndash; ' . $title . '</h1>';
+        $t .= '<form name="confirm" method="post" action="' . $sn . '?&amp;'
+            . 'realblog&amp;admin=plugin_main">';
+        $t .= '<table width="100%"><tbody>';
+        $t .= '<tr><td class="realblog_confirm_info" align="center">'
+            . $info . '</td></tr><tr><td>&nbsp;</td></tr>';
+        $t .= '<tr><td class="realblog_confirm_button" align="center">'
+            // TODO: don't return via JS
+            . tag(
+                'input type="button" name="cancel" value="'
+                . $plugin_tx['realblog']['btn_ok'] . '" onclick=\'location.href="'
+                . $sn . '?&amp;realblog&amp;admin=plugin_main'
+                . '&amp;action=plugin_text&amp;page=' . $page . '"\''
+            )
+            . '</td></tr>';
+        $t .= '</tbody></table></form>';
+        return $t;
+    }
+
 }
 
 ?>

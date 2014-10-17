@@ -15,7 +15,7 @@
  */
 
 require_once './classes/flatfile.php';
-require_once './functions.php';
+require_once './classes/Controller.php';
 
 /**
  * Testing the functions.
@@ -29,13 +29,31 @@ require_once './functions.php';
 class FunctionsTest extends PHPUnit_Framework_TestCase
 {
     /**
+     * Sets up the test fixtures.
+     *
+     * @return void
+     *
+     * @global Realblog_Controller The plugin controller.
+     */
+    public function setUp()
+    {
+        global $_Realblog_controller;
+
+        $_Realblog_controller = new Realblog_Controller();
+    }
+
+    /**
      * Tests that the search clause is null.
      *
      * @return void
+     *
+     * @global Realblog_Controller The plugin controller.
      */
     public function testSearchClauseIsNull()
     {
-        $this->assertNull(Realblog_searchClause());
+        global $_Realblog_controller;
+
+        $this->assertNull($_Realblog_controller->searchClause());
     }
 
     /**
@@ -48,10 +66,14 @@ class FunctionsTest extends PHPUnit_Framework_TestCase
      *
      * @return void
      *
+     * @global Realblog_Controller The plugin controller.
+     *
      * @dataProvider dataForSearchClauseIsA
      */
     public function testSearchClauseIsA($title, $operator, $story, $className)
     {
+        global $_Realblog_controller;
+
         $_GET = array(
             'realblog_title' => $title,
             'title_operator' => '2',
@@ -59,7 +81,7 @@ class FunctionsTest extends PHPUnit_Framework_TestCase
             'realblog_story' => $story,
             'story_operator' => '2'
         );
-        $this->assertInstanceOf($className, Realblog_searchClause());
+        $this->assertInstanceOf($className, $_Realblog_controller->searchClause());
     }
 
     /**
@@ -86,13 +108,16 @@ class FunctionsTest extends PHPUnit_Framework_TestCase
      *
      * @return void
      *
+     * @global array               The localization of the plugins.
+     * @global Realblog_Controller The plugin controller.
+     *
      * @dataProvider dataForStringToTime
      */
     public function testStringToTime($format, $date, $timestamp)
     {
-        global $plugin_tx;
+        global $plugin_tx, $_Realblog_controller;
 
-        $this->assertEquals($timestamp, Realblog_stringToTime($date));
+        $this->assertEquals($timestamp, $_Realblog_controller->stringToTime($date));
     }
 
     /**

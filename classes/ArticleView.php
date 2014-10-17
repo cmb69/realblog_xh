@@ -115,20 +115,21 @@ class Realblog_ArticleView
      *
      * @return string (X)HTML.
      *
-     * @global string The URL of the current page.
-     * @global array  The localization of the plugins.
+     * @global string              The URL of the current page.
+     * @global array               The localization of the plugins.
+     * @global Realblog_Controller The plugin controller.
      */
     private function _renderOverviewLink()
     {
-        global $su, $plugin_tx;
+        global $su, $plugin_tx, $_Realblog_controller;
 
         if ($this->_article[REALBLOG_STATUS] == 2) {
-            $url = Realblog_url(
-                $su, null, array('realblog_year' => Realblog_getYear())
+            $url = $_Realblog_controller->url(
+                $su, null, array('realblog_year' => $_Realblog_controller->getYear())
             );
             $text = $plugin_tx['realblog']['archiv_back'];
         } else {
-            $url = Realblog_url(
+            $url = $_Realblog_controller->url(
                 $su, null, array('realblog_page' => $this->_page)
             );
             $text = $plugin_tx['realblog']['blog_back'];

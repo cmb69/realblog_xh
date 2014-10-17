@@ -25,9 +25,13 @@
  * @param string $realBlogCat A category.
  *
  * @return string (X)HTML.
+ *
+ * @global Realblog_Controller The plugin controller.
  */
 function showrealblog($options = null, $realBlogCat = 'all')
 {
+    global $_Realblog_controller;
+
     $includesearch = false;
     $arguments = Realblog_getArguments($options);
     if (isset($arguments['showsearch'])) {
@@ -42,7 +46,7 @@ function showrealblog($options = null, $realBlogCat = 'all')
             break;
         }
     }
-    return Realblog_blog($includesearch, $realBlogCat);
+    return $_Realblog_controller->blog($includesearch, $realBlogCat);
 }
 
 /**
@@ -51,9 +55,13 @@ function showrealblog($options = null, $realBlogCat = 'all')
  * @param string $options An option string (options: showsearch).
  *
  * @return string (X)HTML.
+ *
+ * @global Realblog_Controller The plugin controller.
  */
 function showrealblogarchive($options = null)
 {
+    global $_Realblog_controller;
+
     $includesearch = false;
     $arguments = Realblog_getArguments($options);
     if (isset($arguments['showsearch'])) {
@@ -69,7 +77,7 @@ function showrealblogarchive($options = null)
             break;
         }
     }
-    return Realblog_archive($includesearch);
+    return $_Realblog_controller->archive($includesearch);
 }
 
 /**
@@ -78,25 +86,53 @@ function showrealblogarchive($options = null)
  * @param string $options An option string (options: realblogpage).
  *
  * @return string (X)HTML.
+ *
+ * @global Realblog_Controller The plugin controller.
  */
 function realbloglink($options)
 {
+    global $_Realblog_controller;
+
     $realblog_page = '';
     $arguments = Realblog_getArguments($options);
     if (isset($arguments['realblogpage'])) {
         $realblog_page = $arguments['realblogpage'];
     }
-    return Realblog_link($realblog_page);
+    return $_Realblog_controller->link($realblog_page);
+}
+
+/**
+ * Parses the $arguments string and returns a map of names to values.
+ *
+ * @param string $arguments An arguments string ('name1=value1,name2=value2').
+ *
+ * @return array
+ */
+function Realblog_getArguments($arguments)
+{
+    $result = array();
+    $arguments = explode(',', $arguments);
+    foreach ($arguments as $argument) {
+        $pair = explode('=', $argument);
+        if (count($pair) == 2) {
+            $result[$pair[0]] = $pair[1];
+        }
+    }
+    return $result;
 }
 
 /**
  * Renders a hyperlink to the newsfeed.
  *
  * @return string (X)HTML.
+ *
+ * @global Realblog_Controller The plugin controller.
  */
 function realblog_rss_adv()
 {
-    return Realblog_feedLink();
+    global $_Realblog_controller;
+
+    return $_Realblog_controller->feedLink();
 }
 
 /**

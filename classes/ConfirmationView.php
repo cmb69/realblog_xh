@@ -54,10 +54,14 @@ abstract class Realblog_ConfirmationView
      * Initializes a new instance.
      *
      * @return void
+     *
+     * @global Realblog_Controller The plugin controller.
      */
     public function __construct()
     {
-        $this->articles = Realblog_getPgParameter('realblogtopics');
+        global $_Realblog_controller;
+
+        $this->articles = $_Realblog_controller->getPgParameter('realblogtopics');
     }
 
     /**
@@ -126,10 +130,11 @@ abstract class Realblog_ConfirmationView
      *
      * @global string The script name.
      * @global array  The localization of the plugins.
+     * @global Realblog_Controller The plugin controller.
      */
     protected function renderConfirmationButtons()
     {
-        global $sn, $plugin_tx;
+        global $sn, $plugin_tx, $_Realblog_controller;
 
         $html = tag(
             'input type="submit" name="submit" value="'
@@ -137,7 +142,7 @@ abstract class Realblog_ConfirmationView
         );
         $html .= '&nbsp;&nbsp;';
         $url = $sn . '?&amp;realblog&amp;admin=plugin_main&amp;action=plugin_text'
-            . '&amp;page=' . Realblog_getPage();
+            . '&amp;page=' . $_Realblog_controller->getPage();
         $html .= tag(
             'input type="button" name="cancel" value="'
             . $plugin_tx['realblog']['btn_cancel'] . '" onclick="'
@@ -151,12 +156,13 @@ abstract class Realblog_ConfirmationView
      *
      * @return string (X)HTML.
      *
-     * @global string The script name.
-     * @global array  The localization of the plugins.
+     * @global string              The script name.
+     * @global array               The localization of the plugins.
+     * @global Realblog_Controller The plugin controller.
      */
     protected function renderNoSelectionInfo()
     {
-        global $sn, $plugin_tx;
+        global $sn, $plugin_tx, $_Realblog_controller;
 
         return '<h1>Realblog &ndash; ' . $this->title . '</h1>'
             . '<form name="confirm" method="post" action="' . $sn
@@ -171,7 +177,7 @@ abstract class Realblog_ConfirmationView
                 . $plugin_tx['realblog']['btn_ok'] . '" onclick=\''
                 . 'location.href="' . $sn . '?&amp;realblog'
                 . '&amp;admin=plugin_main&amp;action=plugin_text'
-                . '&amp;page=' . Realblog_getPage() . '"\''
+                . '&amp;page=' . $_Realblog_controller->getPage() . '"\''
             )
             . '</td></tr>'
             . '</table></form>';

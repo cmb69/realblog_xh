@@ -15,7 +15,8 @@
  */
 
 require_once '../../cmsimple/functions.php';
-require_once './functions.php';
+require_once './constants.php';
+require_once './classes/Controller.php';
 require_once './classes/ArticleView.php';
 
 /**
@@ -54,10 +55,11 @@ class ArticleViewTest extends PHPUnit_Framework_TestCase
      * @global string The URL of the current page.
      * @global array  The configuration of the plugins.
      * @global array  The localization of the plugins.
+     * @global Realblog_Controller The plugin controller.
      */
     public function setUp()
     {
-        global $sn, $su, $plugin_cf, $plugin_tx;
+        global $sn, $su, $plugin_cf, $plugin_tx, $_Realblog_controller;
 
         $sn = '/xh/';
         $su = 'Blog';
@@ -74,6 +76,7 @@ class ArticleViewTest extends PHPUnit_Framework_TestCase
             '1', '1405548000', '1405548000', '1405548000', '1', '',
             'Heading', '<p>Teaser</p>', '<p>Article</p>', '', ''
         );
+        $_Realblog_controller = new Realblog_Controller();
         $this->_subject = new Realblog_ArticleView('1', $article, '1');
     }
 

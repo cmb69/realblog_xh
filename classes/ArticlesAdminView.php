@@ -92,18 +92,19 @@ class Realblog_ArticlesAdminView
      *
      * @return string (X)HTML.
      *
-     * @global string The script name.
+     * @global string              The script name.
+     * @global Realblog_Controller The plugin controller.
      */
     public function render()
     {
-        global $sn;
+        global $sn, $_Realblog_controller;
 
         $html = $this->_renderFilterForm()
             . '<form method="post" action="' . $sn
             . '?&amp;realblog&amp;admin=plugin_main">'
             . '<table class="realblog_table">'
             . $this->_renderTableHead();
-        $page = Realblog_getPage();
+        $page = $_Realblog_controller->getPage();
         $endIndex = $page * $this->_articlesPerPage - 1;
         for ($i = $this->_startIndex; $i <= $endIndex; $i++) {
             if ($i <= count($this->_articles) - 1) {
@@ -150,13 +151,17 @@ class Realblog_ArticlesAdminView
      * @param string $name   A filter name.
      *
      * @return string (X)HTML.
+     *
+     * @global Realblog_Controller The plugin controller.
      */
     private function _renderFilterCheckbox($number, $name)
     {
-        global $plugin_tx;
+        global $plugin_tx, $_Realblog_controller;
 
         $filterName = 'realblog_filter' . $number;
-        $checked = Realblog_getFilter($number) ? ' checked="checked"' : '';
+        $checked = $_Realblog_controller->getFilter($number)
+            ? ' checked="checked"'
+            : '';
         return tag('input type="hidden" name="' . $filterName . '" value=""')
             . '<label>'
             . tag(
@@ -225,12 +230,13 @@ class Realblog_ArticlesAdminView
      *
      * @global string The script name.
      * @global array  The localization of the plugins.
+     * @global Realblog_Controller The plugin controller.
      */
     private function _renderNavigation()
     {
-        global $sn, $plugin_tx;
+        global $sn, $plugin_tx, $_Realblog_controller;
 
-        $page = Realblog_getPage();
+        $page = $_Realblog_controller->getPage();
         $db_total_records = count($this->_articles);
         $tmp = ($db_total_records > 0)
             ? $plugin_tx['realblog']['page_label'] . ' : ' . $page .  '/'
@@ -280,12 +286,13 @@ class Realblog_ArticlesAdminView
      *
      * @global string The script name.
      * @global array  The localization of the plugins.
+     * @global Realblog_Controller The plugin controller.
      */
     private function _renderRow($field)
     {
-        global $sn, $plugin_tx;
+        global $sn, $plugin_tx, $_Realblog_controller;
 
-        $page = Realblog_getPage();
+        $page = $_Realblog_controller->getPage();
         return '<tr>'
             . '<td class="realblog_table_line">'
             . tag(

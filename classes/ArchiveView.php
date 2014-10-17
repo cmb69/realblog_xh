@@ -49,11 +49,15 @@ class Realblog_ArchiveView
      * @param array $articles An array of articles.
      *
      * @return void
+     *
+     * @global Realblog_Controller The plugin controller.
      */
     public function __construct($articles)
     {
+        global $_Realblog_controller;
+
         $this->_articles = $articles;
-        $this->_year = Realblog_getYear();
+        $this->_year = $_Realblog_controller->getYear();
     }
 
     /**
@@ -61,14 +65,15 @@ class Realblog_ArchiveView
      *
      * @return string (X)HTML.
      *
-     * @global array The localization of the plugins.
+     * @global array               The localization of the plugins.
+     * @global Realblog_Controller The plugin controller.
      */
     public function render()
     {
-        global $plugin_tx;
+        global $plugin_tx, $_Realblog_controller;
 
         $t = '';
-        if (!Realblog_getPgParameter('realblog_search')) {
+        if (!$_Realblog_controller->getPgParameter('realblog_search')) {
             $currentYear = date('Y');
             if (!isset($this->_year) || $this->_year <= 0
                 || $this->_year >= $currentYear || empty($this->_year)
@@ -123,10 +128,14 @@ class Realblog_ArchiveView
      * @param int $end   An end timestamp.
      *
      * @return array
+     *
+     * @global Realblog_Controller The plugin controller.
      */
     private function _selectArticlesInPeriod($start, $end)
     {
-        $db = Realblog_connect();
+        global $_Realblog_controller;
+
+        $db = $_Realblog_controller->connect();
         $whereClause = new AndWhereClause(
             new SimpleWhereClause(
                 REALBLOG_STATUS, '=', 2, INTEGER_COMPARISON
@@ -157,12 +166,13 @@ class Realblog_ArchiveView
      *
      * @global string The URL of the current page.
      * @global array  The localization of the plugins.
+     * @global Realblog_Controller The plugin controller.
      */
     private function _renderPagination($back, $next)
     {
-        global $su, $plugin_tx;
+        global $su, $plugin_tx, $_Realblog_controller;
 
-        $url = Realblog_url(
+        $url = $_Realblog_controller->url(
             $su, null, array('realblog_year' => $back)
         );
         $t = '<div class="realblog_table_paging">'
@@ -171,7 +181,7 @@ class Realblog_ArchiveView
             . '&#9664;</a>&nbsp;&nbsp;';
         $t .= '<b>' . $plugin_tx['realblog']['archive_year']
             . $this->_year . '</b>';
-        $url = Realblog_url(
+        $url = $_Realblog_controller->url(
             $su, null, array('realblog_year' => $next)
         );
         $t .= '&nbsp;&nbsp;<a href="' . XH_hsc($url) . '" title="'
@@ -212,16 +222,17 @@ class Realblog_ArchiveView
      *
      * @return string (X)HTML.
      *
-     * @global string The URL of the current page.
-     * @global array  The localization of the plugins.
+     * @global string              The URL of the current page.
+     * @global array               The localization of the plugins.
+     * @global Realblog_Controller The plugin controller.
      */
     private function _renderArticleList($articles)
     {
-        global $su, $plugin_tx;
+        global $su, $plugin_tx, $_Realblog_controller;
 
         $t = '<ul class="realblog_archive">';
         foreach ($articles as $key => $field) {
-            $url = Realblog_url(
+            $url = $_Realblog_controller->url(
                 $su, $field[REALBLOG_TITLE], array(
                     'realblogID' => $field[REALBLOG_ID]
                 )
@@ -241,12 +252,13 @@ class Realblog_ArchiveView
      *
      * @return string (X)HTML.
      *
-     * @global string The URL of the current page.
-     * @global array  The localization of the plugins.
+     * @global string              The URL of the current page.
+     * @global array               The localization of the plugins.
+     * @global Realblog_Controller The plugin controller.
      */
     private function _renderSearchResults()
     {
-        global $su, $plugin_tx;
+        global $su, $plugin_tx, $_Realblog_controller;
 
         $currentMonth = -1;
         $t = '';
@@ -257,7 +269,7 @@ class Realblog_ArchiveView
                 $t .= '<h4>' . $this->_getMonthName($month) . ' ' . $year . '</h4>';
                 $currentMonth = $month;
             }
-            $url = Realblog_url(
+            $url = $_Realblog_controller->url(
                 $su, $field[REALBLOG_TITLE], array(
                     'realblogID' => $field[REALBLOG_ID]
                 )

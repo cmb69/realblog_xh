@@ -128,17 +128,18 @@ class Realblog_RSSFeed
      *
      * @return string XML.
      *
-     * @global string The script name.
-     * @global array The localization of the plugins.
+     * @global string              The script name.
+     * @global array               The localization of the plugins.
+     * @global Realblog_Controller The plugin controller.
      */
     private function _renderItems()
     {
-        global $sn, $plugin_tx;
+        global $sn, $plugin_tx, $_Realblog_controller;
 
         $xml = '';
         foreach ($this->_articles as $article) {
             $url = CMSIMPLE_URL . substr(
-                Realblog_url(
+                $_Realblog_controller->url(
                     $plugin_tx['realblog']["rss_page"],
                     $article['REALBLOG_TITLE'],
                     array(
