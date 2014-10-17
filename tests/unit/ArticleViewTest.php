@@ -17,6 +17,7 @@
 require_once '../../cmsimple/functions.php';
 require_once './constants.php';
 require_once './classes/Controller.php';
+require_once './classes/Article.php';
 require_once './classes/ArticleView.php';
 
 /**
@@ -72,9 +73,11 @@ class ArticleViewTest extends PHPUnit_Framework_TestCase
             'entry_edit' => 'Edit entry'
         );
         $this->_defineConstant('XH_ADM', false);
-        $article = array(
-            '1', '1405548000', '1405548000', '1405548000', '1', '',
-            'Heading', '<p>Teaser</p>', '<p>Article</p>', '', ''
+        $article = Realblog_Article::makeFromRecord(
+            [
+                '1', '1405548000', '1405548000', '1405548000', '1', '',
+                'Heading', '<p>Teaser</p>', '<p>Article</p>', '', ''
+            ]
         );
         $_Realblog_controller = new Realblog_Controller();
         $this->_subject = new Realblog_ArticleView('1', $article, '1');

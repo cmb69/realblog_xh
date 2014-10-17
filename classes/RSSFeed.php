@@ -30,7 +30,7 @@
 class Realblog_RSSFeed
 {
     /**
-     * The article records.
+     * The articles.
      *
      * @var array
      */
@@ -39,7 +39,7 @@ class Realblog_RSSFeed
     /**
      * Initializes a new instance.
      *
-     * @param array $articles An array of article records.
+     * @param array $articles An array of articles.
      *
      * @return void
      */
@@ -141,20 +141,20 @@ class Realblog_RSSFeed
             $url = CMSIMPLE_URL . substr(
                 $_Realblog_controller->url(
                     $plugin_tx['realblog']["rss_page"],
-                    $article['REALBLOG_TITLE'],
+                    $article->getTitle(),
                     array(
-                        'realblogID' => $article[REALBLOG_ID]
+                        'realblogID' => $article->getId()
                     )
                 ),
                 strlen($sn)
             );
             $xml .= '<item>'
-                . '<title>' . XH_hsc($article[REALBLOG_TITLE]) . '</title>'
+                . '<title>' . XH_hsc($article->getTitle()) . '</title>'
                 . '<link>' . XH_hsc($url) . '</link>'
                 . '<description>'
-                . XH_hsc(evaluate_scripting($article[REALBLOG_HEADLINE]))
+                . XH_hsc(evaluate_scripting($article->getTeaser()))
                 . '</description>'
-                . '<pubDate>' . date('r', $article[REALBLOG_DATE])
+                . '<pubDate>' . date('r', $article->getDate())
                 . '</pubDate>'
                 . '</item>';
         }

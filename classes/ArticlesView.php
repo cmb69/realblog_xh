@@ -131,8 +131,8 @@ class Realblog_ArticlesView
             if ($i > $articleCount - 1) {
                 $t .= '';
             } else {
-                $field = $this->articles[$i];
-                $t .= $this->renderArticlePreview($field);
+                $article = $this->articles[$i];
+                $t .= $this->renderArticlePreview($article);
             }
         }
         $t .= '<div style="clear: both;"></div>' . '</div>';
@@ -142,36 +142,36 @@ class Realblog_ArticlesView
     /**
      * Renders an article preview.
      *
-     * @param array $field An article record.
+     * @param Realblog_Article $article An article.
      *
      * @return string (X)HTML.
      *
      * @global array The configuration of the plugins.
      * @global Realblog_Controller The plugin controller.
      */
-    protected function renderArticlePreview($field)
+    protected function renderArticlePreview(Realblog_Article $article)
     {
         global $plugin_cf, $_Realblog_controller;
 
         $t = '';
-        if (strstr($field[REALBLOG_HEADLINE], '|' . $this->categories . '|')
-            || strstr($field[REALBLOG_STORY], '|' . $this->categories . '|')
+        if (strstr($article->getTeaser(), '|' . $this->categories . '|')
+            || strstr($article->getBody(), '|' . $this->categories . '|')
             || $this->categories == 'all'
             || ($_Realblog_controller->getPgParameter('realblog_search')
-            && strstr($field[REALBLOG_H], '|' . $this->categories . '|'))
+            && strstr($article->getTeaser(), '|' . $this->categories . '|'))
         ) {
             if ($plugin_cf['realblog']['teaser_multicolumns']) {
                 $t .= '<div class="realblog_single_entry_preview">'
                     . '<div class="realblog_single_entry_preview_in">';
             }
-            $t .= $this->renderArticleHeading($field);
-            $t .= $this->renderArticleDate($field);
+            $t .= $this->renderArticleHeading($article);
+            $t .= $this->renderArticleDate($article);
             $t .= "\n" . '<div class="realblog_show_story">' . "\n";
-            $t .= evaluate_scripting($field[REALBLOG_HEADLINE]);
+            $t .= evaluate_scripting($article->getTeaser());
             if ($plugin_cf['realblog']['show_read_more_link']
-                && $field[REALBLOG_STORY] != ''
+                && $article->getBody() != ''
             ) {
-                $t .= $this->renderArticleFooter($field);
+                $t .= $this->renderArticleFooter($article);
             }
             $t .= '<div style="clear: both;"></div>' . "\n"
                 . '</div>' . "\n";
@@ -185,7 +185,7 @@ class Realblog_ArticlesView
     /**
      * Renders an article heading.
      *
-     * @param array $field An article record.
+     * @param Realblog_Article $article An article.
      *
      * @return string (X)HTML.
      *
@@ -193,22 +193,22 @@ class Realblog_ArticlesView
      * @global array               The localization of the plugins.
      * @global Realblog_Controller The plugin controller.
      */
-    protected function renderArticleHeading($field)
+    protected function renderArticleHeading(Realblog_Article $article)
     {
         global $su, $plugin_tx, $_Realblog_controller;
 
         $t = '<h4>';
         $url = $_Realblog_controller->url(
-            $su, $field[REALBLOG_TITLE], array(
-                'realblogID' => $field[REALBLOG_ID]
+            $su, $article->getTitle(), array(
+                'realblogID' => $article->getId()
             )
         );
-        if ($field[REALBLOG_STORY] != '' || XH_ADM) {
+        if ($article->getBody() != '' || XH_ADM) {
             $t .= '<a href="' . XH_hsc($url) . '" title="'
                 . $plugin_tx['realblog']["tooltip_view"] . '">';
         }
-        $t .= $field[REALBLOG_TITLE];
-        if ($field[REALBLOG_STORY] != '' || XH_ADM) {
+        $t .= $article->getTitle();
+        if ($article->getBody() != '' || XH_ADM) {
             $t .= '</a>';
         }
         $t .= '</h4>' . "\n";
@@ -218,25 +218,25 @@ class Realblog_ArticlesView
     /**
      * Renders an article date.
      *
-     * @param array $field An article record.
+     * @param Realblog_Article $article An article.
      *
      * @return string (X)HTML.
      *
      * @global array The localization of the plugins.
      */
-    protected function renderArticleDate($field)
+    protected function renderArticleDate(Realblog_Article $article)
     {
         global $plugin_tx;
 
         return '<div class="realblog_show_date">'
-            . date($plugin_tx['realblog']['date_format'], $field[REALBLOG_DATE])
+            . date($plugin_tx['realblog']['date_format'], $article->getDate())
             . '</div>';
     }
 
     /**
      * Renders an article footer.
      *
-     * @param array $field An article record.
+     * @param Realblog_Article $article An article.
      *
      * @return string (X)HTML.
      *
@@ -245,7 +245,7 @@ class Realblog_ArticlesView
      * @global array  The localization of the plugins.
      * @global Realblog_Controller The plugin controller.
      */
-    protected function renderArticleFooter($field)
+    protected function renderArticleFooter(Realblog_Article $article)
     {
         global $su, $plugin_cf, $plugin_tx, $_Realblog_controller;
 
@@ -254,13 +254,13 @@ class Realblog_ArticlesView
         $pcf = $plugin_cf['realblog'];
         if ($pcf['comments_plugin']
             && class_exists($pcf['comments_plugin'] . '_RealblogBridge')
-            && $field[REALBLOG_COMMENTS]
+            && $article->isCommentable()
         ) {
-            $t .= $this->renderCommentCount($field);
+            $t .= $this->renderCommentCount($article);
         }
         $url = $_Realblog_controller->url(
-            $su, $field[REALBLOG_TITLE], array(
-                'realblogID' => $field[REALBLOG_ID]
+            $su, $article->getTitle(), array(
+                'realblogID' => $article->getId()
             )
         );
         $t .= '<p class="realblog_read_more">'
@@ -274,19 +274,19 @@ class Realblog_ArticlesView
     /**
      * Renders a comment count.
      *
-     * @param array $field An article record.
+     * @param Realblog_Article $article An article.
      *
      * @return string (X)HTML.
      *
      * @global array The configuration of the plugins.
      * @global array The localization of the plugins.
      */
-    protected function renderCommentCount($field)
+    protected function renderCommentCount(Realblog_Article $article)
     {
         global $plugin_cf, $plugin_tx;
 
         $bridge = $plugin_cf['realblog']['comments_plugin'] . '_RealblogBridge';
-        $commentsId = 'comments' . $field[REALBLOG_ID];
+        $commentsId = 'comments' . $article->getId();
         $count = call_user_func(array($bridge, count), $commentsId);
         $key = 'message_comments' . XH_numberSuffix($count);
         return '<p class="realblog_number_of_comments">'

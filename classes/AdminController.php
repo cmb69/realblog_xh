@@ -175,9 +175,11 @@ class Realblog_AdminController
     {
         global $plugin_cf, $plugin_tx, $_Realblog_controller;
 
-        $records = $this->db->selectWhere(
-            'realblog.txt', $this->getFilterClause(), -1,
-            new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
+        $records = Realblog_Article::makeArticlesFromRecords(
+            $this->db->selectWhere(
+                'realblog.txt', $this->getFilterClause(), -1,
+                new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
+            )
         );
 
         $page_record_limit = $plugin_cf['realblog']['admin_records_page'];
@@ -228,7 +230,9 @@ class Realblog_AdminController
 
         $_XH_csrfProtection->check();
         $article = $this->getArticleFromParameters();
-        $this->db->insertWithAutoId('realblog.txt', REALBLOG_ID, $article);
+        $this->db->insertWithAutoId(
+            'realblog.txt', REALBLOG_ID, $article->asRecord()
+        );
         $title = $plugin_tx['realblog']['tooltip_add'];
         $info = $plugin_tx['realblog']['story_added'];
         return $this->dbconfirm($title, $info, $_Realblog_controller->getPage());
@@ -250,7 +254,7 @@ class Realblog_AdminController
 
         $_XH_csrfProtection->check();
         $article = $this->getArticleFromParameters();
-        $this->db->updateRowById('realblog.txt', REALBLOG_ID, $article);
+        $this->db->updateRowById('realblog.txt', REALBLOG_ID, $article->asRecord());
         $title = $plugin_tx['realblog']['tooltip_modify'];
         $info = $plugin_tx['realblog']['story_modified'];
         return $this->dbconfirm($title, $info, $_Realblog_controller->getPage());
@@ -380,9 +384,9 @@ class Realblog_AdminController
     }
 
     /**
-     * Returns an article record created from G/P parameters.
+     * Returns an article created from G/P parameters.
      *
-     * @return array
+     * @return Realblog_Article
      *
      * @global Realblog_Controller The plugin controller.
      */
@@ -390,43 +394,47 @@ class Realblog_AdminController
     {
         global $_Realblog_controller;
 
-        $article = array();
-        $article[REALBLOG_ID] = $_Realblog_controller->getPgParameter('realblog_id');
-        $article[REALBLOG_DATE] = $_Realblog_controller->stringToTime(
-            $_Realblog_controller->getPgParameter('realblog_date')
+        $article = new Realblog_Article();
+        $article->setId($_Realblog_controller->getPgParameter('realblog_id'));
+        $article->setDate(
+            $_Realblog_controller->stringToTime(
+                $_Realblog_controller->getPgParameter('realblog_date')
+            )
         );
-        $article[REALBLOG_TITLE] = stsl(
-            $_Realblog_controller->getPgParameter('realblog_title')
+        $article->setTitle(
+            stsl($_Realblog_controller->getPgParameter('realblog_title'))
         );
-        $article[REALBLOG_HEADLINE] = stsl(
-            $_Realblog_controller->getPgParameter('realblog_headline')
+        $article->setTeaser(
+            stsl($_Realblog_controller->getPgParameter('realblog_headline'))
         );
-        $article[REALBLOG_STORY] = stsl(
-            $_Realblog_controller->getPgParameter('realblog_story')
-        );
-        $article[REALBLOG_FRONTPAGE] = $_Realblog_controller->getPgParameter(
-            'realblog_frontpage'
+        $article->setBody(
+            stsl($_Realblog_controller->getPgParameter('realblog_story'))
         );
         $startDate = $_Realblog_controller->getPgParameter('realblog_startdate');
         if (isset($startDate)) {
-            $article[REALBLOG_STARTDATE]
-                = $_Realblog_controller->stringToTime($startDate);
+            $article->setPublishingDate(
+                $_Realblog_controller->stringToTime($startDate)
+            );
         } else {
-            $article[REALBLOG_STARTDATE] = 0;
+            $article->setPublishingDate(0);
         }
         $endDate = $_Realblog_controller->getPgParameter('realblog_enddate');
         if (isset($endDate)) {
-            $article[REALBLOG_ENDDATE]
-                = $_Realblog_controller->stringToTime($endDate);
+            $article->setArchivingDate(
+                $_Realblog_controller->stringToTime($endDate)
+            );
         } else {
-            $article[REALBLOG_ENDDATE] = 2147483647;
+            $article->setArchivingDate(2147483647);
         }
-        $article[REALBLOG_STATUS]
-            = $_Realblog_controller->getPgParameter('realblog_status');
-        $article[REALBLOG_RSSFEED]
-            = $_Realblog_controller->getPgParameter('realblog_rssfeed');
-        $article[REALBLOG_COMMENTS]
-            = $_Realblog_controller->getPgParameter('realblog_comments');
+        $article->setStatus(
+            $_Realblog_controller->getPgParameter('realblog_status')
+        );
+        $article->setFeedable(
+            $_Realblog_controller->getPgParameter('realblog_rssfeed')
+        );
+        $article->setCommentable(
+            $_Realblog_controller->getPgParameter('realblog_comments')
+        );
         return $article;
     }
 
@@ -520,28 +528,26 @@ EOT;
 
         $db = $_Realblog_controller->connect();
         if ($action == 'add_realblog') {
-            $record = array(
-                REALBLOG_ID => 0,
-                REALBLOG_DATE => date('Y-m-d'),
-                REALBLOG_STARTDATE => date('Y-m-d'),
-                REALBLOG_ENDDATE => date('Y-m-d', 2147483647),
-                REALBLOG_STATUS => 0,
-                REALBLOG_FRONTPAGE => '',
-                REALBLOG_TITLE => '',
-                REALBLOG_HEADLINE => '',
-                REALBLOG_STORY => '',
-                REALBLOG_RSSFEED => '',
-                REALBLOG_COMMENTS => ''
+            $article = Realblog_Article::makeFromRecord(
+                array(
+                    REALBLOG_ID => 0,
+                    REALBLOG_DATE => time(),
+                    REALBLOG_STARTDATE => time(),
+                    REALBLOG_ENDDATE => 2147483647,
+                    REALBLOG_STATUS => 0,
+                    REALBLOG_FRONTPAGE => '',
+                    REALBLOG_TITLE => '',
+                    REALBLOG_HEADLINE => '',
+                    REALBLOG_STORY => '',
+                    REALBLOG_RSSFEED => '',
+                    REALBLOG_COMMENTS => ''
+                )
             );
             $title = $plugin_tx['realblog']['tooltip_add'];
         } else {
-            $record = $db->selectUnique('realblog.txt', REALBLOG_ID, $id);
-            $realblog_id = $record[REALBLOG_ID];
-            $record[REALBLOG_DATE] = date('Y-m-d', $record[REALBLOG_DATE]);
-            $record[REALBLOG_STARTDATE] = date(
-                'Y-m-d', (int) $record[REALBLOG_STARTDATE]
+            $article = Realblog_Article::makeFromRecord(
+                $db->selectUnique('realblog.txt', REALBLOG_ID, $id)
             );
-            $record[REALBLOG_ENDDATE] = date('Y-m-d', $record[REALBLOG_ENDDATE]);
             if ($action == 'modify_realblog') {
                 $title = $plugin_tx['realblog']['tooltip_modify'] . ' [ID: '
                     . $id . ']';
@@ -550,7 +556,7 @@ EOT;
                     . $id . ']';
             }
         }
-        $view = new Realblog_ArticleAdminView($record, $action);
+        $view = new Realblog_ArticleAdminView($article, $action);
         return $view->render();
     }
 

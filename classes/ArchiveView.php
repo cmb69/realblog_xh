@@ -147,11 +147,13 @@ class Realblog_ArchiveView
                 REALBLOG_DATE, '<', $end, INTEGER_COMPARISON
             )
         );
-        return $db->selectWhere(
-            'realblog.txt', $whereClause, -1,
-            array(
-                new OrderBy(REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON),
-                new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
+        return Realblog_Article::makeArticlesFromRecords(
+            $db->selectWhere(
+                'realblog.txt', $whereClause, -1,
+                array(
+                    new OrderBy(REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON),
+                    new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
+                )
             )
         );
     }
@@ -231,17 +233,17 @@ class Realblog_ArchiveView
         global $su, $plugin_tx, $_Realblog_controller;
 
         $t = '<ul class="realblog_archive">';
-        foreach ($articles as $key => $field) {
+        foreach ($articles as $key => $article) {
             $url = $_Realblog_controller->url(
-                $su, $field[REALBLOG_TITLE], array(
-                    'realblogID' => $field[REALBLOG_ID]
+                $su, $article->getTitle(), array(
+                    'realblogID' => $article->getId()
                 )
             );
             $t .= '<li>'
-                . date($plugin_tx['realblog']['date_format'], $field[REALBLOG_DATE])
+                . date($plugin_tx['realblog']['date_format'], $article->getDate())
                 . '&nbsp;&nbsp;&nbsp;<a href="' . XH_hsc($url) . '" title="'
                 . $plugin_tx['realblog']["tooltip_view"] . '">'
-                . $field[REALBLOG_TITLE] . '</a></li>';
+                . $article->getTitle() . '</a></li>';
         }
         $t .= '</ul>';
         return $t;
@@ -262,23 +264,23 @@ class Realblog_ArchiveView
 
         $currentMonth = -1;
         $t = '';
-        foreach ($this->articles as $key => $field) {
-            $month = date('n', $field[REALBLOG_DATE]);
-            $year = date('Y', $field[REALBLOG_DATE]);
+        foreach ($this->articles as $key => $article) {
+            $month = date('n', $article->getDate());
+            $year = date('Y', $article->getDate());
             if ($month != $currentMonth) {
                 $t .= '<h4>' . $this->getMonthName($month) . ' ' . $year . '</h4>';
                 $currentMonth = $month;
             }
             $url = $_Realblog_controller->url(
-                $su, $field[REALBLOG_TITLE], array(
-                    'realblogID' => $field[REALBLOG_ID]
+                $su, $article->getTitle(), array(
+                    'realblogID' => $article->getId()
                 )
             );
             $t .= '<p>'
-                . date($plugin_tx['realblog']['date_format'], $field[REALBLOG_DATE])
+                . date($plugin_tx['realblog']['date_format'], $article->getDate())
                 . '&nbsp;&nbsp;&nbsp;<a href="' . XH_hsc($url) . '" title="'
                 . $plugin_tx['realblog']["tooltip_view"] . '">'
-                . $field[REALBLOG_TITLE] . '</a></p>';
+                . $article->getTitle() . '</a></p>';
         }
         return $t;
     }

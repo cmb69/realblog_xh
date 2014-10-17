@@ -39,7 +39,7 @@ class Realblog_ArticleView
     /**
      * The article record.
      *
-     * @var array
+     * @var Realblog_Article
      */
     protected $article;
 
@@ -53,16 +53,16 @@ class Realblog_ArticleView
     /**
      * Initializes a new instance.
      *
-     * @param int    $id      An article ID.
-     * @param string $article An article record.
-     * @param int    $page    An article page.
+     * @param int              $id      An article ID.
+     * @param Realblog_Article $article An article record.
+     * @param int              $page    An article page.
      *
      * @return void
      */
-    public function __construct($id, $article, $page)
+    public function __construct($id, Realblog_Article $article, $page)
     {
         $this->id = (int) $id;
-        $this->article = (array) $article;
+        $this->article = $article;
         $this->page = (int) $page;
     }
 
@@ -82,7 +82,7 @@ class Realblog_ArticleView
             . $this->renderDate() . $this->renderStory()
             . $this->renderLinks() . '</div>';
         // output comments in RealBlog
-        if ($this->wantsComments() && $this->article[REALBLOG_COMMENTS] == 'on') {
+        if ($this->wantsComments() && $this->article->isCommentable()) {
             $realblog_comments_id = 'comments' . $this->id;
             $bridge = $plugin_cf['realblog']['comments_plugin'] . '_RealblogBridge';
             $html .= call_user_func(array($bridge, handle), $realblog_comments_id);
@@ -123,7 +123,7 @@ class Realblog_ArticleView
     {
         global $su, $plugin_tx, $_Realblog_controller;
 
-        if ($this->article[REALBLOG_STATUS] == 2) {
+        if ($this->article->getStatus() == 2) {
             $url = $_Realblog_controller->url(
                 $su, null, array('realblog_year' => $_Realblog_controller->getYear())
             );
@@ -189,7 +189,7 @@ class Realblog_ArticleView
      */
     protected function renderHeading()
     {
-        return '<h4>' . $this->article[REALBLOG_TITLE] . '</h4>';
+        return '<h4>' . $this->article->getTitle() . '</h4>';
     }
 
     /**
@@ -205,7 +205,7 @@ class Realblog_ArticleView
 
         $date = date(
             $plugin_tx['realblog']['date_format'],
-            $this->article[REALBLOG_DATE]
+            $this->article->getDate()
         );
         return '<div class="realblog_show_date">' . $date . '</div>';
     }
@@ -217,9 +217,9 @@ class Realblog_ArticleView
      */
     protected function renderStory()
     {
-        $story = $this->article[REALBLOG_STORY] != ''
-            ? $this->article[REALBLOG_STORY]
-            : $this->article[REALBLOG_HEADLINE];
+        $story = $this->article->getBody() != ''
+            ? $this->article->getBody()
+            : $this->article->getTeaser();
         return '<div class="realblog_show_story_entry">'
             . evaluate_scripting($story)
             . '</div>';
