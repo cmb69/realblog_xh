@@ -112,115 +112,101 @@ class Realblog_Controller
      *
      * @return string (X)HTML.
      *
-     * @global string The page title.
-     * @global int    The current page index.
-     * @global array  The headings of the pages.
      * @global array  The configuration of the plugins.
-     * @global string The value of the page's meta description.
      */
     public function blog($showSearch = false, $realBlogCat = 'all')
     {
-        global $title, $s, $h, $plugin_cf, $description;
+        global $plugin_cf;
 
         $realblogID = $this->getPgParameter('realblogID');
-        $page = $this->getPage();
-        $db = $this->connect();
-        $t = '';
+        $db = Realblog_DB::getConnection();
+        $html = '';
         if (!isset($realblogID)) {
-            $compClause = new SimpleWhereClause(
-                REALBLOG_STATUS, '=', 1, INTEGER_COMPARISON
-            );
-
             if ($showSearch) {
-                $temp = new Realblog_SearchFormView(
-                    $this->getYear()
-                );
-                $t .= $temp->render();
+                $view = new Realblog_SearchFormView($this->getYear());
+                $html .= $view->render();
             }
-
             if ($this->getPgParameter('realblog_search')) {
-                $compRealblogClause = new SimpleWhereClause(
-                    REALBLOG_STATUS, '=', 1, INTEGER_COMPARISON
-                );
                 $compClause = $this->searchClause();
-                $articlesPerPage = PHP_INT_MAX;
                 if (isset($compClause)) {
                     $compClause = new AndWhereClause(
-                        $compRealblogClause, $compClause
+                        new SimpleWhereClause(
+                            REALBLOG_STATUS, '=', 1, INTEGER_COMPARISON
+                        ),
+                        $compClause
                     );
                 }
-                $temp = ($plugin_cf['realblog']['entries_order'] == 'desc')
+                $order = ($plugin_cf['realblog']['entries_order'] == 'desc')
                     ? DESCENDING : ASCENDING;
                 $articles = Realblog_Article::makeArticlesFromRecords(
                     $db->selectWhere(
                         'realblog.txt', $compClause, -1,
                         array(
-                            new OrderBy(REALBLOG_DATE, $temp, INTEGER_COMPARISON),
-                            new OrderBy(REALBLOG_ID, $temp, INTEGER_COMPARISON)
+                            new OrderBy(REALBLOG_DATE, $order, INTEGER_COMPARISON),
+                            new OrderBy(REALBLOG_ID, $order, INTEGER_COMPARISON)
                         )
                     )
                 );
-
-                $numberOfSearchResults = $articles;
-                foreach ($numberOfSearchResults as $searchres) {
-                    if (strstr($searchres->getBody(), '|' . $realBlogCat . '|')) {
-                        $numberOfSearchResults[] = '';
-                    }
-                }
-                if ($realBlogCat != 'all') {
-                    $db_search_records = count($numberOfSearchResults)
-                        - count($articles);
-                } else {
-                    $db_search_records = count($numberOfSearchResults);
-                }
-
-                $t .= $this->renderSearchResults('blog', $db_search_records);
+                $html .= $this->renderSearchResults(
+                    'blog',
+                    $this->getNumberOfSearchResults($articles, $realBlogCat)
+                );
             } else {
-                $articlesPerPage = $plugin_cf['realblog']['entries_per_page'];
-                if (empty($compClause)) {
-                    $compClause = $compRealblogClause;
-                }
-
-                $temp = ($plugin_cf['realblog']['entries_order'] == 'desc')
+                $order = ($plugin_cf['realblog']['entries_order'] == 'desc')
                     ? DESCENDING : ASCENDING;
-                $articles = Realblog_Article::makeArticlesFromRecords(
-                    $db->selectWhere(
-                        'realblog.txt', $compClause, -1,
-                        array(
-                            new OrderBy(REALBLOG_DATE, $temp, INTEGER_COMPARISON),
-                            new OrderBy(REALBLOG_ID, $temp, INTEGER_COMPARISON)
-                        )
-                    )
-                );
+                $articles = Realblog_Article::findArticles(1, $order);
             }
-
-            $catRecords = array();
-            foreach ($articles as $catRecordsTemp) {
-                if ($this->belongsToCategory($realBlogCat, $catRecordsTemp)) {
-                    $catRecords[] = $catRecordsTemp;
-                }
-            }
-
-            $articles = $catRecords;
-
-            $temp = new Realblog_ArticlesView(
-                $articles, $realBlogCat, $articlesPerPage
+            $articles = $this->filterByCategory($realBlogCat, $articles);
+            $view = new Realblog_ArticlesView(
+                $articles, $realBlogCat, $plugin_cf['realblog']['entries_per_page']
             );
-            $t .= $temp->render();
+            $html .= $view->render();
         } else {
-            // Display the realblogitem for the given ID
-            $record = $db->selectUnique('realblog.txt', REALBLOG_ID, $realblogID);
-            if (count($record) > 0) {
-                $article = Realblog_Article::makeFromRecord($record);
-                $description = $this->getDescription($article);
-                $articleView = new Realblog_ArticleView(
-                    $realblogID, $article, $page
-                );
-                $t .= $articleView->render();
-                $title .= $h[$s] . " \xE2\x80\x93 " . $article->getTitle();
+            $html .= $this->renderArticle($realblogID);
+        }
+        return $html;
+    }
+
+    /**
+     * Returns the number of search results.
+     *
+     * @param array<Realblog_Article> $articles An array of articles.
+     * @param string                  $category A category.
+     *
+     * @return int
+     */
+    protected function getNumberOfSearchResults($articles, $category)
+    {
+        $numberOfSearchResults = 0;
+        foreach ($articles as $article) {
+            if (strstr($article->getBody(), '|' . $category . '|')) {
+                $numberOfSearchResults++;
             }
         }
-        return $t;
+        if ($category != 'all') {
+            return $numberOfSearchResults - count($articles);
+        } else {
+            return $numberOfSearchResults;
+        }
+    }
+
+    /**
+     * Returns articles filtered by category.
+     *
+     * @param string                  $category A category.
+     * @param array<Realblog_Article> $articles An array of articles.
+     *
+     * @return array<Realblog_Article>
+     */
+    protected function filterByCategory($category, $articles)
+    {
+        $result = array();
+        foreach ($articles as $article) {
+            if ($this->belongsToCategory($category, $article)) {
+                $result[] = $article;
+            }
+        }
+        return $result;
     }
 
     /**
@@ -239,33 +225,46 @@ class Realblog_Controller
     }
 
     /**
+     * Renders a blog article.
+     *
+     * @param int $id An article ID.
+     *
+     * @return string (X)HTML.
+     *
+     * @global array  The headings of the pages.
+     * @global int    The current page index.
+     * @global string The page title.
+     * @global string The value of the page's meta description.
+     */
+    protected function renderArticle($id)
+    {
+        global $h, $s, $title, $description;
+
+        $article = Realblog_Article::findById($id);
+        if (isset($article)) {
+            $title .= $h[$s] . " \xE2\x80\x93 " . $article->getTitle();
+            $description = $this->getDescription($article);
+            $view = new Realblog_ArticleView($id, $article, $this->getPage());
+            return $view->render();
+        }
+    }
+
+    /**
      * Displays the archived realblog topics.
      *
      * @param mixed $showSearch Whether to show the search form.
      *
      * @return string (X)HTML.
-     *
-     * @global string The value of the page's meta description.
      */
     public function archive($showSearch = false)
     {
-        global $description;
-
         $realblogID = $this->getPgParameter('realblogID');
-        $page = $this->getPage();
-
-        $db = $this->connect();
-        $t = '';
+        $db = Realblog_DB::getConnection();
+        $html = '';
         if (!isset($realblogID)) {
-            $compClause = new SimpleWhereClause(
-                REALBLOG_STATUS, '=', 2, INTEGER_COMPARISON
-            );
-
             if ($showSearch) {
-                $temp = new Realblog_SearchFormView(
-                    $this->getYear()
-                );
-                $t .= $temp->render();
+                $view = new Realblog_SearchFormView($this->getYear());
+                $html .= $view->render();
             }
 
             if ($this->getPgParameter('realblog_search')) {
@@ -278,7 +277,7 @@ class Realblog_Controller
                         $compArchiveClause, $compClause
                     );
                 }
-                $records = Realblog_Article::makeArticlesFromRecords(
+                $articles = Realblog_Article::makeArticlesFromRecords(
                     $db->selectWhere(
                         'realblog.txt', $compClause, -1,
                         array(
@@ -289,40 +288,18 @@ class Realblog_Controller
                         )
                     )
                 );
-                $db_search_records = count($records);
-                $t .= $this->renderSearchResults('archive', $db_search_records);
+                $db_search_records = count($articles);
+                $html .= $this->renderSearchResults('archive', $db_search_records);
             } else {
-                if (empty($compClause)) {
-                    $compClause=$compArchiveClause;
-                }
-                $records = Realblog_Article::makeArticlesFromRecords(
-                    $db->selectWhere(
-                        'realblog.txt', $compClause, -1,
-                        array(
-                            new OrderBy(
-                                REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON
-                            ),
-                            new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
-                        )
-                    )
-                );
+                $articles = Realblog_Article::findArticles(2, DESCENDING);
             }
 
-            $temp = new Realblog_ArchiveView($records);
-            $t .= $temp->render();
+            $view = new Realblog_ArchiveView($articles);
+            $html .= $view->render();
         } else {
-            // Display the realblogitem for the given ID
-            $record = $db->selectUnique('realblog.txt', REALBLOG_ID, $realblogID);
-            if (count($record) > 0) {
-                $article = Realblog_Article::makeFromRecord($record);
-                $description = $this->getDescription($article);
-                $articleView = new Realblog_ArticleView(
-                    $realblogID, $article, $page
-                );
-                $t .= $articleView->render();
-            }
+            $html .= $this->renderArticle($realblogID);
         }
-        return $t;
+        return $html;
     }
 
     /**
@@ -347,71 +324,52 @@ class Realblog_Controller
         if (!in_array($pageUrl, $u)) {
             return '';
         }
-
-        $db = $this->connect();
-
-        if (!isset($id) || $id <= 0) {
-            if ($plugin_cf['realblog']['links_visible'] > 0) {
-                $t = '<p class="realbloglink">'
-                    . $plugin_tx['realblog']['links_visible_text'] . '</p>';
-                // Select all published realblog items ordered by DATE
-                // descending within the publishing range
-                $compClause = new AndWhereClause(
-                    new SimpleWhereClause(
-                        REALBLOG_STATUS, '=', 1, INTEGER_COMPARISON
-                    )
-                );
-                $articles = Realblog_Article::makeArticlesFromRecords(
-                    $db->selectWhere(
-                        'realblog.txt', $compClause, -1,
-                        array(
-                            new OrderBy(
-                                REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON
-                            ),
-                            new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
-                        )
-                    )
-                );
-                // Show the results
-                $max_visible = $plugin_cf['realblog']['links_visible'];
-                $realblog_counter = 0;
-                if (count($articles) > 0) {
-                    if ($max_visible <= 0 || empty($max_visible)) {
-                        $max_visible = count($articles);
-                    }
-                    $t .= "\n" . '<div class="realblog_tpl_show_box">' . "\n";
-                    foreach ($articles as $index => $article) {
-                        $realblog_counter++;
-                        $t .= "\n" . '<div class="realblog_tpl_show_date">' . "\n"
-                            . date(
-                                $plugin_tx['realblog']['date_format'],
-                                $article->getDate()
-                            )
-                            . "\n" . '</div>';
-                        $url = $this->url(
-                            $pageUrl, $article->getTitle(), array(
-                                'realblogID' => $article->getId()
-                            )
-                        );
-                        $t .= '<div class="realblog_tpl_show_title">'
-                            . '<a href="' . XH_hsc($url) . '">'
-                            . $article->getTitle() .'</a></div>';
-                        // Limit the number of visible realblog items (set in
-                        // the configuration; empty=all realblog)
-                        if ($plugin_cf['realblog']['links_visible'] > 0) {
-                            if ($realblog_counter == $max_visible) {
-                                break;
-                            }
-                        }
-                    }
-                    $t .= "\n" . '<div style="clear: both;"></div></div>' . "\n";
-                } else {
-                    $t .= $plugin_tx['realblog']['no_topics'];
-                }
-                //$t.='</div>' . "\n";
-            }
+        if ($plugin_cf['realblog']['links_visible'] <= 0) {
+            return '';
         }
-        return $t;
+        $html = '<p class="realbloglink">'
+            . $plugin_tx['realblog']['links_visible_text'] . '</p>';
+        $articles = Realblog_Article::findArticles(1);
+        if (!empty($articles)) {
+            $articles = array_slice(
+                $articles, 0, $plugin_cf['realblog']['links_visible']
+            );
+            $html .= '<div class="realblog_tpl_show_box">';
+            foreach ($articles as $article) {
+                $html .= $this->renderArticleLink($article, $pageUrl);
+            }
+            $html .= '<div style="clear: both;"></div></div>';
+        } else {
+            $html .= $plugin_tx['realblog']['no_topics'];
+        }
+        return $html;
+    }
+
+    /**
+     * Renders a link to an article.
+     *
+     * @param Realblog_Article $article An article.
+     * @param string           $pageURL The URL of the blog page.
+     *
+     * @return string (X)HTML.
+     *
+     * @global array The localization of the plugins.
+     */
+    protected function renderArticleLink($article, $pageURL)
+    {
+        global $plugin_tx;
+
+        $url = $this->url(
+            $pageURL, $article->getTitle(), array(
+                'realblogID' => $article->getId()
+            )
+        );
+        return '<div class="realblog_tpl_show_date">'
+            . date($plugin_tx['realblog']['date_format'], $article->getDate())
+            . '</div>'
+            . '<div class="realblog_tpl_show_title">'
+            . '<a href="' . XH_hsc($url) . '">' . $article->getTitle() .'</a>'
+            . '</div>';
     }
 
     /**
@@ -444,45 +402,9 @@ class Realblog_Controller
     protected function deliverFeed()
     {
         header('Content-Type: application/rss+xml; charset=UTF-8');
-        $db = $this->connect();
-        $articles = Realblog_Article::makeArticlesFromRecords(
-            $db->selectWhere(
-                'realblog.txt',
-                new SimpleWhereClause(
-                    REALBLOG_RSSFEED, "=", "on", STRING_COMPARISON
-                ),
-                -1,
-                array(
-                    new OrderBy(REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON),
-                    new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
-                )
-            )
-        );
-        $view = new Realblog_RSSFeed($articles);
+        $view = new Realblog_RSSFeed(Realblog_Article::findFeedableArticles());
         echo $view->render();
         exit();
-    }
-
-    /**
-     * Connects to the flatfile database and returns the database object.
-     *
-     * @return Flatfile
-     *
-     * @global array The paths of system files and folders.
-     *
-     * @staticvar Flatfile $db The database object.
-     */
-    public function connect()
-    {
-        global $pth;
-        static $db = null;
-
-        if (!isset($db)) {
-            include_once $pth['folder']['plugins'] . 'realblog/classes/flatfile.php';
-            $db = new Flatfile();
-            $db->datadir = $pth['folder']['content'] . 'realblog/';
-        }
-        return $db;
     }
 
     /**
@@ -515,28 +437,12 @@ class Realblog_Controller
      */
     protected function changeStatus($field, $status)
     {
-        $db = $this->connect();
-        $articles = Realblog_Article::makeArticlesFromRecords(
-            $db->selectWhere(
-                'realblog.txt',
-                new AndWhereClause(
-                    new SimpleWhereClause(
-                        REALBLOG_STATUS, '<', $status, INTEGER_COMPARISON
-                    ),
-                    new SimpleWhereClause(
-                        $field, '<=', strtotime('midnight'), INTEGER_COMPARISON
-                    )
-                )
-            )
+        $articles = Realblog_Article::findArticlesForAutoStatusChange(
+            $field, $status
         );
         foreach ($articles as $article) {
-            $db->updateRowById(
-                'realblog.txt', REALBLOG_ID,
-                array(
-                    REALBLOG_ID => $article->getId(),
-                    REALBLOG_STATUS => $status
-                )
-            );
+            $article->setStatus($status);
+            $article->update();
         }
     }
 

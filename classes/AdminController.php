@@ -30,27 +30,6 @@
 class Realblog_AdminController
 {
     /**
-     * The database connection.
-     *
-     * @var Flatfile
-     */
-    protected $db;
-
-    /**
-     * Initializes a new instance.
-     *
-     * @return void
-     *
-     * @global Realblog_Controller The plugin controller.
-     */
-    public function __construct()
-    {
-        global $_Realblog_controller;
-
-        $this->db = $_Realblog_controller->connect();
-    }
-
-    /**
      * Dispatches on administration requests.
      *
      * @return void
@@ -175,21 +154,17 @@ class Realblog_AdminController
     {
         global $plugin_cf, $plugin_tx, $_Realblog_controller;
 
-        $records = Realblog_Article::makeArticlesFromRecords(
-            $this->db->selectWhere(
-                'realblog.txt', $this->getFilterClause(), -1,
-                new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
-            )
+        $articles = Realblog_Article::findArticlesWithStatus(
+            $this->getFilterStatuses()
         );
-
         $page_record_limit = $plugin_cf['realblog']['admin_records_page'];
-        $db_total_records = count($records);
+        $db_total_records = count($articles);
         $pageCount = ceil($db_total_records / $page_record_limit);
         $page = max(min($_Realblog_controller->getPage(), $pageCount), 1);
         $start_index = ($page - 1) * $page_record_limit;
 
         $view = new Realblog_ArticlesAdminView(
-            $records, $page_record_limit, $start_index, $pageCount
+            $articles, $page_record_limit, $start_index, $pageCount
         );
         return '<h1>Realblog &ndash; '
             . $plugin_tx['realblog']['story_overview'] . '</h1>'
@@ -226,13 +201,11 @@ class Realblog_AdminController
      */
     protected function addArticle()
     {
-        global $title, $plugin_tx, $_XH_csrfProtection, $_Realblog_Controller;
+        global $title, $plugin_tx, $_XH_csrfProtection, $_Realblog_controller;
 
         $_XH_csrfProtection->check();
         $article = $this->getArticleFromParameters();
-        $this->db->insertWithAutoId(
-            'realblog.txt', REALBLOG_ID, $article->asRecord()
-        );
+        $article->insert();
         $title = $plugin_tx['realblog']['tooltip_add'];
         $info = $plugin_tx['realblog']['story_added'];
         return $this->dbconfirm($title, $info, $_Realblog_controller->getPage());
@@ -254,7 +227,7 @@ class Realblog_AdminController
 
         $_XH_csrfProtection->check();
         $article = $this->getArticleFromParameters();
-        $this->db->updateRowById('realblog.txt', REALBLOG_ID, $article->asRecord());
+        $article->update();
         $title = $plugin_tx['realblog']['tooltip_modify'];
         $info = $plugin_tx['realblog']['story_modified'];
         return $this->dbconfirm($title, $info, $_Realblog_controller->getPage());
@@ -276,10 +249,8 @@ class Realblog_AdminController
 
         $_XH_csrfProtection->check();
         $id = $_Realblog_controller->getPgParameter('realblog_id');
-        $this->db->deleteWhere(
-            'realblog.txt', new SimpleWhereClause(REALBLOG_ID, '=', $id),
-            INTEGER_COMPARISON
-        );
+        $article = Realblog_Article::findById($id);
+        $article->delete();
         $title = $plugin_tx['realblog']['tooltip_delete'];
         $info = $plugin_tx['realblog']['story_deleted'];
         return $this->dbconfirm($title, $info, $_Realblog_controller->getPage());
@@ -315,10 +286,9 @@ class Realblog_AdminController
         $status = $_Realblog_controller->getPgParameter('new_realblogstatus');
         if (is_numeric($status) && $status >= 0 && $status <= 2) {
             foreach ($ids as $id) {
-                $article = array();
-                $article[REALBLOG_ID] = $id;
-                $article[REALBLOG_STATUS] = $status;
-                $this->db->updateRowById('realblog.txt', REALBLOG_ID, $article);
+                $article = Realblog_Article::findById($id);
+                $article->setStatus($status);
+                $article->update();
             }
             $title = $plugin_tx['realblog']['tooltip_changestatus'];
             $info = $plugin_tx['realblog']['changestatus_done'];
@@ -358,10 +328,8 @@ class Realblog_AdminController
         $_XH_csrfProtection->check();
         $ids = $_Realblog_controller->getPgParameter('realblogtopics');
         foreach ($ids as $id) {
-            $this->db->deleteWhere(
-                'realblog.txt', new SimpleWhereClause(REALBLOG_ID, '=', $id),
-                INTEGER_COMPARISON
-            );
+            $article = Realblog_Article::findById($id);
+            $article->delete();
         }
         $title = $plugin_tx['realblog']['tooltip_deleteall'];
         $info = $plugin_tx['realblog']['deleteall_done'];
@@ -439,32 +407,23 @@ class Realblog_AdminController
     }
 
     /**
-     * Returns the current filter clause.
+     * Returns the current filter statuses.
      *
-     * @return WhereClause
+     * @return array
      *
      * @global Realblog_Controller The plugin controller.
      */
-    protected function getFilterClause()
+    protected function getFilterStatuses()
     {
         global $_Realblog_controller;
 
-        $filterClause = null;
-        foreach (range(0, 2) as $i) {
+        $statuses = array();
+        for ($i = 0; $i <= 2; $i++) {
             if ($_Realblog_controller->getFilter($i + 1)) {
-                if (isset($filterClause)) {
-                    $filterClause = new OrWhereClause(
-                        $filterClause,
-                        new SimpleWhereClause(REALBLOG_STATUS, "=", $i)
-                    );
-                } else {
-                    $filterClause = new SimpleWhereClause(
-                        REALBLOG_STATUS, "=", $i
-                    );
-                }
+                $statuses[] = $i;
             }
         }
-        return $filterClause;
+        return $statuses;
     }
     /**
      * Writes the required references to the head element.
@@ -526,7 +485,6 @@ EOT;
     {
         global $title, $plugin_cf, $plugin_tx, $_Realblog_controller;
 
-        $db = $_Realblog_controller->connect();
         if ($action == 'add_realblog') {
             $article = Realblog_Article::makeFromRecord(
                 array(
@@ -545,9 +503,7 @@ EOT;
             );
             $title = $plugin_tx['realblog']['tooltip_add'];
         } else {
-            $article = Realblog_Article::makeFromRecord(
-                $db->selectUnique('realblog.txt', REALBLOG_ID, $id)
-            );
+            $article = Realblog_Article::findById($id);
             if ($action == 'modify_realblog') {
                 $title = $plugin_tx['realblog']['tooltip_modify'] . ' [ID: '
                     . $id . ']';

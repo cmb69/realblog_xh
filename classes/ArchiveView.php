@@ -86,7 +86,7 @@ class Realblog_ArchiveView
             $next = min($this->year + 1, $currentYear);
             $back = $this->year - 1;
             $t .= $this->renderPagination($back, $next);
-            $generalrealbloglist = $this->selectArticlesInPeriod(
+            $generalrealbloglist = Realblog_Article::findArchivedArticlesInPeriod(
                 mktime(0, 0, 0, 1, 1, $this->year),
                 mktime(0, 0, 0, 1, 1, $this->year + 1)
             );
@@ -119,43 +119,6 @@ class Realblog_ArchiveView
 
         $monthNames = explode(',', $plugin_tx['realblog']['date_months']);
         return $monthNames[$month - 1];
-    }
-
-    /**
-     * Selects all articles within a certain period.
-     *
-     * @param int $start A start timestamp.
-     * @param int $end   An end timestamp.
-     *
-     * @return array
-     *
-     * @global Realblog_Controller The plugin controller.
-     */
-    protected function selectArticlesInPeriod($start, $end)
-    {
-        global $_Realblog_controller;
-
-        $db = $_Realblog_controller->connect();
-        $whereClause = new AndWhereClause(
-            new SimpleWhereClause(
-                REALBLOG_STATUS, '=', 2, INTEGER_COMPARISON
-            ),
-            new SimpleWhereClause(
-                REALBLOG_DATE, '>=', $start, INTEGER_COMPARISON
-            ),
-            new SimpleWhereClause(
-                REALBLOG_DATE, '<', $end, INTEGER_COMPARISON
-            )
-        );
-        return Realblog_Article::makeArticlesFromRecords(
-            $db->selectWhere(
-                'realblog.txt', $whereClause, -1,
-                array(
-                    new OrderBy(REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON),
-                    new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
-                )
-            )
-        );
     }
 
     /**
@@ -204,7 +167,7 @@ class Realblog_ArchiveView
     {
         $t = '';
         for ($month = $currentMonth; $month >= 1; $month--) {
-            $realbloglist = $this->selectArticlesInPeriod(
+            $realbloglist = Realblog_Article::findArchivedArticlesInPeriod(
                 mktime(0, 0, 0, $month, 1, $this->year),
                 mktime(0, 0, 0, $month + 1, 1, $this->year)
             );

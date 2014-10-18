@@ -131,6 +131,166 @@ class Realblog_Article
     }
 
     /**
+     * Finds and returns all articles with a certain status ordered by date and ID.
+     *
+     * @param int $status A status.
+     * @param int $order  Order ASCENDING or DESCENDING.
+     *
+     * @return array<Realblog_Article>
+     */
+    public static function findArticles($status, $order = DESCENDING)
+    {
+        $db = Realblog_DB::getConnection();
+        return Realblog_Article::makeArticlesFromRecords(
+            $db->selectWhere(
+                'realblog.txt',
+                new SimpleWhereClause(
+                    REALBLOG_STATUS, '=', $status, INTEGER_COMPARISON
+                ),
+                -1,
+                array(
+                    new OrderBy(
+                        REALBLOG_DATE, $order, INTEGER_COMPARISON
+                    ),
+                    new OrderBy(REALBLOG_ID, $order, INTEGER_COMPARISON)
+                )
+            )
+        );
+    }
+
+    /**
+     * Finds all articles with one of the statuses.
+     *
+     * @param array $statuses An array of statuses.
+     *
+     * @return array<Realblog_Article>
+     */
+    public static function findArticlesWithStatus($statuses)
+    {
+        $db = Realblog_DB::getConnection();
+        $filterClause = null;
+        foreach ($statuses as $i) {
+            if (isset($filterClause)) {
+                $filterClause = new OrWhereClause(
+                    $filterClause,
+                    new SimpleWhereClause(REALBLOG_STATUS, "=", $i)
+                );
+            } else {
+                $filterClause = new SimpleWhereClause(
+                    REALBLOG_STATUS, "=", $i
+                );
+            }
+        }
+        return Realblog_Article::makeArticlesFromRecords(
+            $db->selectWhere(
+                'realblog.txt', $filterClause, -1,
+                new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
+            )
+        );
+    }
+
+    /**
+     * Selects all archived articles within a certain period.
+     *
+     * @param int $start A start timestamp.
+     * @param int $end   An end timestamp.
+     *
+     * @return array<Realblog_Article>
+     */
+    public static function findArchivedArticlesInPeriod($start, $end)
+    {
+        $db = Realblog_DB::getConnection();
+        return Realblog_Article::makeArticlesFromRecords(
+            $db->selectWhere(
+                'realblog.txt',
+                new AndWhereClause(
+                    new SimpleWhereClause(
+                        REALBLOG_STATUS, '=', 2, INTEGER_COMPARISON
+                    ),
+                    new SimpleWhereClause(
+                        REALBLOG_DATE, '>=', $start, INTEGER_COMPARISON
+                    ),
+                    new SimpleWhereClause(
+                        REALBLOG_DATE, '<', $end, INTEGER_COMPARISON
+                    )
+                ),
+                -1,
+                array(
+                    new OrderBy(REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON),
+                    new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
+                )
+            )
+        );
+    }
+
+    /**
+     * Finds and returns all feedable articles ordered by date and ID.
+     *
+     * @return array<Realblog_Article>
+     */
+    public static function findFeedableArticles()
+    {
+        $db = Realblog_DB::getConnection();
+        return Realblog_Article::makeArticlesFromRecords(
+            $db->selectWhere(
+                'realblog.txt',
+                new SimpleWhereClause(
+                    REALBLOG_RSSFEED, "=", "on", STRING_COMPARISON
+                ),
+                -1,
+                array(
+                    new OrderBy(REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON),
+                    new OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
+                )
+            )
+        );
+    }
+
+    /**
+     * Finds all articles relevant for automatic status change.
+     *
+     * @param string $field  A field.
+     * @param int    $status A status.
+     *
+     * @return array<Realblog_Articles>
+     */
+    public static function findArticlesForAutoStatusChange($field, $status)
+    {
+        $db = Realblog_DB::getConnection();
+        return Realblog_Article::makeArticlesFromRecords(
+            $db->selectWhere(
+                'realblog.txt',
+                new AndWhereClause(
+                    new SimpleWhereClause(
+                        REALBLOG_STATUS, '<', $status, INTEGER_COMPARISON
+                    ),
+                    new SimpleWhereClause(
+                        $field, '<=', strtotime('midnight'), INTEGER_COMPARISON
+                    )
+                )
+            )
+        );
+    }
+
+    /**
+     * Finds an article by ID.
+     *
+     * @param int $id An ID.
+     *
+     * @return Realblog_Article
+     */
+    public static function findById($id)
+    {
+        $db = Realblog_DB::getConnection();
+        $record = $db->selectUnique('realblog.txt', REALBLOG_ID, $id);
+        if (!empty($record)) {
+            return Realblog_Article::makeFromRecord($record);
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Returns the ID.
      *
      * @return int
@@ -348,6 +508,42 @@ class Realblog_Article
     public function setCommentable($flag)
     {
         $this->commentable = $flag;
+    }
+
+    /**
+     * Inserts the article into the database.
+     *
+     * @return void
+     */
+    public function insert()
+    {
+        $db = Realblog_DB::getConnection();
+        $db->insertWithAutoId('realblog.txt', REALBLOG_ID, $this->asRecord());
+    }
+
+    /**
+     * Updates the article in the database.
+     *
+     * @return void
+     */
+    public function update()
+    {
+        $db = Realblog_DB::getConnection();
+        $db->updateRowById('realblog.txt', REALBLOG_ID, $this->asRecord());
+    }
+
+    /**
+     * Deletes the article from the database.
+     *
+     * @return void
+     */
+    public function delete()
+    {
+        $db = Realblog_DB::getConnection();
+        $db->deleteWhere(
+            'realblog.txt', new SimpleWhereClause(REALBLOG_ID, '=', $this->id),
+            INTEGER_COMPARISON
+        );
     }
 
     /**

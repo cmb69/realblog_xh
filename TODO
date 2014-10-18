@@ -1,3 +1,7 @@
+* refactor Realblog_Controller::archive() and unify with ::blog()
+* fix bug, where searching for blog articles will show unpublished articles
+* fix bug, where number of search results is nonsense
+
 * get rid of @ operators in unit tests (need to replace assertTag())
 * get rid of hard-coded <div style="clear:both">
 * allow external links instead of articles (sugg. by pmschulze)
