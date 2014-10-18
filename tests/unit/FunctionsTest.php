@@ -43,63 +43,6 @@ class FunctionsTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Tests that the search clause is null.
-     *
-     * @return void
-     *
-     * @global Realblog_Controller The plugin controller.
-     */
-    public function testSearchClauseIsNull()
-    {
-        global $_Realblog_controller;
-
-        $this->assertNull($_Realblog_controller->searchClause());
-    }
-
-    /**
-     * Tests that the search clause is an instance of a certain class.
-     *
-     * @param string $title     A title.
-     * @param string $operator  An operator ('OR' or 'AND').
-     * @param string $story     A story.
-     * @param string $className A class name.
-     *
-     * @return void
-     *
-     * @global Realblog_Controller The plugin controller.
-     *
-     * @dataProvider dataForSearchClauseIsA
-     */
-    public function testSearchClauseIsA($title, $operator, $story, $className)
-    {
-        global $_Realblog_controller;
-
-        $_GET = array(
-            'realblog_title' => $title,
-            'title_operator' => '2',
-            'realblog_search' => $operator,
-            'realblog_story' => $story,
-            'story_operator' => '2'
-        );
-        $this->assertInstanceOf($className, $_Realblog_controller->searchClause());
-    }
-
-    /**
-     * Returns test data for testSearchClauseIsA().
-     *
-     * @return array
-     */
-    public function dataForSearchClauseIsA()
-    {
-        return array(
-            array('foo', 'OR', '', 'LikeWhereClause'),
-            array('', 'OR', 'foo', 'LikeWhereClause'),
-            array('foo', 'OR', 'bar', 'OrWhereClause'),
-            array('foo', 'AND', 'bar', 'AndWhereClause')
-        );
-    }
-
-    /**
      * Tests stringToTime().
      *
      * @param string $format    A date format.

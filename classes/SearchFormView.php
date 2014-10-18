@@ -70,13 +70,7 @@ class Realblog_SearchFormView
             . '<p class="realblog_search_hint">'
             . $plugin_tx['realblog']['search_hint'] . '</p>'
             . '<table style="width: 100%;">'
-            . $this->renderInputRow('title')
-            . '<tr>'
-            . '<td style="width: 30%;">&nbsp;</td>'
-            . '<td>' . $this->renderOperatorRadio('and') . '&nbsp;&nbsp;&nbsp;'
-            . $this->renderOperatorRadio('or') . '</td>'
-            . '</tr>'
-            . $this->renderInputRow('story')
+            . $this->renderInputRow()
             . '<tr><td colspan="2" style="text-align: center;">'
             . tag(
                 'input type="submit" value="'
@@ -178,23 +172,12 @@ EOT;
     /**
      * Renders an input row.
      *
-     * @param string $which Which row to render ('title' or 'story').
-     *
      * @return string (X)HTML.
-     *
-     * @global array The localization of the plugins.
      */
-    protected function renderInputRow($which)
+    protected function renderInputRow()
     {
-        global $plugin_tx;
-
-        return '<tr><td style="width: 30%;" class="realblog_search_text">'
-            . $plugin_tx['realblog']["{$which}_label"] . ' '
-            . $plugin_tx['realblog']['search_contains'] . ':' . '</td>'
-            . '<td>'
-            // TODO: make the operators available?
-            /*. $this->renderOperatorSelect("{$which}_operator")*/
-            . $this->renderInput("realblog_$which") . '</td></tr>';
+        return '<tr><td style="width: 30%;" class="realblog_search_text"></td>'
+            . '<td>' . $this->renderInput("realblog_search") . '</td></tr>';
     }
 
     /**
@@ -212,46 +195,6 @@ EOT;
         );
     }
 
-    /**
-     * Renders an operator select element.
-     *
-     * @param string $name A name.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The localization of the plugins.
-     */
-    protected function renderOperatorSelect($name)
-    {
-        global $plugin_tx;
-
-        return '<select name="' . $name . '" style="display: none">'
-            . '<option value="2" selected="selected">'
-            . $plugin_tx['realblog']['search_contains'] . '</option>'
-            . '</select>';
-    }
-
-    /**
-     * Renders an operator radio element.
-     *
-     * @param string $which Which operator to render ('and' or 'or').
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The localiaztion of the plugins.
-     */
-    protected function renderOperatorRadio($which)
-    {
-        global $plugin_tx;
-
-        $checked = ($which == 'or') ? ' checked="checked"' : '';
-        return '<label>'
-            . tag(
-                'input type="radio" name="realblog_search"'
-                . ' value="' . strtoupper($which) . '"' . $checked
-            )
-            . '&nbsp;' . $plugin_tx['realblog']["search_$which"] . '</label>';
-    }
 }
 
 ?>

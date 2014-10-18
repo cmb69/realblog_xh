@@ -12,7 +12,6 @@
 * replace mktime() with strtotime() ?
 * store categories in DB
 * simplify CSS (shall we call for themes?)
-* make use of advanced search functionality (by date), or get rid of it
 * modify language strings to cater for different grammar (no tinkering)
 * change admin GP parameter names
 * unify pagination in front- and back-end

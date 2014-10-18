@@ -572,211 +572,14 @@ class Realblog_Controller
      * Returns the search clause.
      *
      * @return CompositeWhereClause
-     *
-     * @todo realblog_from_date and realblog_to_date are unused!
      */
-    public function searchClause()
+    protected function searchClause()
     {
-        if ($this->getPgParameter('realblog_from_date') != '') {
-            $compClauseDate1 = new SimpleWhereClause(
-                REALBLOG_DATE, $this->getPgParameter('date_operator_1'),
-                $this->stringToTime($this->getPgParameter('realblog_from_date'))
-            );
-        }
-        if ($this->getPgParameter('realblog_to_date') != '') {
-            $compClauseDate2 = new SimpleWhereClause(
-                REALBLOG_DATE, $this->getPgParameter('date_operator_2'),
-                $this->stringToTime($this->getPgParameter('realblog_to_date'))
-            );
-        }
-        if ($this->getPgParameter('realblog_title') != '') {
-            $compClauseTitle = new LikeWhereClause(
-                REALBLOG_TITLE, $this->getPgParameter('realblog_title'),
-                2 // TODO: $this->getPgParameter('title_operator')
-            );
-        }
-        if ($this->getPgParameter('realblog_story') != '') {
-            $compClauseStory = new LikeWhereClause(
-                REALBLOG_STORY, $this->getPgParameter('realblog_story'),
-                2 // TODO: $this->getPgParameter('story_operator')
-            );
-        }
-
-        $code = (int) !empty($compClauseDate1) << 3
-            | (int) !empty($compClauseDate2) << 2
-            | (int) !empty($compClauseTitle) << 1
-            | (int) !empty($compClauseStory);
-        switch ($code) {
-        case 0:
-            $compClause = null;
-            break;
-        case 1:
-            $compClause = $compClauseStory;
-            break;
-        case 2:
-            $compClause = $compClauseTitle;
-            break;
-        case 3:
-            switch ($this->getPgParameter('realblog_search')) {
-            case 'AND':
-                $compClause = new AndWhereClause(
-                    $compClauseTitle, $compClauseStory
-                );
-                break;
-            default:
-                $compClause = new OrWhereClause(
-                    $compClauseTitle, $compClauseStory
-                );
-            }
-            break;
-        case 4:
-            $compClause = $compClauseDate2;
-            break;
-        case 5:
-            switch ($this->getPgParameter('realblog_search')) {
-            case 'AND':
-                $compClause = new AndWhereClause(
-                    $compClauseDate2, $compClauseStory
-                );
-                break;
-            default:
-                $compClause = new OrWhereClause(
-                    $compClauseDate2, $compClauseStory
-                );
-            }
-            break;
-        case 6:
-            switch ($this->getPgParameter('operator_1')) {
-            case 'AND':
-                $compClause = new AndWhereClause(
-                    $compClauseDate2, $compClauseTitle
-                );
-                break;
-            default:
-                $compClause = new OrWhereClause(
-                    $compClauseDate2, $compClauseTitle
-                );
-            }
-            break;
-        case 7:
-            $compClause = $compClauseDate2;
-            switch ($this->getPgParameter('operator_1')) {
-            case 'AND':
-                $compClause = new AndWhereClause($compClause, $compClauseTitle);
-                break;
-            default:
-                $compClause = new OrWhereClause($compClause, $compClauseTitle);
-            }
-            switch ($this->getPgParameter('realblog_search')) {
-            case 'AND':
-                $compClause = new AndWhereClause($compClause, $compClauseStory);
-                break;
-            default:
-                $compClause = new OrWhereClause($compClause, $compClauseStory);
-            }
-            break;
-        case 8:
-            $compClause = $compClauseDate1;
-            break;
-        case 9:
-            switch ($this->getPgParameter('realblog_search')) {
-            case 'AND':
-                $compClause = new AndWhereClause(
-                    $compClauseDate1, $compClauseStory
-                );
-                break;
-            default:
-                $compClause = new OrWhereClause(
-                    $compClauseDate1, $compClauseStory
-                );
-            }
-            break;
-        case 10:
-            switch ($this->getPgParameter('operator_1')) {
-            case 'AND':
-                $compClause = new AndWhereClause(
-                    $compClauseDate1, $compClauseTitle
-                );
-                break;
-            default:
-                $compClause = new OrWhereClause(
-                    $compClauseDate1, $compClauseTitle
-                );
-            }
-            break;
-        case 11:
-            $compClause = $compClauseDate1;
-            switch ($this->getPgParameter('operator_1')) {
-            case 'AND':
-                $compClause = new AndWhereClause(
-                    $compClause, $compClauseTitle
-                );
-                break;
-            default:
-                $compClause = new OrWhereClause(
-                    $compClause, $compClauseTitle
-                );
-            }
-            switch ($this->getPgParameter('realblog_search')) {
-            case 'AND':
-                $compClause = new AndWhereClause($compClause, $compClauseStory);
-                break;
-            default:
-                $compClause = new OrWhereClause($compClause, $compClauseStory);
-            }
-            break;
-        case 12:
-            $compClause = new AndWhereClause($compClauseDate1, $compClauseDate2);
-            break;
-        case 13:
-            switch ($this->getPgParameter('realblog_search')) {
-            case 'AND':
-                $compClause = new AndWhereClause(
-                    new AndWhereClause($compClauseDate1, $compClauseDate2),
-                    $compClauseStory
-                );
-                break;
-            default:
-                $compClause = new OrWhereClause(
-                    new AndWhereClause($compClauseDate1, $compClauseDate2),
-                    $compClauseStory
-                );
-            }
-            break;
-        case 14:
-            switch ($this->getPgParameter('operator_1')) {
-            case 'AND':
-                $compClause = new AndWhereClause(
-                    new AndWhereClause($compClauseDate1, $compClauseDate2),
-                    $compClauseTitle
-                );
-                break;
-            default:
-                $compClause = new OrWhereClause(
-                    new AndWhereClause($compClauseDate1, $compClauseDate2),
-                    $compClauseTitle
-                );
-            }
-            break;
-        case 15:
-            $compClause = new AndWhereClause($compClauseDate1, $compClauseDate2);
-            switch ($this->getPgParameter('operator_1')) {
-            case 'AND':
-                $compClause = new AndWhereClause($compClause, $compClauseTitle);
-                break;
-            default:
-                $compClause = new OrWhereClause($compClause, $compClauseTitle);
-            }
-            switch ($this->getPgParameter('realblog_search')) {
-            case 'AND':
-                $compClause = new AndWhereClause($compClause, $compClauseStory);
-                break;
-            default:
-                $compClause = new OrWhereClause($compClause, $compClauseStory);
-            }
-            break;
-        }
-        return $compClause;
+        $search = $this->getPgParameter('realblog_search');
+        return new OrWhereClause(
+            new LikeWhereClause(REALBLOG_TITLE, $search),
+            new LikeWhereClause(REALBLOG_STORY, $search)
+        );
     }
 
     /**
@@ -795,13 +598,8 @@ class Realblog_Controller
         global $su, $plugin_tx;
 
         $key = ($what == 'archive') ? 'back_to_archive' : 'search_show_all';
-        $title = $this->getPgParameter('realblog_title');
-        $story = $this->getPgParameter('realblog_story');
-        $operator = $this->getPgParameter('realblog_search');
-        $operator = ($operator == 'AND')
-            ? $plugin_tx['realblog']['search_and']
-            : $plugin_tx['realblog']['search_or'];
-        $words = '"' . $title . '" ' . $operator . ' "' . $story . '"';
+        $search = $this->getPgParameter('realblog_search');
+        $words = '"' . $search . '"';
         return '<p>' . $plugin_tx['realblog']['search_searched_for'] . ' <b>'
             . XH_hsc($words) . '</b></p>'
             . '<p>' . $plugin_tx['realblog']['search_result'] . '<b> '
