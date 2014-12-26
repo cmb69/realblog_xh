@@ -1,4 +1,4 @@
-/**!
+/*!
  * Client side scripting of Realblog_XH
  *
  * @author    Jan Kanters <jan.kanters@telenet.be>
