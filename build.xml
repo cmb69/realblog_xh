@@ -9,6 +9,10 @@
         <include name="functions.php"/>
     </fileset>
 
+    <fileset id="js-sources" dir=".">
+        <include name="*.js"/>
+    </fileset>
+
     <fileset id="unit-tests" dir="tests/unit">
         <include name="*Test.php"/>
     </fileset>
@@ -69,10 +73,15 @@
         </phpdoc>
     </target>
 
-<!--    <target name="js-doc">
-        <exec command="jsdoc -destination doc/js imgzoom.js" checkreturn="true"/>
+    <target name="js-doc">
+        <apply executable="jsdoc" parallel="true" checkreturn="true">
+            <arg value="-d"/>
+            <arg value="doc/js"/>
+            <arg value="-p"/>
+            <fileset refid="js-sources"/>
+        </apply>
     </target>
--->
+
     <target name="doc" description="generates the developer documentation"
             depends="php-doc"/>
 
@@ -92,11 +101,11 @@
                 </replacetokens>
             </filterchain>
         </move>
-        <!--<jsMin targetDir="dist" suffix="" failOnError="false">
+        <jsMin targetDir="dist" suffix="" failOnError="false">
             <fileset dir="export">
-                <include name="wdir.js"/>
+                <include name="*.js"/>
             </fileset>
-        </jsMin>-->
+        </jsMin>
         <move todir="dist">
             <fileset dir="export">
                 <exclude name="tests/**"/>

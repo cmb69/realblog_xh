@@ -73,14 +73,18 @@ class Realblog_ArticleAdminView
      *
      * @return string (X)HTML.
      *
+     * @global array The paths of system files and folders.
      * @global string The script name.
      * @global array  The localization of the plugins.
-     * @global string The title of the page.     *
+     * @global string The title of the page.
+     * @global string The (X)HTML fragment to insert before the closing body tag.
      */
     public function render()
     {
-        global $sn, $plugin_tx, $title;
+        global $pth, $sn, $plugin_tx, $title, $bjs;
 
+        $bjs .= '<script type="text/javascript" src="' . $pth['folder']['plugins']
+            . 'realblog/realblog.js"></script>';
         return '<div class="realblog_fields_block"><h1>Realblog &ndash; '
             . $title . '</h1>'
             . '<form name="realblog" method="post" action="' . $sn . '?&amp;'
@@ -96,7 +100,6 @@ class Realblog_ArticleAdminView
             . '<td>' . $this->renderDate() . '</td>'
             . '<td>' . $this->renderPublishingDate() . '</td>'
             . '<td>' . $this->renderArchiveDate() . '</td></tr><tr>'
-            . $this->renderCalendarScript()
             . '<td><span class="realblog_date_label">'
             . $plugin_tx['realblog']['label_status'] . '</span></td>'
             . '<td></td><td></td></tr><tr>'
@@ -165,7 +168,6 @@ class Realblog_ArticleAdminView
         $html = tag(
             'input type="date" name="realblog_date" id="date1" required="required"'
             . ' value="' . date('Y-m-d', $this->article->getDate()) . '"'
-            . ' onfocus="if (!REALBLOG.hasNativeDatePicker) this.blur()"'
         );
         $html .= '&nbsp;'
             . tag(
@@ -193,7 +195,6 @@ class Realblog_ArticleAdminView
                 'input type="date" name="realblog_startdate" id="date2"'
                 . ' required="required" value="'
                 . date('Y-m-d', $this->article->getPublishingDate()) . '"'
-                . ' onfocus="if (!REALBLOG.hasNativeDatePicker) this.blur()"'
             );
             $html .= '&nbsp;'
                 . tag(
@@ -224,7 +225,6 @@ class Realblog_ArticleAdminView
                 'input type="date" name="realblog_enddate" id="date3"'
                 . ' required="required" value="'
                 . date('Y-m-d', $this->article->getArchivingDate()) . '"'
-                . ' onfocus="if (!REALBLOG.hasNativeDatePicker) this.blur()"'
             );
             $html .= '&nbsp;'
                 . tag(
@@ -236,58 +236,6 @@ class Realblog_ArticleAdminView
             $html = $plugin_tx['realblog']['enddate_hint'];
         }
         return $html;
-    }
-
-    /**
-     * Renders the calendar script.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The configuration of the plugins.
-     */
-    protected function renderCalendarScript()
-    {
-        global $plugin_cf;
-
-        $html = '<script type="text/javascript">/* <![CDATA[ */'
-            . $this->renderCalendarInitialization(1);
-        if ($plugin_cf['realblog']['auto_publish']) {
-            $html .= $this->renderCalendarInitialization(2);
-        }
-        if ($plugin_cf['realblog']['auto_archive']) {
-            $html .= $this->renderCalendarInitialization(3);
-        }
-        $html .= '/* ]]> */</script>';
-        return $html;
-    }
-
-    /**
-     * Renders a calendar initialization.
-     *
-     * @param string $num A date input number.
-     *
-     * @return string (X)HTML.
-     */
-    protected function renderCalendarInitialization($num)
-    {
-        return <<<EOT
-if (REALBLOG.hasNativeDatePicker) {
-    document.getElementById("trig_date$num").style.display = "none";
-} else {
-    Calendar.setup({
-        inputField: "date$num",
-        ifFormat: "%Y-%m-%d",
-        button: "trig_date$num",
-        align: "Br",
-        singleClick: true,
-        firstDay: 1,
-        weekNumbers: false,
-        electric: false,
-        showsTime: false,
-        timeFormat: "24"
-    });
-}
-EOT;
     }
 
     /**
