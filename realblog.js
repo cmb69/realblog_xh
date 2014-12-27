@@ -22,16 +22,14 @@ REALBLOG.initDatePickers = function () {
     var i, datePicker;
 
     for (i = 1; i <= 3; i++) {
-        if (!this.hasNativeDatePicker) {
-            document.getElementById("date" + i).onfocus = function () {
-                this.blur();
-            };
-        }
         datePicker = document.getElementById("trig_date" + i);
         if (datePicker) {
             if (this.hasNativeDatePicker) {
                 datePicker.style.display = "none";
             } else {
+                document.getElementById("date" + i).onfocus = function () {
+                    this.blur();
+                };
                 Calendar.setup({
                     inputField: "date" + i,
                     ifFormat: "%Y-%m-%d",
