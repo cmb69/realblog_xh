@@ -47,7 +47,8 @@
     </target>
 
     <target name="unit-tests" description="runs all unit tests">
-        <phpunit haltonerror="true" haltonfailure="true">
+        <phpunit bootstrap="classes/required_classes.php"
+                 haltonerror="true" haltonfailure="true">
             <formatter type="plain" usefile="false"/>
             <batchtest>
                 <fileset refid="unit-tests"/>
@@ -66,7 +67,7 @@
     </target>
 
     <target name="coverage" description="generates coverage report">
-        <exec command="phpunit --configuration coverage.xml" logoutput="true"/>
+        <exec command="phpunit --bootstrap classes/required_classes.php --configuration coverage.xml" logoutput="true"/>
     </target>
 
     <target name="php-doc">

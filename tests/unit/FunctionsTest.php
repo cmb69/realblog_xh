@@ -14,7 +14,6 @@
  */
 
 require_once './classes/flatfile.php';
-require_once './classes/Controller.php';
 
 /**
  * Testing the functions.
