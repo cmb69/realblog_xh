@@ -26,8 +26,6 @@
  */
 function Realblog_autoload($class)
 {
-    global $pth;
-
     $parts = explode('_', $class, 2);
     if ($parts[0] == 'Realblog') {
         include_once dirname(__FILE__) . '/' . $parts[1] . '.php';
