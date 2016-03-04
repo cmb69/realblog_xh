@@ -17,6 +17,8 @@
  * @link      http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
 
+namespace Realblog;
+
 /**
  * The DB.
  *
@@ -26,12 +28,12 @@
  * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  * @link     http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
-class Realblog_DB
+class DB
 {
     /**
      * The unique instance.
      *
-     * @var Realblog_DB
+     * @var DB
      */
     protected static $instance;
 
@@ -64,7 +66,7 @@ class Realblog_DB
     {
         global $pth;
 
-        $this->connection = new Flatfile();
+        $this->connection = new \Flatfile();
         $this->connection->datadir = $pth['folder']['content'] . 'realblog/';
     }
 }

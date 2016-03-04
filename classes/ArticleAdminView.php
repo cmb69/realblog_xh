@@ -17,6 +17,8 @@
  * @link      http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
 
+namespace Realblog;
+
 /**
  * The article administration views.
  *
@@ -26,12 +28,12 @@
  * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  * @link     http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
-class Realblog_ArticleAdminView
+class ArticleAdminView
 {
     /**
      * The article record.
      *
-     * @var Realblog_Article
+     * @var Article
      */
     protected $article;
 
@@ -52,14 +54,14 @@ class Realblog_ArticleAdminView
     /**
      * Initializes a new instance.
      *
-     * @param Realblog_Article $article An article record.
-     * @param string           $action  An action.
+     * @param Article $article An article record.
+     * @param string  $action  An action.
      *
      * @return void
      *
      * @global array The paths of system files and folders.
      */
-    public function __construct(Realblog_Article $article, $action)
+    public function __construct(Article $article, $action)
     {
         global $pth;
 

@@ -17,6 +17,8 @@
  * @link      http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
 
+namespace Realblog;
+
 /**
  * The articles views.
  *
@@ -26,7 +28,7 @@
  * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  * @link     http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
-class Realblog_ArticlesView
+class ArticlesView
 {
     /**
      * The articles.
@@ -70,7 +72,7 @@ class Realblog_ArticlesView
      *
      * @return string (X)HTML.
      *
-     * @global Realblog_Controller The plugin controller.
+     * @global Controller The plugin controller.
      */
     public function render()
     {
@@ -140,14 +142,14 @@ class Realblog_ArticlesView
     /**
      * Renders an article preview.
      *
-     * @param Realblog_Article $article An article.
+     * @param Article $article An article.
      *
      * @return string (X)HTML.
      *
-     * @global array The configuration of the plugins.
-     * @global Realblog_Controller The plugin controller.
+     * @global array      The configuration of the plugins.
+     * @global Controller The plugin controller.
      */
-    protected function renderArticlePreview(Realblog_Article $article)
+    protected function renderArticlePreview(Article $article)
     {
         global $plugin_cf, $_Realblog_controller;
 
@@ -183,15 +185,15 @@ class Realblog_ArticlesView
     /**
      * Renders an article heading.
      *
-     * @param Realblog_Article $article An article.
+     * @param Article $article An article.
      *
      * @return string (X)HTML.
      *
-     * @global string              The URL of the current page.
-     * @global array               The localization of the plugins.
-     * @global Realblog_Controller The plugin controller.
+     * @global string     The URL of the current page.
+     * @global array      The localization of the plugins.
+     * @global Controller The plugin controller.
      */
-    protected function renderArticleHeading(Realblog_Article $article)
+    protected function renderArticleHeading(Article $article)
     {
         global $su, $plugin_tx, $_Realblog_controller;
 
@@ -216,13 +218,13 @@ class Realblog_ArticlesView
     /**
      * Renders an article date.
      *
-     * @param Realblog_Article $article An article.
+     * @param Article $article An article.
      *
      * @return string (X)HTML.
      *
      * @global array The localization of the plugins.
      */
-    protected function renderArticleDate(Realblog_Article $article)
+    protected function renderArticleDate(Article $article)
     {
         global $plugin_tx;
 
@@ -234,16 +236,16 @@ class Realblog_ArticlesView
     /**
      * Renders an article footer.
      *
-     * @param Realblog_Article $article An article.
+     * @param Article $article An article.
      *
      * @return string (X)HTML.
      *
-     * @global string The URL of the current page.
-     * @global array  The configuration of the plugins.
-     * @global array  The localization of the plugins.
-     * @global Realblog_Controller The plugin controller.
+     * @global string     The URL of the current page.
+     * @global array      The configuration of the plugins.
+     * @global array      The localization of the plugins.
+     * @global Controller The plugin controller.
      */
-    protected function renderArticleFooter(Realblog_Article $article)
+    protected function renderArticleFooter(Article $article)
     {
         global $su, $plugin_cf, $plugin_tx, $_Realblog_controller;
 
@@ -272,14 +274,14 @@ class Realblog_ArticlesView
     /**
      * Renders a comment count.
      *
-     * @param Realblog_Article $article An article.
+     * @param Article $article An article.
      *
      * @return string (X)HTML.
      *
      * @global array The configuration of the plugins.
      * @global array The localization of the plugins.
      */
-    protected function renderCommentCount(Realblog_Article $article)
+    protected function renderCommentCount(Article $article)
     {
         global $plugin_cf, $plugin_tx;
 
@@ -327,8 +329,8 @@ class Realblog_ArticlesView
      *
      * @return bool
      *
-     * @global array               The configuration of the plugins.
-     * @global Realblog_Controller The plugin controller.
+     * @global array      The configuration of the plugins.
+     * @global Controller The plugin controller.
      */
     protected function wantsNumberOfArticles($place)
     {
@@ -345,9 +347,9 @@ class Realblog_ArticlesView
      *
      * @return string (X)HTML.
      *
-     * @global string              The URL of the current page.
-     * @global array               The localization of the plugins.
-     * @global Realblog_Controller The plugin controller.
+     * @global string     The URL of the current page.
+     * @global array      The localization of the plugins.
+     * @global Controller The plugin controller.
      */
     protected function renderPageLinks($pageCount)
     {
@@ -377,9 +379,9 @@ class Realblog_ArticlesView
      *
      * @return string (X)HTML.
      *
-     * @global string              The URL of the current page.
-     * @global array               The localization of the plugins.
-     * @global Realblog_Controller The plugin controller.
+     * @global string     The URL of the current page.
+     * @global array      The localization of the plugins.
+     * @global Controller The plugin controller.
      */
     protected function renderPageOfPages($page, $pageCount, $back, $next)
     {

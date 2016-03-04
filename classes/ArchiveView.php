@@ -17,6 +17,8 @@
  * @link      http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
 
+namespace Realblog;
+
 /**
  * The archive views.
  *
@@ -26,7 +28,7 @@
  * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  * @link     http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
-class Realblog_ArchiveView
+class ArchiveView
 {
     /**
      * The articles.
@@ -49,7 +51,7 @@ class Realblog_ArchiveView
      *
      * @return void
      *
-     * @global Realblog_Controller The plugin controller.
+     * @global Controller The plugin controller.
      */
     public function __construct($articles)
     {
@@ -64,8 +66,8 @@ class Realblog_ArchiveView
      *
      * @return string (X)HTML.
      *
-     * @global array               The localization of the plugins.
-     * @global Realblog_Controller The plugin controller.
+     * @global array      The localization of the plugins.
+     * @global Controller The plugin controller.
      */
     public function render()
     {
@@ -85,7 +87,7 @@ class Realblog_ArchiveView
             $next = min($this->year + 1, $currentYear);
             $back = $this->year - 1;
             $t .= $this->renderPagination($back, $next);
-            $generalrealbloglist = Realblog_Article::findArchivedArticlesInPeriod(
+            $generalrealbloglist = Article::findArchivedArticlesInPeriod(
                 mktime(0, 0, 0, 1, 1, $this->year),
                 mktime(0, 0, 0, 1, 1, $this->year + 1)
             );
@@ -128,9 +130,9 @@ class Realblog_ArchiveView
      *
      * @return string (X)HTML.
      *
-     * @global string The URL of the current page.
-     * @global array  The localization of the plugins.
-     * @global Realblog_Controller The plugin controller.
+     * @global string     The URL of the current page.
+     * @global array      The localization of the plugins.
+     * @global Controller The plugin controller.
      */
     protected function renderPagination($back, $next)
     {
@@ -166,7 +168,7 @@ class Realblog_ArchiveView
     {
         $t = '';
         for ($month = $currentMonth; $month >= 1; $month--) {
-            $realbloglist = Realblog_Article::findArchivedArticlesInPeriod(
+            $realbloglist = Article::findArchivedArticlesInPeriod(
                 mktime(0, 0, 0, $month, 1, $this->year),
                 mktime(0, 0, 0, $month + 1, 1, $this->year)
             );
@@ -186,9 +188,9 @@ class Realblog_ArchiveView
      *
      * @return string (X)HTML.
      *
-     * @global string              The URL of the current page.
-     * @global array               The localization of the plugins.
-     * @global Realblog_Controller The plugin controller.
+     * @global string     The URL of the current page.
+     * @global array      The localization of the plugins.
+     * @global Controller The plugin controller.
      */
     protected function renderArticleList($articles)
     {
@@ -216,9 +218,9 @@ class Realblog_ArchiveView
      *
      * @return string (X)HTML.
      *
-     * @global string              The URL of the current page.
-     * @global array               The localization of the plugins.
-     * @global Realblog_Controller The plugin controller.
+     * @global string     The URL of the current page.
+     * @global array      The localization of the plugins.
+     * @global Controller The plugin controller.
      */
     protected function renderSearchResults()
     {

@@ -17,6 +17,8 @@
  * @link      http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
 
+namespace Realblog;
+
 /**
  * The articles administration views.
  *
@@ -26,7 +28,7 @@
  * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  * @link     http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
-class Realblog_ArticlesAdminView
+class ArticlesAdminView
 {
     /**
      * The path of the plugin image folder.
@@ -91,8 +93,8 @@ class Realblog_ArticlesAdminView
      *
      * @return string (X)HTML.
      *
-     * @global string              The script name.
-     * @global Realblog_Controller The plugin controller.
+     * @global string     The script name.
+     * @global Controller The plugin controller.
      */
     public function render()
     {
@@ -151,7 +153,7 @@ class Realblog_ArticlesAdminView
      *
      * @return string (X)HTML.
      *
-     * @global Realblog_Controller The plugin controller.
+     * @global Controller The plugin controller.
      */
     protected function renderFilterCheckbox($number, $name)
     {
@@ -227,9 +229,9 @@ class Realblog_ArticlesAdminView
      *
      * @return string (X)HTML.
      *
-     * @global string The script name.
-     * @global array  The localization of the plugins.
-     * @global Realblog_Controller The plugin controller.
+     * @global string     The script name.
+     * @global array      The localization of the plugins.
+     * @global Controller The plugin controller.
      */
     protected function renderNavigation()
     {
@@ -279,15 +281,15 @@ class Realblog_ArticlesAdminView
     /**
      * Renders a row.
      *
-     * @param Realblog_Article $article An article.
+     * @param Article $article An article.
      *
      * @return string (X)HTML.
      *
-     * @global string The script name.
-     * @global array  The localization of the plugins.
-     * @global Realblog_Controller The plugin controller.
+     * @global string     The script name.
+     * @global array      The localization of the plugins.
+     * @global Controller The plugin controller.
      */
-    protected function renderRow(Realblog_Article $article)
+    protected function renderRow(Article $article)
     {
         global $sn, $plugin_tx, $_Realblog_controller;
 

@@ -17,6 +17,8 @@
  * @link      http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
 
+namespace Realblog;
+
 /**
  * The confirmation views.
  *
@@ -26,7 +28,7 @@
  * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  * @link     http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
-abstract class Realblog_ConfirmationView
+abstract class ConfirmationView
 {
     /**
      * The articles.
@@ -54,7 +56,7 @@ abstract class Realblog_ConfirmationView
      *
      * @return void
      *
-     * @global Realblog_Controller The plugin controller.
+     * @global Controller The plugin controller.
      */
     public function __construct()
     {
@@ -127,9 +129,9 @@ abstract class Realblog_ConfirmationView
      *
      * @return string (X)HTML.
      *
-     * @global string The script name.
-     * @global array  The localization of the plugins.
-     * @global Realblog_Controller The plugin controller.
+     * @global string     The script name.
+     * @global array      The localization of the plugins.
+     * @global Controller The plugin controller.
      */
     protected function renderConfirmationButtons()
     {
@@ -155,9 +157,9 @@ abstract class Realblog_ConfirmationView
      *
      * @return string (X)HTML.
      *
-     * @global string              The script name.
-     * @global array               The localization of the plugins.
-     * @global Realblog_Controller The plugin controller.
+     * @global string     The script name.
+     * @global array      The localization of the plugins.
+     * @global Controller The plugin controller.
      */
     protected function renderNoSelectionInfo()
     {

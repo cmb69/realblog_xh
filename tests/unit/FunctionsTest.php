@@ -31,13 +31,13 @@ class FunctionsTest extends PHPUnit_Framework_TestCase
      *
      * @return void
      *
-     * @global Realblog_Controller The plugin controller.
+     * @global Realblog\Controller The plugin controller.
      */
     public function setUp()
     {
         global $_Realblog_controller;
 
-        $_Realblog_controller = new Realblog_Controller();
+        $_Realblog_controller = new Realblog\Controller();
     }
 
     /**
@@ -48,7 +48,7 @@ class FunctionsTest extends PHPUnit_Framework_TestCase
      *
      * @return void
      *
-     * @global Realblog_Controller The plugin controller.
+     * @global Realblog\Controller The plugin controller.
      *
      * @dataProvider dataForStringToTime
      */

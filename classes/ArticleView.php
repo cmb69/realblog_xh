@@ -17,6 +17,8 @@
  * @link      http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
 
+namespace Realblog;
+
 /**
  * The article views.
  *
@@ -26,7 +28,7 @@
  * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  * @link     http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
-class Realblog_ArticleView
+class ArticleView
 {
     /**
      * The article ID.
@@ -38,7 +40,7 @@ class Realblog_ArticleView
     /**
      * The article record.
      *
-     * @var Realblog_Article
+     * @var Article
      */
     protected $article;
 
@@ -52,13 +54,13 @@ class Realblog_ArticleView
     /**
      * Initializes a new instance.
      *
-     * @param int              $id      An article ID.
-     * @param Realblog_Article $article An article record.
-     * @param int              $page    An article page.
+     * @param int     $id      An article ID.
+     * @param Article $article An article record.
+     * @param int     $page    An article page.
      *
      * @return void
      */
-    public function __construct($id, Realblog_Article $article, $page)
+    public function __construct($id, Article $article, $page)
     {
         $this->id = (int) $id;
         $this->article = $article;
@@ -114,9 +116,9 @@ class Realblog_ArticleView
      *
      * @return string (X)HTML.
      *
-     * @global string              The URL of the current page.
-     * @global array               The localization of the plugins.
-     * @global Realblog_Controller The plugin controller.
+     * @global string     The URL of the current page.
+     * @global array      The localization of the plugins.
+     * @global Controller The plugin controller.
      */
     protected function renderOverviewLink()
     {

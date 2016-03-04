@@ -16,6 +16,8 @@
 require_once '../../cmsimple/functions.php';
 require_once './constants.php';
 
+use Realblog\ArticleView;
+
 /**
  * A dummy.
  *
@@ -39,7 +41,7 @@ class ArticleViewTest extends PHPUnit_Framework_TestCase
     /**
      * The test subject.
      *
-     * @var Realblog_ArticleView
+     * @var ArticleView
      */
     private $_subject;
 
@@ -48,11 +50,11 @@ class ArticleViewTest extends PHPUnit_Framework_TestCase
      *
      * @return void
      *
-     * @global string The script name.
-     * @global string The URL of the current page.
-     * @global array  The configuration of the plugins.
-     * @global array  The localization of the plugins.
-     * @global Realblog_Controller The plugin controller.
+     * @global string              The script name.
+     * @global string              The URL of the current page.
+     * @global array               The configuration of the plugins.
+     * @global array               The localization of the plugins.
+     * @global Realblog\Controller The plugin controller.
      */
     public function setUp()
     {
@@ -69,14 +71,14 @@ class ArticleViewTest extends PHPUnit_Framework_TestCase
             'entry_edit' => 'Edit entry'
         );
         $this->_defineConstant('XH_ADM', false);
-        $article = Realblog_Article::makeFromRecord(
+        $article = Realblog\Article::makeFromRecord(
             [
                 '1', '1405548000', '1405548000', '1405548000', '1', '',
                 'Heading', '<p>Teaser</p>', '<p>Article</p>', '', ''
             ]
         );
-        $_Realblog_controller = new Realblog_Controller();
-        $this->_subject = new Realblog_ArticleView('1', $article, '1');
+        $_Realblog_controller = new Realblog\Controller();
+        $this->_subject = new ArticleView('1', $article, '1');
     }
 
     /**

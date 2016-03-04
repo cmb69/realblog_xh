@@ -17,6 +17,8 @@
  * @link      http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
 
+namespace Realblog;
+
 /**
  * The admin controllers.
  *
@@ -26,7 +28,7 @@
  * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  * @link     http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
-class Realblog_AdminController
+class AdminController
 {
     /**
      * Dispatches on administration requests.
@@ -63,7 +65,7 @@ class Realblog_AdminController
      */
     protected function renderInfoView()
     {
-        $view = new Realblog_InfoView();
+        $view = new InfoView();
         return $view->render();
     }
 
@@ -145,15 +147,15 @@ class Realblog_AdminController
      *
      * @return string (X)HTML.
      *
-     * @global array               The configuration of the plugins.
-     * @global array               The localization of the plugins.
-     * @global Realblog_Controller The plugin controller.
+     * @global array      The configuration of the plugins.
+     * @global array      The localization of the plugins.
+     * @global Controller The plugin controller.
      */
     protected function renderArticles()
     {
         global $plugin_cf, $plugin_tx, $_Realblog_controller;
 
-        $articles = Realblog_Article::findArticlesWithStatus(
+        $articles = Article::findArticlesWithStatus(
             $this->getFilterStatuses()
         );
         $page_record_limit = $plugin_cf['realblog']['admin_records_page'];
@@ -162,7 +164,7 @@ class Realblog_AdminController
         $page = max(min($_Realblog_controller->getPage(), $pageCount), 1);
         $start_index = ($page - 1) * $page_record_limit;
 
-        $view = new Realblog_ArticlesAdminView(
+        $view = new ArticlesAdminView(
             $articles, $page_record_limit, $start_index, $pageCount
         );
         return '<h1>Realblog &ndash; '
@@ -175,8 +177,8 @@ class Realblog_AdminController
      *
      * @return string (X)HTML.
      *
-     * @global string              The value of the <var>action</var> GP parameter.
-     * @global Realblog_Controller The plugin controller.
+     * @global string     The value of the <var>action</var> GP parameter.
+     * @global Controller The plugin controller.
      */
     protected function renderArticle()
     {
@@ -193,10 +195,10 @@ class Realblog_AdminController
      *
      * @return string (X)HTML.
      *
-     * @global string              The page title.
-     * @global array               The localization of the plugins.
-     * @global XH_CSRFProtection   The CSRF protector.
-     * @global Realblog_Controller The plugin controller.
+     * @global string            The page title.
+     * @global array             The localization of the plugins.
+     * @global XH_CSRFProtection The CSRF protector.
+     * @global Controller        The plugin controller.
      */
     protected function addArticle()
     {
@@ -215,10 +217,10 @@ class Realblog_AdminController
      *
      * @return string (X)HTML.
      *
-     * @global string              The page title.
-     * @global array               The localization of the plugins.
-     * @global XH_CSRFProtection   The CSRF protector.
-     * @global Realblog_Controller The plugin controller.
+     * @global string            The page title.
+     * @global array             The localization of the plugins.
+     * @global XH_CSRFProtection The CSRF protector.
+     * @global Controller        The plugin controller.
      */
     protected function modifyArticle()
     {
@@ -237,10 +239,10 @@ class Realblog_AdminController
      *
      * @return string (X)HTML.
      *
-     * @global string              The page title.
-     * @global array               The localization of the plugins.
-     * @global XH_CSRFProtection   The CSRF protector.
-     * @global Realblog_Controller The plugin controller.
+     * @global string            The page title.
+     * @global array             The localization of the plugins.
+     * @global XH_CSRFProtection The CSRF protector.
+     * @global Controller        The plugin controller.
      */
     protected function deleteArticle()
     {
@@ -248,7 +250,7 @@ class Realblog_AdminController
 
         $_XH_csrfProtection->check();
         $id = $_Realblog_controller->getPgParameter('realblog_id');
-        $article = Realblog_Article::findById($id);
+        $article = Article::findById($id);
         $article->delete();
         $title = $plugin_tx['realblog']['tooltip_delete'];
         $info = $plugin_tx['realblog']['story_deleted'];
@@ -262,7 +264,7 @@ class Realblog_AdminController
      */
     protected function confirmChangeStatus()
     {
-        $view = new Realblog_ChangeStatusView();
+        $view = new ChangeStatusView();
         return $view->render();
     }
 
@@ -271,10 +273,10 @@ class Realblog_AdminController
      *
      * @return string (X)HTML.
      *
-     * @global string              The page title.
-     * @global array               The localization of the plugins.
-     * @global XH_CSRFProtection   The CSRF protector.
-     * @global Realblog_Controller The plugin controller.
+     * @global string            The page title.
+     * @global array             The localization of the plugins.
+     * @global XH_CSRFProtection The CSRF protector.
+     * @global Controller        The plugin controller.
      */
     protected function changeStatus()
     {
@@ -285,7 +287,7 @@ class Realblog_AdminController
         $status = $_Realblog_controller->getPgParameter('new_realblogstatus');
         if (is_numeric($status) && $status >= 0 && $status <= 2) {
             foreach ($ids as $id) {
-                $article = Realblog_Article::findById($id);
+                $article = Article::findById($id);
                 $article->setStatus($status);
                 $article->update();
             }
@@ -306,7 +308,7 @@ class Realblog_AdminController
      */
     protected function confirmDelete()
     {
-        $view = new Realblog_DeleteView();
+        $view = new DeleteView();
         return $view->render();
     }
 
@@ -315,10 +317,10 @@ class Realblog_AdminController
      *
      * @return string (X)HTML.
      *
-     * @global string              The page title.
-     * @global array               The localization of the plugins.
-     * @global XH_CSRFProtection   The CSRF protector.
-     * @global Realblog_Controller The plugin controller.
+     * @global string            The page title.
+     * @global array             The localization of the plugins.
+     * @global XH_CSRFProtection The CSRF protector.
+     * @global Controller        The plugin controller.
      */
     protected function deleteArticles()
     {
@@ -327,7 +329,7 @@ class Realblog_AdminController
         $_XH_csrfProtection->check();
         $ids = $_Realblog_controller->getPgParameter('realblogtopics');
         foreach ($ids as $id) {
-            $article = Realblog_Article::findById($id);
+            $article = Article::findById($id);
             $article->delete();
         }
         $title = $plugin_tx['realblog']['tooltip_deleteall'];
@@ -353,15 +355,15 @@ class Realblog_AdminController
     /**
      * Returns an article created from G/P parameters.
      *
-     * @return Realblog_Article
+     * @return Article
      *
-     * @global Realblog_Controller The plugin controller.
+     * @global Controller The plugin controller.
      */
     protected function getArticleFromParameters()
     {
         global $_Realblog_controller;
 
-        $article = new Realblog_Article();
+        $article = new Article();
         $article->setId($_Realblog_controller->getPgParameter('realblog_id'));
         $article->setDate(
             $_Realblog_controller->stringToTime(
@@ -410,7 +412,7 @@ class Realblog_AdminController
      *
      * @return array
      *
-     * @global Realblog_Controller The plugin controller.
+     * @global Controller The plugin controller.
      */
     protected function getFilterStatuses()
     {
@@ -483,7 +485,7 @@ EOT;
         global $title, $plugin_tx;
 
         if ($action == 'add_realblog') {
-            $article = Realblog_Article::makeFromRecord(
+            $article = Article::makeFromRecord(
                 array(
                     REALBLOG_ID => 0,
                     REALBLOG_DATE => time(),
@@ -500,7 +502,7 @@ EOT;
             );
             $title = $plugin_tx['realblog']['tooltip_add'];
         } else {
-            $article = Realblog_Article::findById($id);
+            $article = Article::findById($id);
             if ($action == 'modify_realblog') {
                 $title = $plugin_tx['realblog']['tooltip_modify'] . ' [ID: '
                     . $id . ']';
@@ -509,7 +511,7 @@ EOT;
                     . $id . ']';
             }
         }
-        $view = new Realblog_ArticleAdminView($article, $action);
+        $view = new ArticleAdminView($article, $action);
         return $view->render();
     }
 

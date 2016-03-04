@@ -16,6 +16,8 @@
 require_once './vendor/autoload.php';
 require_once '../../cmsimple/functions.php';
 
+use Realblog\InfoView;
+
 /**
  * Testing the info view.
  *
@@ -30,7 +32,7 @@ class InfoViewTest extends PHPUnit_Framework_TestCase
     /**
      * The subject under test.
      *
-     * @var Realblog_InfoView
+     * @var InfoView
      */
     private $_subject;
 
@@ -49,7 +51,7 @@ class InfoViewTest extends PHPUnit_Framework_TestCase
         $this->_defineConstant('REALBLOG_VERSION', '1.0');
         $pth['folder']['plugins'] = './plugins/';
         $plugin_tx['realblog']['alt_logo'] = 'Ring file with pencil';
-        $this->_subject = new Realblog_InfoView();
+        $this->_subject = new InfoView();
     }
 
     /**

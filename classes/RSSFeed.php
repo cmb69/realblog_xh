@@ -17,6 +17,8 @@
  * @link      http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
 
+namespace Realblog;
+
 /**
  * The RSS feed views.
  *
@@ -26,7 +28,7 @@
  * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  * @link     http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
-class Realblog_RSSFeed
+class RSSFeed
 {
     /**
      * The articles.
@@ -122,9 +124,9 @@ class Realblog_RSSFeed
      *
      * @return string XML.
      *
-     * @global string              The script name.
-     * @global array               The localization of the plugins.
-     * @global Realblog_Controller The plugin controller.
+     * @global string     The script name.
+     * @global array      The localization of the plugins.
+     * @global Controller The plugin controller.
      */
     protected function renderItems()
     {

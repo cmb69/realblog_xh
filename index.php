@@ -86,9 +86,9 @@ define('REALBLOG_VERSION', '@REALBLOG_VERSION@');
 /**
  * The plugin controller.
  *
- * @var Realblog_Controller
+ * @var Realblog\Controller
  */
-$_Realblog_controller = new Realblog_Controller();
+$_Realblog_controller = new Realblog\Controller();
 
 /**
  * Displays the realblog's topic with status = published.
@@ -98,7 +98,7 @@ $_Realblog_controller = new Realblog_Controller();
  *
  * @return string (X)HTML.
  *
- * @global Realblog_Controller The plugin controller.
+ * @global Realblog\Controller The plugin controller.
  */
 function Realblog_blog($showSearch = false, $realBlogCat = 'all')
 {
@@ -114,7 +114,7 @@ function Realblog_blog($showSearch = false, $realBlogCat = 'all')
  *
  * @return string (X)HTML.
  *
- * @global Realblog_Controller The plugin controller.
+ * @global Realblog\Controller The plugin controller.
  */
 function Realblog_archive($showSearch = false)
 {
@@ -134,7 +134,7 @@ function Realblog_archive($showSearch = false)
  *
  * @return string (X)HTML.
  *
- * @global Realblog_Controller The plugin controller.
+ * @global Realblog\Controller The plugin controller.
  */
 function Realblog_link($pageUrl)
 {
@@ -148,7 +148,7 @@ function Realblog_link($pageUrl)
  *
  * @return string (X)HTML.
  *
- * @global Realblog_Controller The plugin controller.
+ * @global Realblog\Controller The plugin controller.
  */
 function Realblog_feedLink()
 {

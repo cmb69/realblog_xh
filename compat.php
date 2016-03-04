@@ -25,7 +25,7 @@
  *
  * @return string (X)HTML.
  *
- * @global Realblog_Controller The plugin controller.
+ * @global Realblog\Controller The plugin controller.
  */
 function showrealblog($options = null, $realBlogCat = 'all')
 {
@@ -55,7 +55,7 @@ function showrealblog($options = null, $realBlogCat = 'all')
  *
  * @return string (X)HTML.
  *
- * @global Realblog_Controller The plugin controller.
+ * @global Realblog\Controller The plugin controller.
  */
 function showrealblogarchive($options = null)
 {
@@ -86,7 +86,7 @@ function showrealblogarchive($options = null)
  *
  * @return string (X)HTML.
  *
- * @global Realblog_Controller The plugin controller.
+ * @global Realblog\Controller The plugin controller.
  */
 function realbloglink($options)
 {
@@ -125,7 +125,7 @@ function Realblog_getArguments($arguments)
  *
  * @return string (X)HTML.
  *
- * @global Realblog_Controller The plugin controller.
+ * @global Realblog\Controller The plugin controller.
  */
 function realblog_rss_adv()
 {
