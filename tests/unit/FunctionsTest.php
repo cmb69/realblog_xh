@@ -44,20 +44,18 @@ class FunctionsTest extends PHPUnit_Framework_TestCase
     /**
      * Tests stringToTime().
      *
-     * @param string $format    A date format.
      * @param string $date      A date string.
      * @param int    $timestamp A timestamp.
      *
      * @return void
      *
-     * @global array               The localization of the plugins.
      * @global Realblog_Controller The plugin controller.
      *
      * @dataProvider dataForStringToTime
      */
-    public function testStringToTime($format, $date, $timestamp)
+    public function testStringToTime($date, $timestamp)
     {
-        global $plugin_tx, $_Realblog_controller;
+        global $_Realblog_controller;
 
         $this->assertEquals($timestamp, $_Realblog_controller->stringToTime($date));
     }
@@ -70,7 +68,7 @@ class FunctionsTest extends PHPUnit_Framework_TestCase
     public function dataForStringToTime()
     {
         return array(
-            array('Y-m-d', '2014-07-25', 1406239200)
+            array('2014-07-25', 1406239200)
         );
     }
 }

@@ -161,13 +161,12 @@ class Realblog_ArticleView
      *
      * @return string (X)HTML.
      *
-     * @global string The script name.
      * @global array  The configuration of the plugins.
      * @global array  The localization of the plugins.
      */
     protected function renderEditCommentsLink()
     {
-        global $sn, $plugin_cf, $plugin_tx;
+        global $plugin_cf, $plugin_tx;
 
         $bridge = $plugin_cf['realblog']['comments_plugin'] . '_RealblogBridge';
         $url = call_user_func(array($bridge, getEditUrl), 'realblog' . $this->id);

@@ -51,14 +51,9 @@ class Realblog_RSSFeed
      * Renders the RSS feed view.
      *
      * @return string XML.
-     *
-     * @global array The configuration of the plugins.
-     * @global array The localization of the plugins.
      */
     public function render()
     {
-        global $plugin_cf, $plugin_tx;
-
         $xml = '<?xml version="1.0" encoding="UTF-8"?>'
             . '<rss version="2.0"><channel>'
             . $this->renderHead()

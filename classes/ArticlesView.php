@@ -70,12 +70,11 @@ class Realblog_ArticlesView
      *
      * @return string (X)HTML.
      *
-     * @global array               The configuration of the plugins.
      * @global Realblog_Controller The plugin controller.
      */
     public function render()
     {
-        global $plugin_cf, $_Realblog_controller;
+        global $_Realblog_controller;
 
         $articleCount = count($this->articles);
         $pageCount = (int) ceil($articleCount / $this->articlesPerPage);

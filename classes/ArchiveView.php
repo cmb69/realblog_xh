@@ -195,7 +195,7 @@ class Realblog_ArchiveView
         global $su, $plugin_tx, $_Realblog_controller;
 
         $t = '<ul class="realblog_archive">';
-        foreach ($articles as $key => $article) {
+        foreach ($articles as $article) {
             $url = $_Realblog_controller->url(
                 $su, $article->getTitle(), array(
                     'realblogID' => $article->getId()
@@ -226,7 +226,7 @@ class Realblog_ArchiveView
 
         $currentMonth = -1;
         $t = '';
-        foreach ($this->articles as $key => $article) {
+        foreach ($this->articles as $article) {
             $month = date('n', $article->getDate());
             $year = date('Y', $article->getDate());
             if ($month != $currentMonth) {

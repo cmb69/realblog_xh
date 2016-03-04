@@ -476,13 +476,11 @@ EOT;
      * @return string (X)HTML.
      *
      * @global string              The page title.
-     * @global array               The configuration of the plugins.
      * @global array               The localization of the plugins.
-     * @global Realblog_Controller The plugin controller.
      */
     protected function form($id, $action)
     {
-        global $title, $plugin_cf, $plugin_tx, $_Realblog_controller;
+        global $title, $plugin_tx;
 
         if ($action == 'add_realblog') {
             $article = Realblog_Article::makeFromRecord(
