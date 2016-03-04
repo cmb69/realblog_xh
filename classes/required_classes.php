@@ -17,21 +17,13 @@
  * @link      http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
 
-/**
- * Autoloads a plugin class.
- *
- * @param string $class A class name.
- *
- * @return void
- */
-function Realblog_autoload($class)
-{
-    $parts = explode('_', $class, 2);
-    if ($parts[0] == 'Realblog') {
-        include_once dirname(__FILE__) . '/' . $parts[1] . '.php';
+spl_autoload_register(
+    function ($class) {
+        $parts = explode('_', $class, 2);
+        if ($parts[0] == 'Realblog') {
+            include_once dirname(__FILE__) . '/' . $parts[1] . '.php';
+        }
     }
-}
-
-spl_autoload_register('Realblog_autoload');
+);
 
 ?>
