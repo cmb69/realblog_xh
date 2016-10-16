@@ -87,12 +87,12 @@ class ArchiveView
             $next = min($this->year + 1, $currentYear);
             $back = $this->year - 1;
             $t .= $this->renderPagination($back, $next);
-            $generalrealbloglist = DB::findArchivedArticlesInPeriod(
+            $count = DB::countArchivedArticlesInPeriod(
                 mktime(0, 0, 0, 1, 1, $this->year),
                 mktime(0, 0, 0, 1, 1, $this->year + 1)
             );
             $t .= $this->renderMonthlyArticleLists($currentMonth);
-            if (count($generalrealbloglist) == 0) {
+            if ($count === 0) {
                 $t .= $plugin_tx['realblog']['no_topics'];
             }
         } else {

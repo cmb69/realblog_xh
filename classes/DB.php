@@ -154,6 +154,31 @@ EOS;
     }
 
     /**
+     * Counts the number of archived articles within a certain period.
+     *
+     * @param int $start A start timestamp.
+     * @param int $end   An end timestamp.
+     *
+     * @return int
+     */
+    public static function countArchivedArticlesInPeriod($start, $end)
+    {
+        $db = self::getConnection();
+        $sql = <<<'EOS'
+SELECT COUNT(*) AS count FROM articles
+    WHERE status = :status AND date >= :start AND date < :end
+    ORDER BY date DESC, id DESC
+EOS;
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':status', 2, SQLITE3_INTEGER);
+        $stmt->bindValue(':start', $start, SQLITE3_INTEGER);
+        $stmt->bindValue(':end', $end, SQLITE3_INTEGER);
+        $result = $stmt->execute();
+        $record = $result->fetchArray(SQLITE3_ASSOC);
+        return $record['count'];
+    }
+
+    /**
      * Selects all archived articles within a certain period.
      *
      * @param int $start A start timestamp.
@@ -165,7 +190,7 @@ EOS;
     {
         $db = self::getConnection();
         $sql = <<<'EOS'
-SELECT * FROM articles
+SELECT id, date, title FROM articles
     WHERE status = :status AND date >= :start AND date < :end
     ORDER BY date DESC, id DESC
 EOS;
@@ -192,11 +217,14 @@ EOS;
     {
         $db = self::getConnection();
         if (empty($statuses)) {
-            $sql = 'SELECT * FROM articles ORDER BY id DESC';
+            $whereClause = '';
         } else {
-            $sql = sprintf('SELECT * FROM articles WHERE status in (%s) ORDER BY id DESC',
-                           implode(', ', $statuses));
+            $whereClause = sprintf('WHERE status IN (%s)', implode(', ', $statuses));
         }
+        $sql = <<<EOS
+SELECT id, date, status, title, feedable, commentable
+    FROM articles $whereClause ORDER BY id DESC
+EOS;
         $result = $db->query($sql);
         $records = array();
         while (($record = $result->fetchArray(SQLITE3_ASSOC)) !== false) {
@@ -213,7 +241,10 @@ EOS;
     public static function findFeedableArticles()
     {
         $db = self::getConnection();
-        $sql = 'SELECT * FROM articles WHERE feedable = :feedable ORDER BY date DESC, id DESC';
+        $sql = <<<'EOS'
+SELECT id, date, title, teaser
+    FROM articles WHERE feedable = :feedable ORDER BY date DESC, id DESC
+EOS;
         $statement = $db->prepare($sql);
         $statement->bindValue(':feedable', 1, SQLITE3_INTEGER);
         $result = $statement->execute();
