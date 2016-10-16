@@ -362,9 +362,9 @@ class AdminController
         }
         $article->status =
             $_Realblog_controller->getPgParameter('realblog_status');
-        $article->feedable =
+        $article->feedable = (bool)
             $_Realblog_controller->getPgParameter('realblog_rssfeed');
-        $article->commentable =
+        $article->commentable = (bool)
             $_Realblog_controller->getPgParameter('realblog_comments');
         return $article;
     }
