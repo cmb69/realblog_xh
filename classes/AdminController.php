@@ -74,27 +74,13 @@ class AdminController
      *
      * @return void
      *
-     * @global array The paths of system files and folders.
-     * @global string The (X)HTML to insert into the contents area.
      * @global string The value of the <var>action</var> GP parameter.
      */
     protected function handleMainAdministration()
     {
-        global $pth, $o, $action;
+        global $action;
 
-        $filename = $pth['folder']['content'] . 'realblog/realblog.txt';
-        if (!file_exists($filename)) {
-            mkdir($pth['folder']['content'] . 'realblog');
-            file_put_contents($filename, '');
-            chmod($filename, 0644);
-            file_put_contents($filename . '.lock', '');
-            chmod($filename . '.lock', 0644);
-        }
-        if (!is_writable($filename)) {
-            $o .= $this->renderDatafileError();
-        } else {
-            $this->dispatchOnAction($action);
-        }
+        $this->dispatchOnAction($action);
     }
 
     /**
@@ -335,21 +321,6 @@ class AdminController
         $title = $plugin_tx['realblog']['tooltip_deleteall'];
         $info = $plugin_tx['realblog']['deleteall_done'];
         return $this->dbconfirm($title, $info, $_Realblog_controller->getPage());
-    }
-
-    /**
-     * Renders the data file error.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The localization of the plugins.
-     */
-    protected function renderDatafileError()
-    {
-        global $plugin_tx;
-
-        return '<h1>Realblog</h1>'
-            . XH_message('fail', $plugin_tx['realblog']['message_datafile']);
     }
 
     /**

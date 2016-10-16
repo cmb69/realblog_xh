@@ -70,6 +70,11 @@ class DB
         try {
             $this->connection = new \Sqlite3($filename, SQLITE3_OPEN_READWRITE);
         } catch (\Exception $ex) {
+            $dirname = dirname($filename);
+            if (!file_exists($dirname)) {
+                mkdir($dirname, 0777);
+                chmod($dirname, 0777);
+            }
             $this->connection = new \Sqlite3($filename);
             $this->createDatabase();
         }
@@ -104,20 +109,22 @@ EOS;
                        SQLITE3_TEXT, SQLITE3_TEXT, SQLITE3_INTEGER,
                        SQLITE3_INTEGER);
         $filename = "{$pth['folder']['content']}realblog/realblog.txt";
-        $lines = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        $this->connection->exec("BEGIN TRANSACTION");
-        $sql = "INSERT INTO articles VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        $statement = $this->connection->prepare($sql);
-        foreach ($lines as $line) {
-            $record = explode("\t", $line);
-            unset($record[5]);
-            $record = array_values($record);
-            foreach ($record as $i => $field) {
-                $statement->bindValue($i + 1, $record[$i], $types[$i]);
+        if (file_exists($filename)) {
+            $lines = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            $this->connection->exec("BEGIN TRANSACTION");
+            $sql = "INSERT INTO articles VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $statement = $this->connection->prepare($sql);
+            foreach ($lines as $line) {
+                $record = explode("\t", $line);
+                unset($record[5]);
+                $record = array_values($record);
+                foreach ($record as $i => $field) {
+                    $statement->bindValue($i + 1, $record[$i], $types[$i]);
+                }
+                $statement->execute();
             }
-            $statement->execute();
+            $this->connection->exec("COMMIT TRANSACTION");
         }
-        $this->connection->exec("COMMIT TRANSACTION");
     }
 }
 
