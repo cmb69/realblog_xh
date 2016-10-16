@@ -141,16 +141,14 @@ class AdminController
     {
         global $plugin_cf, $plugin_tx, $_Realblog_controller;
 
-        $articles = DB::findArticlesWithStatus($this->getFilterStatuses());
-        $page_record_limit = $plugin_cf['realblog']['admin_records_page'];
-        $db_total_records = count($articles);
-        $pageCount = ceil($db_total_records / $page_record_limit);
+        $statuses = $this->getFilterStatuses();
+        $total = DB::countArticlesWithStatus($statuses);
+        $limit = $plugin_cf['realblog']['admin_records_page'];
+        $pageCount = ceil($total / $limit);
         $page = max(min($_Realblog_controller->getPage(), $pageCount), 1);
-        $start_index = ($page - 1) * $page_record_limit;
-
-        $view = new ArticlesAdminView(
-            $articles, $page_record_limit, $start_index, $pageCount
-        );
+        $offset = ($page - 1) * $limit;
+        $articles = DB::findArticlesWithStatus($statuses, $limit, $offset);
+        $view = new ArticlesAdminView($articles, $total, $pageCount);
         return '<h1>Realblog &ndash; '
             . $plugin_tx['realblog']['story_overview'] . '</h1>'
             . $view->render();

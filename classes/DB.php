@@ -207,13 +207,34 @@ EOS;
     }
 
     /**
-     * Finds all articles with one of the statuses.
+     * Counts the number of articles with one of the statuses.
      *
      * @param array $statuses An array of statuses.
      *
+     * @return int
+     */
+    public static function countArticlesWithStatus($statuses)
+    {
+        $db = self::getConnection();
+        if (empty($statuses)) {
+            $whereClause = '';
+        } else {
+            $whereClause = sprintf('WHERE status IN (%s)', implode(', ', $statuses));
+        }
+        $sql = "SELECT COUNT(*) AS count FROM articles $whereClause ORDER BY id DESC";
+        return $db->querySingle($sql);
+    }
+
+    /**
+     * Finds all articles with one of the statuses.
+     *
+     * @param array $statuses An array of statuses.
+     * @param int   $limit    The maximum number of articles.
+     * @param int   $offset   The offset of the first article.
+     *
      * @return array<stdClass>
      */
-    public static function findArticlesWithStatus($statuses)
+    public static function findArticlesWithStatus($statuses, $limit, $offset)
     {
         $db = self::getConnection();
         if (empty($statuses)) {
@@ -223,7 +244,7 @@ EOS;
         }
         $sql = <<<EOS
 SELECT id, date, status, title, feedable, commentable
-    FROM articles $whereClause ORDER BY id DESC
+    FROM articles $whereClause ORDER BY id DESC LIMIT $limit OFFSET $offset
 EOS;
         $result = $db->query($sql);
         $records = array();

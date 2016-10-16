@@ -45,18 +45,11 @@ class ArticlesAdminView
     protected $articles;
 
     /**
-     * The number of articles per page.
+     * The number of articles.
      *
      * @var int
      */
-    protected $articlesPerPage;
-
-    /**
-     * The start index.
-     *
-     * @var int
-     */
-    protected $startIndex;
+    protected $articleCount;
 
     /**
      * The number of pages.
@@ -68,23 +61,21 @@ class ArticlesAdminView
     /**
      * Initializes a new instance.
      *
-     * @param array $articles        An array of articles.
-     * @param int   $articlesPerPage The number of articles per page.
-     * @param int   $startIndex      A start index.
-     * @param int   $pageCount       The number of pages.
+     * @param array $articles     An array of articles.
+     * @param int   $articleCount The number of articles.
+     * @param int   $pageCount    The number of pages.
      *
      * @return void
      *
      * @global array The paths of system files and folders.
      */
-    public function __construct($articles, $articlesPerPage, $startIndex, $pageCount)
+    public function __construct($articles, $articleCount, $pageCount)
     {
         global $pth;
 
         $this->imageFolder =  $pth['folder']['plugins'] . 'realblog/images/';
         $this->articles = $articles;
-        $this->articlesPerPage = (int) $articlesPerPage;
-        $this->startIndex = (int) $startIndex;
+        $this->articleCount = (int) $articleCount;
         $this->pageCount = (int) $pageCount;
     }
 
@@ -105,15 +96,10 @@ class ArticlesAdminView
             . '?&amp;realblog&amp;admin=plugin_main">'
             . '<table class="realblog_table">'
             . $this->renderTableHead();
-        $page = $_Realblog_controller->getPage();
-        $endIndex = $page * $this->articlesPerPage - 1;
-        for ($i = $this->startIndex; $i <= $endIndex; $i++) {
-            if ($i <= count($this->articles) - 1) {
-                $field = $this->articles[$i];
-                $html .= $this->renderRow($field);
-            }
+        foreach ($this->articles as $article) {
+            $html .= $this->renderRow($article);
         }
-
+        $page = $_Realblog_controller->getPage();
         $html .= '</table>'
             . tag('input type="hidden" name="page" value="' . $page . '"')
             . '</form>'
@@ -238,17 +224,16 @@ class ArticlesAdminView
         global $sn, $plugin_tx, $_Realblog_controller;
 
         $page = $_Realblog_controller->getPage();
-        $db_total_records = count($this->articles);
-        $tmp = ($db_total_records > 0)
+        $tmp = ($this->articleCount > 0)
             ? $plugin_tx['realblog']['page_label'] . ' : ' . $page .  '/'
                 . $this->pageCount
             : '';
         $html = '<div class="realblog_paging_block">'
             . '<div class="realblog_db_info">'
             . $plugin_tx['realblog']['record_count'] . ' : '
-            . $db_total_records . '</div>'
+            . $this->articleCount . '</div>'
             . '<div class="realblog_page_info">' . $tmp . '</div>';
-        if ($db_total_records > 0 && $this->pageCount > 1) {
+        if ($this->articleCount > 0 && $this->pageCount > 1) {
             if ($this->pageCount > $page) {
                 $next = $page + 1;
                 $back = ($page > 1) ? ($next - 2) : '1';
