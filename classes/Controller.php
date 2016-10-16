@@ -403,7 +403,7 @@ EOS;
      */
     protected function autoPublish()
     {
-        $this->changeStatus('publishing_date', 1);
+        Article::autoChangeStatus('publishing_date', 1);
     }
 
     /**
@@ -413,26 +413,7 @@ EOS;
      */
     protected function autoArchive()
     {
-        $this->changeStatus('archiving_date', 2);
-    }
-
-    /**
-     * Changes the status according to the value of a certain field.
-     *
-     * @param string $field  A field name.
-     * @param int    $status A status code.
-     *
-     * @return void
-     */
-    protected function changeStatus($field, $status)
-    {
-        $articles = Article::findArticlesForAutoStatusChange(
-            $field, $status
-        );
-        foreach ($articles as $article) {
-            $article->setStatus($status);
-            $article->update();
-        }
+        Article::autoChangeStatus('archiving_date', 2);
     }
 
     /**

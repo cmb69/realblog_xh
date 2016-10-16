@@ -229,26 +229,20 @@ EOS;
     }
 
     /**
-     * Finds all articles relevant for automatic status change.
-     *
      * @param string $field  A field name.
      * @param int    $status A status.
      *
-     * @return array<Realblog_Articles>
+     * @return void
      */
-    public static function findArticlesForAutoStatusChange($field, $status)
+    public static function autoChangeStatus($field, $status)
     {
         $db = DB::getConnection();
-        $sql = "SELECT * FROM articles WHERE status < :status AND $field <= :date";
+        $sql = "UPDATE articles SET status = :status WHERE status < :status AND $field <= :date";
         $statement = $db->prepare($sql);
         $statement->bindValue(':status', $status, SQLITE3_INTEGER);
         $statement->bindValue(':date', strtotime('midnight'), SQLITE3_INTEGER);
-        $result = $statement->execute();
+        $statement->execute();
         $records = array();
-        while (($record = $result->fetchArray(SQLITE3_NUM)) !== false) {
-            $records[] = $record;
-        }
-        return Article::makeArticlesFromRecords($records);
     }
 
     /**
