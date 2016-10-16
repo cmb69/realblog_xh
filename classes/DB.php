@@ -40,14 +40,14 @@ class DB
     /**
      * The connection.
      *
-     * @var flatfile
+     * @var \SQLite3
      */
     protected $connection;
 
     /**
      * Returns the connection.
      *
-     * @return flatfile
+     * @return \SQLite3
      */
     public static function getConnection()
     {
@@ -66,8 +66,58 @@ class DB
     {
         global $pth;
 
-        $this->connection = new \Flatfile();
-        $this->connection->datadir = $pth['folder']['content'] . 'realblog/';
+        $filename = "{$pth['folder']['content']}realblog/realblog.db";
+        try {
+            $this->connection = new \Sqlite3($filename, SQLITE3_OPEN_READWRITE);
+        } catch (\Exception $ex) {
+            $this->connection = new \Sqlite3($filename);
+            $this->createDatabase();
+        }
+    }
+
+    private function createDatabase()
+    {
+        $sql = <<<'EOS'
+CREATE TABLE articles (
+	id	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+	date INTEGER,
+	publishing_date INTEGER,
+	archiving_date INTEGER,
+	status INTEGER,
+	title TEXT,
+	teaser TEXT,
+	body TEXT,
+	feedable INTEGER,
+	commentable INTEGER
+)
+EOS;
+        $this->connection->exec($sql);
+        $this->importFlatfile();
+    }
+
+    private function importFlatfile()
+    {
+        global $pth;
+
+        $types = array(SQLITE3_INTEGER, SQLITE3_INTEGER, SQLITE3_INTEGER,
+                       SQLITE3_INTEGER, SQLITE3_INTEGER, SQLITE3_TEXT,
+                       SQLITE3_TEXT, SQLITE3_TEXT, SQLITE3_INTEGER,
+                       SQLITE3_INTEGER);
+        $filename = "{$pth['folder']['content']}realblog/realblog.txt";
+        $lines = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $this->connection->exec("BEGIN TRANSACTION");
+        $sql = "INSERT INTO articles VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $statement = $this->connection->prepare($sql);
+        foreach ($lines as $line) {
+            $record = explode("\t", $line);
+            unset($record[5]);
+            $record = array_values($record);
+            foreach ($record as $i => $field) {
+                $statement->bindValue($i + 1, $record[$i], $types[$i]);
+            }
+            $statement->execute();
+        }
+        $this->connection->exec("COMMIT TRANSACTION");
     }
 }
 

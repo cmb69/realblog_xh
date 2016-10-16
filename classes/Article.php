@@ -124,7 +124,7 @@ class Article
         $article = new self();
         list(
             $article->id, $article->date, $article->publishingDate,
-            $article->archivingDate, $article->status, $_, $article->title,
+            $article->archivingDate, $article->status,  $article->title,
             $article->teaser, $article->body, $article->feedable,
             $article->commentable
         ) = $record;
@@ -135,28 +135,26 @@ class Article
      * Finds and returns all articles with a certain status ordered by date and ID.
      *
      * @param int $status A status.
-     * @param int $order  Order ASCENDING or DESCENDING.
+     * @param int $order  Order 1 (ascending) or -1 (descending).
      *
      * @return array<Article>
      */
-    public static function findArticles($status, $order = DESCENDING)
+    public static function findArticles($status, $order = -1)
     {
         $db = DB::getConnection();
-        return Article::makeArticlesFromRecords(
-            $db->selectWhere(
-                'realblog.txt',
-                new \SimpleWhereClause(
-                    REALBLOG_STATUS, '=', $status, INTEGER_COMPARISON
-                ),
-                -1,
-                array(
-                    new \OrderBy(
-                        REALBLOG_DATE, $order, INTEGER_COMPARISON
-                    ),
-                    new \OrderBy(REALBLOG_ID, $order, INTEGER_COMPARISON)
-                )
-            )
-        );
+        if ($order === -1) {
+            $sql = 'SELECT * FROM articles WHERE status = :status ORDER BY date DESC, id DESC';
+        } else {
+            $sql = 'SELECT * FROM articles WHERE status = :status ORDER BY date, id';
+        }
+        $statement = $db->prepare($sql);
+        $statement->bindValue(':status', $status, SQLITE3_INTEGER);
+        $result = $statement->execute();
+        $records = array();
+        while (($record = $result->fetchArray(SQLITE3_NUM)) !== false) {
+            $records[] = $record;
+        }
+        return Article::makeArticlesFromRecords($records);
     }
 
     /**
@@ -169,25 +167,18 @@ class Article
     public static function findArticlesWithStatus($statuses)
     {
         $db = DB::getConnection();
-        $filterClause = null;
-        foreach ($statuses as $i) {
-            if (isset($filterClause)) {
-                $filterClause = new \OrWhereClause(
-                    $filterClause,
-                    new \SimpleWhereClause(REALBLOG_STATUS, "=", $i)
-                );
-            } else {
-                $filterClause = new \SimpleWhereClause(
-                    REALBLOG_STATUS, "=", $i
-                );
-            }
+        if (empty($statuses)) {
+            $sql = 'SELECT * FROM articles ORDER BY id DESC';
+        } else {
+            $sql = sprintf('SELECT * FROM articles WHERE status in (%s) ORDER BY id DESC',
+                           implode(', ', $statuses));
         }
-        return Article::makeArticlesFromRecords(
-            $db->selectWhere(
-                'realblog.txt', $filterClause, -1,
-                new \OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
-            )
-        );
+        $result = $db->query($sql);
+        $records = array();
+        while (($record = $result->fetchArray(SQLITE3_NUM)) !== false) {
+            $records[] = $record;
+        }
+        return Article::makeArticlesFromRecords($records);
     }
 
     /**
@@ -201,27 +192,21 @@ class Article
     public static function findArchivedArticlesInPeriod($start, $end)
     {
         $db = DB::getConnection();
-        return Article::makeArticlesFromRecords(
-            $db->selectWhere(
-                'realblog.txt',
-                new \AndWhereClause(
-                    new \SimpleWhereClause(
-                        REALBLOG_STATUS, '=', 2, INTEGER_COMPARISON
-                    ),
-                    new \SimpleWhereClause(
-                        REALBLOG_DATE, '>=', $start, INTEGER_COMPARISON
-                    ),
-                    new \SimpleWhereClause(
-                        REALBLOG_DATE, '<', $end, INTEGER_COMPARISON
-                    )
-                ),
-                -1,
-                array(
-                    new \OrderBy(REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON),
-                    new \OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
-                )
-            )
-        );
+        $sql = <<<'EOS'
+SELECT * FROM articles
+    WHERE status = :status AND date >= :start AND date < :end
+    ORDER BY date DESC, id DESC
+EOS;
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':status', 2, SQLITE3_INTEGER);
+        $stmt->bindValue(':start', $start, SQLITE3_INTEGER);
+        $stmt->bindValue(':end', $end, SQLITE3_INTEGER);
+        $result = $stmt->execute();
+        $records = array();
+        while (($record = $result->fetchArray(SQLITE3_NUM)) !== false) {
+            $records[] = $record;
+        }
+        return Article::makeArticlesFromRecords($records);
     }
 
     /**
@@ -232,25 +217,21 @@ class Article
     public static function findFeedableArticles()
     {
         $db = DB::getConnection();
-        return Article::makeArticlesFromRecords(
-            $db->selectWhere(
-                'realblog.txt',
-                new \SimpleWhereClause(
-                    REALBLOG_RSSFEED, "=", "on", STRING_COMPARISON
-                ),
-                -1,
-                array(
-                    new \OrderBy(REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON),
-                    new \OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
-                )
-            )
-        );
+        $sql = 'SELECT * FROM articles WHERE feedable = :feedable ORDER BY date DESC, id DESC';
+        $statement = $db->prepare($sql);
+        $statement->bindValue(':feedable', 1, SQLITE3_INTEGER);
+        $result = $statement->execute();
+        $records = array();
+        while (($record = $result->fetchArray(SQLITE3_NUM)) !== false) {
+            $records[] = $record;
+        }
+        return Article::makeArticlesFromRecords($records);
     }
 
     /**
      * Finds all articles relevant for automatic status change.
      *
-     * @param string $field  A field.
+     * @param string $field  A field name.
      * @param int    $status A status.
      *
      * @return array<Realblog_Articles>
@@ -258,19 +239,16 @@ class Article
     public static function findArticlesForAutoStatusChange($field, $status)
     {
         $db = DB::getConnection();
-        return Article::makeArticlesFromRecords(
-            $db->selectWhere(
-                'realblog.txt',
-                new \AndWhereClause(
-                    new \SimpleWhereClause(
-                        REALBLOG_STATUS, '<', $status, INTEGER_COMPARISON
-                    ),
-                    new \SimpleWhereClause(
-                        $field, '<=', strtotime('midnight'), INTEGER_COMPARISON
-                    )
-                )
-            )
-        );
+        $sql = "SELECT * FROM articles WHERE status < :status AND $field <= :date";
+        $statement = $db->prepare($sql);
+        $statement->bindValue(':status', $status, SQLITE3_INTEGER);
+        $statement->bindValue(':date', strtotime('midnight'), SQLITE3_INTEGER);
+        $result = $statement->execute();
+        $records = array();
+        while (($record = $result->fetchArray(SQLITE3_NUM)) !== false) {
+            $records[] = $record;
+        }
+        return Article::makeArticlesFromRecords($records);
     }
 
     /**
@@ -283,8 +261,11 @@ class Article
     public static function findById($id)
     {
         $db = DB::getConnection();
-        $record = $db->selectUnique('realblog.txt', REALBLOG_ID, $id);
-        if (!empty($record)) {
+        $statement = $db->prepare('SELECT * FROM articles WHERE id = :id');
+        $statement->bindValue(':id', $id, SQLITE3_INTEGER);
+        $result = $statement->execute();
+        $record = $result->fetchArray(SQLITE3_NUM);
+        if ($record !== false) {
             return Article::makeFromRecord($record);
         } else {
             return null;
@@ -496,7 +477,7 @@ class Article
      */
     public function setFeedable($flag)
     {
-        $this->feedable = $flag;
+        $this->feedable = (bool) $flag;
     }
 
     /**
@@ -508,7 +489,7 @@ class Article
      */
     public function setCommentable($flag)
     {
-        $this->commentable = $flag;
+        $this->commentable = (bool) $flag;
     }
 
     /**
@@ -519,7 +500,25 @@ class Article
     public function insert()
     {
         $db = DB::getConnection();
-        $db->insertWithAutoId('realblog.txt', REALBLOG_ID, $this->asRecord());
+        $sql = <<<'EOS'
+INSERT INTO articles
+    VALUES (
+        :id, :date, :publishing_date, :archiving_date, :status, :title, :teaser,
+        :body, :feedable, :commentable
+    )
+EOS;
+        $statement = $db->prepare($sql);
+        $statement->bindValue(':id', null, SQLITE3_NULL);
+        $statement->bindValue(':date', $this->date, SQLITE3_INTEGER);
+        $statement->bindValue(':publishing_date', $this->publishingDate, SQLITE3_INTEGER);
+        $statement->bindValue(':archiving_date', $this->archivingDate, SQLITE3_INTEGER);
+        $statement->bindValue(':status', $this->status, SQLITE3_INTEGER);
+        $statement->bindValue(':title', $this->title, SQLITE3_TEXT);
+        $statement->bindValue(':teaser', $this->teaser, SQLITE3_TEXT);
+        $statement->bindValue(':body', $this->body, SQLITE3_TEXT);
+        $statement->bindValue(':feedable', $this->feedable, SQLITE3_INTEGER);
+        $statement->bindValue(':commentable', $this->commentable, SQLITE3_INTEGER);
+        $statement->execute();
     }
 
     /**
@@ -530,7 +529,26 @@ class Article
     public function update()
     {
         $db = DB::getConnection();
-        $db->updateRowById('realblog.txt', REALBLOG_ID, $this->asRecord());
+        $sql = <<<'EOS'
+UPDATE articles
+    SET date = :date, publishing_date = :publishing_date,
+    	archiving_date = :archiving_date, status = :status, title = :title,
+        teaser = :teaser, body = :body, feedable = :feedable,
+        commentable = :commentable
+    WHERE id = :id
+EOS;
+        $statement = $db->prepare($sql);
+        $statement->bindValue(':id', $this->id, SQLITE3_INTEGER);
+        $statement->bindValue(':date', $this->date, SQLITE3_INTEGER);
+        $statement->bindValue(':publishing_date', $this->publishingDate, SQLITE3_INTEGER);
+        $statement->bindValue(':archiving_date', $this->archivingDate, SQLITE3_INTEGER);
+        $statement->bindValue(':status', $this->status, SQLITE3_INTEGER);
+        $statement->bindValue(':title', $this->title, SQLITE3_TEXT);
+        $statement->bindValue(':teaser', $this->teaser, SQLITE3_TEXT);
+        $statement->bindValue(':body', $this->body, SQLITE3_TEXT);
+        $statement->bindValue(':feedable', $this->feedable, SQLITE3_INTEGER);
+        $statement->bindValue(':commentable', $this->commentable, SQLITE3_INTEGER);
+        $statement->execute();
     }
 
     /**
@@ -541,10 +559,9 @@ class Article
     public function delete()
     {
         $db = DB::getConnection();
-        $db->deleteWhere(
-            'realblog.txt', new \SimpleWhereClause(REALBLOG_ID, '=', $this->id),
-            INTEGER_COMPARISON
-        );
+        $statement = $db->prepare('DELETE FROM articles WHERE id = :id');
+        $statement->bindValue(':id', $this->id, SQLITE3_INTEGER);
+        $statement->execute();
     }
 
     /**

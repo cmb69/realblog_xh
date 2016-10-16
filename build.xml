@@ -4,7 +4,6 @@
 
     <fileset id="php-sources" dir=".">
         <include name="classes/*.php"/>
-        <exclude name="classes/flatfile.php"/>
         <include name="index.php"/>
         <include name="functions.php"/>
     </fileset>

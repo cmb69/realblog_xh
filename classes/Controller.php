@@ -127,34 +127,29 @@ class Controller
                 $view = new SearchFormView($this->getYear());
                 $html .= $view->render();
             }
-            if ($this->getPgParameter('realblog_search')) {
-                $compClause = $this->searchClause();
-                if (isset($compClause)) {
-                    $compClause = new \AndWhereClause(
-                        new \SimpleWhereClause(
-                            REALBLOG_STATUS, '=', 1, INTEGER_COMPARISON
-                        ),
-                        $compClause
-                    );
-                }
+            if ($search = $this->getPgParameter('realblog_search')) {
                 $order = ($plugin_cf['realblog']['entries_order'] == 'desc')
-                    ? DESCENDING : ASCENDING;
-                $articles = Article::makeArticlesFromRecords(
-                    $db->selectWhere(
-                        'realblog.txt', $compClause, -1,
-                        array(
-                            new \OrderBy(REALBLOG_DATE, $order, INTEGER_COMPARISON),
-                            new \OrderBy(REALBLOG_ID, $order, INTEGER_COMPARISON)
-                        )
-                    )
-                );
+                    ? 'DESC' : 'ASC';
+                $sql = <<<EOS
+SELECT * FROM articles
+    WHERE (title LIKE :text OR body LIKE :text) AND status = 1
+    ORDER BY date $order, id $order
+EOS;
+                $stmt = $db->prepare($sql);
+                $stmt->bindValue(':text', '%' . $search . '%', SQLITE3_TEXT);
+                $result = $stmt->execute();
+                $records = array();
+                while (($record = $result->fetchArray(SQLITE3_NUM)) !== false) {
+                    $records[] = $record;
+                }
+                $articles = Article::makeArticlesFromRecords($records);
                 $html .= $this->renderSearchResults(
                     'blog',
                     $this->getNumberOfSearchResults($articles, $realBlogCat)
                 );
             } else {
                 $order = ($plugin_cf['realblog']['entries_order'] == 'desc')
-                    ? DESCENDING : ASCENDING;
+                    ? -1 : 1;
                 $articles = Article::findArticles(1, $order);
             }
             $articles = $this->filterByCategory($realBlogCat, $articles);
@@ -268,31 +263,24 @@ class Controller
                 $html .= $view->render();
             }
 
-            if ($this->getPgParameter('realblog_search')) {
-                $compArchiveClause = new \SimpleWhereClause(
-                    REALBLOG_STATUS, '=', 2, INTEGER_COMPARISON
-                );
-                $compClause = $this->searchClause();
-                if (isset($compClause)) {
-                    $compClause = new \AndWhereClause(
-                        $compArchiveClause, $compClause
-                    );
+            if ($search = $this->getPgParameter('realblog_search')) {
+                $sql = <<<'EOS'
+SELECT * FROM articles
+    WHERE (title LIKE :text OR body LIKE :text) AND status = 2
+    ORDER BY date DESC, id DESC
+EOS;
+                $stmt = $db->prepare($sql);
+                $stmt->bindValue(':text', '%' . $search . '%', SQLITE3_TEXT);
+                $result = $stmt->execute();
+                $records = array();
+                while (($record = $result->fetchArray(SQLITE3_NUM)) !== false) {
+                    $records[] = $record;
                 }
-                $articles = Article::makeArticlesFromRecords(
-                    $db->selectWhere(
-                        'realblog.txt', $compClause, -1,
-                        array(
-                            new \OrderBy(
-                                REALBLOG_DATE, DESCENDING, INTEGER_COMPARISON
-                            ),
-                            new \OrderBy(REALBLOG_ID, DESCENDING, INTEGER_COMPARISON)
-                        )
-                    )
-                );
+                $articles = Article::makeArticlesFromRecords($records);
                 $db_search_records = count($articles);
                 $html .= $this->renderSearchResults('archive', $db_search_records);
             } else {
-                $articles = Article::findArticles(2, DESCENDING);
+                $articles = Article::findArticles(2, -1);
             }
 
             $view = new ArchiveView($articles);
@@ -415,7 +403,7 @@ class Controller
      */
     protected function autoPublish()
     {
-        $this->changeStatus(REALBLOG_STARTDATE, 1);
+        $this->changeStatus('publishing_date', 1);
     }
 
     /**
@@ -425,14 +413,14 @@ class Controller
      */
     protected function autoArchive()
     {
-        $this->changeStatus(REALBLOG_ENDDATE, 2);
+        $this->changeStatus('archiving_date', 2);
     }
 
     /**
      * Changes the status according to the value of a certain field.
      *
-     * @param int $field  A field number.
-     * @param int $status A status code.
+     * @param string $field  A field name.
+     * @param int    $status A status code.
      *
      * @return void
      */
@@ -567,20 +555,6 @@ class Controller
             $url .= '&' . strtr($name, $replacePairs) . '=' . $value;
         }
         return $url;
-    }
-
-    /**
-     * Returns the search clause.
-     *
-     * @return CompositeWhereClause
-     */
-    protected function searchClause()
-    {
-        $search = $this->getPgParameter('realblog_search');
-        return new \OrWhereClause(
-            new \LikeWhereClause(REALBLOG_TITLE, $search),
-            new \LikeWhereClause(REALBLOG_STORY, $search)
-        );
     }
 
     /**

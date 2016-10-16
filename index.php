@@ -64,11 +64,6 @@ this program; if not, see <http://www.gnu.org/licenses>.
 ////////////////////////////////////////////////// HISTORIC LICENSE SECTION END
 
 /**
- * The flatfile database.
- */
-require_once $pth['folder']['plugin_classes'] . 'flatfile.php';
-
-/**
  * General utility functions.
  */
 require_once $pth['folder']['plugin'] . 'constants.php';

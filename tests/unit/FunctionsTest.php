@@ -13,8 +13,6 @@
  * @link      http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
 
-require_once './classes/flatfile.php';
-
 /**
  * Testing the functions.
  *
