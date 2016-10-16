@@ -64,11 +64,6 @@ this program; if not, see <http://www.gnu.org/licenses>.
 ////////////////////////////////////////////////// HISTORIC LICENSE SECTION END
 
 /**
- * General utility functions.
- */
-require_once $pth['folder']['plugin'] . 'constants.php';
-
-/**
  * Backward compatibility.
  */
 require_once $pth['folder']['plugin'] . 'compat.php';

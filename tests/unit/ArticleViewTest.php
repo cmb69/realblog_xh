@@ -14,7 +14,6 @@
  */
 
 require_once '../../cmsimple/functions.php';
-require_once './constants.php';
 
 use Realblog\ArticleView;
 
