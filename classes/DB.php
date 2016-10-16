@@ -135,16 +135,29 @@ EOS;
      *
      * @return array<stdClass>
      */
-    public static function findArticles($status, $order = -1)
+    public static function findArticles($status, $order = -1, $category = 'all', $search = '')
     {
         $db = self::getConnection();
         if ($order === -1) {
-            $sql = 'SELECT * FROM articles WHERE status = :status ORDER BY date DESC, id DESC';
+            $order = 'DESC';
         } else {
-            $sql = 'SELECT * FROM articles WHERE status = :status ORDER BY date, id';
+            $order = 'ASC';
         }
+        $categoryClause = ($category !== 'all')
+            ? 'AND (teaser LIKE :category OR body LIKE :category)'
+            : '';
+        $searchClause = ($search !== '')
+            ? 'AND (title LIKE :search OR body LIKE :search)'
+            : '';
+        $sql = <<<EOS
+SELECT * FROM articles
+    WHERE status = :status $categoryClause $searchClause
+    ORDER BY date $order, id $order
+EOS;
         $statement = $db->prepare($sql);
         $statement->bindValue(':status', $status, SQLITE3_INTEGER);
+        $statement->bindValue(':category', "%|$category|%", SQLITE3_TEXT);
+        $statement->bindValue(':search', "%$search%", SQLITE3_TEXT);
         $result = $statement->execute();
         $records = array();
         while (($record = $result->fetchArray(SQLITE3_ASSOC)) !== false) {

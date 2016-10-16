@@ -38,13 +38,6 @@ class ArticlesView
     protected $articles;
 
     /**
-     * The categories.
-     *
-     * @var string
-     */
-    protected $categories;
-
-    /**
      * The number of articles per page.
      *
      * @var int
@@ -55,15 +48,13 @@ class ArticlesView
      * Initializes a new instance.
      *
      * @param array  $articles        An array of articles.
-     * @param string $categories      FIXME
      * @param int    $articlesPerPage The number of articles per page.
      *
      * @return void
      */
-    public function __construct($articles, $categories, $articlesPerPage)
+    public function __construct($articles, $articlesPerPage)
     {
         $this->articles = $articles;
-        $this->categories = (string) $categories;
         $this->articlesPerPage = (int) $articlesPerPage;
     }
 
@@ -154,30 +145,23 @@ class ArticlesView
         global $plugin_cf, $_Realblog_controller;
 
         $t = '';
-        if (strstr($article->teaser, '|' . $this->categories . '|')
-            || strstr($article->body, '|' . $this->categories . '|')
-            || $this->categories == 'all'
-            || ($_Realblog_controller->getPgParameter('realblog_search')
-            && strstr($article->teaser, '|' . $this->categories . '|'))
+        if ($plugin_cf['realblog']['teaser_multicolumns']) {
+            $t .= '<div class="realblog_single_entry_preview">'
+                . '<div class="realblog_single_entry_preview_in">';
+        }
+        $t .= $this->renderArticleHeading($article);
+        $t .= $this->renderArticleDate($article);
+        $t .= "\n" . '<div class="realblog_show_story">' . "\n";
+        $t .= evaluate_scripting($article->teaser);
+        if ($plugin_cf['realblog']['show_read_more_link']
+            && $article->body != ''
         ) {
-            if ($plugin_cf['realblog']['teaser_multicolumns']) {
-                $t .= '<div class="realblog_single_entry_preview">'
-                    . '<div class="realblog_single_entry_preview_in">';
-            }
-            $t .= $this->renderArticleHeading($article);
-            $t .= $this->renderArticleDate($article);
-            $t .= "\n" . '<div class="realblog_show_story">' . "\n";
-            $t .= evaluate_scripting($article->teaser);
-            if ($plugin_cf['realblog']['show_read_more_link']
-                && $article->body != ''
-            ) {
-                $t .= $this->renderArticleFooter($article);
-            }
-            $t .= '<div style="clear: both;"></div>' . "\n"
-                . '</div>' . "\n";
-            if ($plugin_cf['realblog']['teaser_multicolumns']) {
-                $t .= '</div>' . "\n" . '</div>' . "\n";
-            }
+            $t .= $this->renderArticleFooter($article);
+        }
+        $t .= '<div style="clear: both;"></div>' . "\n"
+            . '</div>' . "\n";
+        if ($plugin_cf['realblog']['teaser_multicolumns']) {
+            $t .= '</div>' . "\n" . '</div>' . "\n";
         }
         return $t;
     }

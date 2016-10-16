@@ -120,104 +120,28 @@ class Controller
         global $plugin_cf;
 
         $realblogID = $this->getPgParameter('realblogID');
-        $db = DB::getConnection();
         $html = '';
         if (!isset($realblogID)) {
             if ($showSearch) {
                 $view = new SearchFormView($this->getYear());
                 $html .= $view->render();
             }
+            $order = ($plugin_cf['realblog']['entries_order'] == 'desc')
+                ? -1 : 1;
             if ($search = $this->getPgParameter('realblog_search')) {
-                $order = ($plugin_cf['realblog']['entries_order'] == 'desc')
-                    ? 'DESC' : 'ASC';
-                $sql = <<<EOS
-SELECT * FROM articles
-    WHERE (title LIKE :text OR body LIKE :text) AND status = 1
-    ORDER BY date $order, id $order
-EOS;
-                $stmt = $db->prepare($sql);
-                $stmt->bindValue(':text', '%' . $search . '%', SQLITE3_TEXT);
-                $result = $stmt->execute();
-                $records = array();
-                while (($record = $result->fetchArray(SQLITE3_ASSOC)) !== false) {
-                    $records[] = (object) $record;
-                }
-                $articles = $records;
-                $html .= $this->renderSearchResults(
-                    'blog',
-                    $this->getNumberOfSearchResults($articles, $realBlogCat)
-                );
+                $articles = DB::findArticles(1, $order, $realBlogCat, $search);
+                $html .= $this->renderSearchResults('blog', count($articles));
             } else {
-                $order = ($plugin_cf['realblog']['entries_order'] == 'desc')
-                    ? -1 : 1;
-                $articles = DB::findArticles(1, $order);
+                $articles = DB::findArticles(1, $order, $realBlogCat);
             }
-            $articles = $this->filterByCategory($realBlogCat, $articles);
             $view = new ArticlesView(
-                $articles, $realBlogCat, $plugin_cf['realblog']['entries_per_page']
+                $articles, $plugin_cf['realblog']['entries_per_page']
             );
             $html .= $view->render();
         } else {
             $html .= $this->renderArticle($realblogID);
         }
         return $html;
-    }
-
-    /**
-     * Returns the number of search results.
-     *
-     * @param array<Article> $articles An array of articles.
-     * @param string         $category A category.
-     *
-     * @return int
-     */
-    protected function getNumberOfSearchResults($articles, $category)
-    {
-        $numberOfSearchResults = 0;
-        foreach ($articles as $article) {
-            if (strstr($article->body, '|' . $category . '|')) {
-                $numberOfSearchResults++;
-            }
-        }
-        if ($category != 'all') {
-            return $numberOfSearchResults - count($articles);
-        } else {
-            return $numberOfSearchResults;
-        }
-    }
-
-    /**
-     * Returns articles filtered by category.
-     *
-     * @param string          $category A category.
-     * @param array<stdClass> $articles An array of articles.
-     *
-     * @return array<stdClass>
-     */
-    protected function filterByCategory($category, $articles)
-    {
-        $result = array();
-        foreach ($articles as $article) {
-            if ($this->belongsToCategory($category, $article)) {
-                $result[] = $article;
-            }
-        }
-        return $result;
-    }
-
-    /**
-     * Returns whether a record belongs to a certain category.
-     *
-     * @param string   $category A category.
-     * @param stdClass $article  An article.
-     *
-     * @return bool
-     */
-    protected function belongsToCategory($category, \stdClass $article)
-    {
-        return strpos($article->teaser, '|' . $category . '|') !== false
-            || strpos($article->body, '|' . $category . '|') !== false
-            || $category == 'all';
     }
 
     /**
