@@ -139,10 +139,10 @@ EOS;
                 $stmt->bindValue(':text', '%' . $search . '%', SQLITE3_TEXT);
                 $result = $stmt->execute();
                 $records = array();
-                while (($record = $result->fetchArray(SQLITE3_NUM)) !== false) {
-                    $records[] = $record;
+                while (($record = $result->fetchArray(SQLITE3_ASSOC)) !== false) {
+                    $records[] = (object) $record;
                 }
-                $articles = Article::makeArticlesFromRecords($records);
+                $articles = $records;
                 $html .= $this->renderSearchResults(
                     'blog',
                     $this->getNumberOfSearchResults($articles, $realBlogCat)
@@ -150,7 +150,7 @@ EOS;
             } else {
                 $order = ($plugin_cf['realblog']['entries_order'] == 'desc')
                     ? -1 : 1;
-                $articles = Article::findArticles(1, $order);
+                $articles = DB::findArticles(1, $order);
             }
             $articles = $this->filterByCategory($realBlogCat, $articles);
             $view = new ArticlesView(
@@ -175,7 +175,7 @@ EOS;
     {
         $numberOfSearchResults = 0;
         foreach ($articles as $article) {
-            if (strstr($article->getBody(), '|' . $category . '|')) {
+            if (strstr($article->body, '|' . $category . '|')) {
                 $numberOfSearchResults++;
             }
         }
@@ -189,10 +189,10 @@ EOS;
     /**
      * Returns articles filtered by category.
      *
-     * @param string         $category A category.
-     * @param array<Article> $articles An array of articles.
+     * @param string          $category A category.
+     * @param array<stdClass> $articles An array of articles.
      *
-     * @return array<Article>
+     * @return array<stdClass>
      */
     protected function filterByCategory($category, $articles)
     {
@@ -208,15 +208,15 @@ EOS;
     /**
      * Returns whether a record belongs to a certain category.
      *
-     * @param string  $category A category.
-     * @param Article $article  An article.
+     * @param string   $category A category.
+     * @param stdClass $article  An article.
      *
      * @return bool
      */
-    protected function belongsToCategory($category, $article)
+    protected function belongsToCategory($category, \stdClass $article)
     {
-        return strpos($article->getTeaser(), '|' . $category . '|') !== false
-            || strpos($article->getBody(), '|' . $category . '|') !== false
+        return strpos($article->teaser, '|' . $category . '|') !== false
+            || strpos($article->body, '|' . $category . '|') !== false
             || $category == 'all';
     }
 
@@ -236,9 +236,9 @@ EOS;
     {
         global $h, $s, $title, $description;
 
-        $article = Article::findById($id);
+        $article = DB::findById($id);
         if (isset($article)) {
-            $title .= $h[$s] . " \xE2\x80\x93 " . $article->getTitle();
+            $title .= $h[$s] . " \xE2\x80\x93 " . $article->title;
             $description = $this->getDescription($article);
             $view = new ArticleView($id, $article, $this->getPage());
             return $view->render();
@@ -273,14 +273,14 @@ EOS;
                 $stmt->bindValue(':text', '%' . $search . '%', SQLITE3_TEXT);
                 $result = $stmt->execute();
                 $records = array();
-                while (($record = $result->fetchArray(SQLITE3_NUM)) !== false) {
-                    $records[] = $record;
+                while (($record = $result->fetchArray(SQLITE3_ASSOC)) !== false) {
+                    $records[] = (object) $record;
                 }
-                $articles = Article::makeArticlesFromRecords($records);
+                $articles = $records;
                 $db_search_records = count($articles);
                 $html .= $this->renderSearchResults('archive', $db_search_records);
             } else {
-                $articles = Article::findArticles(2, -1);
+                $articles = DB::findArticles(2, -1);
             }
 
             $view = new ArchiveView($articles);
@@ -318,7 +318,7 @@ EOS;
         }
         $html = '<p class="realbloglink">'
             . $plugin_tx['realblog']['links_visible_text'] . '</p>';
-        $articles = Article::findArticles(1);
+        $articles = DB::findArticles(1);
         if (!empty($articles)) {
             $articles = array_slice(
                 $articles, 0, $plugin_cf['realblog']['links_visible']
@@ -337,27 +337,27 @@ EOS;
     /**
      * Renders a link to an article.
      *
-     * @param Article $article An article.
-     * @param string  $pageURL The URL of the blog page.
+     * @param stdClass $article An article.
+     * @param string   $pageURL The URL of the blog page.
      *
      * @return string (X)HTML.
      *
      * @global array The localization of the plugins.
      */
-    protected function renderArticleLink($article, $pageURL)
+    protected function renderArticleLink(\stdClass $article, $pageURL)
     {
         global $plugin_tx;
 
         $url = $this->url(
-            $pageURL, $article->getTitle(), array(
-                'realblogID' => $article->getId()
+            $pageURL, $article->title, array(
+                'realblogID' => $article->id
             )
         );
         return '<div class="realblog_tpl_show_date">'
-            . date($plugin_tx['realblog']['date_format'], $article->getDate())
+            . date($plugin_tx['realblog']['date_format'], $article->date)
             . '</div>'
             . '<div class="realblog_tpl_show_title">'
-            . '<a href="' . XH_hsc($url) . '">' . $article->getTitle() .'</a>'
+            . '<a href="' . XH_hsc($url) . '">' . $article->title .'</a>'
             . '</div>';
     }
 
@@ -391,7 +391,7 @@ EOS;
     protected function deliverFeed()
     {
         header('Content-Type: application/rss+xml; charset=UTF-8');
-        $view = new RSSFeed(Article::findFeedableArticles());
+        $view = new RSSFeed(DB::findFeedableArticles());
         echo $view->render();
         exit();
     }
@@ -403,7 +403,7 @@ EOS;
      */
     protected function autoPublish()
     {
-        Article::autoChangeStatus('publishing_date', 1);
+        DB::autoChangeStatus('publishing_date', 1);
     }
 
     /**
@@ -413,21 +413,21 @@ EOS;
      */
     protected function autoArchive()
     {
-        Article::autoChangeStatus('archiving_date', 2);
+        DB::autoChangeStatus('archiving_date', 2);
     }
 
     /**
      * Returns the meta description for an article.
      *
-     * @param Article $article An article.
+     * @param stdClass $article An article.
      *
      * @return string
      */
-    protected function getDescription(Article $article)
+    protected function getDescription(\stdClass $article)
     {
         return utf8_substr(
             html_entity_decode(
-                strip_tags($article->getTeaser()), ENT_COMPAT, 'UTF-8'
+                strip_tags($article->teaser), ENT_COMPAT, 'UTF-8'
             ),
             0, 150
         );

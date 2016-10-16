@@ -137,20 +137,20 @@ class RSSFeed
             $url = CMSIMPLE_URL . substr(
                 $_Realblog_controller->url(
                     $plugin_tx['realblog']["rss_page"],
-                    $article->getTitle(),
+                    $article->title,
                     array(
-                        'realblogID' => $article->getId()
+                        'realblogID' => $article->id
                     )
                 ),
                 strlen($sn)
             );
             $xml .= '<item>'
-                . '<title>' . XH_hsc($article->getTitle()) . '</title>'
+                . '<title>' . XH_hsc($article->title) . '</title>'
                 . '<link>' . XH_hsc($url) . '</link>'
                 . '<description>'
-                . XH_hsc(evaluate_scripting($article->getTeaser()))
+                . XH_hsc(evaluate_scripting($article->teaser))
                 . '</description>'
-                . '<pubDate>' . date('r', $article->getDate())
+                . '<pubDate>' . date('r', $article->date)
                 . '</pubDate>'
                 . '</item>';
         }

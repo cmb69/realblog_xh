@@ -281,7 +281,7 @@ class ArticlesAdminView
     /**
      * Renders a row.
      *
-     * @param Article $article An article.
+     * @param \stdClass $article An article.
      *
      * @return string (X)HTML.
      *
@@ -289,7 +289,7 @@ class ArticlesAdminView
      * @global array      The localization of the plugins.
      * @global Controller The plugin controller.
      */
-    protected function renderRow(Article $article)
+    protected function renderRow(\stdClass $article)
     {
         global $sn, $plugin_tx, $_Realblog_controller;
 
@@ -298,12 +298,12 @@ class ArticlesAdminView
             . '<td class="realblog_table_line">'
             . tag(
                 'input type="checkbox" name="realblogtopics[]"'
-                . ' value="' . $article->getId() . '"'
+                . ' value="' . $article->id . '"'
             )
             . '</td>'
             . '<td class="realblog_table_line">'
             . '<a href="' . $sn. '?&amp;realblog&amp;admin=plugin_main'
-            . '&amp;action=delete_realblog&amp;realblogID=' . $article->getId()
+            . '&amp;action=delete_realblog&amp;realblogID=' . $article->id
             . '&amp;page=' . $page . '">'
             . tag(
                 'img src="' . $this->imageFolder . 'delete.png"' . ' title="'
@@ -313,7 +313,7 @@ class ArticlesAdminView
             . '</a></td>'
             . '<td class="realblog_table_line">'
             . '<a href="' . $sn . '?&amp;realblog&amp;admin=plugin_main'
-            . '&amp;action=modify_realblog&amp;realblogID=' . $article->getId()
+            . '&amp;action=modify_realblog&amp;realblogID=' . $article->id
             . '&amp;page=' . $page . '">'
             . tag(
                 'img src="' . $this->imageFolder . 'edit.png"' . ' title="'
@@ -321,17 +321,17 @@ class ArticlesAdminView
                 . $plugin_tx['realblog']['tooltip_modify'] . '"'
             )
             . '</a></td>'
-            . '<td class="realblog_table_line">' . $article->getId() . '</td>'
+            . '<td class="realblog_table_line">' . $article->id . '</td>'
             . '<td class="realblog_table_line">'
-            . date($plugin_tx['realblog']['date_format'], $article->getDate())
+            . date($plugin_tx['realblog']['date_format'], $article->date)
             . '</td>'
-            . '<td class="realblog_table_line">' . $article->getStatus() . '</td>'
-            . '<td class="realblog_table_line">' . $article->isFeedable() . '</td>'
-            . '<td class="realblog_table_line">' . $article->isCommentable()
+            . '<td class="realblog_table_line">' . $article->status . '</td>'
+            . '<td class="realblog_table_line">' . $article->feedable . '</td>'
+            . '<td class="realblog_table_line">' . $article->commentable
             . '</td>'
             . '</tr>'
             . '<tr><td colspan="8" class="realblog_table_title">'
-            . $article->getTitle() . '</td></tr>';
+            . $article->title . '</td></tr>';
     }
 }
 

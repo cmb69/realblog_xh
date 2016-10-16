@@ -40,7 +40,7 @@ class ArticleView
     /**
      * The article record.
      *
-     * @var Article
+     * @var stdClass
      */
     protected $article;
 
@@ -54,13 +54,13 @@ class ArticleView
     /**
      * Initializes a new instance.
      *
-     * @param int     $id      An article ID.
-     * @param Article $article An article record.
-     * @param int     $page    An article page.
+     * @param int      $id      An article ID.
+     * @param stdClass $article An article record.
+     * @param int      $page    An article page.
      *
      * @return void
      */
-    public function __construct($id, Article $article, $page)
+    public function __construct($id, \stdClass $article, $page)
     {
         $this->id = (int) $id;
         $this->article = $article;
@@ -83,7 +83,7 @@ class ArticleView
             . $this->renderDate() . $this->renderStory()
             . $this->renderLinks() . '</div>';
         // output comments in RealBlog
-        if ($this->wantsComments() && $this->article->isCommentable()) {
+        if ($this->wantsComments() && $this->article->commentable) {
             $realblog_comments_id = 'comments' . $this->id;
             $bridge = $plugin_cf['realblog']['comments_plugin'] . '_RealblogBridge';
             $html .= call_user_func(array($bridge, handle), $realblog_comments_id);
@@ -124,7 +124,7 @@ class ArticleView
     {
         global $su, $plugin_tx, $_Realblog_controller;
 
-        if ($this->article->getStatus() == 2) {
+        if ($this->article->status == 2) {
             $url = $_Realblog_controller->url(
                 $su, null, array('realblog_year' => $_Realblog_controller->getYear())
             );
@@ -189,7 +189,7 @@ class ArticleView
      */
     protected function renderHeading()
     {
-        return '<h4>' . $this->article->getTitle() . '</h4>';
+        return '<h4>' . $this->article->title . '</h4>';
     }
 
     /**
@@ -205,7 +205,7 @@ class ArticleView
 
         $date = date(
             $plugin_tx['realblog']['date_format'],
-            $this->article->getDate()
+            $this->article->date
         );
         return '<div class="realblog_show_date">' . $date . '</div>';
     }
@@ -217,9 +217,9 @@ class ArticleView
      */
     protected function renderStory()
     {
-        $story = $this->article->getBody() != ''
-            ? $this->article->getBody()
-            : $this->article->getTeaser();
+        $story = $this->article->body != ''
+            ? $this->article->body
+            : $this->article->teaser;
         return '<div class="realblog_show_story_entry">'
             . evaluate_scripting($story)
             . '</div>';

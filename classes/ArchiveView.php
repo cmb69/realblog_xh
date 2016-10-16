@@ -33,7 +33,7 @@ class ArchiveView
     /**
      * The articles.
      *
-     * @var array
+     * @var array<stdClass>
      */
     protected $articles;
 
@@ -87,7 +87,7 @@ class ArchiveView
             $next = min($this->year + 1, $currentYear);
             $back = $this->year - 1;
             $t .= $this->renderPagination($back, $next);
-            $generalrealbloglist = Article::findArchivedArticlesInPeriod(
+            $generalrealbloglist = DB::findArchivedArticlesInPeriod(
                 mktime(0, 0, 0, 1, 1, $this->year),
                 mktime(0, 0, 0, 1, 1, $this->year + 1)
             );
@@ -168,7 +168,7 @@ class ArchiveView
     {
         $t = '';
         for ($month = $currentMonth; $month >= 1; $month--) {
-            $realbloglist = Article::findArchivedArticlesInPeriod(
+            $realbloglist = DB::findArchivedArticlesInPeriod(
                 mktime(0, 0, 0, $month, 1, $this->year),
                 mktime(0, 0, 0, $month + 1, 1, $this->year)
             );
@@ -199,15 +199,15 @@ class ArchiveView
         $t = '<ul class="realblog_archive">';
         foreach ($articles as $article) {
             $url = $_Realblog_controller->url(
-                $su, $article->getTitle(), array(
-                    'realblogID' => $article->getId()
+                $su, $article->title, array(
+                    'realblogID' => $article->id
                 )
             );
             $t .= '<li>'
-                . date($plugin_tx['realblog']['date_format'], $article->getDate())
+                . date($plugin_tx['realblog']['date_format'], $article->date)
                 . '&nbsp;&nbsp;&nbsp;<a href="' . XH_hsc($url) . '" title="'
                 . $plugin_tx['realblog']["tooltip_view"] . '">'
-                . $article->getTitle() . '</a></li>';
+                . $article->title . '</a></li>';
         }
         $t .= '</ul>';
         return $t;
@@ -229,22 +229,22 @@ class ArchiveView
         $currentMonth = -1;
         $t = '';
         foreach ($this->articles as $article) {
-            $month = date('n', $article->getDate());
-            $year = date('Y', $article->getDate());
+            $month = date('n', $article->date);
+            $year = date('Y', $article->date);
             if ($month != $currentMonth) {
                 $t .= '<h4>' . $this->getMonthName($month) . ' ' . $year . '</h4>';
                 $currentMonth = $month;
             }
             $url = $_Realblog_controller->url(
-                $su, $article->getTitle(), array(
-                    'realblogID' => $article->getId()
+                $su, $article->title, array(
+                    'realblogID' => $article->id
                 )
             );
             $t .= '<p>'
-                . date($plugin_tx['realblog']['date_format'], $article->getDate())
+                . date($plugin_tx['realblog']['date_format'], $article->date)
                 . '&nbsp;&nbsp;&nbsp;<a href="' . XH_hsc($url) . '" title="'
                 . $plugin_tx['realblog']["tooltip_view"] . '">'
-                . $article->getTitle() . '</a></p>';
+                . $article->title . '</a></p>';
         }
         return $t;
     }

@@ -33,7 +33,7 @@ class ArticleAdminView
     /**
      * The article record.
      *
-     * @var Article
+     * @var stdClass
      */
     protected $article;
 
@@ -54,14 +54,14 @@ class ArticleAdminView
     /**
      * Initializes a new instance.
      *
-     * @param Article $article An article record.
-     * @param string  $action  An action.
+     * @param stdClass $article An article record.
+     * @param string   $action  An action.
      *
      * @return void
      *
      * @global array The paths of system files and folders.
      */
-    public function __construct(Article $article, $action)
+    public function __construct(\stdClass $article, $action)
     {
         global $pth;
 
@@ -111,7 +111,7 @@ class ArticleAdminView
             . '</table>'
             . '<h4>' . $plugin_tx['realblog']['title_label'] . '</h4>'
             . tag(
-                'input type="text" value="' . $this->article->getTitle()
+                'input type="text" value="' . $this->article->title
                 . '" name="realblog_title" size="70"'
             )
             . $this->renderHeadline() . $this->renderStory()
@@ -131,7 +131,7 @@ class ArticleAdminView
 
         $html = '';
         $fields = array(
-            'realblog_id' => $this->article->getId(),
+            'realblog_id' => $this->article->id,
             'action' => 'do_' . $this->getVerb()
         );
         foreach ($fields as $name => $value) {
@@ -169,7 +169,7 @@ class ArticleAdminView
 
         $html = tag(
             'input type="date" name="realblog_date" id="date1" required="required"'
-            . ' value="' . date('Y-m-d', $this->article->getDate()) . '"'
+            . ' value="' . date('Y-m-d', $this->article->date) . '"'
         );
         $html .= '&nbsp;'
             . tag(
@@ -196,7 +196,7 @@ class ArticleAdminView
             $html = tag(
                 'input type="date" name="realblog_startdate" id="date2"'
                 . ' required="required" value="'
-                . date('Y-m-d', $this->article->getPublishingDate()) . '"'
+                . date('Y-m-d', $this->article->publishingDate) . '"'
             );
             $html .= '&nbsp;'
                 . tag(
@@ -226,7 +226,7 @@ class ArticleAdminView
             $html = tag(
                 'input type="date" name="realblog_enddate" id="date3"'
                 . ' required="required" value="'
-                . date('Y-m-d', $this->article->getArchivingDate()) . '"'
+                . date('Y-m-d', $this->article->archivingDate) . '"'
             );
             $html .= '&nbsp;'
                 . tag(
@@ -254,7 +254,7 @@ class ArticleAdminView
         $states = array('readyforpublishing', 'published', 'archived', 'backuped');
         $html = '<select name="realblog_status">';
         foreach ($states as $i => $state) {
-            $selected = ($i == $this->article->getStatus())
+            $selected = ($i == $this->article->status)
                 ? 'selected="selected"' : '';
             $html .= '<option value="' . $i . '" ' . $selected . '>'
                 . $plugin_tx['realblog'][$state] . '</option>';
@@ -274,7 +274,7 @@ class ArticleAdminView
     {
         global $plugin_tx;
 
-        $checked = ($this->article->isCommentable())
+        $checked = ($this->article->commentable)
             ? 'checked="checked"' : '';
         return '<label>'
             . tag(
@@ -296,7 +296,7 @@ class ArticleAdminView
     {
         global $plugin_tx;
 
-        $checked = ($this->article->isFeedable())
+        $checked = ($this->article->feedable)
             ? 'checked="checked"' : '';
         return '<label>'
             . tag(
@@ -328,7 +328,7 @@ class ArticleAdminView
             . '</p>'
             . '<textarea class="realblog_headline_field" name="realblog_headline"'
             . ' id="realblog_headline" rows="6" cols="60">'
-            . XH_hsc($this->article->getTeaser()) . '</textarea>';
+            . XH_hsc($this->article->teaser) . '</textarea>';
     }
 
     /**
@@ -345,7 +345,7 @@ class ArticleAdminView
         return '<h4>' . $plugin_tx['realblog']['story_label'] . '</h4>'
             . '<textarea class="realblog_story_field"'
             . ' name="realblog_story" id="realblog_story" rows="30" cols="80">'
-            . XH_hsc($this->article->getBody()) . '</textarea>';
+            . XH_hsc($this->article->body) . '</textarea>';
     }
 
     /**

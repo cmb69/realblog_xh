@@ -71,12 +71,11 @@ class ArticleViewTest extends PHPUnit_Framework_TestCase
             'entry_edit' => 'Edit entry'
         );
         $this->_defineConstant('XH_ADM', false);
-        $article = Realblog\Article::makeFromRecord(
+        $article = (object)
             [
                 '1', '1405548000', '1405548000', '1405548000', '1', '',
                 'Heading', '<p>Teaser</p>', '<p>Article</p>', '', ''
-            ]
-        );
+            ];
         $_Realblog_controller = new Realblog\Controller();
         $this->_subject = new ArticleView('1', $article, '1');
     }
