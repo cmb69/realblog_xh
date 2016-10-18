@@ -150,7 +150,8 @@ EOS;
             ? 'AND (title LIKE :search OR body LIKE :search)'
             : '';
         $sql = <<<EOS
-SELECT * FROM articles
+SELECT id, date, title, teaser, commentable, length(body) AS body_length
+	FROM articles
     WHERE status = :status $categoryClause $searchClause
     ORDER BY date $order, id $order
 EOS;
@@ -226,7 +227,7 @@ EOS;
 	public static function findArchivedArticlesContaining($search)
 	{
 		$sql = <<<'EOS'
-SELECT * FROM articles
+SELECT id, date, title FROM articles
     WHERE (title LIKE :text OR body LIKE :text) AND status = 2
     ORDER BY date DESC, id DESC
 EOS;

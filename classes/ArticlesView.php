@@ -154,7 +154,7 @@ class ArticlesView
         $t .= "\n" . '<div class="realblog_show_story">' . "\n";
         $t .= evaluate_scripting($article->teaser);
         if ($plugin_cf['realblog']['show_read_more_link']
-            && $article->body != ''
+            && $article->body_length
         ) {
             $t .= $this->renderArticleFooter($article);
         }
@@ -187,12 +187,12 @@ class ArticlesView
                 'realblogID' => $article->id
             )
         );
-        if ($article->body != '' || XH_ADM) {
+        if ($article->body_length || XH_ADM) {
             $t .= '<a href="' . XH_hsc($url) . '" title="'
                 . $plugin_tx['realblog']["tooltip_view"] . '">';
         }
         $t .= $article->title;
-        if ($article->body != '' || XH_ADM) {
+        if ($article->body_length || XH_ADM) {
             $t .= '</a>';
         }
         $t .= '</h4>' . "\n";
