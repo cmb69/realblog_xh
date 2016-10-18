@@ -91,16 +91,18 @@ class ArticlesView
                 $next = $pageCount;
                 $back = $pageCount - 1;
             }
+        } else {
+            $next = $back = null;
         }
 
         $t = "\n" . '<div class="realblog_show_box">' . "\n";
         $t .= $this->renderPagination(
-            'top', $page, $pageCount, @$back, @$next
+            'top', $page, $pageCount, $back, $next
         );
         $t .= "\n" . '<div style="clear:both;"></div>';
         $t .= $this->renderArticlePreviews($start_index, $end_index);
         $t .= $this->renderPagination(
-            'bottom', $page, $pageCount, @$back, @$next
+            'bottom', $page, $pageCount, $back, $next
         );
         $t .= '<div style="clear: both"></div></div>';
         return $t;
