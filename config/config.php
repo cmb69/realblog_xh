@@ -10,6 +10,7 @@ $plugin_cf['realblog']['links_visible']="4";
 $plugin_cf['realblog']['rss_enabled']="true";
 $plugin_cf['realblog']['rss_editor']="webmaster@example.com";
 $plugin_cf['realblog']['rss_logo']="";
+$plugin_cf['realblog']['rss_entries']="20";
 $plugin_cf['realblog']['show_numberof_entries_bottom']="true";
 $plugin_cf['realblog']['show_numberof_entries_top']="true";
 $plugin_cf['realblog']['show_read_more_link']="true";

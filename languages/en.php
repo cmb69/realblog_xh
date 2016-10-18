@@ -95,6 +95,7 @@ $plugin_tx['realblog']['cf_links_visible']="number of visible entries of functio
 $plugin_tx['realblog']['cf_rss_enabled']="Shall the RSS feed be available?";
 $plugin_tx['realblog']['cf_rss_editor']="The email address of the person responsible for editorial content.";
 $plugin_tx['realblog']['cf_rss_logo']="The path of the logo, relative to the image folder.";
+$plugin_tx['realblog']['cf_rss_entries']="The maximum number of articles shown in the RSS feed.";
 $plugin_tx['realblog']['cf_show_numberof_entries_bottom']="Show the number of entries below the entries preview?";
 $plugin_tx['realblog']['cf_show_numberof_entries_top']="Show the number of entries above the entries preview?";
 $plugin_tx['realblog']['cf_show_read_more_link']="Display the \"read more\" link and the number of comments in the teaser?";

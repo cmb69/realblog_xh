@@ -95,6 +95,7 @@ $plugin_tx['realblog']['cf_links_visible']="Anzahl der sichtbaren Artikel in der
 $plugin_tx['realblog']['cf_rss_enabled']="Soll der RSS-Feed abrufbar sein?";
 $plugin_tx['realblog']['cf_rss_editor']="Die E-Mail-Adresse der Person, die für den redaktionellen Inhalt verantwortlich ist.";
 $plugin_tx['realblog']['cf_rss_logo']="Der Pfad des Logos, relativ zum Bilder-Ordner.";
+$plugin_tx['realblog']['cf_rss_entries']="Die Höchstanzahl von Artikeln, die im RSS-Feed angezeigt werden.";
 $plugin_tx['realblog']['cf_show_numberof_entries_bottom']="Die Anzahl der Artikel unterhalb der Artikelvorschau anzeigen?";
 $plugin_tx['realblog']['cf_show_numberof_entries_top']="Die Anzahl der Artikel oberhalb der Artikelvorschau anzeigen?.";
 $plugin_tx['realblog']['cf_show_read_more_link']="Den Link zum Artikel und die Anzahl der Kommentare im Teaser anzeigen?";

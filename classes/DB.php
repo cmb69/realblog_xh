@@ -309,15 +309,18 @@ EOS;
     /**
      * Finds and returns all feedable articles ordered by date and ID.
      *
+     * @param int $count
+     *
      * @return array<stdClass>
      */
-    public static function findFeedableArticles()
+    public static function findFeedableArticles($count)
     {
         $db = self::getConnection();
-        $sql = <<<'EOS'
+        $sql = <<<SQL
 SELECT id, date, title, teaser
     FROM articles WHERE feedable = :feedable ORDER BY date DESC, id DESC
-EOS;
+	LIMIT $count
+SQL;
         $statement = $db->prepare($sql);
         $statement->bindValue(':feedable', 1, SQLITE3_INTEGER);
         $result = $statement->execute();

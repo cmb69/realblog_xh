@@ -301,8 +301,11 @@ class Controller
      */
     protected function deliverFeed()
     {
+        global $plugin_cf;
+
         header('Content-Type: application/rss+xml; charset=UTF-8');
-        $view = new RSSFeed(DB::findFeedableArticles());
+        $count = $plugin_cf['realblog']['rss_entries'];
+        $view = new RSSFeed(DB::findFeedableArticles($count));
         echo $view->render();
         exit();
     }
