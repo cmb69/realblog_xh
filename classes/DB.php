@@ -135,7 +135,7 @@ EOS;
      *
      * @return array<stdClass>
      */
-    public static function findArticles($status, $order = -1, $category = 'all', $search = '')
+    public static function findArticles($status, $limit, $offset = 0, $order = -1, $category = 'all', $search = null)
     {
         $db = self::getConnection();
         if ($order === -1) {
@@ -146,7 +146,7 @@ EOS;
         $categoryClause = ($category !== 'all')
             ? 'AND (teaser LIKE :category OR body LIKE :category)'
             : '';
-        $searchClause = ($search !== '')
+        $searchClause = isset($search)
             ? 'AND (title LIKE :search OR body LIKE :search)'
             : '';
         $sql = <<<EOS
@@ -154,6 +154,7 @@ SELECT id, date, title, teaser, commentable, length(body) AS body_length
 	FROM articles
     WHERE status = :status $categoryClause $searchClause
     ORDER BY date $order, id $order
+	LIMIT $limit OFFSET $offset
 EOS;
         $statement = $db->prepare($sql);
         $statement->bindValue(':status', $status, SQLITE3_INTEGER);
@@ -249,16 +250,29 @@ EOS;
      *
      * @return int
      */
-    public static function countArticlesWithStatus($statuses)
+    public static function countArticlesWithStatus($statuses, $category = 'all', $search = null)
     {
         $db = self::getConnection();
         if (empty($statuses)) {
-            $whereClause = '';
+            $whereClause = 'WHERE 1 = 1';
         } else {
             $whereClause = sprintf('WHERE status IN (%s)', implode(', ', $statuses));
         }
-        $sql = "SELECT COUNT(*) AS count FROM articles $whereClause ORDER BY id DESC";
-        return $db->querySingle($sql);
+        $categoryClause = ($category !== 'all')
+            ? 'AND (teaser LIKE :category OR body LIKE :category)'
+            : '';
+        $searchClause = isset($search)
+            ? 'AND (title LIKE :search OR body LIKE :search)'
+            : '';
+        $sql = <<<SQL
+SELECT COUNT(*) AS count FROM articles $whereClause $categoryClause $searchClause
+SQL;
+        $statement = $db->prepare($sql);
+        $statement->bindValue(':category', "%|$category|%", SQLITE3_TEXT);
+        $statement->bindValue(':search', "%$search%", SQLITE3_TEXT);
+        $result = $statement->execute();
+        $record = $result->fetchArray(SQLITE3_ASSOC);
+        return $record['count'];
     }
 
     /**

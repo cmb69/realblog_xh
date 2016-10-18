@@ -36,74 +36,44 @@ class ArticlesView
      * @var array
      */
     protected $articles;
-
-    /**
-     * The number of articles per page.
-     *
-     * @var int
-     */
-    protected $articlesPerPage;
+    
+    protected $page;
+    
+    protected $pageCount;
 
     /**
      * Initializes a new instance.
      *
      * @param array  $articles        An array of articles.
-     * @param int    $articlesPerPage The number of articles per page.
      *
      * @return void
      */
-    public function __construct($articles, $articlesPerPage)
+    public function __construct($articles, $page, $pageCount)
     {
         $this->articles = $articles;
-        $this->articlesPerPage = (int) $articlesPerPage;
+        $this->page = $page;
+        $this->pageCount = $pageCount;
     }
 
     /**
      * Renders the view.
      *
      * @return string (X)HTML.
-     *
-     * @global Controller The plugin controller.
      */
     public function render()
     {
-        global $_Realblog_controller;
-
-        $articleCount = count($this->articles);
-        $pageCount = (int) ceil($articleCount / $this->articlesPerPage);
-        $page = $_Realblog_controller->getPage();
-        if ($page > $pageCount) {
-            $page = 1;
-        }
-        if ($page <= 1) {
-            $start_index = 0;
-            $page = 1;
-        } else {
-            $start_index = ($page - 1) * $this->articlesPerPage;
-        }
-        $end_index = min($page * $this->articlesPerPage - 1, $articleCount);
-
-        if ($articleCount > 0 && $pageCount > 1) {
-            if ($pageCount > $page) {
-                $next = $page + 1;
-                $back = ($page > 1) ? $next - 2 : "1";
-            } else {
-                $next = $pageCount;
-                $back = $pageCount - 1;
-            }
+        if ($this->pageCount > 1) {
+            $next = min($this->page + 1, $this->pageCount);
+            $back = max($this->page - 1, 1);
         } else {
             $next = $back = null;
         }
 
         $t = "\n" . '<div class="realblog_show_box">' . "\n";
-        $t .= $this->renderPagination(
-            'top', $page, $pageCount, $back, $next
-        );
+        $t .= $this->renderPagination('top', $back, $next);
         $t .= "\n" . '<div style="clear:both;"></div>';
-        $t .= $this->renderArticlePreviews($start_index, $end_index);
-        $t .= $this->renderPagination(
-            'bottom', $page, $pageCount, $back, $next
-        );
+        $t .= $this->renderArticlePreviews();
+        $t .= $this->renderPagination('bottom', $back, $next);
         $t .= '<div style="clear: both"></div></div>';
         return $t;
     }
@@ -111,22 +81,13 @@ class ArticlesView
     /**
      * Renders the article previews.
      *
-     * @param int $start The first article to render.
-     * @param int $end   The last article to render.
-     *
      * @return string (X)HTML.
      */
-    protected function renderArticlePreviews($start, $end)
+    protected function renderArticlePreviews()
     {
-        $articleCount = count($this->articles);
         $t = '<div id="realblog_entries_preview" class="realblog_entries_preview">';
-        for ($i = $start; $i <= $end; $i++) {
-            if ($i > $articleCount - 1) {
-                $t .= '';
-            } else {
-                $article = $this->articles[$i];
-                $t .= $this->renderArticlePreview($article);
-            }
+        foreach ($this->articles as $article) {
+            $t .= $this->renderArticlePreview($article);
         }
         $t .= '<div style="clear: both;"></div>' . '</div>';
         return $t;
@@ -283,27 +244,22 @@ class ArticlesView
      * Renders the pagination.
      *
      * @param string $place     A place to render ('top' or 'bottom').
-     * @param string $page      A page number.
-     * @param int    $pageCount A page count.
      * @param int    $back      The number of the previous page.
      * @param int    $next      The number of the next page.
      *
      * @return string (X)HTML.
      */
-    protected function renderPagination($place, $page, $pageCount, $back, $next)
+    protected function renderPagination($place, $back, $next)
     {
-        $articleCount = count($this->articles);
         $t = '';
-        if ($articleCount > 0 && $pageCount > 1) {
-            $t .= $this->renderPageLinks($pageCount);
+        if ($this->pageCount > 1) {
+            $t .= $this->renderPageLinks();
         }
         if ($this->wantsNumberOfArticles($place)) {
             $t .= $this->renderNumberOfArticles();
         }
-        if ($articleCount > 0 && $pageCount > 1) {
-            $t .= $this->renderPageOfPages(
-                $page, $pageCount, $back, $next
-            );
+        if ($this->pageCount > 1) {
+            $t .= $this->renderPageOfPages($back, $next);
         }
         return $t;
     }
@@ -329,21 +285,19 @@ class ArticlesView
     /**
      * Renders the page links.
      *
-     * @param int $pageCount A page count.
-     *
      * @return string (X)HTML.
      *
      * @global string     The URL of the current page.
      * @global array      The localization of the plugins.
      * @global Controller The plugin controller.
      */
-    protected function renderPageLinks($pageCount)
+    protected function renderPageLinks()
     {
         global $su, $plugin_tx, $_Realblog_controller;
 
         $t = '<div class="realblog_table_paging">';
-        for ($i = 1; $i <= $pageCount; $i++) {
-            $separator = ($i < $pageCount) ? ' ' : '';
+        for ($i = 1; $i <= $this->pageCount; $i++) {
+            $separator = ($i < $this->pageCount) ? ' ' : '';
             $url = $_Realblog_controller->url(
                 $su, null, array('realblog_page' => $i)
             );
@@ -358,8 +312,6 @@ class ArticlesView
     /**
      * Renders the page of pages.
      *
-     * @param string $page      The number of the current page.
-     * @param int    $pageCount A page count.
      * @param int    $back      The number of the previous page.
      * @param int    $next      The number of the next page.
      *
@@ -369,7 +321,7 @@ class ArticlesView
      * @global array      The localization of the plugins.
      * @global Controller The plugin controller.
      */
-    protected function renderPageOfPages($page, $pageCount, $back, $next)
+    protected function renderPageOfPages($back, $next)
     {
         global $su, $plugin_tx, $_Realblog_controller;
 
@@ -383,7 +335,7 @@ class ArticlesView
             . $plugin_tx['realblog']['page_label'] . ' : '
             . '<a href="' . XH_hsc($backUrl) . '" title="'
             . $plugin_tx['realblog']['tooltip_previous'] . '">'
-            . '&#9664;</a>&nbsp;' . $page . '/' . $pageCount
+            . '&#9664;</a>&nbsp;' . $this->page . '/' . $this->pageCount
             . '&nbsp;' . '<a href="' . XH_hsc($nextUrl) . '" title="'
             . $plugin_tx['realblog']['tooltip_next'] . '">'
             . '&#9654;</a></div>';

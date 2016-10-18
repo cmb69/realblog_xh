@@ -115,31 +115,33 @@ class Controller
      *
      * @global array  The configuration of the plugins.
      */
-    public function blog($showSearch = false, $realBlogCat = 'all')
+    public function blog($showSearch = false, $category = 'all')
     {
-        global $plugin_cf;
+        global $plugin_cf, $_Realblog_controller;
 
-        $realblogID = $this->getPgParameter('realblogID');
+        $id = $this->getPgParameter('realblogID');
         $html = '';
-        if (!isset($realblogID)) {
+        if (!isset($id)) {
             if ($showSearch) {
                 $view = new SearchFormView($this->getYear());
                 $html .= $view->render();
             }
             $order = ($plugin_cf['realblog']['entries_order'] == 'desc')
                 ? -1 : 1;
-            if ($search = $this->getPgParameter('realblog_search')) {
-                $articles = DB::findArticles(1, $order, $realBlogCat, $search);
-                $html .= $this->renderSearchResults('blog', count($articles));
-            } else {
-                $articles = DB::findArticles(1, $order, $realBlogCat);
+            $limit = $plugin_cf['realblog']['entries_per_page'];
+            $page = $_Realblog_controller->getPage();
+            $search = $this->getPgParameter('realblog_search');
+            $articleCount = DB::countArticlesWithStatus(array(1), $category, $search);
+            $pageCount = ceil($articleCount / $limit);
+            $page = min(max($page, 1), $pageCount);
+            $articles = DB::findArticles(1, $limit, ($page-1) * $limit, $order, $category, $search);
+            if ($search) {
+                $html .= $this->renderSearchResults('blog', $articleCount);
             }
-            $view = new ArticlesView(
-                $articles, $plugin_cf['realblog']['entries_per_page']
-            );
+            $view = new ArticlesView($articles, $page, $pageCount);
             $html .= $view->render();
         } else {
-            $html .= $this->renderArticle($realblogID);
+            $html .= $this->renderArticle($id);
         }
         return $html;
     }
@@ -188,12 +190,14 @@ class Controller
 
             if ($search = $this->getPgParameter('realblog_search')) {
                 $articles = DB::findArchivedArticlesContaining($search);
-                $html .= $this->renderSearchResults('archive', count($articles));
+                $articleCount = count($articles);
+                $html .= $this->renderSearchResults('archive', $articleCount);
             } else {
-                $articles = DB::findArticles(2, -1);
+                $articleCount = DB::countArticlesWithStatus(array(2));
+                $articles = array();
             }
 
-            $view = new ArchiveView($articles);
+            $view = new ArchiveView($articles, $articleCount);
             $html .= $view->render();
         } else {
             $html .= $this->renderArticle($realblogID);
@@ -228,11 +232,8 @@ class Controller
         }
         $html = '<p class="realbloglink">'
             . $plugin_tx['realblog']['links_visible_text'] . '</p>';
-        $articles = DB::findArticles(1);
+        $articles = DB::findArticles(1, $plugin_cf['realblog']['links_visible']);
         if (!empty($articles)) {
-            $articles = array_slice(
-                $articles, 0, $plugin_cf['realblog']['links_visible']
-            );
             $html .= '<div class="realblog_tpl_show_box">';
             foreach ($articles as $article) {
                 $html .= $this->renderArticleLink($article, $pageUrl);

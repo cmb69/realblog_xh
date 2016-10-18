@@ -36,6 +36,8 @@ class ArchiveView
      * @var array<stdClass>
      */
     protected $articles;
+    
+    protected $articleCount;
 
     /**
      * The requested year.
@@ -53,11 +55,12 @@ class ArchiveView
      *
      * @global Controller The plugin controller.
      */
-    public function __construct($articles)
+    public function __construct($articles, $articleCount)
     {
         global $_Realblog_controller;
 
         $this->articles = $articles;
+        $this->articleCount = $articleCount;
         $this->year = $_Realblog_controller->getYear();
     }
 
@@ -96,7 +99,7 @@ class ArchiveView
                 $t .= $plugin_tx['realblog']['no_topics'];
             }
         } else {
-            if (count($this->articles) > 0) {
+            if ($this->articleCount > 0) {
                 $t .= $this->renderSearchResults();
             } else {
                 $t .= $plugin_tx['realblog']['no_topics'];
