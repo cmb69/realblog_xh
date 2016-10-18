@@ -219,6 +219,28 @@ EOS;
         return $records;
     }
 
+	/**
+	 * @param string $search
+	 * @return array<stdClass>
+	 */
+	public static function findArchivedArticlesContaining($search)
+	{
+		$sql = <<<'EOS'
+SELECT * FROM articles
+    WHERE (title LIKE :text OR body LIKE :text) AND status = 2
+    ORDER BY date DESC, id DESC
+EOS;
+		$db = self::getConnection();
+		$stmt = $db->prepare($sql);
+		$stmt->bindValue(':text', '%' . $search . '%', SQLITE3_TEXT);
+		$result = $stmt->execute();
+		$records = array();
+		while (($record = $result->fetchArray(SQLITE3_ASSOC)) !== false) {
+			$records[] = (object) $record;
+		}
+		return $records;
+	}
+
     /**
      * Counts the number of articles with one of the statuses.
      *
@@ -298,7 +320,7 @@ EOS;
      */
     public static function findById($id)
     {
-        $db = DB::getConnection();
+        $db = self::getConnection();
         $statement = $db->prepare('SELECT * FROM articles WHERE id = :id');
         $statement->bindValue(':id', $id, SQLITE3_INTEGER);
         $result = $statement->execute();
@@ -380,7 +402,21 @@ EOS;
         $statement->execute();
         $records = array();
     }
-    
+
+	/**
+	 * @param array<int> $ids
+	 * @param int        $status
+	 */
+	public static function updateStatusOfArticlesWithIds($ids, $status)
+	{
+		$sql = sprintf('UPDATE articles SET status = :status WHERE id in (%s)',
+					   implode(',', $ids));
+		$db = self::getConnection();
+		$stmt = $db->prepare($sql);
+		$stmt->bindValue(':status', $status, SQLITE3_INTEGER);
+		$stmt->execute();
+	}
+
     public static function deleteArticleWithId($id)
     {
         $sql = 'DELETE FROM articles WHERE id = :id';
@@ -389,6 +425,17 @@ EOS;
         $stmt->bindValue(':id', $id, SQLITE3_INTEGER);
         $stmt->execute();
     }
+
+	/**
+	 * @param array<int> $ids
+	 */
+	public static function deleteArticlesWithIds($ids)
+	{
+        $sql = sprintf('DELETE FROM articles WHERE id in (%s)',
+                       implode(',', $ids));
+        $db = self::getConnection();
+        $db->exec($sql);
+	}
 }
 
 ?>

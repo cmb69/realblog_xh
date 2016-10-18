@@ -179,7 +179,6 @@ class Controller
     public function archive($showSearch = false)
     {
         $realblogID = $this->getPgParameter('realblogID');
-        $db = DB::getConnection();
         $html = '';
         if (!isset($realblogID)) {
             if ($showSearch) {
@@ -188,21 +187,8 @@ class Controller
             }
 
             if ($search = $this->getPgParameter('realblog_search')) {
-                $sql = <<<'EOS'
-SELECT * FROM articles
-    WHERE (title LIKE :text OR body LIKE :text) AND status = 2
-    ORDER BY date DESC, id DESC
-EOS;
-                $stmt = $db->prepare($sql);
-                $stmt->bindValue(':text', '%' . $search . '%', SQLITE3_TEXT);
-                $result = $stmt->execute();
-                $records = array();
-                while (($record = $result->fetchArray(SQLITE3_ASSOC)) !== false) {
-                    $records[] = (object) $record;
-                }
-                $articles = $records;
-                $db_search_records = count($articles);
-                $html .= $this->renderSearchResults('archive', $db_search_records);
+                $articles = DB::findArchivedArticlesContaining($search);
+                $html .= $this->renderSearchResults('archive', count($articles));
             } else {
                 $articles = DB::findArticles(2, -1);
             }

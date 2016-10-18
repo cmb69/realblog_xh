@@ -268,12 +268,7 @@ class AdminController
         $status = $_Realblog_controller->getPgParameter('new_realblogstatus');
         if (is_numeric($status) && $status >= 0 && $status <= 2) {
             $ids = array_map(function ($id) {return (int) $id;}, $ids);
-            $sql = sprintf('UPDATE articles SET status = :status WHERE id in (%s)',
-                           implode(',', $ids));
-            $db = DB::getConnection();
-            $stmt = $db->prepare($sql);
-            $stmt->bindValue(':status', $status, SQLITE3_INTEGER);
-            $stmt->execute();
+            $db = DB::updateStatusOfArticlesWithIds($ids, $status);
             $title = $plugin_tx['realblog']['tooltip_changestatus'];
             $info = $plugin_tx['realblog']['changestatus_done'];
             return $this->dbconfirm($title, $info, $_Realblog_controller->getPage());
@@ -312,10 +307,7 @@ class AdminController
         $_XH_csrfProtection->check();
         $ids = $_Realblog_controller->getPgParameter('realblogtopics');
         $ids = array_map(function ($id) {return (int) $id;}, $ids);
-        $sql = sprintf('DELETE FROM articles WHERE id in (%s)',
-                       implode(',', $ids));
-        $db = DB::getConnection();
-        $db->exec($sql);
+        DB::deleteArticlesWithIds($ids);
         $title = $plugin_tx['realblog']['tooltip_deleteall'];
         $info = $plugin_tx['realblog']['deleteall_done'];
         return $this->dbconfirm($title, $info, $_Realblog_controller->getPage());
