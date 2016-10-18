@@ -94,7 +94,9 @@ CREATE TABLE articles (
 	body TEXT,
 	feedable INTEGER,
 	commentable INTEGER
-)
+);
+CREATE INDEX status ON articles (status, date, id);
+CREATE INDEX feedable ON articles (feedable, date, id);
 EOS;
         $this->connection->exec($sql);
         $this->importFlatfile();
