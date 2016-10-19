@@ -69,30 +69,6 @@
         <exec command="phpunit --bootstrap classes/required_classes.php --configuration coverage.xml" logoutput="true"/>
     </target>
 
-    <target name="php-doc">
-        <phpdoc title="Realblog_XH Developer Documentation" destdir="doc/php"
-                output="HTML:Smarty:HandS" defaultpackagename="Realblog"
-                defaultcategoryname="CMSimple_XH" parseprivate="true">
-            <fileset refid="php-sources"/>
-            <projdocfileset dir=".">
-               <include name="README"/>
-               <include name="CHANGELOG"/>
-            </projdocfileset>
-        </phpdoc>
-    </target>
-
-    <target name="js-doc">
-        <apply executable="jsdoc" parallel="true" checkreturn="true">
-            <arg value="-d"/>
-            <arg value="doc/js"/>
-            <arg value="-p"/>
-            <fileset refid="js-sources"/>
-        </apply>
-    </target>
-
-    <target name="doc" description="generates the developer documentation"
-            depends="php-doc"/>
-
     <target name="build" description="builds a distributable ZIP archive">
         <fail unless="version" message="version is not defined!"/>
         <exec command="git archive -o export.tar HEAD" checkreturn="true"/>
