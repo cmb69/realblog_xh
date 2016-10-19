@@ -1,12 +1,6 @@
 <?php
 
 /**
- * The DB.
- *
- * PHP version 5
- *
- * @category  CMSimple_XH
- * @package   Realblog
  * @author    Jan Kanters <jan.kanters@telenet.be>
  * @author    Gert Ebersbach <mail@ge-webdesign.de>
  * @author    Christoph M. Becker <cmbecker69@gmx.de>
@@ -14,7 +8,6 @@
  * @copyright 2010-2014 Gert Ebersbach <http://ge-webdesign.de/>
  * @copyright 2014-2016 Christoph M. Becker <http://3-magi.net/>
  * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link      http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
 
 namespace Realblog;
@@ -22,34 +15,19 @@ namespace Realblog;
 use stdClass;
 use SQLite3;
 
-/**
- * The DB.
- *
- * @category CMSimple_XH
- * @package  Realblog
- * @author   Christoph M. Becker <cmbecker69@gmx.de>
- * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link     http://3-magi.net/?CMSimple_XH/Realblog_XH
- */
 class DB
 {
     /**
-     * The unique instance.
-     *
-     * @var DB
+     * @var self
      */
-    protected static $instance;
+    private static $instance;
 
     /**
-     * The connection.
-     *
      * @var SQLite3
      */
-    protected $connection;
+    private $connection;
 
     /**
-     * Returns the connection.
-     *
      * @return SQLite3
      */
     public static function getConnection()
@@ -61,11 +39,9 @@ class DB
     }
 
     /**
-     * Initializes a new instance.
-     *
-     * @global array The paths of system files and folders.
+     * @global array $pth
      */
-    protected function __construct()
+    private function __construct()
     {
         global $pth;
 
@@ -83,21 +59,24 @@ class DB
         }
     }
 
+    /**
+     * @return void
+     */
     private function createDatabase()
     {
         $sql = <<<'EOS'
 CREATE TABLE articles (
-	id	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-	date INTEGER,
-	publishing_date INTEGER,
-	archiving_date INTEGER,
-	status INTEGER,
-	categories TEXT,
-	title TEXT,
-	teaser TEXT,
-	body TEXT,
-	feedable INTEGER,
-	commentable INTEGER
+    id  INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+    date INTEGER,
+    publishing_date INTEGER,
+    archiving_date INTEGER,
+    status INTEGER,
+    categories TEXT,
+    title TEXT,
+    teaser TEXT,
+    body TEXT,
+    feedable INTEGER,
+    commentable INTEGER
 );
 CREATE INDEX status ON articles (status, date, id);
 CREATE INDEX feedable ON articles (feedable, date, id);
@@ -106,6 +85,10 @@ EOS;
         $this->importFlatfile();
     }
 
+    /**
+     * @return void
+     * @global array $pth
+     */
     private function importFlatfile()
     {
         global $pth;
@@ -116,48 +99,56 @@ EOS;
             $this->connection->exec('BEGIN TRANSACTION');
             $sql = <<<'SQL'
 INSERT INTO articles VALUES (
-	:id, :date, :publishing_date, :archiving_date, :status, :categories, :title,
-	:teaser, :body, :feedable, :commentable
+    :id, :date, :publishing_date, :archiving_date, :status, :categories, :title,
+    :teaser, :body, :feedable, :commentable
 )
 SQL;
             $statement = $this->connection->prepare($sql);
             foreach ($lines as $line) {
                 $record = explode("\t", $line);
-				$categories = array_merge($this->getAndRemoveCategories($record[7]),
-										  $this->getAndRemoveCategories($record[8]));
-				$categories = implode(',', $categories);
-				$statement->bindValue(':id', $record[0], SQLITE3_INTEGER);
-				$statement->bindValue(':date', $record[1], SQLITE3_INTEGER);
-				$statement->bindValue(':publishing_date', $record[2], SQLITE3_INTEGER);
-				$statement->bindValue(':archiving_date', $record[3], SQLITE3_INTEGER);
-				$statement->bindValue(':status', $record[4], SQLITE3_INTEGER);
-				$statement->bindValue(':categories', ",$categories,", SQLITE3_TEXT);
-				$statement->bindValue(':title', $record[6], SQLITE3_TEXT);
-				$statement->bindValue(':teaser', $record[7], SQLITE3_TEXT);
-				$statement->bindValue(':body', $record[8], SQLITE3_TEXT);
-				$statement->bindValue(':feedable', $record[9], SQLITE3_INTEGER);
-				$statement->bindValue(':commentable', $record[10], SQLITE3_INTEGER);
+                $categories = array_merge(
+                    $this->getAndRemoveCategories($record[7]),
+                    $this->getAndRemoveCategories($record[8])
+                );
+                $categories = implode(',', $categories);
+                $statement->bindValue(':id', $record[0], SQLITE3_INTEGER);
+                $statement->bindValue(':date', $record[1], SQLITE3_INTEGER);
+                $statement->bindValue(':publishing_date', $record[2], SQLITE3_INTEGER);
+                $statement->bindValue(':archiving_date', $record[3], SQLITE3_INTEGER);
+                $statement->bindValue(':status', $record[4], SQLITE3_INTEGER);
+                $statement->bindValue(':categories', ",$categories,", SQLITE3_TEXT);
+                $statement->bindValue(':title', $record[6], SQLITE3_TEXT);
+                $statement->bindValue(':teaser', $record[7], SQLITE3_TEXT);
+                $statement->bindValue(':body', $record[8], SQLITE3_TEXT);
+                $statement->bindValue(':feedable', $record[9], SQLITE3_INTEGER);
+                $statement->bindValue(':commentable', $record[10], SQLITE3_INTEGER);
                 $statement->execute();
             }
             $this->connection->exec('COMMIT');
         }
     }
 
-	private function getAndRemoveCategories(&$field)
-	{
-		$categories = preg_match('/{{{rbCat\(([^\)]*)\);?}}}/', $field, $matches);
-		$categories = explode('|', trim($matches[1], "'|"));
-		$categories = array_map(function ($cat) {return trim($cat);}, $categories);
-		$field = preg_replace('/{{{rbCat\([^\)]*\);?}}}/', '', $field);
-		return $categories;
-	}
+    /**
+     * @param int &$field
+     * @return array
+     */
+    private function getAndRemoveCategories(&$field)
+    {
+        $categories = preg_match('/{{{rbCat\(([^\)]*)\);?}}}/', $field, $matches);
+        $categories = explode('|', trim($matches[1], "'|"));
+        $categories = array_map(
+            function ($cat) {
+                return trim($cat);
+            },
+            $categories
+        );
+        $field = preg_replace('/{{{rbCat\([^\)]*\);?}}}/', '', $field);
+        return $categories;
+    }
 
     /**
-     * Finds and returns all articles with a certain status ordered by date and ID.
-     *
-     * @param int $status A status.
-     * @param int $order  Order 1 (ascending) or -1 (descending).
-     *
+     * @param int $status
+     * @param int $order
      * @return array<stdClass>
      */
     public static function findArticles($status, $limit, $offset = 0, $order = -1, $category = 'all', $search = null)
@@ -176,10 +167,10 @@ SQL;
             : '';
         $sql = <<<EOS
 SELECT id, date, title, teaser, commentable, length(body) AS body_length
-	FROM articles
+    FROM articles
     WHERE status = :status $categoryClause $searchClause
     ORDER BY date $order, id $order
-	LIMIT $limit OFFSET $offset
+    LIMIT $limit OFFSET $offset
 EOS;
         $statement = $db->prepare($sql);
         $statement->bindValue(':status', $status, SQLITE3_INTEGER);
@@ -194,11 +185,8 @@ EOS;
     }
 
     /**
-     * Counts the number of archived articles within a certain period.
-     *
-     * @param int $start A start timestamp.
-     * @param int $end   An end timestamp.
-     *
+     * @param int $start
+     * @param int $end
      * @return int
      */
     public static function countArchivedArticlesInPeriod($start, $end)
@@ -219,11 +207,8 @@ EOS;
     }
 
     /**
-     * Selects all archived articles within a certain period.
-     *
-     * @param int $start A start timestamp.
-     * @param int $end   An end timestamp.
-     *
+     * @param int $start
+     * @param int $end
      * @return array<stdClass>
      */
     public static function findArchivedArticlesInPeriod($start, $end)
@@ -246,36 +231,33 @@ EOS;
         return $records;
     }
 
-	/**
-	 * @param string $search
-	 * @return array<stdClass>
-	 */
-	public static function findArchivedArticlesContaining($search)
-	{
-		$sql = <<<'EOS'
+    /**
+     * @param string $search
+     * @return array<stdClass>
+     */
+    public static function findArchivedArticlesContaining($search)
+    {
+        $sql = <<<'EOS'
 SELECT id, date, title FROM articles
     WHERE (title LIKE :text OR body LIKE :text) AND status = 2
     ORDER BY date DESC, id DESC
 EOS;
-		$db = self::getConnection();
-		$stmt = $db->prepare($sql);
-		$stmt->bindValue(':text', '%' . $search . '%', SQLITE3_TEXT);
-		$result = $stmt->execute();
-		$records = array();
-		while (($record = $result->fetchArray(SQLITE3_ASSOC)) !== false) {
-			$records[] = (object) $record;
-		}
-		return $records;
-	}
+        $db = self::getConnection();
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':text', '%' . $search . '%', SQLITE3_TEXT);
+        $result = $stmt->execute();
+        $records = array();
+        while (($record = $result->fetchArray(SQLITE3_ASSOC)) !== false) {
+            $records[] = (object) $record;
+        }
+        return $records;
+    }
 
     /**
-     * Counts the number of articles with one of the statuses.
-     *
-     * @param array $statuses An array of statuses.
-     *
+     * @param array<int> $statuses
      * @return int
      */
-    public static function countArticlesWithStatus($statuses, $category = 'all', $search = null)
+    public static function countArticlesWithStatus(array $statuses, $category = 'all', $search = null)
     {
         $db = self::getConnection();
         if (empty($statuses)) {
@@ -301,15 +283,12 @@ SQL;
     }
 
     /**
-     * Finds all articles with one of the statuses.
-     *
-     * @param array $statuses An array of statuses.
-     * @param int   $limit    The maximum number of articles.
-     * @param int   $offset   The offset of the first article.
-     *
+     * @param array<int> $statuses
+     * @param int $limit
+     * @param int $offset
      * @return array<stdClass>
      */
-    public static function findArticlesWithStatus($statuses, $limit, $offset)
+    public static function findArticlesWithStatus(array $statuses, $limit, $offset)
     {
         $db = self::getConnection();
         if (empty($statuses)) {
@@ -330,10 +309,7 @@ EOS;
     }
 
     /**
-     * Finds and returns all feedable articles ordered by date and ID.
-     *
      * @param int $count
-     *
      * @return array<stdClass>
      */
     public static function findFeedableArticles($count)
@@ -342,7 +318,7 @@ EOS;
         $sql = <<<SQL
 SELECT id, date, title, teaser
     FROM articles WHERE feedable = :feedable ORDER BY date DESC, id DESC
-	LIMIT $count
+    LIMIT $count
 SQL;
         $statement = $db->prepare($sql);
         $statement->bindValue(':feedable', 1, SQLITE3_INTEGER);
@@ -355,10 +331,7 @@ SQL;
     }
 
     /**
-     * Finds an article by ID.
-     *
-     * @param int $id An ID.
-     *
+     * @param int $id
      * @return stdClass
      */
     public static function findById($id)
@@ -375,6 +348,9 @@ SQL;
         }
     }
 
+    /**
+     * @return void
+     */
     public static function insertArticle(stdClass $article)
     {
         $db = self::getConnection();
@@ -382,7 +358,7 @@ SQL;
 INSERT INTO articles
     VALUES (
         :id, :date, :publishing_date, :archiving_date, :status, :categories,
-		:title, :teaser, :body, :feedable, :commentable
+        :title, :teaser, :body, :feedable, :commentable
     )
 EOS;
         $statement = $db->prepare($sql);
@@ -391,7 +367,7 @@ EOS;
         $statement->bindValue(':publishing_date', $article->publishing_date, SQLITE3_INTEGER);
         $statement->bindValue(':archiving_date', $article->archiving_date, SQLITE3_INTEGER);
         $statement->bindValue(':status', $article->status, SQLITE3_INTEGER);
-		$statement->bindValue(':categories', $article->categories, SQLITE3_TEXT);
+        $statement->bindValue(':categories', $article->categories, SQLITE3_TEXT);
         $statement->bindValue(':title', $article->title, SQLITE3_TEXT);
         $statement->bindValue(':teaser', $article->teaser, SQLITE3_TEXT);
         $statement->bindValue(':body', $article->body, SQLITE3_TEXT);
@@ -401,8 +377,6 @@ EOS;
     }
 
     /**
-     * Updates an article in the database.
-     *
      * @return void
      */
     public static function updateArticle(stdClass $article)
@@ -411,7 +385,7 @@ EOS;
         $sql = <<<'EOS'
 UPDATE articles
     SET date = :date, publishing_date = :publishing_date,
-    	archiving_date = :archiving_date, status = :status, title = :title,
+        archiving_date = :archiving_date, status = :status, title = :title,
         teaser = :teaser, body = :body, feedable = :feedable,
         commentable = :commentable
     WHERE id = :id
@@ -431,9 +405,8 @@ EOS;
     }
 
     /**
-     * @param string $field  A field name.
-     * @param int    $status A status.
-     *
+     * @param string $field
+     * @param int $status
      * @return void
      */
     public static function autoChangeStatus($field, $status)
@@ -446,20 +419,27 @@ EOS;
         $statement->execute();
     }
 
-	/**
-	 * @param array<int> $ids
-	 * @param int        $status
-	 */
-	public static function updateStatusOfArticlesWithIds($ids, $status)
-	{
-		$sql = sprintf('UPDATE articles SET status = :status WHERE id in (%s)',
-					   implode(',', $ids));
-		$db = self::getConnection();
-		$stmt = $db->prepare($sql);
-		$stmt->bindValue(':status', $status, SQLITE3_INTEGER);
-		$stmt->execute();
-	}
+    /**
+     * @param array<int> $ids
+     * @param int $status
+     * @return void
+     */
+    public static function updateStatusOfArticlesWithIds(array $ids, $status)
+    {
+        $sql = sprintf(
+            'UPDATE articles SET status = :status WHERE id in (%s)',
+            implode(',', $ids)
+        );
+        $db = self::getConnection();
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':status', $status, SQLITE3_INTEGER);
+        $stmt->execute();
+    }
 
+    /**
+     * @param int id
+     * @return void
+     */
     public static function deleteArticleWithId($id)
     {
         $sql = 'DELETE FROM articles WHERE id = :id';
@@ -469,16 +449,17 @@ EOS;
         $stmt->execute();
     }
 
-	/**
-	 * @param array<int> $ids
-	 */
-	public static function deleteArticlesWithIds($ids)
-	{
-        $sql = sprintf('DELETE FROM articles WHERE id in (%s)',
-                       implode(',', $ids));
+    /**
+     * @param array<int> $ids
+     * @return void
+     */
+    public static function deleteArticlesWithIds(array $ids)
+    {
+        $sql = sprintf(
+            'DELETE FROM articles WHERE id in (%s)',
+            implode(',', $ids)
+        );
         $db = self::getConnection();
         $db->exec($sql);
-	}
+    }
 }
-
-?>

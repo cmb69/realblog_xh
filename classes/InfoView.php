@@ -1,12 +1,6 @@
 <?php
 
 /**
- * The info views.
- *
- * PHP version 5
- *
- * @category  CMSimple_XH
- * @package   Realblog
  * @author    Jan Kanters <jan.kanters@telenet.be>
  * @author    Gert Ebersbach <mail@ge-webdesign.de>
  * @author    Christoph M. Becker <cmbecker69@gmx.de>
@@ -14,26 +8,14 @@
  * @copyright 2010-2014 Gert Ebersbach <http://ge-webdesign.de/>
  * @copyright 2014-2016 Christoph M. Becker <http://3-magi.net/>
  * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link      http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
 
 namespace Realblog;
 
-/**
- * The info views.
- *
- * @category CMSimple_XH
- * @package  Realblog
- * @author   Christoph M. Becker <cmbecker69@gmx.de>
- * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link     http://3-magi.net/?CMSimple_XH/Realblog_XH
- */
 class InfoView
 {
     /**
-     * Renders the plugin info.
-     *
-     * @return string (X)HTML.
+     * @return string
      */
     public function render()
     {
@@ -44,12 +26,9 @@ class InfoView
     }
 
     /**
-     * Renders the plugin logo.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The paths of system files and folders.
-     * @global array The localization of the plugins.
+     * @return string
+     * @global array $pth
+     * @global array $plugin_tx
      */
     protected function renderLogo()
     {
@@ -63,9 +42,7 @@ class InfoView
     }
 
     /**
-     * Renders the copyright info.
-     *
-     * @return string (X)HTML.
+     * @return string
      */
     protected function renderCopyright()
     {
@@ -79,9 +56,7 @@ class InfoView
     }
 
     /**
-     * Renders the license info.
-     *
-     * @return string (X)HTML.
+     * @return string
      */
     protected function renderLicense()
     {
@@ -101,5 +76,3 @@ target="_blank">http://www.gnu.org/licenses/</a>.</p>
 EOT;
     }
 }
-
-?>

@@ -1,12 +1,6 @@
 <?php
 
 /**
- * The front-end functionality.
- *
- * PHP version 5
- *
- * @category  CMSimple_XH
- * @package   Realblog
  * @author    Jan Kanters <jan.kanters@telenet.be>
  * @author    Gert Ebersbach <mail@ge-webdesign.de>
  * @author    Christoph M. Becker <cmbecker69@gmx.de>
@@ -14,7 +8,6 @@
  * @copyright 2010-2014 Gert Ebersbach <http://ge-webdesign.de/>
  * @copyright 2014-2016 Christoph M. Becker <http://3-magi.net/>
  * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link      http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
 
 /*
@@ -63,19 +56,11 @@ this program; if not, see <http://www.gnu.org/licenses>.
 */
 ////////////////////////////////////////////////// HISTORIC LICENSE SECTION END
 
-/**
- * Backward compatibility.
- */
 require_once $pth['folder']['plugin'] . 'compat.php';
 
-/**
- * The plugin version.
- */
 define('REALBLOG_VERSION', '@REALBLOG_VERSION@');
 
 /**
- * The plugin controller.
- *
  * @var Realblog\Controller
  */
 $_Realblog_controller = new Realblog\Controller();
@@ -83,28 +68,24 @@ $_Realblog_controller = new Realblog\Controller();
 /**
  * Displays the realblog's topic with status = published.
  *
- * @param array  $showSearch  Whether to show the searchform.
- * @param string $realBlogCat FIXME
- *
- * @return string (X)HTML.
- *
- * @global Realblog\Controller The plugin controller.
+ * @param bool $showSearch  Whether to show the searchform.
+ * @param string $category
+ * @return string
+ * @global Realblog\Controller $_Realblog_controller
  */
-function Realblog_blog($showSearch = false, $realBlogCat = 'all')
+function Realblog_blog($showSearch = false, $category = 'all')
 {
     global $_Realblog_controller;
 
-    return $_Realblog_controller->blog($showSearch, $realBlogCat);
+    return $_Realblog_controller->blog($showSearch, $category);
 }
 
 /**
- * Displays the archived realblog topics.
+ * Displays the archived realblog topics
  *
- * @param mixed $showSearch Whether to show the search form.
- *
- * @return string (X)HTML.
- *
- * @global Realblog\Controller The plugin controller.
+ * @param bool $showSearch
+ * @return string
+ * @global Realblog\Controller $_Realblog_controller
  */
 function Realblog_archive($showSearch = false)
 {
@@ -114,17 +95,11 @@ function Realblog_archive($showSearch = false)
 }
 
 /**
- * Displays the realblog topics with a link to the blog page from the template.
+ * Displays the realblog topics with a link to the blog page from the template
  *
- * A page calling #cmsimple $output.=showrealblog();# must exist.
- * Options: realblog_page [required] : this is the page containing the
- *          showrealblog() function
- *
- * @param mixed $pageUrl A URL of a page where the blog is shown.
- *
- * @return string (X)HTML.
- *
- * @global Realblog\Controller The plugin controller.
+ * @param string $pageUrl
+ * @return string
+ * @global Realblog\Controller $_Realblog_controller
  */
 function Realblog_link($pageUrl)
 {
@@ -134,11 +109,10 @@ function Realblog_link($pageUrl)
 }
 
 /**
- * Returns a graphical hyperlink to the RSS feed.
+ * Returns a graphical hyperlink to the RSS feed
  *
- * @return string (X)HTML.
- *
- * @global Realblog\Controller The plugin controller.
+ * @return string
+ * @global Realblog\Controller $_Realblog_controller
  */
 function Realblog_feedLink()
 {
@@ -148,5 +122,3 @@ function Realblog_feedLink()
 }
 
 $_Realblog_controller->init();
-
-?>

@@ -5,7 +5,7 @@
     <fileset id="php-sources" dir=".">
         <include name="classes/*.php"/>
         <include name="index.php"/>
-        <include name="functions.php"/>
+        <include name="compat.php"/>
     </fileset>
 
     <fileset id="js-sources" dir=".">
@@ -25,11 +25,9 @@
         <echo>${help}</echo>
     </target>
 
-    <target name="sniff" description="checks adherence to PEAR CS">
-        <phpcodesniffer standard="PEAR" format="full">
+    <target name="sniff" description="checks adherence to the coding standard">
+        <phpcodesniffer standard="PSR2" format="full">
             <fileset refid="php-sources"/>
-            <fileset refid="unit-tests"/>
-            <!--<fileset refid="attack-tests"/>-->
         </phpcodesniffer>
     </target>
 

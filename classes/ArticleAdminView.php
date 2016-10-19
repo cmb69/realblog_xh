@@ -1,12 +1,6 @@
 <?php
 
 /**
- * The article administration views.
- *
- * PHP version 5
- *
- * @category  CMSimple_XH
- * @package   Realblog
  * @author    Jan Kanters <jan.kanters@telenet.be>
  * @author    Gert Ebersbach <mail@ge-webdesign.de>
  * @author    Christoph M. Becker <cmbecker69@gmx.de>
@@ -14,54 +8,33 @@
  * @copyright 2010-2014 Gert Ebersbach <http://ge-webdesign.de/>
  * @copyright 2014-2016 Christoph M. Becker <http://3-magi.net/>
  * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link      http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
 
 namespace Realblog;
 
 use stdClass;
 
-/**
- * The article administration views.
- *
- * @category CMSimple_XH
- * @package  Realblog
- * @author   Christoph M. Becker <cmbecker69@gmx.de>
- * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link     http://3-magi.net/?CMSimple_XH/Realblog_XH
- */
 class ArticleAdminView
 {
     /**
-     * The article record.
-     *
      * @var stdClass
      */
     protected $article;
 
     /**
-     * The requested action.
-     *
      * @var string
      */
     protected $action;
 
     /**
-     * The paths of the plugin image folder.
-     *
      * @var string
      */
     protected $imageFolder;
 
     /**
-     * Initializes a new instance.
-     *
-     * @param stdClass $article An article record.
-     * @param string   $action  An action.
-     *
-     * @return void
-     *
-     * @global array The paths of system files and folders.
+     * @param stdClass $article
+     * @param string $action
+     * @global array $pth
      */
     public function __construct(stdClass $article, $action)
     {
@@ -73,15 +46,12 @@ class ArticleAdminView
     }
 
     /**
-     * Renders the article administration view.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The paths of system files and folders.
-     * @global string The script name.
-     * @global array  The localization of the plugins.
-     * @global string The title of the page.
-     * @global string The (X)HTML fragment to insert before the closing body tag.
+     * @return string
+     * @global array $pth
+     * @global string $sn
+     * @global array $plugin_tx
+     * @global string $title
+     * @global string $bjs
      */
     public function render()
     {
@@ -125,13 +95,10 @@ class ArticleAdminView
     }
 
     /**
-     * Renders the hidden fields.
-     *
-     * @return string (X)HTML.
-     *
-     * @global XH_CSRFProtection The CSRF protector.
+     * @return string
+     * @global \XH_CSRFProtection $_XH_csrfProtection
      */
-    protected function renderHiddenFields()
+    private function renderHiddenFields()
     {
         global $_XH_csrfProtection;
 
@@ -148,14 +115,11 @@ class ArticleAdminView
     }
 
     /**
-     * Renders a hidden field.
-     *
-     * @param string $name  A field name.
-     * @param string $value A field value.
-     *
-     * @return string (X)HTML.
+     * @param string $name
+     * @param string $value
+     * @return string
      */
-    protected function renderHiddenField($name, $value)
+    private function renderHiddenField($name, $value)
     {
         return tag(
             'input type="hidden" name="' . $name . '" value="' . $value . '"'
@@ -163,13 +127,10 @@ class ArticleAdminView
     }
 
     /**
-     * Renders the date input.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The localization of the plugins.
+     * @return string
+     * @global array $plugin_tx
      */
-    protected function renderDate()
+    private function renderDate()
     {
         global $plugin_tx;
 
@@ -187,14 +148,11 @@ class ArticleAdminView
     }
 
     /**
-     * Renders the publishing date input.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The configuration of the plugins.
-     * @global array The localization of the plugins.
+     * @return string
+     * @global array $plugin_cf
+     * @global array $plugin_tx
      */
-    protected function renderPublishingDate()
+    private function renderPublishingDate()
     {
         global $plugin_cf, $plugin_tx;
 
@@ -217,14 +175,11 @@ class ArticleAdminView
     }
 
     /**
-     * Renders the archiving date input.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The configuration of the plugins.
-     * @global array The localization of the plugins.
+     * @return string
+     * @global array $plugin_cf
+     * @global array $plugin_tx
      */
-    protected function renderArchiveDate()
+    private function renderArchiveDate()
     {
         global $plugin_cf, $plugin_tx;
 
@@ -247,13 +202,10 @@ class ArticleAdminView
     }
 
     /**
-     * Renders the status select.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The localization of the plugins.
+     * @return string
+     * @global array $plugin_tx
      */
-    protected function renderStatusSelect()
+    private function renderStatusSelect()
     {
         global $plugin_tx;
 
@@ -270,13 +222,10 @@ class ArticleAdminView
     }
 
     /**
-     * Renders the comments checkbox.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The localization of the plugins.
+     * @return string
+     * @global array $plugin_tx
      */
-    protected function renderCommentsCheckbox()
+    private function renderCommentsCheckbox()
     {
         global $plugin_tx;
 
@@ -292,13 +241,10 @@ class ArticleAdminView
     }
 
     /**
-     * Renders the feed checkbox.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The localization of the plugins.
+     * @return string
+     * @global array $plugin_tx
      */
-    protected function renderFeedCheckbox()
+    private function renderFeedCheckbox()
     {
         global $plugin_tx;
 
@@ -313,7 +259,10 @@ class ArticleAdminView
             . '</span></label>';
     }
 
-    protected function renderCategories()
+    /**
+     * @return string
+     */
+    private function renderCategories()
     {
         return tag(
             'input type="text" size="70" name="realblog_categories" value="'
@@ -322,13 +271,10 @@ class ArticleAdminView
     }
 
     /**
-     * Renders the headline (teaser).
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The localization of the plugins.
+     * @return string
+     * @global array $plugin_tx
      */
-    protected function renderHeadline()
+    private function renderHeadline()
     {
         global $plugin_tx;
 
@@ -339,13 +285,10 @@ class ArticleAdminView
     }
 
     /**
-     * Renders the story (body).
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The localization of the plugins.
+     * @return string
+     * @global array $plugin_tx
      */
-    protected function renderStory()
+    private function renderStory()
     {
         global $plugin_tx;
 
@@ -356,14 +299,11 @@ class ArticleAdminView
     }
 
     /**
-     * Renders the submit buttons.
-     *
-     * @return string (X)HTML.
-     *
-     * @global string The script name.
-     * @global array  The localization of the plugins.
+     * @return string
+     * @global string $sn
+     * @global array $plugin_tx
      */
-    protected function renderSubmitButtons()
+    private function renderSubmitButtons()
     {
         global $sn, $plugin_tx;
 
@@ -383,21 +323,17 @@ class ArticleAdminView
     }
 
     /**
-     * Gets the current verb.
-     *
      * @return string
      */
-    protected function getVerb()
+    private function getVerb()
     {
         switch ($this->action) {
-        case 'add_realblog':
-            return 'add';
-        case 'modify_realblog':
-            return 'modify';
-        case 'delete_realblog':
-            return 'delete';
+            case 'add_realblog':
+                return 'add';
+            case 'modify_realblog':
+                return 'modify';
+            case 'delete_realblog':
+                return 'delete';
         }
     }
 }
-
-?>

@@ -1,12 +1,6 @@
 <?php
 
 /**
- * The confirmation views.
- *
- * PHP version 5
- *
- * @category  CMSimple_XH
- * @package   Realblog
  * @author    Jan Kanters <jan.kanters@telenet.be>
  * @author    Gert Ebersbach <mail@ge-webdesign.de>
  * @author    Christoph M. Becker <cmbecker69@gmx.de>
@@ -14,49 +8,29 @@
  * @copyright 2010-2014 Gert Ebersbach <http://ge-webdesign.de/>
  * @copyright 2014-2016 Christoph M. Becker <http://3-magi.net/>
  * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link      http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
 
 namespace Realblog;
 
-/**
- * The confirmation views.
- *
- * @category CMSimple_XH
- * @package  Realblog
- * @author   Christoph M. Becker <cmbecker69@gmx.de>
- * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link     http://3-magi.net/?CMSimple_XH/Realblog_XH
- */
 abstract class ConfirmationView
 {
     /**
-     * The articles.
-     *
      * @var array
      */
     protected $articles;
 
     /**
-     * The title of the page.
-     *
      * @var string
      */
     protected $title;
 
     /**
-     * The label of the OK button.
-     *
      * @var string
      */
     protected $buttonLabel;
 
     /**
-     * Initializes a new instance.
-     *
-     * @return void
-     *
-     * @global Controller The plugin controller.
+     * @global Controller $_Realblog_controller
      */
     public function __construct()
     {
@@ -66,9 +40,7 @@ abstract class ConfirmationView
     }
 
     /**
-     * Renders the change status view.
-     *
-     * @return string (X)HTML.
+     * @return string
      */
     public function render()
     {
@@ -81,20 +53,14 @@ abstract class ConfirmationView
     }
 
     /**
-     * Renders the confirmation.
-     *
-     * @return string (X)HTML.
+     * @return string
      */
     abstract protected function renderConfirmation();
 
     /**
-     * Renders the hidden fields.
-     *
-     * @param string $do A do verb.
-     *
-     * @return string (X)HTML.
-     *
-     * @global XH_CSRFProtection The CSRF protector.
+     * @param string $do
+     * @return string
+     * @global XH_CSRFProtection $_XH_csrfProtection
      */
     protected function renderHiddenFields($do)
     {
@@ -110,14 +76,11 @@ abstract class ConfirmationView
     }
 
     /**
-     * Renders a hidden field.
-     *
-     * @param string $name  A field name.
-     * @param string $value A field value.
-     *
-     * @return string (X)HTML.
+     * @param string $name
+     * @param string $value
+     * @return string
      */
-    protected function renderHiddenField($name, $value)
+    private function renderHiddenField($name, $value)
     {
         return tag(
             'input type="hidden" name="' . $name . '" value="' . $value . '"'
@@ -125,13 +88,10 @@ abstract class ConfirmationView
     }
 
     /**
-     * Renders the confirmation buttons
-     *
-     * @return string (X)HTML.
-     *
-     * @global string     The script name.
-     * @global array      The localization of the plugins.
-     * @global Controller The plugin controller.
+     * @return string
+     * @global string $sn
+     * @global array $plugin_tx
+     * @global Controller $_Realblog_controller
      */
     protected function renderConfirmationButtons()
     {
@@ -153,15 +113,12 @@ abstract class ConfirmationView
     }
 
     /**
-     * Renders the no selection information.
-     *
-     * @return string (X)HTML.
-     *
-     * @global string     The script name.
-     * @global array      The localization of the plugins.
-     * @global Controller The plugin controller.
+     * @return string
+     * @global string $sn
+     * @global array $plugin_tx
+     * @global Controller $_Realblog_controller
      */
-    protected function renderNoSelectionInfo()
+    private function renderNoSelectionInfo()
     {
         global $sn, $plugin_tx, $_Realblog_controller;
 
@@ -184,5 +141,3 @@ abstract class ConfirmationView
             . '</table></form>';
     }
 }
-
-?>

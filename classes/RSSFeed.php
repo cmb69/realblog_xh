@@ -1,12 +1,6 @@
 <?php
 
 /**
- * The RSS feed views.
- *
- * PHP version 5
- *
- * @category  CMSimple_XH
- * @package   Realblog
  * @author    Jan Kanters <jan.kanters@telenet.be>
  * @author    Gert Ebersbach <mail@ge-webdesign.de>
  * @author    Christoph M. Becker <cmbecker69@gmx.de>
@@ -14,45 +8,27 @@
  * @copyright 2010-2014 Gert Ebersbach <http://ge-webdesign.de/>
  * @copyright 2014-2016 Christoph M. Becker <http://3-magi.net/>
  * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link      http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
 
 namespace Realblog;
 
-/**
- * The RSS feed views.
- *
- * @category CMSimple_XH
- * @package  Realblog
- * @author   Christoph M. Becker <cmbecker69@gmx.de>
- * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link     http://3-magi.net/?CMSimple_XH/Realblog_XH
- */
 class RSSFeed
 {
     /**
-     * The articles.
-     *
-     * @var array
+     * @var array<stdClass>
      */
     protected $articles;
 
     /**
-     * Initializes a new instance.
-     *
-     * @param array $articles An array of articles.
-     *
-     * @return void
+     * @param array<stdClass> $articles
      */
-    public function __construct($articles)
+    public function __construct(array $articles)
     {
-        $this->articles = (array) $articles;
+        $this->articles = $articles;
     }
 
     /**
-     * Renders the RSS feed view.
-     *
-     * @return string XML.
+     * @return string
      */
     public function render()
     {
@@ -65,14 +41,11 @@ class RSSFeed
     }
 
     /**
-     * Renders the RSS feed head.
-     *
-     * @return string XML.
-     *
-     * @global array The configuration of the plugins.
-     * @global array The localization of the plugins.
+     * @return string
+     * @global array $plugin_cf
+     * @global array $plugin_tx
      */
-    protected function renderHead()
+    private function renderHead()
     {
         global $plugin_cf, $plugin_tx;
 
@@ -93,15 +66,12 @@ class RSSFeed
     }
 
     /**
-     * Renders the feed image.
-     *
-     * @return string XML.
-     *
-     * @global array The paths of system files and folders.
-     * @global array The configuration of the plugins.
-     * @global array The localization of the plugins.
+     * @return string
+     * @global array $pth
+     * @global array $plugin_cf
+     * @global array $plugin_tx
      */
-    protected function renderImage()
+    private function renderImage()
     {
         global $pth, $plugin_cf, $plugin_tx;
 
@@ -120,15 +90,12 @@ class RSSFeed
     }
 
     /**
-     * Renders the feed items.
-     *
-     * @return string XML.
-     *
-     * @global string     The script name.
-     * @global array      The localization of the plugins.
-     * @global Controller The plugin controller.
+     * @return string
+     * @global string $sn
+     * @global array $plugin_tx
+     * @global Controller $_Realblog_controller
      */
-    protected function renderItems()
+    private function renderItems()
     {
         global $sn, $plugin_tx, $_Realblog_controller;
 
@@ -157,5 +124,3 @@ class RSSFeed
         return $xml;
     }
 }
-
-?>

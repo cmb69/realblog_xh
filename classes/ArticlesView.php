@@ -1,12 +1,6 @@
 <?php
 
 /**
- * The articles views.
- *
- * PHP version 5
- *
- * @category  CMSimple_XH
- * @package   Realblog
  * @author    Jan Kanters <jan.kanters@telenet.be>
  * @author    Gert Ebersbach <mail@ge-webdesign.de>
  * @author    Christoph M. Becker <cmbecker69@gmx.de>
@@ -14,45 +8,41 @@
  * @copyright 2010-2014 Gert Ebersbach <http://ge-webdesign.de/>
  * @copyright 2014-2016 Christoph M. Becker <http://3-magi.net/>
  * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link      http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
 
 namespace Realblog;
 
 use stdClass;
 
-/**
- * The articles views.
- *
- * @category CMSimple_XH
- * @package  Realblog
- * @author   Christoph M. Becker <cmbecker69@gmx.de>
- * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link     http://3-magi.net/?CMSimple_XH/Realblog_XH
- */
 class ArticlesView
 {
     /**
-     * The articles.
-     *
-     * @var array
+     * @var array<stdClass>
      */
     protected $articles;
-    
+
+    /**
+     * @var int
+     */
     protected $articleCount;
-    
+
+    /**
+     * @var int
+     */
     protected $page;
-    
+
+    /**
+     * @var int
+     */
     protected $pageCount;
 
     /**
-     * Initializes a new instance.
-     *
-     * @param array  $articles        An array of articles.
-     *
-     * @return void
+     * @param array<stdClass> $articles
+     * @param int $articleCount
+     * @param int $page
+     * @param int $pageCount
      */
-    public function __construct($articles, $articleCount, $page, $pageCount)
+    public function __construct(array $articles, $articleCount, $page, $pageCount)
     {
         $this->articles = $articles;
         $this->articleCount = $articleCount;
@@ -61,9 +51,10 @@ class ArticlesView
     }
 
     /**
-     * Renders the view.
-     *
-     * @return string (X)HTML.
+     * @return string
+     * @global Controller $_Realblog_controller
+     * @global string $su
+     * @global array $plugin_cf
      */
     public function render()
     {
@@ -71,8 +62,12 @@ class ArticlesView
 
         $t = "\n" . '<div class="realblog_show_box">' . "\n";
         $url = $_Realblog_controller->url($su, null, array('realblog_page' => '%s'));
-        $pagination = new PaginationView($this->articleCount, $this->page,
-                                         $this->pageCount, $url);
+        $pagination = new PaginationView(
+            $this->articleCount,
+            $this->page,
+            $this->pageCount,
+            $url
+        );
         if ($plugin_cf['realblog']['pagination_top']) {
             $t .= $pagination->render();
         }
@@ -86,11 +81,9 @@ class ArticlesView
     }
 
     /**
-     * Renders the article previews.
-     *
-     * @return string (X)HTML.
+     * @return string
      */
-    protected function renderArticlePreviews()
+    private function renderArticlePreviews()
     {
         $t = '<div id="realblog_entries_preview" class="realblog_entries_preview">';
         foreach ($this->articles as $article) {
@@ -101,15 +94,10 @@ class ArticlesView
     }
 
     /**
-     * Renders an article preview.
-     *
-     * @param stdClass $article An article.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array      The configuration of the plugins.
+     * @return string
+     * @global array $plugin_cf
      */
-    protected function renderArticlePreview(stdClass $article)
+    private function renderArticlePreview(stdClass $article)
     {
         global $plugin_cf;
 
@@ -136,25 +124,20 @@ class ArticlesView
     }
 
     /**
-     * Renders an article heading.
-     *
-     * @param stdClass $article An article.
-     *
-     * @return string (X)HTML.
-     *
-     * @global string     The URL of the current page.
-     * @global array      The localization of the plugins.
-     * @global Controller The plugin controller.
+     * @return string
+     * @global string $su
+     * @global array $plugin_tx
+     * @global Controller $_Realblog_controller
      */
-    protected function renderArticleHeading(stdClass $article)
+    private function renderArticleHeading(stdClass $article)
     {
         global $su, $plugin_tx, $_Realblog_controller;
 
         $t = '<h4>';
         $url = $_Realblog_controller->url(
-            $su, $article->title, array(
-                'realblogID' => $article->id
-            )
+            $su,
+            $article->title,
+            array('realblogID' => $article->id)
         );
         if ($article->body_length || XH_ADM) {
             $t .= '<a href="' . XH_hsc($url) . '" title="'
@@ -169,15 +152,10 @@ class ArticlesView
     }
 
     /**
-     * Renders an article date.
-     *
-     * @param stdClass $article An article.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The localization of the plugins.
+     * @return string
+     * @global array $plugin_tx
      */
-    protected function renderArticleDate(stdClass $article)
+    private function renderArticleDate(stdClass $article)
     {
         global $plugin_tx;
 
@@ -187,18 +165,13 @@ class ArticlesView
     }
 
     /**
-     * Renders an article footer.
-     *
-     * @param stdClass $article An article.
-     *
-     * @return string (X)HTML.
-     *
-     * @global string     The URL of the current page.
-     * @global array      The configuration of the plugins.
-     * @global array      The localization of the plugins.
-     * @global Controller The plugin controller.
+     * @return string
+     * @global string $su
+     * @global array $plugin_cf
+     * @global array $plugin_tx
+     * @global Controller $_Realblog_controller
      */
-    protected function renderArticleFooter(stdClass $article)
+    private function renderArticleFooter(stdClass $article)
     {
         global $su, $plugin_cf, $plugin_tx, $_Realblog_controller;
 
@@ -212,9 +185,9 @@ class ArticlesView
             $t .= $this->renderCommentCount($article);
         }
         $url = $_Realblog_controller->url(
-            $su, $article->title, array(
-                'realblogID' => $article->id
-            )
+            $su,
+            $article->title,
+            array('realblogID' => $article->id)
         );
         $t .= '<p class="realblog_read_more">'
             . '<a href="' . XH_hsc($url) . '" title="'
@@ -225,16 +198,11 @@ class ArticlesView
     }
 
     /**
-     * Renders a comment count.
-     *
-     * @param stdClass $article An article.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The configuration of the plugins.
-     * @global array The localization of the plugins.
+     * @return string
+     * @global array $plugin_cf
+     * @global array $plugin_tx
      */
-    protected function renderCommentCount(stdClass $article)
+    private function renderCommentCount(stdClass $article)
     {
         global $plugin_cf, $plugin_tx;
 
@@ -246,5 +214,3 @@ class ArticlesView
             . sprintf($plugin_tx['realblog'][$key], $count) . '</p>';
     }
 }
-
-?>

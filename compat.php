@@ -1,12 +1,6 @@
 <?php
 
 /**
- * Backward compatibility.
- *
- * PHP version 5
- *
- * @category  CMSimple_XH
- * @package   Realblog
  * @author    Jan Kanters <jan.kanters@telenet.be>
  * @author    Gert Ebersbach <mail@ge-webdesign.de>
  * @author    Christoph M. Becker <cmbecker69@gmx.de>
@@ -14,20 +8,15 @@
  * @copyright 2010-2014 Gert Ebersbach <http://ge-webdesign.de/>
  * @copyright 2014-2016 Christoph M. Becker <http://3-magi.net/>
  * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link      http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
 
 /**
- * Renders the published articles.
- *
- * @param string $options     An option string (options: showsearch).
- * @param string $realBlogCat A category.
- *
- * @return string (X)HTML.
- *
- * @global Realblog\Controller The plugin controller.
+ * @param string $options
+ * @param string $category
+ * @return string
+ * @global Realblog\Controller $_Realblog_controller
  */
-function showrealblog($options = null, $realBlogCat = 'all')
+function showrealblog($options = null, $category = 'all')
 {
     global $_Realblog_controller;
 
@@ -35,27 +24,23 @@ function showrealblog($options = null, $realBlogCat = 'all')
     $arguments = Realblog_getArguments($options);
     if (isset($arguments['showsearch'])) {
         switch (strtolower($arguments['showsearch'])) {
-        case '0':
-        case 'false':
-            $includesearch = false;
-            break;
-        case '1':
-        case 'true':
-            $includesearch = true;
-            break;
+            case '0':
+            case 'false':
+                $includesearch = false;
+                break;
+            case '1':
+            case 'true':
+                $includesearch = true;
+                break;
         }
     }
     return $_Realblog_controller->blog($includesearch, $realBlogCat);
 }
 
 /**
- * Renders the archived articles.
- *
- * @param string $options An option string (options: showsearch).
- *
- * @return string (X)HTML.
- *
- * @global Realblog\Controller The plugin controller.
+ * @param string $options
+ * @return string
+ * @global Realblog\Controller $_Realblog_controller
  */
 function showrealblogarchive($options = null)
 {
@@ -66,27 +51,23 @@ function showrealblogarchive($options = null)
     if (isset($arguments['showsearch'])) {
         $argument = strtolower($arguments['showsearch']);
         switch ($argument) {
-        case '0':
-        case 'false':
-            $includesearch = false;
-            break;
-        case '1':
-        case 'true':
-            $includesearch = true;
-            break;
+            case '0':
+            case 'false':
+                $includesearch = false;
+                break;
+            case '1':
+            case 'true':
+                $includesearch = true;
+                break;
         }
     }
     return $_Realblog_controller->archive($includesearch);
 }
 
 /**
- * Renders the published topics with a link to the blog page from the template.
- *
- * @param string $options An option string (options: realblogpage).
- *
- * @return string (X)HTML.
- *
- * @global Realblog\Controller The plugin controller.
+ * @param string $options
+ * @return string
+ * @global Realblog\Controller $_Realblog_controller
  */
 function realbloglink($options)
 {
@@ -101,10 +82,7 @@ function realbloglink($options)
 }
 
 /**
- * Parses the $arguments string and returns a map of names to values.
- *
- * @param string $arguments An arguments string ('name1=value1,name2=value2').
- *
+ * @param string $arguments
  * @return array
  */
 function Realblog_getArguments($arguments)
@@ -121,11 +99,8 @@ function Realblog_getArguments($arguments)
 }
 
 /**
- * Renders a hyperlink to the newsfeed.
- *
- * @return string (X)HTML.
- *
- * @global Realblog\Controller The plugin controller.
+ * @return string
+ * @global Realblog\Controller $_Realblog_controller
  */
 function realblog_rss_adv()
 {
@@ -135,8 +110,6 @@ function realblog_rss_adv()
 }
 
 /**
- * A dummy function for categories.
- *
  * @return void
  */
 function rbCat()
@@ -145,10 +118,7 @@ function rbCat()
 }
 
 /**
- * Dummy function for compatibility reasons.
- *
  * @return void
- *
  * @deprecated since 3.0beta4
  */
 function commentsMembersOnly()
@@ -156,5 +126,3 @@ function commentsMembersOnly()
     // should be E_USER_DEPRECATED, but that requires PHP >= 5.3 or XH >= 1.6.3
     trigger_error('Function ' . __FUNCTION__ . '() is deprecated', E_USER_NOTICE);
 }
-
-?>

@@ -1,12 +1,6 @@
 <?php
 
 /**
- * The search form views.
- *
- * PHP version 5
- *
- * @category  CMSimple_XH
- * @package   Realblog
  * @author    Jan Kanters <jan.kanters@telenet.be>
  * @author    Gert Ebersbach <mail@ge-webdesign.de>
  * @author    Christoph M. Becker <cmbecker69@gmx.de>
@@ -14,35 +8,19 @@
  * @copyright 2010-2014 Gert Ebersbach <http://ge-webdesign.de/>
  * @copyright 2014-2016 Christoph M. Becker <http://3-magi.net/>
  * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link      http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
 
 namespace Realblog;
 
-/**
- * The search form views.
- *
- * @category CMSimple_XH
- * @package  Realblog
- * @author   Christoph M. Becker <cmbecker69@gmx.de>
- * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link     http://3-magi.net/?CMSimple_XH/Realblog_XH
- */
 class SearchFormView
 {
     /**
-     * The selected year.
-     *
      * @var int
      */
     protected $year;
 
     /**
-     * Initializes a new instance.
-     *
-     * @param int $year A year.
-     *
-     * @return void
+     * @param int $year
      */
     public function __construct($year)
     {
@@ -50,13 +28,10 @@ class SearchFormView
     }
 
     /**
-     * Renders the view.
-     *
-     * @return string (X)HTML.
-     *
-     * @global string The script name.
-     * @global array  The localization of the core.
-     * @global array  The localization of the plugins.
+     * @return string
+     * @global string $sn
+     * @global array $tx
+     * @global array $plugin_tx
      */
     public function render()
     {
@@ -79,11 +54,8 @@ class SearchFormView
     }
 
     /**
-     * Renders the hidden input fields.
-     *
-     * @return string (X)HTML.
-     *
-     * @global string The URL of the current page.
+     * @return string
+     * @global string $su
      */
     protected function renderHiddenInputs()
     {
@@ -93,12 +65,9 @@ class SearchFormView
     }
 
     /**
-     * Renders a hidden input field.
-     *
-     * @param string $name  A name.
-     * @param string $value A value.
-     *
-     * @return string (X)HTML.
+     * @param string $name
+     * @param string $value
+     * @return string
      */
     protected function renderHiddenInput($name, $value)
     {
@@ -107,5 +76,3 @@ class SearchFormView
         );
     }
 }
-
-?>

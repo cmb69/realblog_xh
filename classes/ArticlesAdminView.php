@@ -1,12 +1,6 @@
 <?php
 
 /**
- * The articles administration views.
- *
- * PHP version 5
- *
- * @category  CMSimple_XH
- * @package   Realblog
  * @author    Jan Kanters <jan.kanters@telenet.be>
  * @author    Gert Ebersbach <mail@ge-webdesign.de>
  * @author    Christoph M. Becker <cmbecker69@gmx.de>
@@ -14,64 +8,41 @@
  * @copyright 2010-2014 Gert Ebersbach <http://ge-webdesign.de/>
  * @copyright 2014-2016 Christoph M. Becker <http://3-magi.net/>
  * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link      http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
 
 namespace Realblog;
 
 use stdClass;
 
-/**
- * The articles administration views.
- *
- * @category CMSimple_XH
- * @package  Realblog
- * @author   Christoph M. Becker <cmbecker69@gmx.de>
- * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link     http://3-magi.net/?CMSimple_XH/Realblog_XH
- */
 class ArticlesAdminView
 {
     /**
-     * The path of the plugin image folder.
-     *
      * @var string
      */
     protected $imageFolder;
 
     /**
-     * The articles.
-     *
-     * @var array
+     * @var array<stdClass>
      */
     protected $articles;
 
     /**
-     * The number of articles.
-     *
      * @var int
      */
     protected $articleCount;
 
     /**
-     * The number of pages.
-     *
      * @var int
      */
     protected $pageCount;
 
     /**
-     * Initializes a new instance.
-     *
-     * @param array $articles     An array of articles.
-     * @param int   $articleCount The number of articles.
-     * @param int   $pageCount    The number of pages.
-     *
-     * @return void
-     *
-     * @global array The paths of system files and folders.
+     * @param array<stdClass> $articles
+     * @param int $articleCount
+     * @param int $pageCount
+     * @global array $pth
      */
-    public function __construct($articles, $articleCount, $pageCount)
+    public function __construct(array $articles, $articleCount, $pageCount)
     {
         global $pth;
 
@@ -82,12 +53,11 @@ class ArticlesAdminView
     }
 
     /**
-     * Renders the view.
-     *
-     * @return string (X)HTML.
-     *
-     * @global string     The script name.
-     * @global Controller The plugin controller.
+     * @return string
+     * @global string $sn
+     * @global Controller $_Realblog_controller
+     * @global array $plugin_cf
+     * @global string $sn
      */
     public function render()
     {
@@ -119,14 +89,11 @@ class ArticlesAdminView
     }
 
     /**
-     * Renders the filter form.
-     *
-     * @return string (X)HTML.
-     *
-     * @global string The script name.
-     * @global array  The localization of the plugins.
+     * @return string
+     * @global string $sn
+     * @global array $plugin_tx
      */
-    protected function renderFilterForm()
+    private function renderFilterForm()
     {
         global $sn, $plugin_tx;
 
@@ -143,16 +110,13 @@ class ArticlesAdminView
     }
 
     /**
-     * Renders a filter checkbox and its label.
-     *
-     * @param int    $number A filter number.
-     * @param string $name   A filter name.
-     *
-     * @return string (X)HTML.
-     *
-     * @global Controller The plugin controller.
+     * @param int $number
+     * @param string $name
+     * @return string
+     * @global array $plugin_tx
+     * @global Controller $_Realblog_controller
      */
-    protected function renderFilterCheckbox($number, $name)
+    private function renderFilterCheckbox($number, $name)
     {
         global $plugin_tx, $_Realblog_controller;
 
@@ -169,14 +133,11 @@ class ArticlesAdminView
     }
 
     /**
-     * Renders the head of the table.
-     *
-     * @return string (X)HTML.
-     *
-     * @global string The script name.
-     * @global array  The localization of the plugins.
+     * @return string
+     * @global string $sn
+     * @global array $plugin_tx
      */
-    protected function renderTableHead()
+    private function renderTableHead()
     {
         global $sn, $plugin_tx;
 
@@ -222,17 +183,13 @@ class ArticlesAdminView
     }
 
     /**
-     * Renders a row.
-     *
-     * @param stdClass $article An article.
-     *
-     * @return string (X)HTML.
-     *
-     * @global string     The script name.
-     * @global array      The localization of the plugins.
-     * @global Controller The plugin controller.
+     * @param stdClass $article
+     * @return string
+     * @global string $sn
+     * @global array $plugin_tx
+     * @global Controller $_Realblog_controller
      */
-    protected function renderRow(stdClass $article)
+    private function renderRow(stdClass $article)
     {
         global $sn, $plugin_tx, $_Realblog_controller;
 
@@ -277,5 +234,3 @@ class ArticlesAdminView
             . $article->title . '</td></tr>';
     }
 }
-
-?>

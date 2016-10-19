@@ -1,12 +1,6 @@
 <?php
 
 /**
- * The article views.
- *
- * PHP version 5
- *
- * @category  CMSimple_XH
- * @package   Realblog
  * @author    Jan Kanters <jan.kanters@telenet.be>
  * @author    Gert Ebersbach <mail@ge-webdesign.de>
  * @author    Christoph M. Becker <cmbecker69@gmx.de>
@@ -14,53 +8,32 @@
  * @copyright 2010-2014 Gert Ebersbach <http://ge-webdesign.de/>
  * @copyright 2014-2016 Christoph M. Becker <http://3-magi.net/>
  * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link      http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
 
 namespace Realblog;
 
 use stdClass;
 
-/**
- * The article views.
- *
- * @category CMSimple_XH
- * @package  Realblog
- * @author   Christoph M. Becker <cmbecker69@gmx.de>
- * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link     http://3-magi.net/?CMSimple_XH/Realblog_XH
- */
 class ArticleView
 {
     /**
-     * The article ID.
-     *
      * @var int
      */
     protected $id;
 
     /**
-     * The article record.
-     *
      * @var stdClass
      */
     protected $article;
 
     /**
-     * The article page. Most likely this is always 1.
-     *
      * @var int
      */
     protected $page;
 
     /**
-     * Initializes a new instance.
-     *
-     * @param int      $id      An article ID.
-     * @param stdClass $article An article record.
-     * @param int      $page    An article page.
-     *
-     * @return void
+     * @param int $id
+     * @param int $page
      */
     public function __construct($id, stdClass $article, $page)
     {
@@ -70,11 +43,8 @@ class ArticleView
     }
 
     /**
-     * Renders the article.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The configuration of the plugins.
+     * @return string
+     * @global array $plugin_cf
      */
     public function render()
     {
@@ -94,11 +64,9 @@ class ArticleView
     }
 
     /**
-     * Renders the links.
-     *
-     * @return string (X)HTML.
+     * @return string
      */
-    protected function renderLinks()
+    private function renderLinks()
     {
         $html = '<div class="realblog_buttons">'
             . $this->renderOverviewLink();
@@ -114,26 +82,27 @@ class ArticleView
     }
 
     /**
-     * Renders the overview link.
-     *
-     * @return string (X)HTML.
-     *
-     * @global string     The URL of the current page.
-     * @global array      The localization of the plugins.
-     * @global Controller The plugin controller.
+     * @return string
+     * @global string $su
+     * @global array $plugin_tx
+     * @global Controller $_Realblog_controller
      */
-    protected function renderOverviewLink()
+    private function renderOverviewLink()
     {
         global $su, $plugin_tx, $_Realblog_controller;
 
         if ($this->article->status == 2) {
             $url = $_Realblog_controller->url(
-                $su, null, array('realblog_year' => $_Realblog_controller->getYear())
+                $su,
+                null,
+                array('realblog_year' => $_Realblog_controller->getYear())
             );
             $text = $plugin_tx['realblog']['archiv_back'];
         } else {
             $url = $_Realblog_controller->url(
-                $su, null, array('realblog_page' => $this->page)
+                $su,
+                null,
+                array('realblog_page' => $this->page)
             );
             $text = $plugin_tx['realblog']['blog_back'];
         }
@@ -142,14 +111,11 @@ class ArticleView
     }
 
     /**
-     * Renders the edit entry link.
-     *
-     * @return string (X)HTML.
-     *
-     * @global string The script name.
-     * @global array  The localization of the plugins.
+     * @return string
+     * @global string $sn
+     * @global array $plugin_tx
      */
-    protected function renderEditEntryLink()
+    private function renderEditEntryLink()
     {
         global $sn, $plugin_tx;
 
@@ -161,14 +127,11 @@ class ArticleView
     }
 
     /**
-     * Renders the edit comments link.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array  The configuration of the plugins.
-     * @global array  The localization of the plugins.
+     * @return string
+     * @global array $plugin_cf
+     * @global array $plugin_tx
      */
-    protected function renderEditCommentsLink()
+    private function renderEditCommentsLink()
     {
         global $plugin_cf, $plugin_tx;
 
@@ -183,25 +146,19 @@ class ArticleView
     }
 
     /**
-     * Renders the article heading.
-     *
-     * @return string (X)HTML.
-     *
+     * @return string
      * @todo Heed $cf[menu][levels].
      */
-    protected function renderHeading()
+    private function renderHeading()
     {
         return '<h4>' . $this->article->title . '</h4>';
     }
 
     /**
-     * Renders the article date.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The localization of the plugins.
+     * @return string
+     * @global array $plugin_tx
      */
-    protected function renderDate()
+    private function renderDate()
     {
         global $plugin_tx;
 
@@ -213,11 +170,9 @@ class ArticleView
     }
 
     /**
-     * Renders the article story.
-     *
-     * @return string (X)HTML.
+     * @return string
      */
-    protected function renderStory()
+    private function renderStory()
     {
         $story = $this->article->body != ''
             ? $this->article->body
@@ -228,13 +183,10 @@ class ArticleView
     }
 
     /**
-     * Returns whether comments are enabled.
-     *
      * @return bool
-     *
-     * @global array The configuration of the plugins.
+     * @global array $plugin_cf
      */
-    protected function wantsComments()
+    private function wantsComments()
     {
         global $plugin_cf;
 
@@ -243,5 +195,3 @@ class ArticleView
             && class_exists($pcf['comments_plugin'] . '_RealblogBridge');
     }
 }
-
-?>

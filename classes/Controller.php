@@ -1,10 +1,6 @@
 <?php
 
 /**
- * The controllers.
- *
- * PHP version 5
- *
  * @category  CMSimple_XH
  * @package   Realblog
  * @author    Jan Kanters <jan.kanters@telenet.be>
@@ -14,30 +10,17 @@
  * @copyright 2010-2014 Gert Ebersbach <http://ge-webdesign.de/>
  * @copyright 2014-2016 Christoph M. Becker <http://3-magi.net/>
  * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link      http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
 
 namespace Realblog;
 
 use stdClass;
 
-/**
- * The controllers.
- *
- * @category CMSimple_XH
- * @package  Realblog
- * @author   Christoph M. Becker <cmbecker69@gmx.de>
- * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link     http://3-magi.net/?CMSimple_XH/Realblog_XH
- */
 class Controller
 {
     /**
-     * Initializes the plugin.
-     *
      * @return void
-     *
-     * @global array The configuration of the plugin.
+     * @global array $plugin_cf
      */
     public function init()
     {
@@ -66,13 +49,10 @@ class Controller
     }
 
     /**
-     * Returns whether the plugin administration is requested.
-     *
      * @return bool
-     *
-     * @global string Whether the plugin administration is requested.
+     * @global string $realblog
      */
-    protected function isAdministrationRequested()
+    private function isAdministrationRequested()
     {
         global $realblog;
 
@@ -80,24 +60,19 @@ class Controller
     }
 
     /**
-     * Handles the plugin administration.
-     *
      * @return void
      */
-    protected function handleAdministration()
+    private function handleAdministration()
     {
         $controller = new AdminController();
         $controller->dispatch();
     }
 
     /**
-     * Emits the alternate RSS link.
-     *
      * @return void
-     *
-     * @global string The (X)HTML for the head element.
+     * @global string $hjs
      */
-    protected function emitAlternateRSSLink()
+    private function emitAlternateRSSLink()
     {
         global $hjs;
 
@@ -108,14 +83,11 @@ class Controller
     }
 
     /**
-     * Displays the realblog's topic with status = published.
-     *
-     * @param array  $showSearch  Whether to show the searchform.
-     * @param string $realBlogCat FIXME
-     *
-     * @return string (X)HTML.
-     *
-     * @global array  The configuration of the plugins.
+     * @param bool $showSearch
+     * @param string $category
+     * @return string
+     * @global array $plugin_cf
+     * @global Controller $_Realblog_controller
      */
     public function blog($showSearch = false, $category = 'all')
     {
@@ -149,18 +121,14 @@ class Controller
     }
 
     /**
-     * Renders a blog article.
-     *
-     * @param int $id An article ID.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array  The headings of the pages.
-     * @global int    The current page index.
-     * @global string The page title.
-     * @global string The value of the page's meta description.
+     * @param int $id
+     * @return string
+     * @global array $h
+     * @global int $s
+     * @global string $title
+     * @global string $description
      */
-    protected function renderArticle($id)
+    private function renderArticle($id)
     {
         global $h, $s, $title, $description;
 
@@ -174,11 +142,8 @@ class Controller
     }
 
     /**
-     * Displays the archived realblog topics.
-     *
-     * @param mixed $showSearch Whether to show the search form.
-     *
-     * @return string (X)HTML.
+     * @param bool $showSearch
+     * @return string
      */
     public function archive($showSearch = false)
     {
@@ -208,19 +173,11 @@ class Controller
     }
 
     /**
-     * Displays the realblog topics with a link to the blog page from the template.
-     *
-     * A page calling #cmsimple $output.=showrealblog();# must exist.
-     * Options: realblog_page [required] : this is the page containing the
-     *          showrealblog() function
-     *
-     * @param mixed $pageUrl A URL of a page where the blog is shown.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array  The URLs of the pages.
-     * @global array  The configuration of the plugins.
-     * @global array  The localization of the plugins.
+     * @param string $pageUrl
+     * @return string
+     * @global array $u
+     * @global array $plugin_cf
+     * @global array $plugin_tx
      */
     public function link($pageUrl)
     {
@@ -248,23 +205,18 @@ class Controller
     }
 
     /**
-     * Renders a link to an article.
-     *
-     * @param stdClass $article An article.
-     * @param string   $pageURL The URL of the blog page.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The localization of the plugins.
+     * @param string $pageURL
+     * @return string
+     * @global array $plugin_tx
      */
-    protected function renderArticleLink(stdClass $article, $pageURL)
+    private function renderArticleLink(stdClass $article, $pageURL)
     {
         global $plugin_tx;
 
         $url = $this->url(
-            $pageURL, $article->title, array(
-                'realblogID' => $article->id
-            )
+            $pageURL,
+            $article->title,
+            array('realblogID' => $article->id)
         );
         return '<div class="realblog_tpl_show_date">'
             . date($plugin_tx['realblog']['date_format'], $article->date)
@@ -275,12 +227,9 @@ class Controller
     }
 
     /**
-     * Returns a graphical hyperlink to the RSS feed.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array  The paths of system files and folders.
-     * @global array  The localization of the plugins.
+     * @return string
+     * @global array $pth
+     * @global array $plugin_tx
      */
     public function feedLink()
     {
@@ -293,15 +242,12 @@ class Controller
                 . $plugin_tx['realblog']['rss_tooltip'] . '" style="border: 0;"'
             )
             . '</a>';
-
     }
 
     /**
-     * Delivers the RSS feed.
-     *
      * @return void
      */
-    protected function deliverFeed()
+    private function deliverFeed()
     {
         global $plugin_cf;
 
@@ -313,47 +259,35 @@ class Controller
     }
 
     /**
-     * Changes status to published when publishing date is reached.
-     *
      * @return void
      */
-    protected function autoPublish()
+    private function autoPublish()
     {
         DB::autoChangeStatus('publishing_date', 1);
     }
 
     /**
-     * Changes status to archived when archive date is reached.
-     *
      * @return void
      */
-    protected function autoArchive()
+    private function autoArchive()
     {
         DB::autoChangeStatus('archiving_date', 2);
     }
 
     /**
-     * Returns the meta description for an article.
-     *
-     * @param stdClass $article An article.
-     *
      * @return string
      */
-    protected function getDescription(stdClass $article)
+    private function getDescription(stdClass $article)
     {
         return utf8_substr(
-            html_entity_decode(
-                strip_tags($article->teaser), ENT_COMPAT, 'UTF-8'
-            ),
-            0, 150
+            html_entity_decode(strip_tags($article->teaser), ENT_COMPAT, 'UTF-8'),
+            0,
+            150
         );
     }
 
     /**
-     * Returns the value of a POST or GET parameter; <var>null</var> if not set.
-     *
-     * @param string $name A parameter name.
-     *
+     * @param string $name
      * @return string
      */
     public function getPgParameter($name)
@@ -368,8 +302,6 @@ class Controller
     }
 
     /**
-     * Returns the requested page number, and stores it in a cookie.
-     *
      * @return int
      */
     public function getPage()
@@ -387,8 +319,6 @@ class Controller
     }
 
     /**
-     * Returns the requested year, and stores it in a cookie.
-     *
      * @return int
      */
     public function getYear()
@@ -406,10 +336,7 @@ class Controller
     }
 
     /**
-     * Returns a requested filter, and stores it in a cookie.
-     *
-     * @param int $num A filter number (1-3).
-     *
+     * @param int $num
      * @return bool
      */
     public function getFilter($num)
@@ -427,12 +354,9 @@ class Controller
     }
 
     /**
-     * Constructs a front-end URL.
-     *
-     * @param string $pageUrl      A page URL.
-     * @param string $articleTitle An article title.
-     * @param array  $params       A map of names -> values.
-     *
+     * @param string $pageUrl
+     * @param string $articleTitle
+     * @param array  $params
      * @return string
      */
     public function url($pageUrl, $articleTitle = null, $params = array())
@@ -455,17 +379,13 @@ class Controller
     }
 
     /**
-     * Renders the search results.
-     *
-     * @param string $what  Which search results ('blog' or 'archive').
-     * @param string $count The number of hits.
-     *
-     * @return string (X)HTML.
-     *
-     * @global string The URL of the current page.
-     * @global array  The localization of the plugins.
+     * @param string $what
+     * @param string $count
+     * @return string
+     * @global string $su
+     * @global array $plugin_tx
      */
-    protected function renderSearchResults($what, $count)
+    private function renderSearchResults($what, $count)
     {
         global $su, $plugin_tx;
 
@@ -481,10 +401,7 @@ class Controller
     }
 
     /**
-     * Parses a date string and returns a timestamp.
-     *
-     * @param mixed $date A date string in ISO format.
-     *
+     * @param string $date
      * @return int
      */
     public function stringToTime($date)
@@ -492,7 +409,4 @@ class Controller
         $parts = explode('-', $date);
         return mktime(0, 0, 0, $parts[1], $parts[2], $parts[0]);
     }
-
 }
-
-?>
