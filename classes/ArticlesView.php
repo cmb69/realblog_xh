@@ -37,6 +37,8 @@ class ArticlesView
      */
     protected $articles;
     
+    protected $articleCount;
+    
     protected $page;
     
     protected $pageCount;
@@ -48,9 +50,10 @@ class ArticlesView
      *
      * @return void
      */
-    public function __construct($articles, $page, $pageCount)
+    public function __construct($articles, $articleCount, $page, $pageCount)
     {
         $this->articles = $articles;
+        $this->articleCount = $articleCount;
         $this->page = $page;
         $this->pageCount = $pageCount;
     }
@@ -354,7 +357,7 @@ class ArticlesView
 
         return '<div class="realblog_db_info">'
             . $plugin_tx['realblog']['record_count'] . ' : '
-            . count($this->articles) . '</div>';
+            . $this->articleCount . '</div>';
     }
 }
 

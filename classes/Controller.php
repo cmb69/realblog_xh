@@ -138,7 +138,7 @@ class Controller
             if ($search) {
                 $html .= $this->renderSearchResults('blog', $articleCount);
             }
-            $view = new ArticlesView($articles, $page, $pageCount);
+            $view = new ArticlesView($articles, $articleCount, $page, $pageCount);
             $html .= $view->render();
         } else {
             $html .= $this->renderArticle($id);
