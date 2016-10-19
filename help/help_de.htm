@@ -95,6 +95,11 @@ anpassen.</p>
 <pre>{{{Realblog_blog();}}}</pre>
 <p>Um ebenfalls das Suchformular anzuzeigen, schreiben Sie:</p>
 <pre>{{{Realblog_blog(true);}}}</pre>
+<p>Um die Liste der neuesten Artikel auf jeder Seite anzuzeigen,
+fügen Sie an einer passenden Stelle des Templates folgendes ein:</p>
+<pre>&lt;?php echo Realblog_link('BLOG_URL')?&gt;</pre>
+<p>BLOG_URL muss durch die URL der Hauptseite des Blogs ersetzt werden. Details
+finden Sie in der Beschreibung der <a href="#usage-rss">RSS page Einstellung</a>.</p>
 <div class="toplink"><a href="#">zum Seitenanfang</a></div>
 
 <h3 id="usage-administration">Administration</h3>
