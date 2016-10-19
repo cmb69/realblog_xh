@@ -1,14 +1,5 @@
-form[name=realblogsearch] {
-    overflow: hidden;
-}
-.realblog_search_toggle {
-    border: none;
-    vertical-align: bottom;
-    margin-right: 0.5em;
-    cursor: pointer;
-}
-.realblog_search_caption {
-    font-weight: bold;
+.realblog_search_form {
+    text-align: right;
 }
 
 /* Textareas */

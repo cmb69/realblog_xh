@@ -85,7 +85,6 @@ $plugin_tx['realblog']['tooltip_next']="volgende pagina";
 $plugin_tx['realblog']['tooltip_nextyear']="volgend jaar";
 $plugin_tx['realblog']['tooltip_previous']="vorige pagina";
 $plugin_tx['realblog']['tooltip_previousyear']="vorig jaar";
-$plugin_tx['realblog']['tooltip_showsearch']="zoekopties";
 $plugin_tx['realblog']['tooltip_view']="laat artikel zien";
 $plugin_tx['realblog']['window_close']="sluit venster";
 $plugin_tx['realblog']['window_print']="print geselecteerde artikelen";

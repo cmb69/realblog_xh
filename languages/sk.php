@@ -80,7 +80,6 @@ $plugin_tx['realblog']['tooltip_next']="ďalšia strana";
 $plugin_tx['realblog']['tooltip_nextyear']="ďalší rok";
 $plugin_tx['realblog']['tooltip_previous']="predošlá strana";
 $plugin_tx['realblog']['tooltip_previousyear']="predošlý rok";
-$plugin_tx['realblog']['tooltip_showsearch']="vohľadávač";
 $plugin_tx['realblog']['tooltip_view']="ukázať článok";
 $plugin_tx['realblog']['window_close']="zatvoriť okno";
 $plugin_tx['realblog']['window_print']="vytlačiť vybraté články";

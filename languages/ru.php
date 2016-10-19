@@ -104,7 +104,6 @@ $plugin_tx['realblog']['tooltip_next']="Следующая страница";
 $plugin_tx['realblog']['tooltip_nextyear']="Следующий год";
 $plugin_tx['realblog']['tooltip_previous']="Предыдущая страница";
 $plugin_tx['realblog']['tooltip_previousyear']="Предыдущий год";
-$plugin_tx['realblog']['tooltip_showsearch']="Настройка поиска";
 $plugin_tx['realblog']['tooltip_view']="Просмотр записи";
 $plugin_tx['realblog']['window_close']="Закрытие окна";
 $plugin_tx['realblog']['window_print']="Печать выбранной записи";
