@@ -45,6 +45,9 @@ class PaginationView
     {
         global $plugin_tx;
 
+        if ($this->pageCount <= 1) {
+            return '';
+        }
         $pageOfPages = sprintf(
             $plugin_tx['realblog']['page_of_pages'],
             $this->page,
