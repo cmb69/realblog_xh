@@ -239,7 +239,7 @@ class ArticlesView
 
         $bridge = $plugin_cf['realblog']['comments_plugin'] . '_RealblogBridge';
         $commentsId = 'comments' . $article->id;
-        $count = call_user_func(array($bridge, count), $commentsId);
+        $count = call_user_func(array($bridge, 'count'), $commentsId);
         $key = 'message_comments' . XH_numberSuffix($count);
         return '<p class="realblog_number_of_comments">'
             . sprintf($plugin_tx['realblog'][$key], $count) . '</p>';
