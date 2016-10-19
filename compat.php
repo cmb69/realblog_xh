@@ -15,11 +15,13 @@
  * @param string $category
  * @return string
  * @global Realblog\Controller $_Realblog_controller
+ * @deprecated as of 3.0beta6
  */
 function showrealblog($options = null, $category = 'all')
 {
     global $_Realblog_controller;
 
+    trigger_error('Function ' . __FUNCTION__ . '() is deprecated', E_USER_DEPRECATED);
     $includesearch = false;
     $arguments = Realblog_getArguments($options);
     if (isset($arguments['showsearch'])) {
@@ -41,11 +43,13 @@ function showrealblog($options = null, $category = 'all')
  * @param string $options
  * @return string
  * @global Realblog\Controller $_Realblog_controller
+ * @deprecated as of 3.0beta6
  */
 function showrealblogarchive($options = null)
 {
     global $_Realblog_controller;
 
+    trigger_error('Function ' . __FUNCTION__ . '() is deprecated', E_USER_DEPRECATED);
     $includesearch = false;
     $arguments = Realblog_getArguments($options);
     if (isset($arguments['showsearch'])) {
@@ -68,11 +72,13 @@ function showrealblogarchive($options = null)
  * @param string $options
  * @return string
  * @global Realblog\Controller $_Realblog_controller
+ * @deprecated as of 3.0beta6
  */
 function realbloglink($options)
 {
     global $_Realblog_controller;
 
+    trigger_error('Function ' . __FUNCTION__ . '() is deprecated', E_USER_DEPRECATED);
     $realblog_page = '';
     $arguments = Realblog_getArguments($options);
     if (isset($arguments['realblogpage'])) {
@@ -101,28 +107,30 @@ function Realblog_getArguments($arguments)
 /**
  * @return string
  * @global Realblog\Controller $_Realblog_controller
+ * @deprecated as of 3.0beta6
  */
 function realblog_rss_adv()
 {
     global $_Realblog_controller;
 
+    trigger_error('Function ' . __FUNCTION__ . '() is deprecated', E_USER_DEPRECATED);
     return $_Realblog_controller->feedLink();
 }
 
 /**
  * @return void
+ * @deprecated as of 3.0beta6
  */
 function rbCat()
 {
-    return;
+    trigger_error('Function ' . __FUNCTION__ . '() is deprecated', E_USER_DEPRECATED);
 }
 
 /**
  * @return void
- * @deprecated since 3.0beta4
+ * @deprecated as of 3.0beta4
  */
 function commentsMembersOnly()
 {
-    // should be E_USER_DEPRECATED, but that requires PHP >= 5.3 or XH >= 1.6.3
-    trigger_error('Function ' . __FUNCTION__ . '() is deprecated', E_USER_NOTICE);
+    trigger_error('Function ' . __FUNCTION__ . '() is deprecated', E_USER_DEPRECATED);
 }
