@@ -19,6 +19,8 @@
 
 namespace Realblog;
 
+use stdClass;
+
 /**
  * The article administration views.
  *
@@ -61,7 +63,7 @@ class ArticleAdminView
      *
      * @global array The paths of system files and folders.
      */
-    public function __construct(\stdClass $article, $action)
+    public function __construct(stdClass $article, $action)
     {
         global $pth;
 

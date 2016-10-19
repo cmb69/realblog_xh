@@ -19,6 +19,9 @@
 
 namespace Realblog;
 
+use stdClass;
+use SQLite3;
+
 /**
  * The DB.
  *
@@ -40,14 +43,14 @@ class DB
     /**
      * The connection.
      *
-     * @var \SQLite3
+     * @var SQLite3
      */
     protected $connection;
 
     /**
      * Returns the connection.
      *
-     * @return \SQLite3
+     * @return SQLite3
      */
     public static function getConnection()
     {
@@ -68,14 +71,14 @@ class DB
 
         $filename = "{$pth['folder']['content']}realblog/realblog.db";
         try {
-            $this->connection = new \Sqlite3($filename, SQLITE3_OPEN_READWRITE);
+            $this->connection = new Sqlite3($filename, SQLITE3_OPEN_READWRITE);
         } catch (\Exception $ex) {
             $dirname = dirname($filename);
             if (!file_exists($dirname)) {
                 mkdir($dirname, 0777);
                 chmod($dirname, 0777);
             }
-            $this->connection = new \Sqlite3($filename);
+            $this->connection = new Sqlite3($filename);
             $this->createDatabase();
         }
     }
@@ -372,7 +375,7 @@ SQL;
         }
     }
 
-    public static function insertArticle(\stdClass $article)
+    public static function insertArticle(stdClass $article)
     {
         $db = self::getConnection();
         $sql = <<<'EOS'
@@ -402,7 +405,7 @@ EOS;
      *
      * @return void
      */
-    public static function updateArticle(\stdClass $article)
+    public static function updateArticle(stdClass $article)
     {
         $db = self::getConnection();
         $sql = <<<'EOS'

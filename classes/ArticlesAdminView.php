@@ -19,6 +19,8 @@
 
 namespace Realblog;
 
+use stdClass;
+
 /**
  * The articles administration views.
  *
@@ -222,7 +224,7 @@ class ArticlesAdminView
     /**
      * Renders a row.
      *
-     * @param \stdClass $article An article.
+     * @param stdClass $article An article.
      *
      * @return string (X)HTML.
      *
@@ -230,7 +232,7 @@ class ArticlesAdminView
      * @global array      The localization of the plugins.
      * @global Controller The plugin controller.
      */
-    protected function renderRow(\stdClass $article)
+    protected function renderRow(stdClass $article)
     {
         global $sn, $plugin_tx, $_Realblog_controller;
 

@@ -19,6 +19,8 @@
 
 namespace Realblog;
 
+use stdClass;
+
 /**
  * The articles views.
  *
@@ -108,7 +110,7 @@ class ArticlesView
      * @global array      The configuration of the plugins.
      * @global Controller The plugin controller.
      */
-    protected function renderArticlePreview(\stdClass $article)
+    protected function renderArticlePreview(stdClass $article)
     {
         global $plugin_cf, $_Realblog_controller;
 
@@ -145,7 +147,7 @@ class ArticlesView
      * @global array      The localization of the plugins.
      * @global Controller The plugin controller.
      */
-    protected function renderArticleHeading(\stdClass $article)
+    protected function renderArticleHeading(stdClass $article)
     {
         global $su, $plugin_tx, $_Realblog_controller;
 
@@ -176,7 +178,7 @@ class ArticlesView
      *
      * @global array The localization of the plugins.
      */
-    protected function renderArticleDate(\stdClass $article)
+    protected function renderArticleDate(stdClass $article)
     {
         global $plugin_tx;
 
@@ -197,7 +199,7 @@ class ArticlesView
      * @global array      The localization of the plugins.
      * @global Controller The plugin controller.
      */
-    protected function renderArticleFooter(\stdClass $article)
+    protected function renderArticleFooter(stdClass $article)
     {
         global $su, $plugin_cf, $plugin_tx, $_Realblog_controller;
 

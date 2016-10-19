@@ -19,6 +19,8 @@
 
 namespace Realblog;
 
+use stdClass;
+
 /**
  * The article views.
  *
@@ -60,7 +62,7 @@ class ArticleView
      *
      * @return void
      */
-    public function __construct($id, \stdClass $article, $page)
+    public function __construct($id, stdClass $article, $page)
     {
         $this->id = (int) $id;
         $this->article = $article;

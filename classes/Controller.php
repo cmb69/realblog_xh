@@ -19,6 +19,8 @@
 
 namespace Realblog;
 
+use stdClass;
+
 /**
  * The controllers.
  *
@@ -255,7 +257,7 @@ class Controller
      *
      * @global array The localization of the plugins.
      */
-    protected function renderArticleLink(\stdClass $article, $pageURL)
+    protected function renderArticleLink(stdClass $article, $pageURL)
     {
         global $plugin_tx;
 
@@ -337,7 +339,7 @@ class Controller
      *
      * @return string
      */
-    protected function getDescription(\stdClass $article)
+    protected function getDescription(stdClass $article)
     {
         return utf8_substr(
             html_entity_decode(

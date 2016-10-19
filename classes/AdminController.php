@@ -19,6 +19,8 @@
 
 namespace Realblog;
 
+use stdClass;
+
 /**
  * The admin controllers.
  *
@@ -324,7 +326,7 @@ class AdminController
     {
         global $_Realblog_controller;
 
-        $article = new \stdClass();
+        $article = new stdClass();
         $article->id = $_Realblog_controller->getPgParameter('realblog_id');
         $article->date =
             $_Realblog_controller->stringToTime(
