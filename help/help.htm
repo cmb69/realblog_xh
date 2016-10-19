@@ -37,7 +37,6 @@ that, Realblog_XH doesn't have any multilingual capabilities.</p>
 </ul>
 </li>
 <li><a href="#bc">Backward compatibility</a></li>
-<li><a href="#limitations">Limitations</a></li>
 <li><a href="#license">License</a></li>
 <li><a href="#credits">Credits</a></li>
 </ul>
@@ -101,11 +100,10 @@ meant to be pretty much self explaining.</p>
 
 <h3 id="usage-categories">Categories</h3>
 <p>Realblog_XH currently has only very basic support for categories. To define
-the categories a post belongs to, you have put a plugin call in the teaser
-or the actual article:</p>
-<pre>{{{rbCat('|Category 1|Category 2|');}}}</pre>
-<p>Note that you can define as many categories as you like, and that all
-categories have to be surrounded by vertical bars.</p>
+the categories a post belongs to, enter a <em>comma separated</em> list of
+category names in the respective field of the article form:</p>
+<pre>Category 1,Category 2</pre>
+<p>Note that you can define as many categories as you like.</p>
 <p>It is not possible for visitors to filter for categories, but you can prepare
 separate CMSimple_XH pages for each category, and display the respective posts
 on these pages by passing a second argument to Realblog_blog():</p>
@@ -151,14 +149,6 @@ calls are deprecated, and may be removed in the future.</p>
 <p>The RSS feed files (realblog_rss_feed.xml) are not used anymore&mdash;instead
 the feeds are built dynamically. You should delete the old files, so that news
 readers will not grab the old contents.</p>
-<div class="toplink"><a href="#">back to top</a></div>
-
-<h2 id="limitations">Limitations</h2>
-<p>There is a soft limit on the amount of posts and their size that Realblog_XH
-can handle, similar to the soft limit on the size of CMSimple_XH's content.htm.
-Most likely you'll never reach this limit if you're writing just one or two
-posts per week, but if you're planning to do heavy blogging, you are better off
-using a database driven blogging software.</p>
 <div class="toplink"><a href="#">back to top</a></div>
 
 <h2 id="license">License</h2>

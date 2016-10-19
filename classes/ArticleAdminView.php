@@ -108,6 +108,10 @@ class ArticleAdminView
             . '<td>' . $this->renderStatusSelect() . '</td>'
             . '<td>' . $this->renderCommentsCheckbox() . '</td>'
             . '<td>' . $this->renderFeedCheckbox() . '</td></tr>'
+            . '<tr><td colspan="3"><span class="realblog_date_label">'
+            . $plugin_tx['realblog']['label_categories']
+            . '</span></td></tr>'
+            . '<tr><td colspan="3">' . $this->renderCategories() . '<td></tr>'
             . '</table>'
             . '<h4>' . $plugin_tx['realblog']['title_label'] . '</h4>'
             . tag(
@@ -307,6 +311,14 @@ class ArticleAdminView
             . '</span></label>';
     }
 
+    protected function renderCategories()
+    {
+        return tag(
+            'input type="text" size="70" name="realblog_categories" value="'
+            . XH_hsc(trim($this->article->categories, ',')) . '"'
+        );
+    }
+
     /**
      * Renders the headline (teaser).
      *
@@ -319,13 +331,6 @@ class ArticleAdminView
         global $plugin_tx;
 
         return '<h4>' . $plugin_tx['realblog']['headline_label'] . '</h4>'
-            . '<p>' . $plugin_tx['realblog']['label_template']
-            . tag(
-                'input type="text" value="{{{rbCat(\'|category1|category2|\');}}}"'
-                . ' readonly="readonly" onclick="this.select()"'
-                . ' style="margin-left: 0.5em"'
-            )
-            . '</p>'
             . '<textarea class="realblog_headline_field" name="realblog_headline"'
             . ' id="realblog_headline" rows="6" cols="60">'
             . XH_hsc($this->article->teaser) . '</textarea>';

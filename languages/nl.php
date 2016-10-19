@@ -33,7 +33,6 @@ $plugin_tx['realblog']['headline_label']="voorbeschouwing";
 $plugin_tx['realblog']['id_label']="ID";
 $plugin_tx['realblog']['label_rss']="RSS feed";
 $plugin_tx['realblog']['label_status']="Status";
-$plugin_tx['realblog']['label_template']="Template (copy &amp; paste):";
 $plugin_tx['realblog']['links_visible_text']="Nieuwste artikelen in Blog:";
 $plugin_tx['realblog']['menu_main']="Artikelen";
 $plugin_tx['realblog']['message_comments_1']="Er is %d commentaar op dit artikel.";

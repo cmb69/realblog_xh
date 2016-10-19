@@ -89,6 +89,7 @@ CREATE TABLE articles (
 	publishing_date INTEGER,
 	archiving_date INTEGER,
 	status INTEGER,
+	categories TEXT,
 	title TEXT,
 	teaser TEXT,
 	body TEXT,
@@ -106,28 +107,47 @@ EOS;
     {
         global $pth;
 
-        $types = array(SQLITE3_INTEGER, SQLITE3_INTEGER, SQLITE3_INTEGER,
-                       SQLITE3_INTEGER, SQLITE3_INTEGER, SQLITE3_TEXT,
-                       SQLITE3_TEXT, SQLITE3_TEXT, SQLITE3_INTEGER,
-                       SQLITE3_INTEGER);
         $filename = "{$pth['folder']['content']}realblog/realblog.txt";
         if (file_exists($filename)) {
             $lines = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-            $this->connection->exec("BEGIN TRANSACTION");
-            $sql = "INSERT INTO articles VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $this->connection->exec('BEGIN TRANSACTION');
+            $sql = <<<'SQL'
+INSERT INTO articles VALUES (
+	:id, :date, :publishing_date, :archiving_date, :status, :categories, :title,
+	:teaser, :body, :feedable, :commentable
+)
+SQL;
             $statement = $this->connection->prepare($sql);
             foreach ($lines as $line) {
                 $record = explode("\t", $line);
-                unset($record[5]);
-                $record = array_values($record);
-                foreach ($record as $i => $field) {
-                    $statement->bindValue($i + 1, $record[$i], $types[$i]);
-                }
+				$categories = array_merge($this->getAndRemoveCategories($record[7]),
+										  $this->getAndRemoveCategories($record[8]));
+				$categories = implode(',', $categories);
+				$statement->bindValue(':id', $record[0], SQLITE3_INTEGER);
+				$statement->bindValue(':date', $record[1], SQLITE3_INTEGER);
+				$statement->bindValue(':publishing_date', $record[2], SQLITE3_INTEGER);
+				$statement->bindValue(':archiving_date', $record[3], SQLITE3_INTEGER);
+				$statement->bindValue(':status', $record[4], SQLITE3_INTEGER);
+				$statement->bindValue(':categories', ",$categories,", SQLITE3_TEXT);
+				$statement->bindValue(':title', $record[6], SQLITE3_TEXT);
+				$statement->bindValue(':teaser', $record[7], SQLITE3_TEXT);
+				$statement->bindValue(':body', $record[8], SQLITE3_TEXT);
+				$statement->bindValue(':feedable', $record[9], SQLITE3_INTEGER);
+				$statement->bindValue(':commentable', $record[10], SQLITE3_INTEGER);
                 $statement->execute();
             }
-            $this->connection->exec("COMMIT TRANSACTION");
+            $this->connection->exec('COMMIT');
         }
     }
+
+	private function getAndRemoveCategories(&$field)
+	{
+		$categories = preg_match('/{{{rbCat\(([^\)]*)\);?}}}/', $field, $matches);
+		$categories = explode('|', trim($matches[1], "'|"));
+		$categories = array_map(function ($cat) {return trim($cat);}, $categories);
+		$field = preg_replace('/{{{rbCat\([^\)]*\);?}}}/', '', $field);
+		return $categories;
+	}
 
     /**
      * Finds and returns all articles with a certain status ordered by date and ID.
@@ -146,7 +166,7 @@ EOS;
             $order = 'ASC';
         }
         $categoryClause = ($category !== 'all')
-            ? 'AND (teaser LIKE :category OR body LIKE :category)'
+            ? 'AND categories LIKE :category'
             : '';
         $searchClause = isset($search)
             ? 'AND (title LIKE :search OR body LIKE :search)'
@@ -160,7 +180,7 @@ SELECT id, date, title, teaser, commentable, length(body) AS body_length
 EOS;
         $statement = $db->prepare($sql);
         $statement->bindValue(':status', $status, SQLITE3_INTEGER);
-        $statement->bindValue(':category', "%|$category|%", SQLITE3_TEXT);
+        $statement->bindValue(':category', "%,$category,%", SQLITE3_TEXT);
         $statement->bindValue(':search', "%$search%", SQLITE3_TEXT);
         $result = $statement->execute();
         $records = array();
@@ -261,7 +281,7 @@ EOS;
             $whereClause = sprintf('WHERE status IN (%s)', implode(', ', $statuses));
         }
         $categoryClause = ($category !== 'all')
-            ? 'AND (teaser LIKE :category OR body LIKE :category)'
+            ? 'AND categories LIKE :category'
             : '';
         $searchClause = isset($search)
             ? 'AND (title LIKE :search OR body LIKE :search)'
@@ -270,7 +290,7 @@ EOS;
 SELECT COUNT(*) AS count FROM articles $whereClause $categoryClause $searchClause
 SQL;
         $statement = $db->prepare($sql);
-        $statement->bindValue(':category', "%|$category|%", SQLITE3_TEXT);
+        $statement->bindValue(':category', "%,$category,%", SQLITE3_TEXT);
         $statement->bindValue(':search', "%$search%", SQLITE3_TEXT);
         $result = $statement->execute();
         $record = $result->fetchArray(SQLITE3_ASSOC);
@@ -358,8 +378,8 @@ SQL;
         $sql = <<<'EOS'
 INSERT INTO articles
     VALUES (
-        :id, :date, :publishing_date, :archiving_date, :status, :title, :teaser,
-        :body, :feedable, :commentable
+        :id, :date, :publishing_date, :archiving_date, :status, :categories,
+		:title, :teaser, :body, :feedable, :commentable
     )
 EOS;
         $statement = $db->prepare($sql);
@@ -368,6 +388,7 @@ EOS;
         $statement->bindValue(':publishing_date', $article->publishing_date, SQLITE3_INTEGER);
         $statement->bindValue(':archiving_date', $article->archiving_date, SQLITE3_INTEGER);
         $statement->bindValue(':status', $article->status, SQLITE3_INTEGER);
+		$statement->bindValue(':categories', $article->categories, SQLITE3_TEXT);
         $statement->bindValue(':title', $article->title, SQLITE3_TEXT);
         $statement->bindValue(':teaser', $article->teaser, SQLITE3_TEXT);
         $statement->bindValue(':body', $article->body, SQLITE3_TEXT);

@@ -356,6 +356,9 @@ class AdminController
             $_Realblog_controller->getPgParameter('realblog_rssfeed');
         $article->commentable = (bool)
             $_Realblog_controller->getPgParameter('realblog_comments');
+        $article->categories = ','
+            . trim($_Realblog_controller->getPgParameter('realblog_categories'))
+            . ',';
         return $article;
     }
 
@@ -443,6 +446,7 @@ EOT;
                 'publishing_date' => time(),
                 'archiving_date' => 2147483647,
                 'status' => 0,
+                'categories' => '',
                 'title' => '',
                 'teaser' => '',
                 'body' => '',

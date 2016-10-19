@@ -13,11 +13,11 @@
 <img src="../realblog.png" style="float:left; margin-right:16px" alt="Ringbuch
 mit Bleistift">
 <p>Realblog_XH ermöglicht die Präsentation eines Blogs auf Ihrer CMSimple_XH
-website. Das Plugin bietet die grundlegenden Blog-Funktionalitäten, wie die
+Website. Das Plugin bietet die grundlegenden Blog-Funktionalitäten, wie die
 Anzeige einer chronologisch geordneten Übersicht der Beiträge, ein optionales
 monatliches Archiv, automatisches zeitgesteuertes Veröffentlichen und
 Archivieren von Beiträgen, die Suche in den Blog-Inhalten, einen RSS-Feed und
-eine primitive Kategorisierung. Separat geschriebene Teaser weden unterstützt.
+eine sehr einfache Kategorisierung. Separat geschriebene Teaser werden unterstützt.
 Teaser und Artikel können beliebiges CMSimple_XH Skripting enthalten. Jeder
 Blog-Beitrag kann individuell kommentierbar gemacht werden, was ein kompatibles
 Kommentar-Plugin erfordert.</p>
@@ -39,7 +39,6 @@ hinaus hat Realblog_XH keine mehrsprachigen Fähigkeiten.</p>
 </ul>
 </li>
 <li><a href="#bc">Abwärtskompatibilität</a></li>
-<li><a href="#limitations">Beschränkungen</a></li>
 <li><a href="#license">Lizenz</a></li>
 <li><a href="#credits">Danksagung</a></li>
 </ul>
@@ -105,12 +104,12 @@ verwalten. Sie können Beiträge erzeugen, bearbeiten und löschen, ihren Status
 <div class="toplink"><a href="#">zum Seitenanfang</a></div>
 
 <h3 id="usage-categories">Kategorien</h3>
-<p>Realblog_XH hat derzeit nur eine primitive Unterstützung von Kategorien. Um
-die Kategorien zu definieren, zu denen ein Beitrag gehört, müssen Sie einen
-Pluginaufruf in den Teaser oder den eigentlich Artikel schreiben:</p>
-<pre>{{{rbCat('|Kategorie 1|Kategorie 2|');}}}</pre>
-<p>Beachten Sie, dass Sie beliebig viele Kategorien definieren können, und dass
-alle Kategorien von senkrechten Strichen umgeben sein müssen.</p>
+<p>Realblog_XH hat derzeit nur eine sehr grundlegende Unterstützung von Kategorien. Um
+die Kategorien zu definieren, zu denen ein Beitrag gehört, tragen Sie die durch
+<em>Komma getrennten</em> Kategorienamen in das entsprechende Feld im
+Artikelformular ein:</p>
+<pre>Kategorie 1,Kategorie 2</pre>
+<p>Beachten Sie, dass Sie beliebig viele Kategorien definieren können.</p>
 <p>Es ist Besuchern nicht möglich nach Kategorien zu filtern, aber Sie können
 separate CMSimple_XH Seiten für jede Kategorie anlegen, und die entsprechenden
 Beiträge auf diesen Seiten anzeigen lassen, wenn Sie ein zweites Argument an
@@ -162,15 +161,6 @@ Version entfernt werden.</p>
 <p>Die RSS-Feed-Dateien (realblog_rss_feed.xml) werden nicht mehr verwendet
 &ndash; statt dessen werden die Feeds dynamisch generiert. Sie sollten die alten
 Dateien löschen, so dass News-Reader nicht die alten Inhalte aufschnappen.</p>
-<div class="toplink"><a href="#">zum Seitenanfang</a></div>
-
-<h2 id="limitations">Beschränkungen</h2>
-<p>Es gibt eine weiche Obergrenze der Anzahl der Beiträge und deren Größe die
-Realblog_XH verwalten kann, ähnlich wie die weiche Obergrenze der Größe von
-CMSimple_XH's content.htm. Wahrscheinlich werden Sie diese Grenze nie erreichen,
-wenn Sie nur ein oder zwei Beiträge pro Woche schreiben, aber wenn Sie vorhaben
-viel zu bloggen, dann sind Sie mit einer Datenbank gestützten Blog-Software
-besser bedient.</p>
 <div class="toplink"><a href="#">zum Seitenanfang</a></div>
 
 <h2 id="license">Lizenz</h2>
