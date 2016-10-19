@@ -270,7 +270,7 @@ class AdminController
         $status = $_Realblog_controller->getPgParameter('new_realblogstatus');
         if (is_numeric($status) && $status >= 0 && $status <= 2) {
             $ids = array_map(function ($id) {return (int) $id;}, $ids);
-            $db = DB::updateStatusOfArticlesWithIds($ids, $status);
+            DB::updateStatusOfArticlesWithIds($ids, $status);
             $title = $plugin_tx['realblog']['tooltip_changestatus'];
             $info = $plugin_tx['realblog']['changestatus_done'];
             return $this->dbconfirm($title, $info, $_Realblog_controller->getPage());

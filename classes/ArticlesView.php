@@ -108,11 +108,10 @@ class ArticlesView
      * @return string (X)HTML.
      *
      * @global array      The configuration of the plugins.
-     * @global Controller The plugin controller.
      */
     protected function renderArticlePreview(stdClass $article)
     {
-        global $plugin_cf, $_Realblog_controller;
+        global $plugin_cf;
 
         $t = '';
         if ($plugin_cf['realblog']['teaser_multicolumns']) {

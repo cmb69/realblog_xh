@@ -444,7 +444,6 @@ EOS;
         $statement->bindValue(':status', $status, SQLITE3_INTEGER);
         $statement->bindValue(':date', strtotime('midnight'), SQLITE3_INTEGER);
         $statement->execute();
-        $records = array();
     }
 
 	/**
