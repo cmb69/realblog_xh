@@ -38,7 +38,7 @@ class Controller
                 $this->deliverFeed();
             }
         }
-        if (XH_ADM) {
+        if (defined('XH_ADM') && XH_ADM) {
             if (function_exists('XH_registerStandardPluginMenuItems')) {
                 XH_registerStandardPluginMenuItems(true);
             }

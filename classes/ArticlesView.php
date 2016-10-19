@@ -139,12 +139,12 @@ class ArticlesView
             $article->title,
             array('realblogID' => $article->id)
         );
-        if ($article->body_length || XH_ADM) {
+        if ($article->body_length || (defined('XH_ADM') && XH_ADM)) {
             $t .= '<a href="' . XH_hsc($url) . '" title="'
                 . $plugin_tx['realblog']["tooltip_view"] . '">';
         }
         $t .= $article->title;
-        if ($article->body_length || XH_ADM) {
+        if ($article->body_length || (defined('XH_ADM') && XH_ADM)) {
             $t .= '</a>';
         }
         $t .= '</h4>' . "\n";

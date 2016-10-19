@@ -70,7 +70,7 @@ class ArticleView
     {
         $html = '<div class="realblog_buttons">'
             . $this->renderOverviewLink();
-        if (XH_ADM) {
+        if (defined('XH_ADM') && XH_ADM) {
             if ($this->wantsComments()) {
                 $html .= $this->renderEditCommentsLink();
             }
