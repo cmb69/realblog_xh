@@ -41,7 +41,7 @@ this program; if not, see <http://www.gnu.org/licenses>.
 
 require_once $pth['folder']['plugin'] . 'compat.php';
 
-define('REALBLOG_VERSION', '@REALBLOG_VERSION@');
+const REALBLOG_VERSION = '@REALBLOG_VERSION@';
 
 /**
  * @var Realblog\Controller
