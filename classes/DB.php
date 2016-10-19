@@ -385,9 +385,9 @@ EOS;
         $sql = <<<'EOS'
 UPDATE articles
     SET date = :date, publishing_date = :publishing_date,
-        archiving_date = :archiving_date, status = :status, title = :title,
-        teaser = :teaser, body = :body, feedable = :feedable,
-        commentable = :commentable
+        archiving_date = :archiving_date, status = :status,
+        categories = :categories, title = :title, teaser = :teaser, body = :body,
+        feedable = :feedable, commentable = :commentable
     WHERE id = :id
 EOS;
         $statement = $db->prepare($sql);
@@ -396,6 +396,7 @@ EOS;
         $statement->bindValue(':publishing_date', $article->publishing_date, SQLITE3_INTEGER);
         $statement->bindValue(':archiving_date', $article->archiving_date, SQLITE3_INTEGER);
         $statement->bindValue(':status', $article->status, SQLITE3_INTEGER);
+        $statement->bindValue(':categories', $article->categories, SQLITE3_TEXT);
         $statement->bindValue(':title', $article->title, SQLITE3_TEXT);
         $statement->bindValue(':teaser', $article->teaser, SQLITE3_TEXT);
         $statement->bindValue(':body', $article->body, SQLITE3_TEXT);
