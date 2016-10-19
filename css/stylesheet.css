@@ -105,23 +105,9 @@ border: 1px solid #075FB9;
 border: 0;
 }
 
-.realblog_paging_block {
-    overflow: hidden;
-    padding-top: 1em;
-}
-
-.realblog_db_info {
-    float: right;
-    margin-bottom: 1em;
-}
-
-.realblog_page_info {
-    float: left;
-    margin-bottom: 1em;
-}
-
-.realblog_page_info a {
-    text-decoration: none;
+.realblog_pagination {
+    font-size: small;
+    text-align: right;
 }
 
 .realblog_table_paging {

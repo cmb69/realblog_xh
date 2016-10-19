@@ -89,8 +89,13 @@ class ArticlesAdminView
      */
     public function render()
     {
-        global $sn, $_Realblog_controller;
+        global $sn, $_Realblog_controller, $plugin_cf, $sn;
 
+        $page = $_Realblog_controller->getPage();
+        if ($plugin_cf['realblog']['pagination_top'] || $plugin_cf['realblog']['pagination_bottom']) {
+            $url = "$sn?&realblog&admin=plugin_main&action=plugin_text&realblog_page=%s";
+            $pagination = new PaginationView($this->articleCount, $page, $this->pageCount, $url);
+        }
         $html = $this->renderFilterForm()
             . '<form method="post" action="' . $sn
             . '?&amp;realblog&amp;admin=plugin_main">'
@@ -99,11 +104,15 @@ class ArticlesAdminView
         foreach ($this->articles as $article) {
             $html .= $this->renderRow($article);
         }
-        $page = $_Realblog_controller->getPage();
+        if ($plugin_cf['realblog']['pagination_top']) {
+            $html .= $pagination->render();
+        }
         $html .= '</table>'
             . tag('input type="hidden" name="page" value="' . $page . '"')
-            . '</form>'
-            . $this->renderNavigation();
+            . '</form>';
+        if ($plugin_cf['realblog']['pagination_bottom']) {
+            $html .= $pagination->render();
+        }
         return $html;
     }
 
@@ -208,59 +217,6 @@ class ArticlesAdminView
             . '<td class="realblog_table_header">'
             . $plugin_tx['realblog']['comments_onoff'] . '</td>'
             . '</tr>';
-    }
-
-    /**
-     * Renders the pagination navigation.
-     *
-     * @return string (X)HTML.
-     *
-     * @global string     The script name.
-     * @global array      The localization of the plugins.
-     * @global Controller The plugin controller.
-     */
-    protected function renderNavigation()
-    {
-        global $sn, $plugin_tx, $_Realblog_controller;
-
-        $page = $_Realblog_controller->getPage();
-        $tmp = ($this->articleCount > 0)
-            ? $plugin_tx['realblog']['page_label'] . ' : ' . $page .  '/'
-                . $this->pageCount
-            : '';
-        $html = '<div class="realblog_paging_block">'
-            . '<div class="realblog_db_info">'
-            . $plugin_tx['realblog']['record_count'] . ' : '
-            . $this->articleCount . '</div>'
-            . '<div class="realblog_page_info">' . $tmp . '</div>';
-        if ($this->articleCount > 0 && $this->pageCount > 1) {
-            if ($this->pageCount > $page) {
-                $next = $page + 1;
-                $back = ($page > 1) ? ($next - 2) : '1';
-            } else {
-                $next = $this->pageCount;
-                $back = $this->pageCount - 1;
-            }
-            $html .= '<div class="realblog_table_paging">'
-                . '<a href="' . $sn . '?&amp;realblog'
-                . '&amp;admin=plugin_main&amp;action=plugin_text&amp;realblog_page='
-                . $back . '" title="' . $plugin_tx['realblog']['tooltip_previous']
-                . '">&#9664;</a>&nbsp;&nbsp;';
-            for ($i = 1; $i <= $this->pageCount; $i++) {
-                $separator = ($i < $this->pageCount) ? ' ' : '';
-                $html .= '<a href="' . $sn . '?&amp;realblog&amp;admin=plugin_main'
-                    . '&amp;action=plugin_text&amp;realblog_page=' . $i
-                    . '" title="' . $plugin_tx['realblog']['page_label']
-                    . ' ' . $i . '">[' . $i . ']</a>' . $separator;
-            }
-            $html .= '&nbsp;&nbsp;<a href="' . $sn . '?&amp;realblog'
-                . '&amp;admin=plugin_main&amp;action=plugin_text&amp;realblog_page='
-                . $next . '" title="' . $plugin_tx['realblog']['tooltip_next']
-                . '">&#9654;</a>'
-                . '</div>';
-        }
-        $html .= '</div>';
-        return $html;
     }
 
     /**

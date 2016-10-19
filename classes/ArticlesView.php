@@ -65,18 +65,20 @@ class ArticlesView
      */
     public function render()
     {
-        if ($this->pageCount > 1) {
-            $next = min($this->page + 1, $this->pageCount);
-            $back = max($this->page - 1, 1);
-        } else {
-            $next = $back = null;
-        }
+        global $_Realblog_controller, $su, $plugin_cf;
 
         $t = "\n" . '<div class="realblog_show_box">' . "\n";
-        $t .= $this->renderPagination('top', $back, $next);
+        $url = $_Realblog_controller->url($su, null, array('realblog_page' => '%s'));
+        $pagination = new PaginationView($this->articleCount, $this->page,
+                                         $this->pageCount, $url);
+        if ($plugin_cf['realblog']['pagination_top']) {
+            $t .= $pagination->render();
+        }
         $t .= "\n" . '<div style="clear:both;"></div>';
         $t .= $this->renderArticlePreviews();
-        $t .= $this->renderPagination('bottom', $back, $next);
+        if ($plugin_cf['realblog']['pagination_bottom']) {
+            $t .= $pagination->render();
+        }
         $t .= '<div style="clear: both"></div></div>';
         return $t;
     }
@@ -241,123 +243,6 @@ class ArticlesView
         $key = 'message_comments' . XH_numberSuffix($count);
         return '<p class="realblog_number_of_comments">'
             . sprintf($plugin_tx['realblog'][$key], $count) . '</p>';
-    }
-
-    /**
-     * Renders the pagination.
-     *
-     * @param string $place     A place to render ('top' or 'bottom').
-     * @param int    $back      The number of the previous page.
-     * @param int    $next      The number of the next page.
-     *
-     * @return string (X)HTML.
-     */
-    protected function renderPagination($place, $back, $next)
-    {
-        $t = '';
-        if ($this->pageCount > 1) {
-            $t .= $this->renderPageLinks();
-        }
-        if ($this->wantsNumberOfArticles($place)) {
-            $t .= $this->renderNumberOfArticles();
-        }
-        if ($this->pageCount > 1) {
-            $t .= $this->renderPageOfPages($back, $next);
-        }
-        return $t;
-    }
-
-    /**
-     * Whether the number of articles ought to be displayed.
-     *
-     * @param string $place A place ('top' or 'bottom').
-     *
-     * @return bool
-     *
-     * @global array      The configuration of the plugins.
-     * @global Controller The plugin controller.
-     */
-    protected function wantsNumberOfArticles($place)
-    {
-        global $plugin_cf, $_Realblog_controller;
-
-        return is_null($_Realblog_controller->getPgParameter('realblog_story'))
-            && $plugin_cf['realblog']['show_numberof_entries_' . $place];
-    }
-
-    /**
-     * Renders the page links.
-     *
-     * @return string (X)HTML.
-     *
-     * @global string     The URL of the current page.
-     * @global array      The localization of the plugins.
-     * @global Controller The plugin controller.
-     */
-    protected function renderPageLinks()
-    {
-        global $su, $plugin_tx, $_Realblog_controller;
-
-        $t = '<div class="realblog_table_paging">';
-        for ($i = 1; $i <= $this->pageCount; $i++) {
-            $separator = ($i < $this->pageCount) ? ' ' : '';
-            $url = $_Realblog_controller->url(
-                $su, null, array('realblog_page' => $i)
-            );
-            $t .= '<a href="' . XH_hsc($url) . '" title="'
-                . $plugin_tx['realblog']['page_label'] . ' ' . $i . '">['
-                . $i . ']</a>' . $separator;
-        }
-        $t .= '</div>';
-        return $t;
-    }
-
-    /**
-     * Renders the page of pages.
-     *
-     * @param int    $back      The number of the previous page.
-     * @param int    $next      The number of the next page.
-     *
-     * @return string (X)HTML.
-     *
-     * @global string     The URL of the current page.
-     * @global array      The localization of the plugins.
-     * @global Controller The plugin controller.
-     */
-    protected function renderPageOfPages($back, $next)
-    {
-        global $su, $plugin_tx, $_Realblog_controller;
-
-        $backUrl = $_Realblog_controller->url(
-            $su, null, array('realblog_page' => $back)
-        );
-        $nextUrl = $_Realblog_controller->url(
-            $su, null, array('realblog_page' => $next)
-        );
-        return '<div class="realblog_page_info">'
-            . $plugin_tx['realblog']['page_label'] . ' : '
-            . '<a href="' . XH_hsc($backUrl) . '" title="'
-            . $plugin_tx['realblog']['tooltip_previous'] . '">'
-            . '&#9664;</a>&nbsp;' . $this->page . '/' . $this->pageCount
-            . '&nbsp;' . '<a href="' . XH_hsc($nextUrl) . '" title="'
-            . $plugin_tx['realblog']['tooltip_next'] . '">'
-            . '&#9654;</a></div>';
-    }
-
-    /**
-     * Renders the number of articles.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The localization of the plugins.
-     */
-    protected function renderNumberOfArticles()
-    {
-        global $plugin_tx;
-
-        return '<div class="realblog_db_info">'
-            . $plugin_tx['realblog']['record_count'] . ' : '
-            . $this->articleCount . '</div>';
     }
 }
 
