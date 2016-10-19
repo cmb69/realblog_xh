@@ -36,7 +36,7 @@ function showrealblog($options = null, $category = 'all')
                 break;
         }
     }
-    return $_Realblog_controller->blog($includesearch, $realBlogCat);
+    return $_Realblog_controller->blog($includesearch, $category);
 }
 
 /**
