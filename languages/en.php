@@ -8,7 +8,6 @@ $plugin_tx['realblog']['back_to_archive']="back to archive &raquo;";
 $plugin_tx['realblog']['backuped']="saved";
 $plugin_tx['realblog']['blog_back']="entries overview";
 $plugin_tx['realblog']['btn_add']="add";
-$plugin_tx['realblog']['btn_cancel']="cancel";
 $plugin_tx['realblog']['btn_delete']="delete";
 $plugin_tx['realblog']['btn_modify']="save";
 $plugin_tx['realblog']['btn_next']="next";

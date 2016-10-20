@@ -8,7 +8,6 @@ $plugin_tx['realblog']['back_to_archive']="terug naar archief &raquo;";
 $plugin_tx['realblog']['backuped']="opgeslagen";
 $plugin_tx['realblog']['blog_back']="artikel overzicht";
 $plugin_tx['realblog']['btn_add']="voeg toe";
-$plugin_tx['realblog']['btn_cancel']="annuleer";
 $plugin_tx['realblog']['btn_delete']="verwijder";
 $plugin_tx['realblog']['btn_modify']="opslaan";
 $plugin_tx['realblog']['btn_next']="volgende";

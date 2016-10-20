@@ -14,7 +14,6 @@ $plugin_tx['realblog']['back_to_archive']="Возврат к архиву »";
 $plugin_tx['realblog']['backuped']="&nbsp;&bull;&nbsp;сохранена";
 $plugin_tx['realblog']['blog_back']="Обзор записей";
 $plugin_tx['realblog']['btn_add']="Добавить";
-$plugin_tx['realblog']['btn_cancel']="Отмена";
 $plugin_tx['realblog']['btn_delete']="Удалить";
 $plugin_tx['realblog']['btn_modify']="Сохранить";
 $plugin_tx['realblog']['btn_next']="Вперед";

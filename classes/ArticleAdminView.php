@@ -91,7 +91,7 @@ class ArticleAdminView
                 . '" name="realblog_title" size="70"'
             )
             . $this->renderHeadline() . $this->renderStory()
-            . $this->renderSubmitButtons() . '</form>' . '</div>';
+            . $this->renderSubmitButton() . '</form>' . '</div>';
     }
 
     /**
@@ -303,7 +303,7 @@ class ArticleAdminView
      * @global string $sn
      * @global array $plugin_tx
      */
-    private function renderSubmitButtons()
+    private function renderSubmitButton()
     {
         global $sn, $plugin_tx;
 
@@ -311,13 +311,6 @@ class ArticleAdminView
             . tag(
                 'input type="submit" name="save" value="'
                 . $plugin_tx['realblog']['btn_' . $this->getVerb()] . '"'
-            )
-            . '&nbsp;&nbsp;&nbsp;'
-            . tag(
-                'input type="button" name="cancel" value="'
-                . $plugin_tx['realblog']['btn_cancel'] . '" onclick="'
-                . 'location.href=&quot;' . $sn . '?&amp;realblog&amp;'
-                . 'admin=plugin_main&amp;action=plugin_text' . '&quot;"'
             )
             . '</p>';
     }

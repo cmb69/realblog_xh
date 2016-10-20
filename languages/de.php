@@ -8,7 +8,6 @@ $plugin_tx['realblog']['back_to_archive']="Zurück zum Archiv »";
 $plugin_tx['realblog']['backuped']="Gesichert";
 $plugin_tx['realblog']['blog_back']="zur Artikel-Übersicht";
 $plugin_tx['realblog']['btn_add']="Hinzufügen";
-$plugin_tx['realblog']['btn_cancel']="Abbrechen";
 $plugin_tx['realblog']['btn_delete']="Löschen";
 $plugin_tx['realblog']['btn_modify']="Speichern";
 $plugin_tx['realblog']['btn_next']="Nächste";

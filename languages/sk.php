@@ -8,7 +8,6 @@ $plugin_tx['realblog']['back_to_archive']="naspäť do archívu &raquo;";
 $plugin_tx['realblog']['backuped']="uložené";
 $plugin_tx['realblog']['blog_back']="prehľad článkov";
 $plugin_tx['realblog']['btn_add']="pridať";
-$plugin_tx['realblog']['btn_cancel']="zrušiť";
 $plugin_tx['realblog']['btn_delete']="vymazať";
 $plugin_tx['realblog']['btn_modify']="uložiť";
 $plugin_tx['realblog']['btn_next']="ďalej";
