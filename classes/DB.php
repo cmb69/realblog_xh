@@ -349,7 +349,7 @@ SQL;
     }
 
     /**
-     * @return void
+     * @return int
      */
     public static function insertArticle(stdClass $article)
     {
@@ -373,11 +373,15 @@ EOS;
         $statement->bindValue(':body', $article->body, SQLITE3_TEXT);
         $statement->bindValue(':feedable', $article->feedable, SQLITE3_INTEGER);
         $statement->bindValue(':commentable', $article->commentable, SQLITE3_INTEGER);
-        $statement->execute();
+        $res = $statement->execute();
+        if ($res) {
+            $res = $db->changes();
+        }
+        return $res;
     }
 
     /**
-     * @return void
+     * @return int
      */
     public static function updateArticle(stdClass $article)
     {
@@ -402,7 +406,11 @@ EOS;
         $statement->bindValue(':body', $article->body, SQLITE3_TEXT);
         $statement->bindValue(':feedable', $article->feedable, SQLITE3_INTEGER);
         $statement->bindValue(':commentable', $article->commentable, SQLITE3_INTEGER);
-        $statement->execute();
+        $res = $statement->execute();
+        if ($res) {
+            $res = $db->changes();
+        }
+        return $res;
     }
 
     /**
@@ -423,7 +431,7 @@ EOS;
     /**
      * @param array<int> $ids
      * @param int $status
-     * @return void
+     * @return int
      */
     public static function updateStatusOfArticlesWithIds(array $ids, $status)
     {
@@ -434,12 +442,16 @@ EOS;
         $db = self::getConnection();
         $stmt = $db->prepare($sql);
         $stmt->bindValue(':status', $status, SQLITE3_INTEGER);
-        $stmt->execute();
+        $res = $stmt->execute();
+        if ($res) {
+            $res = $db->changes();
+        }
+        return $res;
     }
 
     /**
      * @param int id
-     * @return void
+     * @return int
      */
     public static function deleteArticleWithId($id)
     {
@@ -447,12 +459,16 @@ EOS;
         $db = self::getConnection();
         $stmt = $db->prepare($sql);
         $stmt->bindValue(':id', $id, SQLITE3_INTEGER);
-        $stmt->execute();
+        $res = $stmt->execute();
+        if ($res) {
+            $res = $db->changes();
+        }
+        return $res;
     }
 
     /**
      * @param array<int> $ids
-     * @return void
+     * @return int
      */
     public static function deleteArticlesWithIds(array $ids)
     {
@@ -461,6 +477,10 @@ EOS;
             implode(',', $ids)
         );
         $db = self::getConnection();
-        $db->exec($sql);
+        $res = $db->exec($sql);
+        if ($res) {
+            $res = $db->changes();
+        }
+        return $res;
     }
 }

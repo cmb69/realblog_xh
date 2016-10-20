@@ -153,10 +153,14 @@ class AdminController
 
         $_XH_csrfProtection->check();
         $article = $this->getArticleFromParameters();
-        DB::insertArticle($article);
+        $res = DB::insertArticle($article);
         $title = $plugin_tx['realblog']['tooltip_add'];
-        $info = $plugin_tx['realblog']['story_added'];
-        return $this->dbconfirm($title, $info);
+        if ($res === 1) {
+            $info = XH_message('success', $plugin_tx['realblog']['story_added']);
+        } else {
+            $info = XH_message('fail', $plugin_tx['realblog']['story_added_error']);
+        }
+        return $this->renderInfo($title, $info);
     }
 
     /**
@@ -171,10 +175,14 @@ class AdminController
 
         $_XH_csrfProtection->check();
         $article = $this->getArticleFromParameters();
-        DB::updateArticle($article);
+        $res = DB::updateArticle($article);
         $title = $plugin_tx['realblog']['tooltip_modify'];
-        $info = $plugin_tx['realblog']['story_modified'];
-        return $this->dbconfirm($title, $info);
+        if ($res === 1) {
+            $info = XH_message('success', $plugin_tx['realblog']['story_modified']);
+        } else {
+            $info = XH_message('fail', $plugin_tx['realblog']['story_modified_error']);
+        }
+        return $this->renderInfo($title, $info);
     }
 
     /**
@@ -190,10 +198,14 @@ class AdminController
 
         $_XH_csrfProtection->check();
         $id = $_Realblog_controller->getPgParameter('realblog_id');
-        DB::deleteArticleWithId($id);
+        $res = DB::deleteArticleWithId($id);
         $title = $plugin_tx['realblog']['tooltip_delete'];
-        $info = $plugin_tx['realblog']['story_deleted'];
-        return $this->dbconfirm($title, $info);
+        if ($res === 1) {
+            $info = XH_message('success', $plugin_tx['realblog']['story_deleted']);
+        } else {
+            $info = XH_message('fail', $plugin_tx['realblog']['story_deleted_error']);
+        }
+        return $this->renderInfo($title, $info);
     }
 
     /**
@@ -227,14 +239,20 @@ class AdminController
                 },
                 $ids
             );
-            DB::updateStatusOfArticlesWithIds($ids, $status);
+            $res = DB::updateStatusOfArticlesWithIds($ids, $status);
             $title = $plugin_tx['realblog']['tooltip_changestatus'];
-            $info = $plugin_tx['realblog']['changestatus_done'];
-            return $this->dbconfirm($title, $info);
+            if ($res === count($ids)) {
+                $info = XH_message('success', $plugin_tx['realblog']['changestatus_done']);
+            } elseif ($res > 0) {
+                $info = XH_message('warning', $plugin_tx['realblog']['changestatus_warning'], $res, count($ids));
+            } else {
+                $info = XH_message('fail', $plugin_tx['realblog']['changestatus_error']);
+            }
+            return $this->renderInfo($title, $info);
         } else {
             $title = $plugin_tx['realblog']['tooltip_changestatus'];
-            $info = $plugin_tx['realblog']['nochangestatus_done'];
-            return $this->dbconfirm($title, $info);
+            $info = XH_hsc('info', $plugin_tx['realblog']['nochangestatus_done']);
+            return $this->renderInfo($title, $info);
         }
     }
 
@@ -267,10 +285,16 @@ class AdminController
             },
             $ids
         );
-        DB::deleteArticlesWithIds($ids);
+        $res = DB::deleteArticlesWithIds($ids);
         $title = $plugin_tx['realblog']['tooltip_deleteall'];
-        $info = $plugin_tx['realblog']['deleteall_done'];
-        return $this->dbconfirm($title, $info);
+        if ($res === count($ids)) {
+            $info = XH_message('success', $plugin_tx['realblog']['deleteall_done']);
+        } elseif ($res > 0) {
+            $info = XH_message('warning', $plugin_tx['realblog']['deleteall_warning'], $res, count($ids));
+        } else {
+            $info = XH_message('fail', $plugin_tx['realblog']['deleteall_error']);
+        }
+        return $this->renderInfo($title, $info);
     }
 
     /**
@@ -416,17 +440,16 @@ EOT;
 
     /**
      * @param string $title
-     * @param string $info
+     * @param string $message
      * @return string
      * @global array $plugin_tx
      * @global string $sn
      * @global Controller $_Realblog_controller
      */
-    private function dbconfirm($title, $info)
+    private function renderInfo($title, $message)
     {
         global $plugin_tx, $sn, $_Realblog_controller;
 
-        $message = XH_message('success', $info);
         $page = $_Realblog_controller->getPage();
         $url = XH_hsc("$sn?&realblog&admin=plugin_main&action=plugin_text&page=$page");
         return <<<HTML
