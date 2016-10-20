@@ -36,21 +36,21 @@ class ChangeStatusView extends ConfirmationView
     {
         global $sn, $plugin_tx;
 
-        $html = '<h1>Realblog &ndash; ' . $this->title . '</h1>'
-            . '<form name="confirm" method="post" action="' . $sn
-            . '?&amp;' . 'realblog' . '&amp;admin=plugin_main">'
-            . $this->renderHiddenFields('do_batchchangestatus')
-            . '<table width="100%">'
-            . '<tr><td width="100%" align="center">'
-            . $this->renderStatusSelect() . '</td></tr>'
-            . '<tr><td class="realblog_confirm_info" align="center">'
-            . $plugin_tx['realblog']['confirm_changestatus']
-            . '</td></tr>'
-            . '<tr><td>&nbsp;</td></tr>'
-            . '<tr><td class="realblog_confirm_button" align="center">'
-            . $this->renderConfirmationButtons() . '</td></tr>'
-            . '</table></form>';
-        return $html;
+        $url = XH_hsc("$sn?&realblog&admin=plugin_main");
+        $message = XH_message('warning', $plugin_tx['realblog']['confirm_changestatus']);
+        $hiddenFields = $this->renderHiddenFields('do_batchchangestatus');
+        $statusSelect = $this->renderStatusSelect();
+        $confirmationButton = $this->renderConfirmationButton();
+        $overviewLink = $this->renderOverviewLink();
+        return <<<HTML
+<h1>Realblog &ndash; {$this->title}</h1>
+$message
+<form name="confirm" method="post" action="$url">
+    $hiddenFields
+    <p style="text-align: center">$statusSelect $confirmationButton</p>
+    <p>$overviewLink</p>
+</form>
+HTML;
     }
 
     /**

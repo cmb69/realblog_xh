@@ -36,18 +36,19 @@ class DeleteView extends ConfirmationView
     {
         global $sn, $plugin_tx;
 
-        $o = '<h1>Realblog &ndash; ' . $this->title . '</h1>';
-        $o .= '<form name="confirm" method="post" action="' . $sn
-            . '?&amp;realblog&amp;admin=plugin_main">'
-            . $this->renderHiddenFields('do_delselected');
-        $o .= '<table width="100%">';
-        $o .= '<tr><td class="reablog_confirm_info" align="center">'
-            . $plugin_tx['realblog']['confirm_deleteall']
-            . '</td></tr><tr><td>&nbsp;</td></tr>';
-        $o .= '<tr><td class="reablog_confirm_button" align="center">'
-            . $this->renderConfirmationButtons()
-            . '</td></tr>';
-        $o .= '</table></form>';
-        return $o;
+        $url = XH_hsc("$sn?&realblog&admin=plugin_main");
+        $message = XH_message('warning', $plugin_tx['realblog']['confirm_deleteall']);
+        $hiddenFields = $this->renderHiddenFields('do_delselected');
+        $confirmationButton = $this->renderConfirmationButton();
+        $overviewLink = $this->renderOverviewLink();
+        return <<<HTML
+<h1>Realblog &ndash; {$this->title}</h1>
+$message
+<form name="confirm" method="post" action="$url">
+    $hiddenFields
+    <p style="text-align: center">$confirmationButton</p>
+    <p>$overviewLink</p>
+</form>
+HTML;
     }
 }

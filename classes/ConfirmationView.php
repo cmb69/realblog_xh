@@ -15,9 +15,9 @@ namespace Realblog;
 abstract class ConfirmationView
 {
     /**
-     * @var array
+     * @var array<int>
      */
-    protected $articles;
+    protected $ids;
 
     /**
      * @var string
@@ -36,7 +36,7 @@ abstract class ConfirmationView
     {
         global $_Realblog_controller;
 
-        $this->articles = $_Realblog_controller->getPgParameter('realblogtopics');
+        $this->ids = $_Realblog_controller->getPgParameter('realblogtopics');
     }
 
     /**
@@ -44,7 +44,7 @@ abstract class ConfirmationView
      */
     public function render()
     {
-        if (count($this->articles) > 0) {
+        if (count($this->ids) > 0) {
             $html = $this->renderConfirmation();
         } else {
             $html = $this->renderNoSelectionInfo();
@@ -67,7 +67,7 @@ abstract class ConfirmationView
         global $_XH_csrfProtection;
 
         $html = '';
-        foreach ($this->articles as $value) {
+        foreach ($this->ids as $value) {
             $html .= $this->renderHiddenField('realblogtopics[]', $value);
         }
         $html .= $this->renderHiddenField('action', $do)
@@ -89,27 +89,30 @@ abstract class ConfirmationView
 
     /**
      * @return string
+     */
+    protected function renderConfirmationButton()
+    {
+        return tag(
+            'input type="submit" name="submit" value="'
+            . $this->buttonLabel . '"'
+        );
+    }
+
+    /**
+     * @return string
      * @global string $sn
      * @global array $plugin_tx
      * @global Controller $_Realblog_controller
      */
-    protected function renderConfirmationButtons()
+    protected function renderOverviewLink()
     {
         global $sn, $plugin_tx, $_Realblog_controller;
 
-        $html = tag(
-            'input type="submit" name="submit" value="'
-            . $this->buttonLabel . '"'
-        );
-        $html .= '&nbsp;&nbsp;';
-        $url = $sn . '?&amp;realblog&amp;admin=plugin_main&amp;action=plugin_text'
-            . '&amp;page=' . $_Realblog_controller->getPage();
-        $html .= tag(
-            'input type="button" name="cancel" value="'
-            . $plugin_tx['realblog']['btn_cancel'] . '" onclick="'
-            . 'location.href=&quot;' . $url . '&quot;"'
-        );
-        return $html;
+        $page = $_Realblog_controller->getPage();
+        $url = XH_hsc("$sn?&realblog&admin=plugin_main&action=plugin_text&page=$page");
+        return <<<HTML
+<a href="$url">{$plugin_tx['realblog']['blog_back']}</a>
+HTML;
     }
 
     /**
@@ -122,22 +125,13 @@ abstract class ConfirmationView
     {
         global $sn, $plugin_tx, $_Realblog_controller;
 
-        return '<h1>Realblog &ndash; ' . $this->title . '</h1>'
-            . '<form name="confirm" method="post" action="' . $sn
-            . '?&amp;' . 'realblog' . '&amp;admin=plugin_main">'
-            . '<table width="100%">'
-            . '<tr><td class="realblog_confirm_info" align="center">'
-            . $plugin_tx['realblog']['nothing_selected']
-            . '</td></tr>'
-            . '<tr><td class="realblog_confirm_button" align="center">'
-            . tag(
-                'input type="button" name="cancel" value="'
-                . $plugin_tx['realblog']['btn_ok'] . '" onclick=\''
-                . 'location.href="' . $sn . '?&amp;realblog'
-                . '&amp;admin=plugin_main&amp;action=plugin_text'
-                . '&amp;page=' . $_Realblog_controller->getPage() . '"\''
-            )
-            . '</td></tr>'
-            . '</table></form>';
+        $message = XH_message('info', $plugin_tx['realblog']['nothing_selected']);
+        $page = $_Realblog_controller->getPage();
+        $url = XH_hsc("$sn?&realblog&admin=plugin_main&action=plugin_text&page=$page");
+        return <<<HTML
+<h1>Realblog &ndash; {$this->title}</h1>
+$message
+<p><a href="$url">{$plugin_tx['realblog']['blog_back']}</a></p>
+HTML;
     }
 }
