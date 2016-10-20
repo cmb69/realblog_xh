@@ -146,18 +146,17 @@ class AdminController
      * @global string $title
      * @global array $plugin_tx
      * @global \XH_CSRFProtection $_XH_csrfProtection
-     * @global Controller $_Realblog_controller
      */
     private function addArticle()
     {
-        global $title, $plugin_tx, $_XH_csrfProtection, $_Realblog_controller;
+        global $title, $plugin_tx, $_XH_csrfProtection;
 
         $_XH_csrfProtection->check();
         $article = $this->getArticleFromParameters();
         DB::insertArticle($article);
         $title = $plugin_tx['realblog']['tooltip_add'];
         $info = $plugin_tx['realblog']['story_added'];
-        return $this->dbconfirm($title, $info, $_Realblog_controller->getPage());
+        return $this->dbconfirm($title, $info);
     }
 
     /**
@@ -165,18 +164,17 @@ class AdminController
      * @global string $title
      * @global array $plugin_tx
      * @global \XH_CSRFProtection $_XH_csrfProtection
-     * @global Controller $_Realblog_controller
      */
     private function modifyArticle()
     {
-        global $title, $plugin_tx, $_XH_csrfProtection, $_Realblog_controller;
+        global $title, $plugin_tx, $_XH_csrfProtection;
 
         $_XH_csrfProtection->check();
         $article = $this->getArticleFromParameters();
         DB::updateArticle($article);
         $title = $plugin_tx['realblog']['tooltip_modify'];
         $info = $plugin_tx['realblog']['story_modified'];
-        return $this->dbconfirm($title, $info, $_Realblog_controller->getPage());
+        return $this->dbconfirm($title, $info);
     }
 
     /**
@@ -195,7 +193,7 @@ class AdminController
         DB::deleteArticleWithId($id);
         $title = $plugin_tx['realblog']['tooltip_delete'];
         $info = $plugin_tx['realblog']['story_deleted'];
-        return $this->dbconfirm($title, $info, $_Realblog_controller->getPage());
+        return $this->dbconfirm($title, $info);
     }
 
     /**
@@ -232,11 +230,11 @@ class AdminController
             DB::updateStatusOfArticlesWithIds($ids, $status);
             $title = $plugin_tx['realblog']['tooltip_changestatus'];
             $info = $plugin_tx['realblog']['changestatus_done'];
-            return $this->dbconfirm($title, $info, $_Realblog_controller->getPage());
+            return $this->dbconfirm($title, $info);
         } else {
             $title = $plugin_tx['realblog']['tooltip_changestatus'];
             $info = $plugin_tx['realblog']['nochangestatus_done'];
-            return $this->dbconfirm($title, $info, $_Realblog_controller->getPage());
+            return $this->dbconfirm($title, $info);
         }
     }
 
@@ -272,7 +270,7 @@ class AdminController
         DB::deleteArticlesWithIds($ids);
         $title = $plugin_tx['realblog']['tooltip_deleteall'];
         $info = $plugin_tx['realblog']['deleteall_done'];
-        return $this->dbconfirm($title, $info, $_Realblog_controller->getPage());
+        return $this->dbconfirm($title, $info);
     }
 
     /**
@@ -419,31 +417,22 @@ EOT;
     /**
      * @param string $title
      * @param string $info
-     * @param int $page
      * @return string
      * @global array $plugin_tx
      * @global string $sn
+     * @global Controller $_Realblog_controller
      */
-    private function dbconfirm($title, $info, $page)
+    private function dbconfirm($title, $info)
     {
-        global $plugin_tx, $sn;
+        global $plugin_tx, $sn, $_Realblog_controller;
 
-        $t = '<h1>Realblog &ndash; ' . $title . '</h1>';
-        $t .= '<form name="confirm" method="post" action="' . $sn . '?&amp;'
-            . 'realblog&amp;admin=plugin_main">';
-        $t .= '<table width="100%"><tbody>';
-        $t .= '<tr><td class="realblog_confirm_info" align="center">'
-            . $info . '</td></tr><tr><td>&nbsp;</td></tr>';
-        $t .= '<tr><td class="realblog_confirm_button" align="center">'
-            // TODO: don't return via JS
-            . tag(
-                'input type="button" name="cancel" value="'
-                . $plugin_tx['realblog']['btn_ok'] . '" onclick=\'location.href="'
-                . $sn . '?&amp;realblog&amp;admin=plugin_main'
-                . '&amp;action=plugin_text&amp;page=' . $page . '"\''
-            )
-            . '</td></tr>';
-        $t .= '</tbody></table></form>';
-        return $t;
+        $message = XH_message('success', $info);
+        $page = $_Realblog_controller->getPage();
+        $url = XH_hsc("$sn?&realblog&admin=plugin_main&action=plugin_text&page=$page");
+        return <<<HTML
+<h1>Realblog &ndash; $title</h1>
+$message
+<p><a href="$url">{$plugin_tx['realblog']['blog_back']}</a></p>
+HTML;
     }
 }
