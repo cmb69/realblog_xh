@@ -48,7 +48,6 @@ $plugin_tx['realblog']['mnu_choice']="- select -";
 $plugin_tx['realblog']['month_names']="";
 $plugin_tx['realblog']['new_realblogstatus']="Choose new Status";
 $plugin_tx['realblog']['no_topics']="no entries available";
-$plugin_tx['realblog']['nochangestatus_done']="Wrong status of entry selected.";
 $plugin_tx['realblog']['nothing_selected']="no entries selected";
 $plugin_tx['realblog']['page_of_pages']="Page %d of %d";
 $plugin_tx['realblog']['published']="published";

@@ -43,7 +43,6 @@ $plugin_tx['realblog']['mnu_choice']="- vyberte -";
 $plugin_tx['realblog']['month_names']="";
 $plugin_tx['realblog']['new_realblogstatus']="Zvoľte nový status";
 $plugin_tx['realblog']['no_topics']="Neexistujú žiadne články";
-$plugin_tx['realblog']['nochangestatus_done']="Zvolili ste nesprávny status článku.";
 $plugin_tx['realblog']['nothing_selected']="nevybrali ste žiadne články";
 $plugin_tx['realblog']['page_label']="strana";
 $plugin_tx['realblog']['published']="zverejnené";

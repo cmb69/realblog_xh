@@ -43,7 +43,6 @@ $plugin_tx['realblog']['mnu_choice']="- selecteer -";
 $plugin_tx['realblog']['month_names']="";
 $plugin_tx['realblog']['new_realblogstatus']="Kies nieuwe status";
 $plugin_tx['realblog']['no_topics']="geen artikelen beschikbaar";
-$plugin_tx['realblog']['nochangestatus_done']="Verkeerder status van artikel geselecteerd.";
 $plugin_tx['realblog']['nothing_selected']="geen artikelen geselecteerd";
 $plugin_tx['realblog']['published']="gepubliceerd";
 $plugin_tx['realblog']['read_more']="lees meer &raquo;";

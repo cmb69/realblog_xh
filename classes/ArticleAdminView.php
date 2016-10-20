@@ -209,7 +209,7 @@ class ArticleAdminView
     {
         global $plugin_tx;
 
-        $states = array('readyforpublishing', 'published', 'archived', 'backuped');
+        $states = array('readyforpublishing', 'published', 'archived');
         $html = '<select name="realblog_status">';
         foreach ($states as $i => $state) {
             $selected = ($i == $this->article->status)

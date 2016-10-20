@@ -48,7 +48,6 @@ $plugin_tx['realblog']['mnu_choice']="- Bitte wählen -";
 $plugin_tx['realblog']['month_names']="";
 $plugin_tx['realblog']['new_realblogstatus']="Neuen Status wählen ";
 $plugin_tx['realblog']['no_topics']="Keine Artikel verfügbar";
-$plugin_tx['realblog']['nochangestatus_done']="Falscher Artikel Status gewählt.";
 $plugin_tx['realblog']['nothing_selected']="Keine News gewählt";
 $plugin_tx['realblog']['page_of_pages']="Seite %d von %d";
 $plugin_tx['realblog']['published']="Veröffentlicht";

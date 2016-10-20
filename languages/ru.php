@@ -50,7 +50,6 @@ $plugin_tx['realblog']['mnu_choice']="- выбор -";
 $plugin_tx['realblog']['month_names']="январь,февраль,март,апрель,май,июнь,июль,август,сентябрь,октябрь,ноябрь,декабрь";
 $plugin_tx['realblog']['new_realblogstatus']="Укажите новое состояние ";
 $plugin_tx['realblog']['no_topics']="Записи недоступны";
-$plugin_tx['realblog']['nochangestatus_done']="Выбрано неправильное состояние записи.";
 $plugin_tx['realblog']['nothing_selected']="Записи не выбраны";
 $plugin_tx['realblog']['published']="&nbsp;&bull;&nbsp;опубликована";
 $plugin_tx['realblog']['read_more']="читать дальше »";

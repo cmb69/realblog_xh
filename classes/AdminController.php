@@ -232,28 +232,22 @@ class AdminController
         $_XH_csrfProtection->check();
         $ids = $_Realblog_controller->getPgParameter('realblogtopics');
         $status = $_Realblog_controller->getPgParameter('new_realblogstatus');
-        if (is_numeric($status) && $status >= 0 && $status <= 2) {
-            $ids = array_map(
-                function ($id) {
-                    return (int) $id;
-                },
-                $ids
-            );
-            $res = DB::updateStatusOfArticlesWithIds($ids, $status);
-            $title = $plugin_tx['realblog']['tooltip_changestatus'];
-            if ($res === count($ids)) {
-                $info = XH_message('success', $plugin_tx['realblog']['changestatus_done']);
-            } elseif ($res > 0) {
-                $info = XH_message('warning', $plugin_tx['realblog']['changestatus_warning'], $res, count($ids));
-            } else {
-                $info = XH_message('fail', $plugin_tx['realblog']['changestatus_error']);
-            }
-            return $this->renderInfo($title, $info);
+        $ids = array_map(
+            function ($id) {
+                return (int) $id;
+            },
+            $ids
+        );
+        $res = DB::updateStatusOfArticlesWithIds($ids, $status);
+        $title = $plugin_tx['realblog']['tooltip_changestatus'];
+        if ($res === count($ids)) {
+            $info = XH_message('success', $plugin_tx['realblog']['changestatus_done']);
+        } elseif ($res > 0) {
+            $info = XH_message('warning', $plugin_tx['realblog']['changestatus_warning'], $res, count($ids));
         } else {
-            $title = $plugin_tx['realblog']['tooltip_changestatus'];
-            $info = XH_hsc('info', $plugin_tx['realblog']['nochangestatus_done']);
-            return $this->renderInfo($title, $info);
+            $info = XH_message('fail', $plugin_tx['realblog']['changestatus_error']);
         }
+        return $this->renderInfo($title, $info);
     }
 
     /**

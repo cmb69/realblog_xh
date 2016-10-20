@@ -70,7 +70,7 @@ CREATE TABLE articles (
     date INTEGER,
     publishing_date INTEGER,
     archiving_date INTEGER,
-    status INTEGER,
+    status INTEGER CHECK (status BETWEEN 0 AND 2),
     categories TEXT,
     title TEXT,
     teaser TEXT,
@@ -106,6 +106,7 @@ SQL;
             $statement = $this->connection->prepare($sql);
             foreach ($lines as $line) {
                 $record = explode("\t", $line);
+                $status = ($record[4] == 1 || $record[4] == 2) ? $record[4] : 0;
                 $categories = array_merge(
                     $this->getAndRemoveCategories($record[7]),
                     $this->getAndRemoveCategories($record[8])
@@ -115,7 +116,7 @@ SQL;
                 $statement->bindValue(':date', $record[1], SQLITE3_INTEGER);
                 $statement->bindValue(':publishing_date', $record[2], SQLITE3_INTEGER);
                 $statement->bindValue(':archiving_date', $record[3], SQLITE3_INTEGER);
-                $statement->bindValue(':status', $record[4], SQLITE3_INTEGER);
+                $statement->bindValue(':status', $status, SQLITE3_INTEGER);
                 $statement->bindValue(':categories', ",$categories,", SQLITE3_TEXT);
                 $statement->bindValue(':title', $record[6], SQLITE3_TEXT);
                 $statement->bindValue(':teaser', $record[7], SQLITE3_TEXT);
