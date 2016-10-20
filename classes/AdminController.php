@@ -154,12 +154,12 @@ class AdminController
         $_XH_csrfProtection->check();
         $article = $this->getArticleFromParameters();
         $res = DB::insertArticle($article);
-        $title = $plugin_tx['realblog']['tooltip_add'];
         if ($res === 1) {
-            $info = XH_message('success', $plugin_tx['realblog']['story_added']);
+            $this->redirectToOverview();
         } else {
             $info = XH_message('fail', $plugin_tx['realblog']['story_added_error']);
         }
+        $title = $plugin_tx['realblog']['tooltip_add'];
         return $this->renderInfo($title, $info);
     }
 
@@ -176,12 +176,12 @@ class AdminController
         $_XH_csrfProtection->check();
         $article = $this->getArticleFromParameters();
         $res = DB::updateArticle($article);
-        $title = $plugin_tx['realblog']['tooltip_modify'];
         if ($res === 1) {
-            $info = XH_message('success', $plugin_tx['realblog']['story_modified']);
+            $this->redirectToOverview();
         } else {
             $info = XH_message('fail', $plugin_tx['realblog']['story_modified_error']);
         }
+        $title = $plugin_tx['realblog']['tooltip_modify'];
         return $this->renderInfo($title, $info);
     }
 
@@ -199,12 +199,12 @@ class AdminController
         $_XH_csrfProtection->check();
         $id = $_Realblog_controller->getPgParameter('realblog_id');
         $res = DB::deleteArticleWithId($id);
-        $title = $plugin_tx['realblog']['tooltip_delete'];
         if ($res === 1) {
-            $info = XH_message('success', $plugin_tx['realblog']['story_deleted']);
+            $this->redirectToOverview();
         } else {
             $info = XH_message('fail', $plugin_tx['realblog']['story_deleted_error']);
         }
+        $title = $plugin_tx['realblog']['tooltip_delete'];
         return $this->renderInfo($title, $info);
     }
 
@@ -239,14 +239,14 @@ class AdminController
             $ids
         );
         $res = DB::updateStatusOfArticlesWithIds($ids, $status);
-        $title = $plugin_tx['realblog']['tooltip_changestatus'];
         if ($res === count($ids)) {
-            $info = XH_message('success', $plugin_tx['realblog']['changestatus_done']);
+            $this->redirectToOverview();
         } elseif ($res > 0) {
             $info = XH_message('warning', $plugin_tx['realblog']['changestatus_warning'], $res, count($ids));
         } else {
             $info = XH_message('fail', $plugin_tx['realblog']['changestatus_error']);
         }
+        $title = $plugin_tx['realblog']['tooltip_changestatus'];
         return $this->renderInfo($title, $info);
     }
 
@@ -280,14 +280,14 @@ class AdminController
             $ids
         );
         $res = DB::deleteArticlesWithIds($ids);
-        $title = $plugin_tx['realblog']['tooltip_deleteall'];
         if ($res === count($ids)) {
-            $info = XH_message('success', $plugin_tx['realblog']['deleteall_done']);
+            $this->redirectToOverview();
         } elseif ($res > 0) {
             $info = XH_message('warning', $plugin_tx['realblog']['deleteall_warning'], $res, count($ids));
         } else {
             $info = XH_message('fail', $plugin_tx['realblog']['deleteall_error']);
         }
+        $title = $plugin_tx['realblog']['tooltip_deleteall'];
         return $this->renderInfo($title, $info);
     }
 
@@ -430,6 +430,20 @@ EOT;
         }
         $view = new ArticleAdminView($article, $action);
         return $view->render();
+    }
+
+    /**
+     * @return void
+     * @global Controller $_Realblog_controller
+     */
+    private function redirectToOverview()
+    {
+        global $_Realblog_controller;
+
+        $page = $_Realblog_controller->getPage();
+        $url = CMSIMPLE_URL . "?&realblog&admin=plugin_main&action=plugin_text&page=$page";
+        header("Location: $url", true, 303);
+        exit;
     }
 
     /**
