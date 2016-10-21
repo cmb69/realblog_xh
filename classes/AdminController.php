@@ -46,7 +46,11 @@ class AdminController
      */
     private function renderInfoView()
     {
-        $view = new InfoView();
+        global $pth;
+
+        $view = new View('info');
+        $view->logoPath = "{$pth['folder']['plugins']}realblog/realblog.png";
+        $view->version = REALBLOG_VERSION;
         return $view->render();
     }
 
@@ -86,13 +90,13 @@ class AdminController
                 $o .= $this->deleteArticle();
                 break;
             case 'batchdelete':
-                $o .= $this->confirmDelete();
+                $o .= $this->renderConfirmation('delete');
                 break;
             case 'do_delselected':
                 $o .= $this->deleteArticles();
                 break;
             case 'change_status':
-                $o .= $this->confirmChangeStatus();
+                $o .= $this->renderConfirmation('change-status');
                 break;
             case 'do_batchchangestatus':
                 $o .= $this->changeStatus();
@@ -119,10 +123,51 @@ class AdminController
         $page = max(min($_Realblog_controller->getPage(), $pageCount), 1);
         $offset = ($page - 1) * $limit;
         $articles = DB::findArticlesWithStatus($statuses, $limit, $offset);
-        $view = new ArticlesAdminView($articles, $total, $pageCount);
-        return '<h1>Realblog &ndash; '
-            . $plugin_tx['realblog']['story_overview'] . '</h1>'
-            . $view->render();
+        return $this->renderArticlesView($articles, $total, $pageCount);
+    }
+
+    private function renderArticlesView($articles, $articleCount, $pageCount)
+    {
+        global $pth, $sn, $_Realblog_controller, $plugin_cf;
+
+        $imageFolder = "{$pth['folder']['plugins']}realblog/images/";
+        $view = new View('articles-form');
+        $view->page = $page = $_Realblog_controller->getPage();
+        if ($plugin_cf['realblog']['pagination_top'] || $plugin_cf['realblog']['pagination_bottom']) {
+            $url = "$sn?&realblog&admin=plugin_main&action=plugin_text&realblog_page=%s";
+            $view->pagination = new PaginationView($articleCount, $page, $pageCount, $url);
+        }
+        $view->hasTopPagination = $plugin_cf['realblog']['pagination_top'];
+        $view->hasBottomPagination = $plugin_cf['realblog']['pagination_bottom'];
+        $view->articles = $articles;
+        $view->actionUrl = "$sn?&realblog&admin=plugin_main&action=plugin_text";
+        $view->addUrl = "$sn?&realblog&admin=plugin_main&action=add_realblog";
+        $view->deleteUrl = function ($article) use ($page) {
+            global $sn;
+
+            return "$sn?&realblog&admin=plugin_main&action=delete_realblog&realblogID={$article->id}&page=$page";
+        };
+        $view->modifyUrl = function ($article) use ($page) {
+            global $sn;
+
+            return "$sn?&realblog&admin=plugin_main&action=modify_realblog&realblogID={$article->id}&page=$page";
+        };
+        $view->states = array('readyforpublishing', 'published', 'archived');
+        $view->hasFilter = function ($num) {
+            global $_Realblog_controller;
+
+            return $_Realblog_controller->getFilter($num);
+        };
+        $view->deleteIcon = "{$imageFolder}delete.png";
+        $view->changeStatusIcon = "{$imageFolder}change-status.png";
+        $view->addIcon = "{$imageFolder}add.png";
+        $view->modifyIcon = "{$imageFolder}edit.png";
+        $view->formatDate = function ($article) {
+            global $plugin_tx;
+
+            return date($plugin_tx['realblog']['date_format'], $article->date);
+        };
+        return $view->render();
     }
 
     /**
@@ -208,12 +253,21 @@ class AdminController
         return $this->renderInfo($title, $info);
     }
 
-    /**
-     * @return string
-     */
-    private function confirmChangeStatus()
+    private function renderConfirmation($kind)
     {
-        $view = new ChangeStatusView();
+        global $sn, $_Realblog_controller, $_XH_csrfProtection;
+
+        $page = $_Realblog_controller->getPage();
+        $view = new View("confirm-$kind");
+        if ($kind === 'change-status') {
+            $view->states = array(
+                'label_status', 'readyforpublishing', 'published', 'archived'
+            );
+        }
+        $view->ids = $_Realblog_controller->getPgParameter('realblogtopics');
+        $view->action = "$sn?&realblog&admin=plugin_main";
+        $view->url = "$sn?&realblog&admin=plugin_main&action=plugin_text&page=$page";
+        $view->csrfTokenInput = new HtmlString($_XH_csrfProtection->tokenInput());
         return $view->render();
     }
 
@@ -248,15 +302,6 @@ class AdminController
         }
         $title = $plugin_tx['realblog']['tooltip_changestatus'];
         return $this->renderInfo($title, $info);
-    }
-
-    /**
-     * @return string
-     */
-    private function confirmDelete()
-    {
-        $view = new DeleteView();
-        return $view->render();
     }
 
     /**
@@ -428,8 +473,43 @@ EOT;
                     . $id . ']';
             }
         }
-        $view = new ArticleAdminView($article, $action);
+        return $this->renderForm($article, $action);
+    }
+
+    private function renderForm(stdClass $article, $action)
+    {
+        global $pth, $sn, $plugin_cf, $title, $bjs, $_XH_csrfProtection;
+
+        $bjs .= '<script type="text/javascript" src="' . $pth['folder']['plugins']
+            . 'realblog/realblog.js"></script>';
+        $view = new View('article-form');
+        $view->article = $article;
+        $view->title = $title;
+        $view->actionUrl = "$sn?&realblog&admin=plugin_main";
+        $view->action = 'do_' . $this->getVerb($action);
+        $view->tokenInput = new HtmlString($_XH_csrfProtection->tokenInput());
+        $view->calendarIcon = "{$pth['folder']['plugins']}realblog/images/calendar.png";
+        $view->formatDate = function ($time) {
+            return date('Y-m-d', $time);
+        };
+        $view->isAutoPublish = $plugin_cf['realblog']['auto_publish'];
+        $view->isAutoArchive = $plugin_cf['realblog']['auto_archive'];
+        $view->states = array('readyforpublishing', 'published', 'archived');
+        $view->categories = trim($article->categories, ',');
+        $view->button = 'btn_' . $this->getVerb($action);
         return $view->render();
+    }
+
+    private function getVerb($action)
+    {
+        switch ($action) {
+            case 'add_realblog':
+                return 'add';
+            case 'modify_realblog':
+                return 'modify';
+            case 'delete_realblog':
+                return 'delete';
+        }
     }
 
     /**

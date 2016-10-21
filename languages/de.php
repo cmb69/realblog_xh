@@ -58,6 +58,7 @@ $plugin_tx['realblog']['rss_language']="de";
 $plugin_tx['realblog']['rss_page']="Blog";
 $plugin_tx['realblog']['rss_title']="Weblog";
 $plugin_tx['realblog']['rss_tooltip']="RSS feed für diese Website";
+$plugin_tx['realblog']['search_button']="Suchen";
 $plugin_tx['realblog']['search_hint']="Diese Suchfunktion sucht nach kompletten Zeichenketten. Eine Suche nach verschiedenen Wörtern (unabhängig von ihrer Platzierung im Text) ist nicht möglich.";
 $plugin_tx['realblog']['search_placeholder']="Suchbegriff eingeben";
 $plugin_tx['realblog']['search_result']="gefundene Artikel:";

@@ -87,23 +87,21 @@ class Controller
      * @param string $category
      * @return string
      * @global array $plugin_cf
-     * @global Controller $_Realblog_controller
      */
     public function blog($showSearch = false, $category = 'all')
     {
-        global $plugin_cf, $_Realblog_controller;
+        global $plugin_cf;
 
         $id = $this->getPgParameter('realblogID');
         $html = '';
         if (!isset($id)) {
             if ($showSearch) {
-                $view = new SearchFormView($this->getYear());
-                $html .= $view->render();
+                $html .= $this->renderSearchForm();
             }
             $order = ($plugin_cf['realblog']['entries_order'] == 'desc')
                 ? -1 : 1;
             $limit = $plugin_cf['realblog']['entries_per_page'];
-            $page = $_Realblog_controller->getPage();
+            $page = $this->getPage();
             $search = $this->getPgParameter('realblog_search');
             $articleCount = DB::countArticlesWithStatus(array(1), $category, $search);
             $pageCount = ceil($articleCount / $limit);
@@ -112,12 +110,79 @@ class Controller
             if ($search) {
                 $html .= $this->renderSearchResults('blog', $articleCount);
             }
-            $view = new ArticlesView($articles, $articleCount, $page, $pageCount);
-            $html .= $view->render();
+            $html .= $this->renderArticles($articles, $articleCount, $page, $pageCount);
         } else {
             $html .= $this->renderArticle($id);
         }
         return $html;
+    }
+
+    private function renderSearchForm()
+    {
+        global $su, $sn;
+
+        $view = new View('search-form');
+        $view->actionUrl = $sn;
+        $view->pageUrl = $su;
+        return $view->render();
+    }
+
+    private function renderArticles(array $articles, $articleCount, $page, $pageCount)
+    {
+        global $su, $plugin_cf;
+
+        $view = new View('articles');
+        $view->articles = $articles;
+        $view->pagination = new PaginationView(
+            $articleCount,
+            $page,
+            $pageCount,
+            $this->url($su, null, array('realblog_page' => '%s'))
+        );
+        $view->hasTopPagination = (bool) $plugin_cf['realblog']['pagination_top'];
+        $view->hasBottomPagination = (bool) $plugin_cf['realblog']['pagination_bottom'];
+        $view->hasMultiColumns = (bool) $plugin_cf['realblog']['teaser_multicolumns'];
+        $view->url = function ($article) {
+            global $su, $_Realblog_controller;
+
+            return $_Realblog_controller->url(
+                $su,
+                $article->title,
+                array('realblogID' => $article->id)
+            );
+        };
+        $view->hasLinkedHeader = function ($article) {
+            return $article->body_length || (defined('XH_ADM') && XH_ADM);
+        };
+        $view->date = function ($article) {
+            global $plugin_tx;
+
+            return date($plugin_tx['realblog']['date_format'], $article->date);
+        };
+        $view->teaser = function ($article) {
+            return new HtmlString(evaluate_scripting($article->teaser));
+        };
+        $view->hasReadMore = function ($article) {
+            global $plugin_cf;
+
+            return $plugin_cf['realblog']['show_read_more_link']
+                && $article->body_length;
+        };
+        $view->isCommentable = function ($article) {
+            global $plugin_cf;
+
+            return $plugin_cf['realblog']['comments_plugin']
+                && class_exists("{$plugin_cf['realblog']['comments_plugin']}_RealblogBridge")
+                && $article->commentable;
+        };
+        $view->commentCount = function ($article) {
+            global $plugin_cf;
+
+            $bridge = $plugin_cf['realblog']['comments_plugin'] . '_RealblogBridge';
+            $commentsId = "comments{$article->id}";
+            return call_user_func(array($bridge, 'count'), $commentsId);
+        };
+        return $view->render();
     }
 
     /**
@@ -130,15 +195,53 @@ class Controller
      */
     private function renderArticle($id)
     {
-        global $h, $s, $title, $description;
+        global $sn, $su, $h, $s, $title, $description, $plugin_cf, $plugin_tx;
 
         $article = DB::findById($id);
         if (isset($article)) {
             $title .= $h[$s] . " \xE2\x80\x93 " . $article->title;
             $description = $this->getDescription($article);
-            $view = new ArticleView($id, $article, $this->getPage());
+            $view = new View('article');
+            $view->article = $article;
+            $view->isAdmin = defined('XH_ADM') && XH_ADM;
+            $view->wantsComments = $this->wantsComments();
+            if ($article->status === 2) {
+                $params = array('realblog_year' => $this->getYear());
+                $view->backText = $plugin_tx['realblog']['archiv_back'];
+            } else {
+                $params = array('realblog_page' => $this->getPage());
+                $view->backText = $plugin_tx['realblog']['blog_back'];
+            }
+            $view->backUrl = $this->url($su, null, $params);
+            $view->editUrl = "$sn?&realblog&admin=plugin_main"
+                . "&action=modify_realblog&realblogID={$article->id}";
+            if ($this->wantsComments()) {
+                $bridge = "{$plugin_cf['realblog']['comments_plugin']}_RealblogBridge";
+                $view->editCommentsUrl = call_user_func(array($bridge, 'getEditUrl'), 'realblog' . $article->id);
+            }
+            $view->date = date($plugin_tx['realblog']['date_format'], $article->date);
+            $story = ($article->body != '') ? $article->body : $article->teaser;
+            $view->story = new HtmlString(evaluate_scripting($story));
+            $view->renderComments = function ($article) {
+                global $plugin_cf;
+
+                if ($article->commentable) {
+                    $commentId = 'comments' . $article->id;
+                    $bridge = $plugin_cf['realblog']['comments_plugin'] . '_RealblogBridge';
+                    return call_user_func(array($bridge, handle), $commentId);
+                }
+            };
             return $view->render();
         }
+    }
+
+    private function wantsComments()
+    {
+        global $plugin_cf;
+
+        $pcf = $plugin_cf['realblog'];
+        return $pcf['comments_plugin']
+            && class_exists($pcf['comments_plugin'] . '_RealblogBridge');
     }
 
     /**
@@ -151,8 +254,7 @@ class Controller
         $html = '';
         if (!isset($realblogID)) {
             if ($showSearch) {
-                $view = new SearchFormView($this->getYear());
-                $html .= $view->render();
+                $html .= $this->renderSearchForm();
             }
 
             if ($search = $this->getPgParameter('realblog_search')) {
@@ -164,12 +266,86 @@ class Controller
                 $articles = array();
             }
 
-            $view = new ArchiveView($articles, $articleCount);
-            $html .= $view->render();
+            $html .= $this->renderArchive($articles, $articleCount);
         } else {
             $html .= $this->renderArticle($realblogID);
         }
         return $html;
+    }
+
+    private function renderArchive(array $articles, $articleCount)
+    {
+        global $plugin_tx;
+
+        if (!$this->getPgParameter('realblog_search')) {
+            $year = $this->getYear();
+            $years = DB::findArchiveYears();
+            $key = array_search($year, $years);
+            if ($key === false) {
+                $key = count($years) - 1;
+                $year = $years[$key];
+            }
+            $back = ($key > 0) ? $years[$key - 1] : null;
+            $next = ($key < count($years) - 1) ? $years[$key + 1] : null;
+            $articles = DB::findArchivedArticlesInPeriod(
+                mktime(0, 0, 0, 1, 1, $year),
+                mktime(0, 0, 0, 1, 1, $year + 1)
+            );
+            return $this->renderArchivedArticles($articles, false, $back, $next);
+        } else {
+            return $this->renderArchivedArticles($articles, true, null, null);
+        }
+    }
+
+    private function renderArchivedArticles(array $articles, $isSearch, $back, $next)
+    {
+        global $su, $plugin_tx;
+
+        $view = new View('archive');
+        $view->isSearch = $isSearch;
+        $view->articles = $articles;
+        $view->year = $this->getYear();
+        if ($back) {
+            $view->backUrl = $this->url(
+                $su,
+                null,
+                array('realblog_year' => $back)
+            );
+        }
+        if ($next) {
+            $view->nextUrl = $this->url(
+                $su,
+                null,
+                array('realblog_year' => $next)
+            );
+        }
+        $view->url = function (stdClass $article) {
+            global $su, $_Realblog_controller;
+
+            return $_Realblog_controller->url(
+                $su,
+                $article->title,
+                array('realblogID' => $article->id)
+            );
+        };
+        $view->formatDate = function (stdClass $article) {
+            global $plugin_tx;
+
+            return date($plugin_tx['realblog']['date_format'], $article->date);
+        };
+        $view->yearOf = function (stdClass $article) {
+            return date('Y', $article->date);
+        };
+        $view->monthOf = function (stdClass $article) {
+            return date('n', $article->date);
+        };
+        $view->monthName = function ($month) {
+            global $plugin_tx;
+    
+            $monthNames = explode(',', $plugin_tx['realblog']['date_months']);
+            return $monthNames[$month - 1];
+        };
+        return $view->render();
     }
 
     /**
@@ -249,13 +425,42 @@ class Controller
      */
     private function deliverFeed()
     {
-        global $plugin_cf;
+        global $sn, $pth, $plugin_cf, $plugin_tx;
 
         header('Content-Type: application/rss+xml; charset=UTF-8');
+        $view = new View('feed');
+        $view->url = CMSIMPLE_URL . '?' . $plugin_tx['realblog']['rss_page'];
+        $view->managingEditor = $plugin_cf['realblog']['rss_editor'];
+        $view->hasLogo = (bool) $plugin_cf['realblog']['rss_logo'];
+        $view->imageUrl = preg_replace(
+            array('/\/[^\/]+\/\.\.\//', '/\/\.\//'),
+            '/',
+            CMSIMPLE_URL . $pth['folder']['images']
+            . $plugin_cf['realblog']['rss_logo']
+        );
         $count = $plugin_cf['realblog']['rss_entries'];
-        $view = new RSSFeed(DB::findFeedableArticles($count));
-        echo $view->render();
-        exit();
+        $view->articles = DB::findFeedableArticles($count);
+        $view->articleUrl = function ($article) use ($sn, $plugin_tx) {
+            global $_Realblog_controller;
+
+            return CMSIMPLE_URL . substr(
+                $_Realblog_controller->url(
+                    $plugin_tx['realblog']["rss_page"],
+                    $article->title,
+                    array(
+                        'realblogID' => $article->id
+                    )
+                ),
+                strlen($sn));
+        };
+        $view->evaluatedTeaser = function ($article) {
+            return evaluate_scripting($article->teaser);
+        };
+        $view->rssDate = function ($article) {
+            return date('r', $article->date);
+        };
+        echo '<?xml version="1.0" encoding="UTF-8"?>', PHP_EOL, $view->render();
+        exit;
     }
 
     /**

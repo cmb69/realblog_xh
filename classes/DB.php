@@ -188,28 +188,6 @@ EOS;
     /**
      * @param int $start
      * @param int $end
-     * @return int
-     */
-    public static function countArchivedArticlesInPeriod($start, $end)
-    {
-        $db = self::getConnection();
-        $sql = <<<'EOS'
-SELECT COUNT(*) AS count FROM articles
-    WHERE status = :status AND date >= :start AND date < :end
-    ORDER BY date DESC, id DESC
-EOS;
-        $stmt = $db->prepare($sql);
-        $stmt->bindValue(':status', 2, SQLITE3_INTEGER);
-        $stmt->bindValue(':start', $start, SQLITE3_INTEGER);
-        $stmt->bindValue(':end', $end, SQLITE3_INTEGER);
-        $result = $stmt->execute();
-        $record = $result->fetchArray(SQLITE3_ASSOC);
-        return $record['count'];
-    }
-
-    /**
-     * @param int $start
-     * @param int $end
      * @return array<stdClass>
      */
     public static function findArchivedArticlesInPeriod($start, $end)
@@ -230,6 +208,21 @@ EOS;
             $records[] = (object) $record;
         }
         return $records;
+    }
+
+    public static function findArchiveYears()
+    {
+        $db = self::getConnection();
+        $sql = <<<'SQL'
+SELECT DISTINCT strftime('%Y', date, 'unixepoch') AS year
+    FROM articles ORDER BY year
+SQL;
+        $res = $db->query($sql);
+        $years = array();
+        while (($record = $res->fetchArray(SQLITE3_ASSOC)) !== false) {
+            $years[] = (int) $record['year'];
+        }
+        return $years;
     }
 
     /**
