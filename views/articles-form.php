@@ -10,7 +10,7 @@
                     <img src="<?=$this->imageFolder?>refresh.png" alt="<?=$this->text('tooltip_refresh')?>">
                 </button>
                 <button name="action" value="batchdelete" title="<?=$this->text('tooltip_deleteall')?>">
-                    <img src="<?=$this->imageFolder?>delete.png" alt="<?=$this->text('tooltip_deleteall')?>">
+                    <img src="<?=$this->imageFolder?>batch-delete.png" alt="<?=$this->text('tooltip_deleteall')?>">
                 </button>
                 <button name="action" value="change_status" title="<?=$this->text('tooltip_changestatus')?>">
                     <img src="<?=$this->imageFolder?>change-status.png" alt="<?=$this->text('tooltip_changestatus')?>">
