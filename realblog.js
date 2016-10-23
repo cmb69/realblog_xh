@@ -22,18 +22,18 @@ REALBLOG.initDatePickers = function () {
     var i, datePicker;
 
     for (i = 1; i <= 3; i++) {
-        datePicker = document.getElementById("trig_date" + i);
+        datePicker = document.getElementById("realblog_trig_date" + i);
         if (datePicker) {
             if (this.hasNativeDatePicker) {
                 datePicker.style.display = "none";
             } else {
-                document.getElementById("date" + i).onfocus = function () {
+                document.getElementById("realblog_date" + i).onfocus = function () {
                     this.blur();
                 };
                 Calendar.setup({
-                    inputField: "date" + i,
+                    inputField: "realblog_date" + i,
                     ifFormat: "%Y-%m-%d",
-                    button: "trig_date" + i,
+                    button: "realblog_trig_date" + i,
                     align: "Br",
                     singleClick: true,
                     firstDay: 1,

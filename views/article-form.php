@@ -13,13 +13,13 @@
                 <td><label for="date3" class="realblog_label"><?=$this->text('enddate_label')?></span></label>            </tr>
             <tr>
                 <td>
-                    <input type="date" name="realblog_date" id="date1" required="required" value="<?=$this->formatDate($this->article->date)?>">
-                    <img src="<?=$this->calendarIcon?>" id="trig_date1" class="realblog_date_selector" title="<?=$this->text('tooltip_datepicker')?>" alt="">
+                    <input type="date" name="realblog_date" id="realblog_date1" required="required" value="<?=$this->formatDate($this->article->date)?>">
+                    <img src="<?=$this->calendarIcon?>" id="realblog_trig_date1" class="realblog_date_selector" title="<?=$this->text('tooltip_datepicker')?>" alt="">
                 </td>
                 <td>
 <?php if ($this->isAutoPublish):?>
-                    <input type="date" name="realblog_startdate" id="date2" required="required" value="<?=$this->formatDate($this->article->publishing_date)?>">
-                    <img src="<?=$this->calendarIcon?>" id="trig_date2" class="realblog_date_selector" title="<?=$this->text('tooltip_datepicker')?>" alt="">
+                    <input type="date" name="realblog_startdate" id="realblog_date2" required="required" value="<?=$this->formatDate($this->article->publishing_date)?>">
+                    <img src="<?=$this->calendarIcon?>" id="realblog_trig_date2" class="realblog_date_selector" title="<?=$this->text('tooltip_datepicker')?>" alt="">
 <?php else:?>
                     <?=$this->text('startdate_hint')?>
                     <input type="hidden" name="realblog_startdate" value="0">
@@ -27,8 +27,8 @@
                 </td>
                 <td>
 <?php if ($this->isAutoArchive):?>
-                    <input type="date" name="realblog_enddate" id="date3" required="required" value="<?=$this->formatDate($this->article->archivingDate)?>">
-                    <img src="<?=$this->calendarIcon?>" id="trig_date3" class="realblog_date_selector" title="<?=$this->text('tooltip_datepicker')?>" alt="">
+                    <input type="date" name="realblog_enddate" id="realblog_date3" required="required" value="<?=$this->formatDate($this->article->archivingDate)?>">
+                    <img src="<?=$this->calendarIcon?>" id="realblog_trig_date3" class="realblog_date_selector" title="<?=$this->text('tooltip_datepicker')?>" alt="">
 <?php else:?>
                     <?=$this->text('enddate_hint')?>
                     <input type="hidden" name="realblog_enddate" value="2147483647">
