@@ -1,6 +1,9 @@
 <!-- realblog articles form -->
 <h1>Realblog – <?=$this->text('story_overview')?></h1>
-<form class="realblog_filter" method="post" action="<?=$this->actionUrl?>">
+<form class="realblog_filter" method="get" action="<?=$this->actionUrl?>">
+    <input type="hidden" name="selected" value="realblog">
+    <input type="hidden" name="admin" value="plugin_main">
+    <input type="hidden" name="action" value="plugin_text">
 <?php foreach ($this->states as $i => $status):?>
     <input type="hidden" name="realblog_filter<?=$i+1?>" value="">
     <label>
@@ -11,7 +14,10 @@
     <button><?=$this->text('btn_filter')?></button>
 </form>
 
-<form method="post" action="<?=$this->actionUrl?>">
+<form method="get" action="<?=$this->actionUrl?>">
+    <input type="hidden" name="selected" value="realblog">
+    <input type="hidden" name="admin" value="plugin_main">
+    <input type="hidden" name="action" value="plugin_text">
 <?php if ($this->hasTopPagination):?>
     <?=$this->pagination->render()?>
 <?php endif?>
@@ -23,7 +29,7 @@
                 </button>
             </td>
             <td class="realblog_table_header">
-                <button name="action" value="change_status"  title="<?=$this->text('tooltip_changestatus')?>">
+                <button name="action" value="change_status" title="<?=$this->text('tooltip_changestatus')?>">
                     <img src="<?=$this->changeStatusIcon?>" alt="<?=$this->text('tooltip_changestatus')?>">
                 </button>
             </td>

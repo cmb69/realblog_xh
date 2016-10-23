@@ -54,9 +54,9 @@ class Controller
      */
     private function isAdministrationRequested()
     {
-        global $realblog;
+        global $realblog, $su;
 
-        return isset($realblog) && $realblog == 'true';
+        return isset($realblog) && $realblog == 'true' || $su === 'realblog';
     }
 
     /**
@@ -546,8 +546,8 @@ class Controller
      */
     public function getFilter($num)
     {
-        if (isset($_POST["realblog_filter$num"])) {
-            $filter = ($_POST["realblog_filter$num"] == 'on');
+        if (isset($_GET["realblog_filter$num"])) {
+            $filter = ($_GET["realblog_filter$num"] == 'on');
             $_COOKIE["realblog_filter$num"] = $filter ? 'on' : '';
             setcookie("realblog_filter$num", $filter ? 'on' : '', 0, CMSIMPLE_ROOT);
         } elseif (isset($_COOKIE["realblog_filter$num"])) {

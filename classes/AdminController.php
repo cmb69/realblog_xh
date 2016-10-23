@@ -140,7 +140,7 @@ class AdminController
         $view->hasTopPagination = $plugin_cf['realblog']['pagination_top'];
         $view->hasBottomPagination = $plugin_cf['realblog']['pagination_bottom'];
         $view->articles = $articles;
-        $view->actionUrl = "$sn?&realblog&admin=plugin_main&action=plugin_text";
+        $view->actionUrl = $sn;
         $view->addUrl = "$sn?&realblog&admin=plugin_main&action=add_realblog";
         $view->deleteUrl = function ($article) use ($page) {
             global $sn;
