@@ -148,7 +148,11 @@ class Controller
 
             return $_Realblog_controller->url(
                 $su,
-                array('realblog_id' => $article->id, 'realblog_search' => $search)
+                array(
+                    'realblog_id' => $article->id,
+                    'realblog_page' => $_Realblog_controller->getPage(),
+                    'realblog_search' => $search
+                )
             );
         };
         $view->hasLinkedHeader = function ($article) {
@@ -317,6 +321,7 @@ class Controller
                 $su,
                 array(
                     'realblog_id' => $article->id,
+                    'realblog_year' => date('Y', $article->date),
                     'realblog_search' => $_Realblog_controller->getPgParameter('realblog_search')
                 )
             );
@@ -498,14 +503,24 @@ class Controller
      */
     public function getPage()
     {
-        if (isset($_GET['realblog_page'])) {
-            $page = (int) $_GET['realblog_page'];
-            $_COOKIE['realblog_page'] = $page;
-            setcookie('realblog_page', $page, 0, CMSIMPLE_ROOT);
-        } elseif (isset($_COOKIE['realblog_page'])) {
-            $page = (int) $_COOKIE['realblog_page'];
+        global $edit;
+
+        if (defined('XH_ADM') && XH_ADM && $edit) {
+            if (isset($_GET['realblog_page'])) {
+                $page = (int) $_GET['realblog_page'];
+                $_COOKIE['realblog_page'] = $page;
+                setcookie('realblog_page', $page, 0, CMSIMPLE_ROOT);
+            } elseif (isset($_COOKIE['realblog_page'])) {
+                $page = (int) $_COOKIE['realblog_page'];
+            } else {
+                $page = 1;
+            }
         } else {
-            $page = 1;
+            if (isset($_GET['realblog_page'])) {
+                $page = $_GET['realblog_page'];
+            } else {
+                $page = 1;
+            }
         }
         return $page;
     }
@@ -516,11 +531,7 @@ class Controller
     public function getYear()
     {
         if (isset($_GET['realblog_year'])) {
-            $year = (int) $_GET['realblog_year'];
-            $_COOKIE['realblog_year'] = $year;
-            setcookie('realblog_year', $year, 0, CMSIMPLE_ROOT);
-        } elseif (isset($_COOKIE['realblog_year'])) {
-            $year = (int) $_COOKIE['realblog_year'];
+            $year = $_GET['realblog_year'];
         } else {
             $year = date('Y');
         }
@@ -561,7 +572,10 @@ class Controller
         $url = $sn . '?' . $pageUrl;
         ksort($params);
         foreach ($params as $name => $value) {
-            if (!($name == 'realblog_search' && !$value)) {
+            if (!($name == 'realblog_page' && $value == 1
+                || $name == 'realblog_year' && $value == date('Y')
+                || $name == 'realblog_search' && !$value)
+            ) {
                 $url .= '&' . strtr($name, $replacePairs) . '=' . $value;
             }
         }
