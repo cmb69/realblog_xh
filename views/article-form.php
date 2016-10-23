@@ -8,10 +8,9 @@
         <?=$this->tokenInput?>
         <table>
             <tr>
-                <td><span class="realblog_date_label"><?=$this->text('date_label')?></span></td>
-                <td><span class="realblog_date_label"><?=$this->text('startdate_label')?></span></td>
-                <td><span class="realblog_date_label"><?=$this->text('enddate_label')?></span></td>
-            </tr>
+                <td><label for="date1" class="realblog_label"><?=$this->text('date_label')?></label></td>
+                <td><label for="date2" class="realblog_label"><?=$this->text('startdate_label')?></label></td>
+                <td><label for="date3" class="realblog_label"><?=$this->text('enddate_label')?></span></label>            </tr>
             <tr>
                 <td>
                     <input type="date" name="realblog_date" id="date1" required="required" value="<?=$this->formatDate($this->article->date)?>">
@@ -35,13 +34,13 @@
                 </td>
             </tr>
             <tr>
-                <td><span class="realblog_date_label"><?=$this->text('label_status')?></span></td>
+                <td><label for="realblog_status" class="realblog_label"><?=$this->text('label_status')?></label></td>
                 <td></td>
                 <td></td>
             </tr>
             <tr>
                 <td>
-                    <select name="realblog_status">
+                    <select id="realblog_status" name="realblog_status">
 <?php foreach ($this->states as $i => $state):?>
                         <option value="<?=$this->escape($i)?>" <?php if ($this->article->status === $i) echo 'selected'?>><?=$this->text($state)?></option>
 <?php endforeach?>
@@ -60,19 +59,23 @@
                     </label>
                 </td>
             </tr>
-            <tr>
-                <td colspan="3"><span class="realblog_date_label"><?=$this->text('label_categories')?></span></td>
-            </tr>
-            <tr>
-                <td colspan="3"><input type="text" size="70" name="realblog_categories" value="<?=$this->categories?>"><td>
-            </tr>
         </table>
-        <h4><?=$this->text('title_label')?></h4>
-        <input type="text" value="<?=$this->escape($this->article->title)?>" name="realblog_title" size="70">
-        <h4><?=$this->text('headline_label')?></h4>
-        <textarea class="realblog_headline_field" name="realblog_headline" id="realblog_headline" rows="6" cols="60"><?=$this->escape($this->article->teaser)?></textarea>
-        <h4><?=$this->text('story_label')?></h4>
-        <textarea class="realblog_story_field" name="realblog_story" id="realblog_story" rows="30" cols="80"><?=$this->escape($this->article->body)?></textarea>
+        <p>
+            <label for="realblog_categories" class="realblog_label"><?=$this->text('label_categories')?></label>
+            <input type="text" id="realblog_categories" name="realblog_categories" value="<?=$this->categories?>" size="50">
+        </p>
+        <p>
+            <label for="realblog_title" class="realblog_label"><?=$this->text('title_label')?></label>
+            <input type="text" id="realblog_title" name="realblog_title" value="<?=$this->escape($this->article->title)?>" size="50">
+        </p>
+        <p>
+            <label for="realblog_headline" class="realblog_label"><?=$this->text('headline_label')?></label>
+            <textarea class="realblog_headline_field" id="realblog_headline" name="realblog_headline" rows="6" cols="60"><?=$this->escape($this->article->teaser)?></textarea>
+        </p>
+        <p>
+            <label for="realblog_story" class="realblog_label"><?=$this->text('story_label')?></label>
+            <textarea class="realblog_story_field" id="realblog_story" name="realblog_story" rows="30" cols="80"><?=$this->escape($this->article->body)?></textarea>
+        </p>
         <p style="text-align: center"><input type="submit" name="save" value="<?=$this->text($this->button)?>"></p>
     </form>
 </div>    
