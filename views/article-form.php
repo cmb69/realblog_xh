@@ -27,7 +27,7 @@
                 </td>
                 <td>
 <?php if ($this->isAutoArchive):?>
-                    <input type="date" name="realblog_enddate" id="realblog_date3" required="required" value="<?=$this->formatDate($this->article->archivingDate)?>">
+                    <input type="date" name="realblog_enddate" id="realblog_date3" required="required" value="<?=$this->formatDate($this->article->archiving_date)?>">
                     <img src="<?=$this->calendarIcon?>" id="realblog_trig_date3" class="realblog_date_selector" title="<?=$this->text('tooltip_datepicker')?>" alt="">
 <?php else:?>
                     <?=$this->text('enddate_hint')?>
