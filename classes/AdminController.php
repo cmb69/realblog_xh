@@ -344,16 +344,8 @@ class AdminController
         $article->title = stsl($_POST['realblog_title']);
         $article->teaser = stsl($_POST['realblog_headline']);
         $article->body = stsl($_POST['realblog_story']);
-        if (isset($_POST['realblog_startdate'])) {
-            $article->publishing_date = stsl($_POST['realblog_startdate']);
-        } else {
-            $article->publishing_date = 0;
-        }
-        if (isset($_POST['realblog_enddate'])) {
-            $article->archiving_date = stsl($_POST['realblog_enddate']);
-        } else {
-            $article->archiving_date = 2147483647;
-        }
+        $article->publishing_date = stsl($_POST['realblog_startdate']);
+        $article->archiving_date = stsl($_POST['realblog_enddate']);
         $article->status = stsl($_POST['realblog_status']);
         $article->feedable = (bool) stsl($_POST['realblog_rssfeed']);
         $article->commentable = (bool) stsl($_POST['realblog_comments']);

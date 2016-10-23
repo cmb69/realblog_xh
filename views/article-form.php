@@ -22,6 +22,7 @@
                     <img src="<?=$this->calendarIcon?>" id="trig_date2" class="realblog_date_selector" title="<?=$this->text('tooltip_datepicker')?>" alt="">
 <?php else:?>
                     <?=$this->text('startdate_hint')?>
+                    <input type="hidden" name="realblog_startdate" value="0">
 <?php endif?>
                 </td>
                 <td>
@@ -30,6 +31,7 @@
                     <img src="<?=$this->calendarIcon?>" id="trig_date3" class="realblog_date_selector" title="<?=$this->text('tooltip_datepicker')?>" alt="">
 <?php else:?>
                     <?=$this->text('enddate_hint')?>
+                    <input type="hidden" name="realblog_enddate" value="2147483647">
 <?php endif?>
                 </td>
             </tr>
