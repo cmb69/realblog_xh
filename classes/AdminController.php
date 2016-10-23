@@ -434,7 +434,7 @@ EOT;
                 'feedable' => 0,
                 'commentable' => 0
             );
-            $title = ['tooltip_add'];
+            $title = $plugin_tx['realblog']['tooltip_add'];
         } else {
             $article = DB::findById($id);
             if (!$article) {
