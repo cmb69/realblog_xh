@@ -451,7 +451,8 @@ class Controller
                         'realblog_id' => $article->id
                     )
                 ),
-                strlen($sn));
+                strlen($sn)
+            );
         };
         $view->evaluatedTeaser = function ($article) {
             return evaluate_scripting($article->teaser);

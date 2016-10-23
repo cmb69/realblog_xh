@@ -141,12 +141,14 @@ class AdminController
         $view->deleteUrl = function ($article) use ($page) {
             global $sn;
 
-            return "$sn?&realblog&admin=plugin_main&action=delete_realblog&realblog_id={$article->id}&realblog_page=$page";
+            return "$sn?&realblog&admin=plugin_main&action=delete_realblog"
+                . "&realblog_id={$article->id}&realblog_page=$page";
         };
         $view->modifyUrl = function ($article) use ($page) {
             global $sn;
 
-            return "$sn?&realblog&admin=plugin_main&action=modify_realblog&realblog_id={$article->id}&realblog_page=$page";
+            return "$sn?&realblog&admin=plugin_main&action=modify_realblog"
+                . "&realblog_id={$article->id}&realblog_page=$page";
         };
         $view->states = array('readyforpublishing', 'published', 'archived');
         $view->hasFilter = function ($num) {
