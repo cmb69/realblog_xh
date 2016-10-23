@@ -1,12 +1,12 @@
 <!-- realblog confirm delete -->
-<h1>Realblog – <?=$this->text('tooltip_deleteall')?></h1>
+<h1>Realblog – <?=$this->text('tooltip_delete_selected')?></h1>
 <?php if (count($this->ids)):?>
 <p class="xh_warning"><?=$this->text('confirm_deleteall')?></p>
 <form name="confirm" method="post" action="<?=$this->action?>">
 <?php foreach ($this->ids as $id):?>
     <input type="hidden" name="realblog_ids[]" value="<?=$this->escape($id)?>">
 <?php endforeach?>
-    <input type="hidden" name="action" value="do_delselected"?>
+    <input type="hidden" name="action" value="do_delete_selected"?>
     <?=$this->csrfTokenInput?>
     <p style="text-align: center">
         <input type="submit" name="submit" value="<?=$this->text('btn_delete')?>">

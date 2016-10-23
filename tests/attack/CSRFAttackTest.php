@@ -120,14 +120,14 @@ class CSRFAttackTest extends PHPUnit_Framework_TestCase
             array(
                 array(
                     'admin' => 'plugin_main',
-                    'action' => 'do_add'
+                    'action' => 'do_create'
                 ),
                 'realblog'
             ),
             array(
                 array(
                     'admin' => 'plugin_main',
-                    'action' => 'do_modify'
+                    'action' => 'do_edit'
                 ),
                 'realblog'
             ),
@@ -141,14 +141,14 @@ class CSRFAttackTest extends PHPUnit_Framework_TestCase
             array(
                 array(
                     'admin' => 'plugin_main',
-                    'action' => 'do_delselected'
+                    'action' => 'do_delete_selected'
                 ),
                 'realblog'
             ),
             array(
                 array(
                     'admin' => 'plugin_main',
-                    'action' => 'do_batchchangestatus'
+                    'action' => 'do_change_status'
                 ),
                 'realblog'
             )

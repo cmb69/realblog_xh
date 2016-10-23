@@ -1,12 +1,12 @@
 <!-- realblog confirm change status -->
-<h1>Realblog – <?=$this->text('tooltip_changestatus')?></h1>
+<h1>Realblog – <?=$this->text('tooltip_change_status')?></h1>
 <?php if (count($this->ids)):?>
 <p class="xh_warning"><?=$this->text('confirm_changestatus')?></p>
 <form name="confirm" method="post" action="<?=$this->action?>">
 <?php foreach ($this->ids as $id):?>
     <input type="hidden" name="realblog_ids[]" value="<?=$this->escape($id)?>">
 <?php endforeach?>
-    <input type="hidden" name="action" value="do_batchchangestatus"?>
+    <input type="hidden" name="action" value="do_change_status"?>
     <?=$this->csrfTokenInput?>
     <p style="text-align: center">
         <select name="realblog_status">

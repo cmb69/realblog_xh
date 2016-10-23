@@ -9,14 +9,14 @@
                 <button name="action" value="plugin_text" title="<?=$this->text('tooltip_refresh')?>">
                     <img src="<?=$this->imageFolder?>refresh.png" alt="<?=$this->text('tooltip_refresh')?>">
                 </button>
-                <button name="action" value="batchdelete" title="<?=$this->text('tooltip_deleteall')?>">
-                    <img src="<?=$this->imageFolder?>batch-delete.png" alt="<?=$this->text('tooltip_deleteall')?>">
+                <button name="action" value="delete_selected" title="<?=$this->text('tooltip_delete_selected')?>">
+                    <img src="<?=$this->imageFolder?>delete-selected.png" alt="<?=$this->text('tooltip_delete_selected')?>">
                 </button>
-                <button name="action" value="change_status" title="<?=$this->text('tooltip_changestatus')?>">
-                    <img src="<?=$this->imageFolder?>change-status.png" alt="<?=$this->text('tooltip_changestatus')?>">
+                <button name="action" value="change_status" title="<?=$this->text('tooltip_change_status')?>">
+                    <img src="<?=$this->imageFolder?>change-status.png" alt="<?=$this->text('tooltip_change_status')?>">
                 </button>
-                <button name="action" value="add_realblog" title="<?=$this->text('tooltip_add')?>">
-                    <img src="<?=$this->imageFolder?>add.png" alt="<?$this->text('tooltip_add')?>"
+                <button name="action" value="create" title="<?=$this->text('tooltip_create')?>">
+                    <img src="<?=$this->imageFolder?>create.png" alt="<?$this->text('tooltip_create')?>"
                 </button>
             </td>
             <td class="realblog_table_header"><?=$this->text('id_label')?></td>
@@ -36,8 +36,8 @@
                 </a>
             </td>
             <td class="realblog_table_line">
-                <a href="<?=$this->modifyUrl($article)?>">
-                    <img src="<?=$this->imageFolder?>edit.png" title="<?=$this->text('tooltip_modify')?>" alt="<?=$this->text('tooltip_modify')?>">
+                <a href="<?=$this->editUrl($article)?>">
+                    <img src="<?=$this->imageFolder?>edit.png" title="<?=$this->text('tooltip_edit')?>" alt="<?=$this->text('tooltip_edit')?>">
                 </a>
             </td>
             <td class="realblog_table_line"><?=$this->escape($article->id)?></td>

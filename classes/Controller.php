@@ -219,7 +219,7 @@ class Controller
             $params['realblog_search'] = $this->getPgParameter('realblog_search');
             $view->backUrl = $this->url($su, $params);
             $view->editUrl = "$sn?&realblog&admin=plugin_main"
-                . "&action=modify_realblog&realblog_id={$article->id}";
+                . "&action=edit&realblog_id={$article->id}";
             if ($this->wantsComments()) {
                 $bridge = "{$plugin_cf['realblog']['comments_plugin']}_RealblogBridge";
                 $view->editCommentsUrl = call_user_func(array($bridge, 'getEditUrl'), 'realblog' . $article->id);

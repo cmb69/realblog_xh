@@ -75,30 +75,30 @@ class AdminController
         global $o;
 
         switch ($action) {
-            case 'add_realblog':
-            case 'modify_realblog':
-            case 'delete_realblog':
+            case 'create':
+            case 'edit':
+            case 'delete':
                 $o .= $this->renderArticle();
                 break;
-            case 'do_add':
-                $o .= $this->addArticle();
+            case 'do_create':
+                $o .= $this->createArticle();
                 break;
-            case 'do_modify':
-                $o .= $this->modifyArticle();
+            case 'do_edit':
+                $o .= $this->editArticle();
                 break;
             case 'do_delete':
                 $o .= $this->deleteArticle();
                 break;
-            case 'batchdelete':
+            case 'delete_selected':
                 $o .= $this->renderConfirmation('delete');
                 break;
-            case 'do_delselected':
+            case 'do_delete_selected':
                 $o .= $this->deleteArticles();
                 break;
             case 'change_status':
                 $o .= $this->renderConfirmation('change-status');
                 break;
-            case 'do_batchchangestatus':
+            case 'do_change_status':
                 $o .= $this->changeStatus();
                 break;
             default:
@@ -140,13 +140,13 @@ class AdminController
         $view->deleteUrl = function ($article) use ($page) {
             global $sn;
 
-            return "$sn?&realblog&admin=plugin_main&action=delete_realblog"
+            return "$sn?&realblog&admin=plugin_main&action=delete"
                 . "&realblog_id={$article->id}&realblog_page=$page";
         };
-        $view->modifyUrl = function ($article) use ($page) {
+        $view->editUrl = function ($article) use ($page) {
             global $sn;
 
-            return "$sn?&realblog&admin=plugin_main&action=modify_realblog"
+            return "$sn?&realblog&admin=plugin_main&action=edit"
                 . "&realblog_id={$article->id}&realblog_page=$page";
         };
         $view->states = array('readyforpublishing', 'published', 'archived');
@@ -185,7 +185,7 @@ class AdminController
      * @global array $plugin_tx
      * @global \XH_CSRFProtection $_XH_csrfProtection
      */
-    private function addArticle()
+    private function createArticle()
     {
         global $title, $plugin_tx, $_XH_csrfProtection;
 
@@ -197,7 +197,7 @@ class AdminController
         } else {
             $info = XH_message('fail', $plugin_tx['realblog']['story_added_error']);
         }
-        $title = $plugin_tx['realblog']['tooltip_add'];
+        $title = $plugin_tx['realblog']['tooltip_create'];
         return $this->renderInfo($title, $info);
     }
 
@@ -207,7 +207,7 @@ class AdminController
      * @global array $plugin_tx
      * @global \XH_CSRFProtection $_XH_csrfProtection
      */
-    private function modifyArticle()
+    private function editArticle()
     {
         global $title, $plugin_tx, $_XH_csrfProtection;
 
@@ -219,7 +219,7 @@ class AdminController
         } else {
             $info = XH_message('fail', $plugin_tx['realblog']['story_modified_error']);
         }
-        $title = $plugin_tx['realblog']['tooltip_modify'];
+        $title = $plugin_tx['realblog']['tooltip_edit'];
         return $this->renderInfo($title, $info);
     }
 
@@ -292,7 +292,7 @@ class AdminController
         } else {
             $info = XH_message('fail', $plugin_tx['realblog']['changestatus_error']);
         }
-        $title = $plugin_tx['realblog']['tooltip_changestatus'];
+        $title = $plugin_tx['realblog']['tooltip_change_status'];
         return $this->renderInfo($title, $info);
     }
 
@@ -324,7 +324,7 @@ class AdminController
         } else {
             $info = XH_message('fail', $plugin_tx['realblog']['deleteall_error']);
         }
-        $title = $plugin_tx['realblog']['tooltip_deleteall'];
+        $title = $plugin_tx['realblog']['tooltip_delete_selected'];
         return $this->renderInfo($title, $info);
     }
 
@@ -418,7 +418,7 @@ EOT;
     {
         global $title, $plugin_tx;
 
-        if ($action == 'add_realblog') {
+        if ($action == 'create') {
             $article = (object) array(
                 'id' => null,
                 'version' => 0,
@@ -433,16 +433,16 @@ EOT;
                 'feedable' => 0,
                 'commentable' => 0
             );
-            $title = $plugin_tx['realblog']['tooltip_add'];
+            $title = $plugin_tx['realblog']['tooltip_create'];
         } else {
             $article = DB::findById($id);
             if (!$article) {
                 return XH_message('fail', $plugin_tx['realblog']['message_not_found']);
             }
-            if ($action == 'modify_realblog') {
-                $title = $plugin_tx['realblog']['tooltip_modify'] . ' [ID: '
+            if ($action == 'edit') {
+                $title = $plugin_tx['realblog']['tooltip_edit'] . ' [ID: '
                     . $id . ']';
-            } elseif ($action == 'delete_realblog') {
+            } elseif ($action == 'delete') {
                 $title = $plugin_tx['realblog']['tooltip_delete'] . ' [ID: '
                     . $id . ']';
             }
@@ -460,7 +460,7 @@ EOT;
         $view->article = $article;
         $view->title = $title;
         $view->actionUrl = "$sn?&realblog&admin=plugin_main";
-        $view->action = 'do_' . $this->getVerb($action);
+        $view->action = "do_$action";
         $view->tokenInput = new HtmlString($_XH_csrfProtection->tokenInput());
         $view->calendarIcon = "{$pth['folder']['plugins']}realblog/images/calendar.png";
         $view->formatDate = function ($time) {
@@ -470,20 +470,8 @@ EOT;
         $view->isAutoArchive = $plugin_cf['realblog']['auto_archive'];
         $view->states = array('readyforpublishing', 'published', 'archived');
         $view->categories = trim($article->categories, ',');
-        $view->button = 'btn_' . $this->getVerb($action);
+        $view->button = "btn_$action";
         return $view->render();
-    }
-
-    private function getVerb($action)
-    {
-        switch ($action) {
-            case 'add_realblog':
-                return 'add';
-            case 'modify_realblog':
-                return 'modify';
-            case 'delete_realblog':
-                return 'delete';
-        }
     }
 
     /**
