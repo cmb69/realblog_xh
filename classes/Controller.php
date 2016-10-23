@@ -353,7 +353,7 @@ class Controller
      * @global array $plugin_cf
      * @global array $plugin_tx
      */
-    public function link($pageUrl)
+    public function link($pageUrl, $showTeaser)
     {
         global $u, $plugin_cf, $plugin_tx;
 
@@ -363,37 +363,23 @@ class Controller
         if ($plugin_cf['realblog']['links_visible'] <= 0) {
             return '';
         }
-        $html = '<p class="realbloglink">'
-            . $plugin_tx['realblog']['links_visible_text'] . '</p>';
-        $articles = DB::findArticles(1, $plugin_cf['realblog']['links_visible']);
-        if (!empty($articles)) {
-            $html .= '<div class="realblog_tpl_show_box">';
-            foreach ($articles as $article) {
-                $html .= $this->renderArticleLink($article, $pageUrl);
-            }
-            $html .= '</div>';
-        } else {
-            $html .= $plugin_tx['realblog']['no_topics'];
-        }
-        return $html;
-    }
+        $view = new View('latest');
+        $view->articles = DB::findArticles(1, $plugin_cf['realblog']['links_visible']);
+        $view->formatDate = function ($article) {
+            global $plugin_tx;
 
-    /**
-     * @param string $pageURL
-     * @return string
-     * @global array $plugin_tx
-     */
-    private function renderArticleLink(stdClass $article, $pageURL)
-    {
-        global $plugin_tx;
+            return date($plugin_tx['realblog']['date_format'], $article->date);
+        };
+        $view->url = function ($article) use ($pageUrl) {
+            global $_Realblog_controller;
 
-        $url = $this->url($pageURL, array('realblog_id' => $article->id));
-        return '<div class="realblog_tpl_show_date">'
-            . date($plugin_tx['realblog']['date_format'], $article->date)
-            . '</div>'
-            . '<div class="realblog_tpl_show_title">'
-            . '<a href="' . XH_hsc($url) . '">' . $article->title .'</a>'
-            . '</div>';
+            return $_Realblog_controller->url($pageUrl, array('realblog_id' => $article->id));
+        };
+        $view->showTeaser = $showTeaser;
+        $view->teaser = function ($article) {
+            return new HtmlString(evaluate_scripting($article->teaser));
+        };
+        return $view->render();
     }
 
     /**

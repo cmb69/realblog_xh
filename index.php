@@ -86,11 +86,11 @@ function Realblog_archive($showSearch = false)
  * @return string
  * @global Realblog\Controller $_Realblog_controller
  */
-function Realblog_link($pageUrl)
+function Realblog_link($pageUrl, $showTeaser = false)
 {
     global $_Realblog_controller;
 
-    return $_Realblog_controller->link($pageUrl);
+    return $_Realblog_controller->link($pageUrl, $showTeaser);
 }
 
 /**
