@@ -67,6 +67,7 @@ class DB
         $sql = <<<'EOS'
 CREATE TABLE articles (
     id  INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+    version INTEGER,
     date INTEGER,
     publishing_date INTEGER,
     archiving_date INTEGER,
@@ -99,8 +100,8 @@ EOS;
             $this->connection->exec('BEGIN TRANSACTION');
             $sql = <<<'SQL'
 INSERT INTO articles VALUES (
-    :id, :date, :publishing_date, :archiving_date, :status, :categories, :title,
-    :teaser, :body, :feedable, :commentable
+    :id, 1, :date, :publishing_date, :archiving_date, :status,
+    :categories, :title, :teaser, :body, :feedable, :commentable
 )
 SQL;
             $statement = $this->connection->prepare($sql);
@@ -351,8 +352,8 @@ SQL;
         $sql = <<<'EOS'
 INSERT INTO articles
     VALUES (
-        :id, :date, :publishing_date, :archiving_date, :status, :categories,
-        :title, :teaser, :body, :feedable, :commentable
+        :id, 1, :date, :publishing_date, :archiving_date, :status,
+        :categories, :title, :teaser, :body, :feedable, :commentable
     )
 EOS;
         $statement = $db->prepare($sql);
@@ -382,14 +383,15 @@ EOS;
         $db = self::getConnection();
         $sql = <<<'EOS'
 UPDATE articles
-    SET date = :date, publishing_date = :publishing_date,
+    SET version = version + 1, date = :date, publishing_date = :publishing_date,
         archiving_date = :archiving_date, status = :status,
         categories = :categories, title = :title, teaser = :teaser, body = :body,
         feedable = :feedable, commentable = :commentable
-    WHERE id = :id
+    WHERE id = :id AND version = :version
 EOS;
         $statement = $db->prepare($sql);
         $statement->bindValue(':id', $article->id, SQLITE3_INTEGER);
+        $statement->bindValue(':version', $article->version, SQLITE3_INTEGER);
         $statement->bindValue(':date', $article->date, SQLITE3_INTEGER);
         $statement->bindValue(':publishing_date', $article->publishing_date, SQLITE3_INTEGER);
         $statement->bindValue(':archiving_date', $article->archiving_date, SQLITE3_INTEGER);
@@ -415,7 +417,10 @@ EOS;
     public static function autoChangeStatus($field, $status)
     {
         $db = self::getConnection();
-        $sql = "UPDATE articles SET status = :status WHERE status < :status AND $field <= :date";
+        $sql = <<<SQL
+UPDATE articles SET version = version + 1, status = :status
+    WHERE status < :status AND $field <= :date
+SQL;
         $statement = $db->prepare($sql);
         $statement->bindValue(':status', $status, SQLITE3_INTEGER);
         $statement->bindValue(':date', strtotime('midnight'), SQLITE3_INTEGER);
@@ -430,7 +435,7 @@ EOS;
     public static function updateStatusOfArticlesWithIds(array $ids, $status)
     {
         $sql = sprintf(
-            'UPDATE articles SET status = :status WHERE id in (%s)',
+            'UPDATE articles SET version = version + 1, status = :status WHERE id in (%s)',
             implode(',', $ids)
         );
         $db = self::getConnection();
@@ -444,15 +449,15 @@ EOS;
     }
 
     /**
-     * @param int id
      * @return int
      */
-    public static function deleteArticleWithId($id)
+    public static function deleteArticle($article)
     {
-        $sql = 'DELETE FROM articles WHERE id = :id';
+        $sql = 'DELETE FROM articles WHERE id = :id AND version = :version';
         $db = self::getConnection();
         $stmt = $db->prepare($sql);
-        $stmt->bindValue(':id', $id, SQLITE3_INTEGER);
+        $stmt->bindValue(':id', $article->id, SQLITE3_INTEGER);
+        $stmt->bindValue(':version', $article->version, SQLITE3_INTEGER);
         $res = $stmt->execute();
         if ($res) {
             $res = $db->changes();

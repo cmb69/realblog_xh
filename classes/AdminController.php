@@ -235,8 +235,8 @@ class AdminController
         global $title, $plugin_tx, $_XH_csrfProtection, $_Realblog_controller;
 
         $_XH_csrfProtection->check();
-        $id = $_Realblog_controller->getPgParameter('realblog_id');
-        $res = DB::deleteArticleWithId($id);
+        $article = $this->getArticleFromParameters();
+        $res = DB::deleteArticle($article);
         if ($res === 1) {
             $this->redirectToOverview();
         } else {
@@ -339,6 +339,7 @@ class AdminController
 
         $article = new stdClass();
         $article->id = $_Realblog_controller->getPgParameter('realblog_id');
+        $article->version = $_Realblog_controller->getPgParameter('realblog_version');
         $article->date =
             $_Realblog_controller->stringToTime(
                 $_Realblog_controller->getPgParameter('realblog_date')
@@ -444,6 +445,7 @@ EOT;
         if ($action == 'add_realblog') {
             $article = (object) array(
                 'id' => null,
+                'version' => 0,
                 'date' => time(),
                 'publishing_date' => time(),
                 'archiving_date' => 2147483647,
@@ -455,7 +457,7 @@ EOT;
                 'feedable' => 0,
                 'commentable' => 0
             );
-            $title = $plugin_tx['realblog']['tooltip_add'];
+            $title = ['tooltip_add'];
         } else {
             $article = DB::findById($id);
             if (!$article) {

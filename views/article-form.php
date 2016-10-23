@@ -2,8 +2,9 @@
 <div class="realblog_fields_block">
     <h1>Realblog – <?=$this->title?></h1>
     <form name="realblog" method="post" action="<?=$this->actionUrl?>">
-        <input type="hidden" name="realblog_id" value="<?=$this->escape($this->article->id)?>">
         <input type="hidden" name="action" value="<?=$this->action?>">
+        <input type="hidden" name="realblog_id" value="<?=$this->escape($this->article->id)?>">
+        <input type="hidden" name="realblog_version" value="<?=$this->escape($this->article->version)?>">
         <?=$this->tokenInput?>
         <table>
             <tr>
