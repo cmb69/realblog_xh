@@ -47,7 +47,7 @@
 <?php foreach ($this->articles as $article):?>
         <tr>
             <td class="realblog_table_line">
-                <input type="checkbox" name="realblogtopics[]" value="<?=$this->escape($article->id)?>">
+                <input type="checkbox" name="realblog_ids[]" value="<?=$this->escape($article->id)?>">
             </td>
             <td class="realblog_table_line">
                 <a href="<?=$this->deleteUrl($article)?>">

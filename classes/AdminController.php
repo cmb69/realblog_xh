@@ -264,7 +264,7 @@ class AdminController
                 'label_status', 'readyforpublishing', 'published', 'archived'
             );
         }
-        $view->ids = $_Realblog_controller->getPgParameter('realblogtopics');
+        $view->ids = $_Realblog_controller->getPgParameter('realblog_ids');
         $view->action = "$sn?&realblog&admin=plugin_main";
         $view->url = "$sn?&realblog&admin=plugin_main&action=plugin_text&realblog_page=$page";
         $view->csrfTokenInput = new HtmlString($_XH_csrfProtection->tokenInput());
@@ -284,7 +284,7 @@ class AdminController
         global $title, $plugin_tx, $_XH_csrfProtection, $_Realblog_controller;
 
         $_XH_csrfProtection->check();
-        $ids = $_Realblog_controller->getPgParameter('realblogtopics');
+        $ids = $_Realblog_controller->getPgParameter('realblog_ids');
         $status = $_Realblog_controller->getPgParameter('new_realblogstatus');
         $ids = array_map(
             function ($id) {
@@ -317,7 +317,7 @@ class AdminController
         global $title, $plugin_tx, $_XH_csrfProtection, $_Realblog_controller;
 
         $_XH_csrfProtection->check();
-        $ids = $_Realblog_controller->getPgParameter('realblogtopics');
+        $ids = $_Realblog_controller->getPgParameter('realblog_ids');
         $ids = array_map(
             function ($id) {
                 return (int) $id;

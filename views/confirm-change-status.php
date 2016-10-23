@@ -4,7 +4,7 @@
 <p class="xh_warning"><?=$this->text('confirm_changestatus')?></p>
 <form name="confirm" method="post" action="<?=$this->action?>">
 <?php foreach ($this->ids as $id):?>
-    <input type="hidden" name="realblogtopics[]" value="<?=$this->escape($id)?>">
+    <input type="hidden" name="realblog_ids[]" value="<?=$this->escape($id)?>">
 <?php endforeach?>
     <input type="hidden" name="action" value="do_batchchangestatus"?>
     <?=$this->csrfTokenInput?>
