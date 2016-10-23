@@ -73,5 +73,5 @@
 <?php if ($this->hasBottomPagination):?>
     <?=$this->pagination->render()?>
 <?php endif?>
-    <input type="hidden" name="page" value="<?=$this->page?>">
+    <input type="hidden" name="realblog_page" value="<?=$this->page?>">
 </form>

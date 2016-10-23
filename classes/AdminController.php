@@ -145,12 +145,12 @@ class AdminController
         $view->deleteUrl = function ($article) use ($page) {
             global $sn;
 
-            return "$sn?&realblog&admin=plugin_main&action=delete_realblog&realblogID={$article->id}&page=$page";
+            return "$sn?&realblog&admin=plugin_main&action=delete_realblog&realblog_id={$article->id}&realblog_page=$page";
         };
         $view->modifyUrl = function ($article) use ($page) {
             global $sn;
 
-            return "$sn?&realblog&admin=plugin_main&action=modify_realblog&realblogID={$article->id}&page=$page";
+            return "$sn?&realblog&admin=plugin_main&action=modify_realblog&realblog_id={$article->id}&realblog_page=$page";
         };
         $view->states = array('readyforpublishing', 'published', 'archived');
         $view->hasFilter = function ($num) {
@@ -181,7 +181,7 @@ class AdminController
 
         init_editor(array('realblog_headline_field', 'realblog_story_field'));
         return $this->form(
-            $_Realblog_controller->getPgParameter('realblogID'),
+            $_Realblog_controller->getPgParameter('realblog_id'),
             $action
         );
     }
@@ -266,7 +266,7 @@ class AdminController
         }
         $view->ids = $_Realblog_controller->getPgParameter('realblogtopics');
         $view->action = "$sn?&realblog&admin=plugin_main";
-        $view->url = "$sn?&realblog&admin=plugin_main&action=plugin_text&page=$page";
+        $view->url = "$sn?&realblog&admin=plugin_main&action=plugin_text&realblog_page=$page";
         $view->csrfTokenInput = new HtmlString($_XH_csrfProtection->tokenInput());
         return $view->render();
     }
@@ -521,7 +521,7 @@ EOT;
         global $_Realblog_controller;
 
         $page = $_Realblog_controller->getPage();
-        $url = CMSIMPLE_URL . "?&realblog&admin=plugin_main&action=plugin_text&page=$page";
+        $url = CMSIMPLE_URL . "?&realblog&admin=plugin_main&action=plugin_text&realblog_page=$page";
         header("Location: $url", true, 303);
         exit;
     }
@@ -539,7 +539,7 @@ EOT;
         global $plugin_tx, $sn, $_Realblog_controller;
 
         $page = $_Realblog_controller->getPage();
-        $url = XH_hsc("$sn?&realblog&admin=plugin_main&action=plugin_text&page=$page");
+        $url = XH_hsc("$sn?&realblog&admin=plugin_main&action=plugin_text&realblog_page=$page");
         return <<<HTML
 <h1>Realblog &ndash; $title</h1>
 $message

@@ -92,7 +92,7 @@ class Controller
     {
         global $plugin_cf;
 
-        $id = $this->getPgParameter('realblogID');
+        $id = $this->getPgParameter('realblog_id');
         $html = '';
         if (!isset($id)) {
             if ($showSearch) {
@@ -148,7 +148,7 @@ class Controller
             return $_Realblog_controller->url(
                 $su,
                 $article->title,
-                array('realblogID' => $article->id)
+                array('realblog_id' => $article->id)
             );
         };
         $view->hasLinkedHeader = function ($article) {
@@ -214,7 +214,7 @@ class Controller
             }
             $view->backUrl = $this->url($su, null, $params);
             $view->editUrl = "$sn?&realblog&admin=plugin_main"
-                . "&action=modify_realblog&realblogID={$article->id}";
+                . "&action=modify_realblog&realblog_id={$article->id}";
             if ($this->wantsComments()) {
                 $bridge = "{$plugin_cf['realblog']['comments_plugin']}_RealblogBridge";
                 $view->editCommentsUrl = call_user_func(array($bridge, 'getEditUrl'), 'realblog' . $article->id);
@@ -250,9 +250,9 @@ class Controller
      */
     public function archive($showSearch = false)
     {
-        $realblogID = $this->getPgParameter('realblogID');
+        $id = $this->getPgParameter('realblog_id');
         $html = '';
-        if (!isset($realblogID)) {
+        if (!isset($id)) {
             if ($showSearch) {
                 $html .= $this->renderSearchForm();
             }
@@ -268,7 +268,7 @@ class Controller
 
             $html .= $this->renderArchive($articles, $articleCount);
         } else {
-            $html .= $this->renderArticle($realblogID);
+            $html .= $this->renderArticle($id);
         }
         return $html;
     }
@@ -325,7 +325,7 @@ class Controller
             return $_Realblog_controller->url(
                 $su,
                 $article->title,
-                array('realblogID' => $article->id)
+                array('realblog_id' => $article->id)
             );
         };
         $view->formatDate = function (stdClass $article) {
@@ -392,7 +392,7 @@ class Controller
         $url = $this->url(
             $pageURL,
             $article->title,
-            array('realblogID' => $article->id)
+            array('realblog_id' => $article->id)
         );
         return '<div class="realblog_tpl_show_date">'
             . date($plugin_tx['realblog']['date_format'], $article->date)
@@ -448,7 +448,7 @@ class Controller
                     $plugin_tx['realblog']["rss_page"],
                     $article->title,
                     array(
-                        'realblogID' => $article->id
+                        'realblog_id' => $article->id
                     )
                 ),
                 strlen($sn));
@@ -569,7 +569,7 @@ class Controller
         global $sn;
 
         $replacePairs = array(
-            //'realblogID' => 'id',
+            //'realblog_id' => 'id',
             //'realblog_page' => 'page'
         );
         $url = $sn . '?' . $pageUrl;
