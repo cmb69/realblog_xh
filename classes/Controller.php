@@ -233,7 +233,7 @@ class Controller
                 if ($article->commentable) {
                     $commentId = 'comments' . $article->id;
                     $bridge = $plugin_cf['realblog']['comments_plugin'] . '_RealblogBridge';
-                    return call_user_func(array($bridge, handle), $commentId);
+                    return new HtmlString(call_user_func(array($bridge, 'handle'), $commentId));
                 }
             };
             return $view->render();

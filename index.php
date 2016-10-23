@@ -41,6 +41,8 @@ this program; if not, see <http://www.gnu.org/licenses>.
 
 require_once $pth['folder']['plugin'] . 'compat.php';
 
+class_alias('\Realblog\CommentsBridge', 'Realblog_CommentsBridge');
+
 const REALBLOG_VERSION = '@REALBLOG_VERSION@';
 
 /**
