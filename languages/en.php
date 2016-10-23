@@ -40,6 +40,7 @@ $plugin_tx['realblog']['message_comments_1']="There is %d comment on this articl
 $plugin_tx['realblog']['message_comments_2_4']="There are %d comments on this article.";
 $plugin_tx['realblog']['message_comments_5']="There %d comments on this article.";
 $plugin_tx['realblog']['message_datafile']="Data file not exists or not writable.";
+$plugin_tx['realblog']['message_not_found']="Article not found!";
 $plugin_tx['realblog']['mnu_choice']="- select -";
 $plugin_tx['realblog']['month_names']="";
 $plugin_tx['realblog']['new_realblogstatus']="Choose new Status";

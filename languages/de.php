@@ -40,6 +40,7 @@ $plugin_tx['realblog']['message_comments_1']="Dieser Artikel wurde %d mal kommen
 $plugin_tx['realblog']['message_comments_2_4']="Dieser Artikel wurde %d mal kommentiert.";
 $plugin_tx['realblog']['message_comments_5']="Dieser Artikel wurde %d mal kommentiert.";
 $plugin_tx['realblog']['message_datafile']="Datenbank-Datei existiert nicht oder ist nicht beschreibbar.";
+$plugin_tx['realblog']['message_not_found']="Der Artikel konnte nicht gefunden werden!";
 $plugin_tx['realblog']['mnu_choice']="- Bitte wählen -";
 $plugin_tx['realblog']['month_names']="";
 $plugin_tx['realblog']['new_realblogstatus']="Neuen Status wählen ";

@@ -458,6 +458,9 @@ EOT;
             $title = $plugin_tx['realblog']['tooltip_add'];
         } else {
             $article = DB::findById($id);
+            if (!$article) {
+                return XH_message('fail', $plugin_tx['realblog']['message_not_found']);
+            }
             if ($action == 'modify_realblog') {
                 $title = $plugin_tx['realblog']['tooltip_modify'] . ' [ID: '
                     . $id . ']';
