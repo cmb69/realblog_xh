@@ -338,41 +338,26 @@ class AdminController
         global $_Realblog_controller;
 
         $article = new stdClass();
-        $article->id = $_Realblog_controller->getPgParameter('realblog_id');
-        $article->version = $_Realblog_controller->getPgParameter('realblog_version');
-        $article->date =
-            $_Realblog_controller->stringToTime(
-                $_Realblog_controller->getPgParameter('realblog_date')
-            );
-        $article->title =
-            stsl($_Realblog_controller->getPgParameter('realblog_title'));
-        $article->teaser =
-            stsl($_Realblog_controller->getPgParameter('realblog_headline'));
-        $article->body =
-            stsl($_Realblog_controller->getPgParameter('realblog_story'));
-        $startDate = $_Realblog_controller->getPgParameter('realblog_startdate');
-        if (isset($startDate)) {
-            $article->publishing_date =
-                $_Realblog_controller->stringToTime($startDate);
+        $article->id = stsl($_POST['realblog_id']);
+        $article->version = stsl($_POST['realblog_version']);
+        $article->date = $_Realblog_controller->stringToTime(stsl($_POST['realblog_date']));
+        $article->title = stsl($_POST['realblog_title']);
+        $article->teaser = stsl($_POST['realblog_headline']);
+        $article->body = stsl($_POST['realblog_story']);
+        if (isset($_POST['realblog_startdate'])) {
+            $article->publishing_date = stsl($_POST['realblog_startdate']);
         } else {
             $article->publishing_date = 0;
         }
-        $endDate = $_Realblog_controller->getPgParameter('realblog_enddate');
-        if (isset($endDate)) {
-            $article->archiving_date =
-                $_Realblog_controller->stringToTime($endDate);
+        if (isset($_POST['realblog_enddate'])) {
+            $article->archiving_date = stsl($_POST['realblog_enddate']);
         } else {
             $article->archiving_date = 2147483647;
         }
-        $article->status =
-            $_Realblog_controller->getPgParameter('realblog_status');
-        $article->feedable = (bool)
-            $_Realblog_controller->getPgParameter('realblog_rssfeed');
-        $article->commentable = (bool)
-            $_Realblog_controller->getPgParameter('realblog_comments');
-        $article->categories = ','
-            . trim($_Realblog_controller->getPgParameter('realblog_categories'))
-            . ',';
+        $article->status = stsl($_POST['realblog_status']);
+        $article->feedable = (bool) stsl($_POST['realblog_rssfeed']);
+        $article->commentable = (bool) stsl($_POST['realblog_comments']);
+        $article->categories = ',' . trim(stsl($_POST['realblog_categories'])) . ',';
         return $article;
     }
 
