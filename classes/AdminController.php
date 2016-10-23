@@ -109,12 +109,11 @@ class AdminController
     /**
      * @return string
      * @global array $plugin_cf
-     * @global array $plugin_tx
      * @global Controller $_Realblog_controller
      */
     private function renderArticles()
     {
-        global $plugin_cf, $plugin_tx, $_Realblog_controller;
+        global $plugin_cf, $_Realblog_controller;
 
         $statuses = $this->getFilterStatuses();
         $total = DB::countArticlesWithStatus($statuses);
@@ -123,12 +122,12 @@ class AdminController
         $page = max(min($_Realblog_controller->getPage(), $pageCount), 1);
         $offset = ($page - 1) * $limit;
         $articles = DB::findArticlesWithStatus($statuses, $limit, $offset);
-        return $this->renderArticlesView($articles, $total, $pageCount);
+        return $this->renderArticlesView($articles, $pageCount);
     }
 
-    private function renderArticlesView($articles, $articleCount, $pageCount)
+    private function renderArticlesView($articles, $pageCount)
     {
-        global $pth, $sn, $_Realblog_controller, $plugin_cf;
+        global $pth, $sn, $_Realblog_controller;
 
         $view = new View('articles-form');
         $view->imageFolder = "{$pth['folder']['plugins']}realblog/images/";

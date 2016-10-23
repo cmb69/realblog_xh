@@ -266,17 +266,15 @@ class Controller
                 $articles = array();
             }
 
-            $html .= $this->renderArchive($articles, $articleCount);
+            $html .= $this->renderArchive($articles);
         } else {
             $html .= $this->renderArticle($id);
         }
         return $html;
     }
 
-    private function renderArchive(array $articles, $articleCount)
+    private function renderArchive(array $articles)
     {
-        global $plugin_tx;
-
         if (!$this->getPgParameter('realblog_search')) {
             $year = $this->getYear();
             $years = DB::findArchiveYears();
