@@ -9,7 +9,6 @@
 <?php   endif?>
         <span class="realblog_button"><a href="<?=$this->editUrl?>"><?=$this->text('entry_edit')?></a></span>
 <?php endif?>
-        <div style="clear: both"></div>
     </div>
 
     <h4><?=$this->escape($this->article->title)?></h4>
@@ -24,7 +23,6 @@
 <?php   endif?>
         <span class="realblog_button"><a href="<?=$this->editUrl?>"><?=$this->text('entry_edit')?></a></span>
 <?php endif?>
-        <div style="clear: both"></div>
     </div>
 
 </div>

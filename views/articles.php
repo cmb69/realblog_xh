@@ -3,7 +3,6 @@
 <?php if ($this->hasTopPagination):?>
     <?=$this->pagination->render()?>
 <?php endif?>
-    <div style="clear:both"></div>
     <div id="realblog_entries_preview" class="realblog_entries_preview">
 <?php foreach ($this->articles as $article):?>
 <?php   if ($this->hasMultiColumns):?>
@@ -38,10 +37,8 @@
         </div>
 <?php   endif?>
 <?php endforeach?>
-        <div style="clear: both"></div>
     </div>
 <?php if ($this->hasBottomPagination):?>
     <?=$this->pagination->render()?>
 <?php endif?>
-    <div style="clear: both"></div>
 </div>

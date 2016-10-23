@@ -371,7 +371,7 @@ class Controller
             foreach ($articles as $article) {
                 $html .= $this->renderArticleLink($article, $pageUrl);
             }
-            $html .= '<div style="clear: both;"></div></div>';
+            $html .= '</div>';
         } else {
             $html .= $plugin_tx['realblog']['no_topics'];
         }
