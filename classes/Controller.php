@@ -137,7 +137,7 @@ class Controller
             $articleCount,
             $page,
             $pageCount,
-            $this->url($su, null, array('realblog_page' => '%s'))
+            $this->url($su, array('realblog_page' => '%s'))
         );
         $view->hasTopPagination = (bool) $plugin_cf['realblog']['pagination_top'];
         $view->hasBottomPagination = (bool) $plugin_cf['realblog']['pagination_bottom'];
@@ -147,7 +147,6 @@ class Controller
 
             return $_Realblog_controller->url(
                 $su,
-                $article->title,
                 array('realblog_id' => $article->id)
             );
         };
@@ -212,7 +211,7 @@ class Controller
                 $params = array('realblog_page' => $this->getPage());
                 $view->backText = $plugin_tx['realblog']['blog_back'];
             }
-            $view->backUrl = $this->url($su, null, $params);
+            $view->backUrl = $this->url($su, $params);
             $view->editUrl = "$sn?&realblog&admin=plugin_main"
                 . "&action=modify_realblog&realblog_id={$article->id}";
             if ($this->wantsComments()) {
@@ -304,25 +303,16 @@ class Controller
         $view->articles = $articles;
         $view->year = $this->getYear();
         if ($back) {
-            $view->backUrl = $this->url(
-                $su,
-                null,
-                array('realblog_year' => $back)
-            );
+            $view->backUrl = $this->url($su, array('realblog_year' => $back));
         }
         if ($next) {
-            $view->nextUrl = $this->url(
-                $su,
-                null,
-                array('realblog_year' => $next)
-            );
+            $view->nextUrl = $this->url($su, array('realblog_year' => $next));
         }
         $view->url = function (stdClass $article) {
             global $su, $_Realblog_controller;
 
             return $_Realblog_controller->url(
                 $su,
-                $article->title,
                 array('realblog_id' => $article->id)
             );
         };
@@ -387,11 +377,7 @@ class Controller
     {
         global $plugin_tx;
 
-        $url = $this->url(
-            $pageURL,
-            $article->title,
-            array('realblog_id' => $article->id)
-        );
+        $url = $this->url($pageURL, array('realblog_id' => $article->id));
         return '<div class="realblog_tpl_show_date">'
             . date($plugin_tx['realblog']['date_format'], $article->date)
             . '</div>'
@@ -444,10 +430,7 @@ class Controller
             return CMSIMPLE_URL . substr(
                 $_Realblog_controller->url(
                     $plugin_tx['realblog']["rss_page"],
-                    $article->title,
-                    array(
-                        'realblog_id' => $article->id
-                    )
+                    array('realblog_id' => $article->id)
                 ),
                 strlen($sn)
             );
@@ -559,11 +542,10 @@ class Controller
 
     /**
      * @param string $pageUrl
-     * @param string $articleTitle
      * @param array  $params
      * @return string
      */
-    public function url($pageUrl, $articleTitle = null, $params = array())
+    public function url($pageUrl, $params = array())
     {
         global $sn;
 
@@ -572,9 +554,6 @@ class Controller
             //'realblog_page' => 'page'
         );
         $url = $sn . '?' . $pageUrl;
-        if (isset($articleTitle)) {
-            $url .= '&' . uenc($articleTitle);
-        }
         ksort($params);
         foreach ($params as $name => $value) {
             $url .= '&' . strtr($name, $replacePairs) . '=' . $value;
