@@ -9,7 +9,7 @@
     <input type="hidden" name="action" value="do_batchchangestatus"?>
     <?=$this->csrfTokenInput?>
     <p style="text-align: center">
-        <select name="new_realblogstatus">
+        <select name="realblog_status">
 <?php foreach ($this->states as $i => $state):?>
             <option value="<?=$this->escape($i - 1)?>"><?=$this->text($state)?></option>
 <?php endforeach?>

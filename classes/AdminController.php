@@ -254,7 +254,7 @@ class AdminController
         $view = new View("confirm-$kind");
         if ($kind === 'change-status') {
             $view->states = array(
-                'label_status', 'readyforpublishing', 'published', 'archived'
+                'new_realblogstatus', 'readyforpublishing', 'published', 'archived'
             );
         }
         $view->ids = $_Realblog_controller->getPgParameter('realblog_ids');
@@ -278,7 +278,7 @@ class AdminController
 
         $_XH_csrfProtection->check();
         $ids = $_Realblog_controller->getPgParameter('realblog_ids');
-        $status = $_Realblog_controller->getPgParameter('new_realblogstatus');
+        $status = $_Realblog_controller->getPgParameter('realblog_status');
         $ids = array_map(
             function ($id) {
                 return (int) $id;
