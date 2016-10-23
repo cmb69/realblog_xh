@@ -69,17 +69,16 @@ padding-bottom: 12px;
     border-collapse: collapse;
 }
 
-.realblog_table_header {
+.realblog_table_header, .realblog_table_footer {
     background: #555;
     color: #fff;
     padding: 0.5em 0;
     font-weight: bold;
     text-align: center;
 }
-.realblog_table_header button {
+.realblog_table_header button, .realblog_table_footer button {
     background: none;
     border: none;
-    padding: 0;
     cursor: pointer;
 }
 

@@ -130,18 +130,14 @@ class AdminController
     {
         global $pth, $sn, $_Realblog_controller, $plugin_cf;
 
-        $imageFolder = "{$pth['folder']['plugins']}realblog/images/";
         $view = new View('articles-form');
-        $view->page = $page = $_Realblog_controller->getPage();
-        if ($plugin_cf['realblog']['pagination_top'] || $plugin_cf['realblog']['pagination_bottom']) {
-            $url = "$sn?&realblog&admin=plugin_main&action=plugin_text&realblog_page=%s";
-            $view->pagination = new PaginationView($articleCount, $page, $pageCount, $url);
-        }
-        $view->hasTopPagination = $plugin_cf['realblog']['pagination_top'];
-        $view->hasBottomPagination = $plugin_cf['realblog']['pagination_bottom'];
+        $view->imageFolder = "{$pth['folder']['plugins']}realblog/images/";
+        $view->page = $page = min(max($_Realblog_controller->getPage(), 0), $pageCount);
+        $view->prevPage = max($page - 1, 1);
+        $view->nextPage = min($page + 1, $pageCount);
+        $view->lastPage = $pageCount;
         $view->articles = $articles;
         $view->actionUrl = $sn;
-        $view->addUrl = "$sn?&realblog&admin=plugin_main&action=add_realblog";
         $view->deleteUrl = function ($article) use ($page) {
             global $sn;
 
@@ -158,10 +154,6 @@ class AdminController
 
             return $_Realblog_controller->getFilter($num);
         };
-        $view->deleteIcon = "{$imageFolder}delete.png";
-        $view->changeStatusIcon = "{$imageFolder}change-status.png";
-        $view->addIcon = "{$imageFolder}add.png";
-        $view->modifyIcon = "{$imageFolder}edit.png";
         $view->formatDate = function ($article) {
             global $plugin_tx;
 
@@ -392,7 +384,7 @@ class AdminController
 
         $statuses = array();
         for ($i = 0; $i <= 2; $i++) {
-            if ($_Realblog_controller->getFilter($i + 1)) {
+            if ($_Realblog_controller->getFilter($i)) {
                 $statuses[] = $i;
             }
         }
