@@ -133,21 +133,22 @@ class Controller
 
         $view = new View('articles');
         $view->articles = $articles;
+        $search = $this->getPgParameter('realblog_search');
         $view->pagination = new PaginationView(
             $articleCount,
             $page,
             $pageCount,
-            $this->url($su, array('realblog_page' => '%s'))
+            $this->url($su, array('realblog_page' => '%s', 'realblog_search' => $search))
         );
         $view->hasTopPagination = (bool) $plugin_cf['realblog']['pagination_top'];
         $view->hasBottomPagination = (bool) $plugin_cf['realblog']['pagination_bottom'];
         $view->hasMultiColumns = (bool) $plugin_cf['realblog']['teaser_multicolumns'];
-        $view->url = function ($article) {
+        $view->url = function ($article) use ($search) {
             global $su, $_Realblog_controller;
 
             return $_Realblog_controller->url(
                 $su,
-                array('realblog_id' => $article->id)
+                array('realblog_id' => $article->id, 'realblog_search' => $search)
             );
         };
         $view->hasLinkedHeader = function ($article) {
@@ -211,6 +212,7 @@ class Controller
                 $params = array('realblog_page' => $this->getPage());
                 $view->backText = $plugin_tx['realblog']['blog_back'];
             }
+            $params['realblog_search'] = $this->getPgParameter('realblog_search');
             $view->backUrl = $this->url($su, $params);
             $view->editUrl = "$sn?&realblog&admin=plugin_main"
                 . "&action=modify_realblog&realblog_id={$article->id}";
@@ -313,7 +315,10 @@ class Controller
 
             return $_Realblog_controller->url(
                 $su,
-                array('realblog_id' => $article->id)
+                array(
+                    'realblog_id' => $article->id,
+                    'realblog_search' => $_Realblog_controller->getPgParameter('realblog_search')
+                )
             );
         };
         $view->formatDate = function (stdClass $article) {
@@ -556,7 +561,9 @@ class Controller
         $url = $sn . '?' . $pageUrl;
         ksort($params);
         foreach ($params as $name => $value) {
-            $url .= '&' . strtr($name, $replacePairs) . '=' . $value;
+            if (!($name == 'realblog_search' && !$value)) {
+                $url .= '&' . strtr($name, $replacePairs) . '=' . $value;
+            }
         }
         return $url;
     }
