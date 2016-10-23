@@ -228,11 +228,10 @@ class AdminController
      * @global string $title
      * @global array $plugin_tx
      * @global \XH_CSRFProtection $_XH_csrfProtection
-     * @global Controller $_Realblog_controller
      */
     private function deleteArticle()
     {
-        global $title, $plugin_tx, $_XH_csrfProtection, $_Realblog_controller;
+        global $title, $plugin_tx, $_XH_csrfProtection;
 
         $_XH_csrfProtection->check();
         $article = $this->getArticleFromParameters();
