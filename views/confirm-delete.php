@@ -7,7 +7,7 @@
     <input type="hidden" name="realblog_ids[]" value="<?=$this->escape($id)?>">
 <?php endforeach?>
     <input type="hidden" name="action" value="do_delete_selected"?>
-    <?=$this->csrfTokenInput?>
+    <input type="hidden" name="xh_csrf_token" value="<?=$this->csrfToken?>">
     <p style="text-align: center">
         <input type="submit" name="submit" value="<?=$this->text('btn_delete')?>">
     </p>

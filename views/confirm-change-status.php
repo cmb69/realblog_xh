@@ -7,7 +7,7 @@
     <input type="hidden" name="realblog_ids[]" value="<?=$this->escape($id)?>">
 <?php endforeach?>
     <input type="hidden" name="action" value="do_change_status"?>
-    <?=$this->csrfTokenInput?>
+    <input type="hidden" name="xh_csrf_token" value="<?=$this->csrfToken?>">
     <p style="text-align: center">
         <select name="realblog_status">
 <?php foreach ($this->states as $i => $state):?>

@@ -15,6 +15,7 @@
 namespace Realblog;
 
 use stdClass;
+use ReflectionClass;
 
 class Controller
 {
@@ -64,8 +65,46 @@ class Controller
      */
     private function handleAdministration()
     {
-        $controller = new AdminController();
-        $controller->dispatch();
+        global $admin, $action, $o;
+
+        $o .= print_plugin_admin('on');
+        switch ($admin) {
+            case '':
+                $o .= $this->renderInfoView();
+                break;
+            case 'plugin_main':
+                $this->handleMainAdministration();
+                break;
+            default:
+                $o .= plugin_admin_common($action, $admin, 'realblog');
+        }
+    }
+
+    private function renderInfoView()
+    {
+        global $pth;
+
+        $view = new View('info');
+        $view->logoPath = "{$pth['folder']['plugins']}realblog/realblog.png";
+        $view->version = REALBLOG_VERSION;
+        return $view->render();
+    }
+
+    private function handleMainAdministration()
+    {
+        global $o, $action;
+
+        $methodName = lcfirst(implode('', array_map('ucfirst', explode('_', $action)))) . 'Action';
+        $controller = new MainAdminController();
+        $class = new ReflectionClass($controller);
+        if ($class->hasMethod($methodName)
+            && ($method = $class->getMethod($methodName))
+            && $method->isPublic()
+        ) {
+            $o .= $method->invoke($controller);
+        } else {
+            $o .= $controller->defaultAction();
+        }
     }
 
     /**

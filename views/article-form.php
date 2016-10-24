@@ -5,12 +5,13 @@
         <input type="hidden" name="action" value="<?=$this->action?>">
         <input type="hidden" name="realblog_id" value="<?=$this->escape($this->article->id)?>">
         <input type="hidden" name="realblog_version" value="<?=$this->escape($this->article->version)?>">
-        <?=$this->tokenInput?>
+        <input type="hidden" name="xh_csrf_token" value="<?=$this->csrfToken?>">
         <table>
             <tr>
                 <td><label for="date1" class="realblog_label"><?=$this->text('date_label')?></label></td>
                 <td><label for="date2" class="realblog_label"><?=$this->text('startdate_label')?></label></td>
-                <td><label for="date3" class="realblog_label"><?=$this->text('enddate_label')?></span></label>            </tr>
+                <td><label for="date3" class="realblog_label"><?=$this->text('enddate_label')?></span></label><
+            </tr>
             <tr>
                 <td>
                     <input type="date" name="realblog_date" id="realblog_date1" required="required" value="<?=$this->formatDate($this->article->date)?>">
@@ -21,7 +22,7 @@
                     <input type="date" name="realblog_startdate" id="realblog_date2" required="required" value="<?=$this->formatDate($this->article->publishing_date)?>">
                     <img src="<?=$this->calendarIcon?>" id="realblog_trig_date2" class="realblog_date_selector" title="<?=$this->text('tooltip_datepicker')?>" alt="">
 <?php else:?>
-                    <?=$this->text('startdate_hint')?>
+                    <span><?=$this->text('startdate_hint')?></span>
                     <input type="hidden" name="realblog_startdate" value="0">
 <?php endif?>
                 </td>
@@ -30,15 +31,14 @@
                     <input type="date" name="realblog_enddate" id="realblog_date3" required="required" value="<?=$this->formatDate($this->article->archiving_date)?>">
                     <img src="<?=$this->calendarIcon?>" id="realblog_trig_date3" class="realblog_date_selector" title="<?=$this->text('tooltip_datepicker')?>" alt="">
 <?php else:?>
-                    <?=$this->text('enddate_hint')?>
+                    <span><?=$this->text('enddate_hint')?></span>
                     <input type="hidden" name="realblog_enddate" value="2147483647">
 <?php endif?>
                 </td>
             </tr>
             <tr>
                 <td><label for="realblog_status" class="realblog_label"><?=$this->text('label_status')?></label></td>
-                <td></td>
-                <td></td>
+                <td colspan="2"></td>
             </tr>
             <tr>
                 <td>
