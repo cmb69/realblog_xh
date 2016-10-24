@@ -36,8 +36,6 @@ function showrealblog($options = null, $category = 'all')
  */
 function showrealblogarchive($options = null)
 {
-    global $_Realblog_controller;
-
     $function = __FUNCTION__;
     trigger_error("$function() is deprecated; use Realblog_archive() instead", E_USER_DEPRECATED);
     $includesearch = false;
@@ -106,7 +104,7 @@ function realblog_rss_adv()
 function rbCat()
 {
     $function = __FUNCTION__;
-    trigger_error("rbCat() is deprecated; enter the categories in the respective field instead", E_USER_DEPRECATED);
+    trigger_error("$function() is deprecated; enter the categories in the respective field instead", E_USER_DEPRECATED);
 }
 
 /**

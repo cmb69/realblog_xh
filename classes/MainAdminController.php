@@ -109,50 +109,53 @@ class MainAdminController extends AbstractController
         global $_Realblog_controller;
 
         init_editor(array('realblog_headline_field', 'realblog_story_field'));
-        return $this->form(
-            $_Realblog_controller->getPgParameter('realblog_id'),
-            $action
-        );
-    }
-
-    private function form($id, $action)
-    {
-        global $title;
-
-        if ($action == 'create') {
-            $article = (object) array(
-                'id' => null,
-                'version' => 0,
-                'date' => time(),
-                'publishing_date' => time(),
-                'archiving_date' => 2147483647,
-                'status' => 0,
-                'categories' => '',
-                'title' => '',
-                'teaser' => '',
-                'body' => '',
-                'feedable' => 0,
-                'commentable' => 0
-            );
-            $title = $this->text['tooltip_create'];
+        if ($action === 'create') {
+            $article = $this->makeArticle();
         } else {
+            $id = $_Realblog_controller->getPgParameter('realblog_id');
             $article = DB::findById($id);
             if (!$article) {
                 return XH_message('fail', $this->text['message_not_found']);
-            }
-            if ($action == 'edit') {
-                $title = "{$this->text['tooltip_edit']} #$id";
-            } elseif ($action == 'delete') {
-                $title = "{$this->text['tooltip_delete']} #$id";
             }
         }
         return $this->renderForm($article, $action);
     }
 
+    private function makeArticle()
+    {
+        return (object) array(
+            'id' => null,
+            'version' => 0,
+            'date' => time(),
+            'publishing_date' => time(),
+            'archiving_date' => 2147483647,
+            'status' => 0,
+            'categories' => '',
+            'title' => '',
+            'teaser' => '',
+            'body' => '',
+            'feedable' => 0,
+            'commentable' => 0
+        );
+    }
+
     private function renderForm(stdClass $article, $action)
     {
-        global $pth, $sn, $plugin_cf, $title, $bjs;
+        global $pth, $sn, $title, $bjs;
 
+        switch ($action) {
+            case 'create':
+                $title = $this->text['tooltip_create'];
+                break;
+            case 'edit':
+                $title = "{$this->text['tooltip_edit']} #{$article->id}";
+                break;
+            case 'delete':
+                $title = "{$this->text['tooltip_delete']} #{$article->id}";
+                break;
+            default:
+                assert(false);
+        }
         $this->useCalendar();
         $bjs .= '<script type="text/javascript" src="' . $pth['folder']['plugins']
             . 'realblog/realblog.js"></script>';
@@ -166,8 +169,8 @@ class MainAdminController extends AbstractController
         $view->formatDate = function ($time) {
             return date('Y-m-d', $time);
         };
-        $view->isAutoPublish = $plugin_cf['realblog']['auto_publish'];
-        $view->isAutoArchive = $plugin_cf['realblog']['auto_archive'];
+        $view->isAutoPublish = $this->config['auto_publish'];
+        $view->isAutoArchive = $this->config['auto_archive'];
         $view->states = array('readyforpublishing', 'published', 'archived');
         $view->categories = trim($article->categories, ',');
         $view->button = "btn_{$action}";
@@ -256,12 +259,10 @@ EOT;
 
     private function getArticleFromParameters()
     {
-        global $_Realblog_controller;
-
         $article = new stdClass();
         $article->id = stsl($_POST['realblog_id']);
         $article->version = stsl($_POST['realblog_version']);
-        $article->date = $_Realblog_controller->stringToTime(stsl($_POST['realblog_date']));
+        $article->date = $this->stringToTime(stsl($_POST['realblog_date']));
         $article->title = stsl($_POST['realblog_title']);
         $article->teaser = stsl($_POST['realblog_headline']);
         $article->body = stsl($_POST['realblog_story']);
@@ -272,6 +273,12 @@ EOT;
         $article->commentable = (bool) stsl($_POST['realblog_comments']);
         $article->categories = ',' . trim(stsl($_POST['realblog_categories'])) . ',';
         return $article;
+    }
+
+    private function stringToTime($date)
+    {
+        $parts = explode('-', $date);
+        return mktime(0, 0, 0, $parts[1], $parts[2], $parts[0]);
     }
 
     public function deleteSelectedAction()

@@ -10,7 +10,7 @@
             <tr>
                 <td><label for="date1" class="realblog_label"><?=$this->text('date_label')?></label></td>
                 <td><label for="date2" class="realblog_label"><?=$this->text('startdate_label')?></label></td>
-                <td><label for="date3" class="realblog_label"><?=$this->text('enddate_label')?></span></label><
+                <td><label for="date3" class="realblog_label"><?=$this->text('enddate_label')?></span></label>
             </tr>
             <tr>
                 <td>

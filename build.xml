@@ -34,7 +34,7 @@
     <target name="mess" description="detects code flaws">
         <phpmd>
             <fileset refid="php-sources"/>
-            <fileset refid="unit-tests"/>
+            <!--<fileset refid="unit-tests"/>-->
             <fileset refid="attack-tests"/>
          </phpmd>
     </target>
@@ -48,7 +48,7 @@
                  haltonerror="true" haltonfailure="true">
             <formatter type="plain" usefile="false"/>
             <batchtest>
-                <fileset refid="unit-tests"/>
+                <!--<fileset refid="unit-tests"/>-->
             </batchtest>
         </phpunit>
     </target>

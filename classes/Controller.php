@@ -221,19 +221,6 @@ class Controller
     }
 
     /**
-     * @return int
-     */
-    public function getYear()
-    {
-        if (isset($_GET['realblog_year'])) {
-            $year = $_GET['realblog_year'];
-        } else {
-            $year = date('Y');
-        }
-        return $year;
-    }
-
-    /**
      * @param int $num
      * @return bool
      */
@@ -275,15 +262,5 @@ class Controller
             }
         }
         return $url;
-    }
-
-    /**
-     * @param string $date
-     * @return int
-     */
-    public function stringToTime($date)
-    {
-        $parts = explode('-', $date);
-        return mktime(0, 0, 0, $parts[1], $parts[2], $parts[0]);
     }
 }

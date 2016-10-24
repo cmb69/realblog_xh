@@ -20,8 +20,6 @@ class ArchiveController extends MainController
 
     public function defaultAction()
     {
-        global $_Realblog_controller;
-
         $html = '';
         if ($this->showSearch) {
             $html .= $this->renderSearchForm();
@@ -41,10 +39,8 @@ class ArchiveController extends MainController
 
     private function renderArchive(array $articles)
     {
-        global $_Realblog_controller;
-
         if (!$this->searchTerm) {
-            $year = $_Realblog_controller->getYear();
+            $year = $this->year;
             $years = DB::findArchiveYears();
             $key = array_search($year, $years);
             if ($key === false) {
@@ -70,7 +66,7 @@ class ArchiveController extends MainController
         $view = new View('archive');
         $view->isSearch = $isSearch;
         $view->articles = $articles;
-        $view->year = $_Realblog_controller->getYear();
+        $view->year = $this->year;
         if ($back) {
             $view->backUrl = $_Realblog_controller->url($su, array('realblog_year' => $back));
         }

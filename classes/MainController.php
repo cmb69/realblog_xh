@@ -17,11 +17,14 @@ abstract class MainController extends AbstractController
 
     protected $searchTerm;
 
+    protected $year;
+
     public function __construct($showSearch)
     {
         parent::__construct();
         $this->showSearch = $showSearch;
         $this->searchTerm = isset($_GET['realblog_search']) ? $_GET['realblog_search'] : null;
+        $this->year = isset($_GET['realblog_year']) ? $_GET['realblog_year'] : date('Y');
     }
 
     protected function renderSearchForm()
@@ -61,7 +64,7 @@ abstract class MainController extends AbstractController
             $view->isAdmin = defined('XH_ADM') && XH_ADM;
             $view->wantsComments = $this->wantsComments();
             if ($article->status === 2) {
-                $params = array('realblog_year' => $_Realblog_controller->getYear());
+                $params = array('realblog_year' => $this->year);
                 $view->backText = $this->text['archiv_back'];
             } else {
                 $params = array('realblog_page' => $_Realblog_controller->getPage());
