@@ -11,23 +11,18 @@ namespace Realblog;
 
 use stdClass;
 
-class MainAdminController
+class MainAdminController extends AbstractController
 {
     private $urlPath;
-
-    private $config;
-
-    private $text;
 
     private $page;
 
     public function __construct()
     {
-        global $sn, $plugin_cf, $plugin_tx, $_Realblog_controller;
+        global $sn, $_Realblog_controller;
 
+        parent::__construct();
         $this->urlPath = $sn;
-        $this->config = $plugin_cf['realblog'];
-        $this->text = $plugin_tx['realblog'];
         $this->page = $_Realblog_controller->getPage();
     }
 

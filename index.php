@@ -52,58 +52,46 @@ $_Realblog_controller = new Realblog\Controller();
 
 /**
  * Displays the realblog's topic with status = published.
- *
- * @param bool $showSearch  Whether to show the searchform.
- * @param string $category
- * @return string
- * @global Realblog\Controller $_Realblog_controller
  */
 function Realblog_blog($showSearch = false, $category = 'all')
 {
-    global $_Realblog_controller;
-
-    return $_Realblog_controller->blog($showSearch, $category);
+    $controller = new Realblog\BlogController($showSearch, $category);
+    if (isset($_GET['realblog_id'])) {
+        return $controller->showArticleAction($_GET['realblog_id']);
+    } else {
+        return $controller->defaultAction();
+    }
 }
 
 /**
  * Displays the archived realblog topics
- *
- * @param bool $showSearch
- * @return string
- * @global Realblog\Controller $_Realblog_controller
  */
 function Realblog_archive($showSearch = false)
 {
-    global $_Realblog_controller;
-
-    return $_Realblog_controller->archive($showSearch);
+    $controller = new Realblog\ArchiveController($showSearch);
+    if (isset($_GET['realblog_id'])) {
+        return $controller->showArticleAction($_GET['realblog_id']);
+    } else {
+        return $controller->defaultAction();
+    }
 }
 
 /**
  * Displays the realblog topics with a link to the blog page from the template
- *
- * @param string $pageUrl
- * @return string
- * @global Realblog\Controller $_Realblog_controller
  */
 function Realblog_link($pageUrl, $showTeaser = false)
 {
-    global $_Realblog_controller;
-
-    return $_Realblog_controller->link($pageUrl, $showTeaser);
+    $controller = new Realblog\LinkController($pageUrl, $showTeaser);
+    return $controller->defaultAction();
 }
 
 /**
  * Returns a graphical hyperlink to the RSS feed
- *
- * @return string
- * @global Realblog\Controller $_Realblog_controller
  */
 function Realblog_feedLink()
 {
-    global $_Realblog_controller;
-
-    return $_Realblog_controller->feedLink();
+    $controller = new Realblog\FeedLinkController();
+    return $controller->defaultAction();
 }
 
 $_Realblog_controller->init();
