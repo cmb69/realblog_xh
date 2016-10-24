@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "a563050c671f04df5d7d9acf075d9e30",
-    "content-hash": "173399ce5fbac46ea0929f73d5de5406",
+    "hash": "df4f57a66bce880a75b4889a1c060a05",
+    "content-hash": "724c313a8a54870c1ab3fa4991d78276",
     "packages": [],
     "packages-dev": [
         {
@@ -235,6 +235,63 @@
                 "reverse-engineer"
             ],
             "time": "2016-09-22 18:49:42"
+        },
+        {
+            "name": "bartlett/umlwriter",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/llaville/umlwriter.git",
+                "reference": "8b952840a317988b10b4f0c51a3dcec80e8f35dc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/llaville/umlwriter/zipball/8b952840a317988b10b4f0c51a3dcec80e8f35dc",
+                "reference": "8b952840a317988b10b4f0c51a3dcec80e8f35dc",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0",
+                "sebastian/version": "~1.0",
+                "symfony/console": "~2.5"
+            },
+            "require-dev": {
+                "andrewsville/php-token-reflection": "~1.4",
+                "bartlett/php-reflect": "~4.0"
+            },
+            "suggest": {
+                "andrewsville/php-token-reflection": "Reverse-engine, alternative solution",
+                "bartlett/php-reflect": "Reverse-engine, default solution"
+            },
+            "bin": [
+                "bin/umlwriter"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Bartlett\\": "src/Bartlett"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Laurent Laville",
+                    "email": "pear@laurent-laville.org",
+                    "homepage": "https://github.com/llaville",
+                    "role": "Lead"
+                }
+            ],
+            "description": "Create UML class diagrams from your PHP source.",
+            "homepage": "http://php5.laurent-laville.org/umlwriter/",
+            "keywords": [
+                "graphviz",
+                "plantuml",
+                "uml"
+            ],
+            "time": "2015-12-09 19:43:25"
         },
         {
             "name": "composer/semver",
@@ -1830,27 +1887,19 @@
         },
         {
             "name": "sebastian/version",
-            "version": "2.0.0",
+            "version": "1.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/version.git",
-                "reference": "c829badbd8fdf16a0bad8aa7fa7971c029f1b9c5"
+                "reference": "58b3a85e7999757d6ad81c787a1fbf5ff6c628c6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/version/zipball/c829badbd8fdf16a0bad8aa7fa7971c029f1b9c5",
-                "reference": "c829badbd8fdf16a0bad8aa7fa7971c029f1b9c5",
+                "url": "https://api.github.com/repos/sebastianbergmann/version/zipball/58b3a85e7999757d6ad81c787a1fbf5ff6c628c6",
+                "reference": "58b3a85e7999757d6ad81c787a1fbf5ff6c628c6",
                 "shasum": ""
             },
-            "require": {
-                "php": ">=5.6"
-            },
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.0.x-dev"
-                }
-            },
             "autoload": {
                 "classmap": [
                     "src/"
@@ -1869,7 +1918,7 @@
             ],
             "description": "Library that helps with managing the version number of Git-hosted PHP projects",
             "homepage": "https://github.com/sebastianbergmann/version",
-            "time": "2016-02-04 12:56:52"
+            "time": "2015-06-21 13:59:46"
         },
         {
             "name": "seld/jsonlint",
