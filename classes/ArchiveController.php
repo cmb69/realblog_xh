@@ -32,7 +32,6 @@ class ArchiveController extends MainController
             $articleCount = count($articles);
             $html .= $this->renderSearchResults('archive', $articleCount);
         } else {
-            $articleCount = DB::countArticlesWithStatus(array(2));
             $articles = array();
         }
 
