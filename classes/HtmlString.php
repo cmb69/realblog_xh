@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @copyright 2016 Christoph M. Becker <http://3-magi.net/>
+ * @copyright 2016-2017 Christoph M. Becker <http://3-magi.net/>
  * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  */
 

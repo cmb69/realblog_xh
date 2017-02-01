@@ -8,7 +8,7 @@
  * @author    Christoph M. Becker <cmbecker69@gmx.de>
  * @copyright 2006-2010 Jan Kanters
  * @copyright 2010-2014 Gert Ebersbach <http://ge-webdesign.de/>
- * @copyright 2014-2016 Christoph M. Becker <http://3-magi.net/>
+ * @copyright 2014-2017 Christoph M. Becker <http://3-magi.net/>
  * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  */
 

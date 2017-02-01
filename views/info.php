@@ -5,7 +5,7 @@
 <p>
     Copyright © 2006-2010 Jan Kanters<br>
     Copyright © 2010-2014 <a href="http://www.ge-webdesign.de/" target="_blank">Gert Ebersbach</a><br>
-    Copyright © 2014-2016 <a href="http://3-magi.net/" target="_blank">Christoph M. Becker</a>
+    Copyright © 2014-2017 <a href="http://3-magi.net/" target="_blank">Christoph M. Becker</a>
 </p>
 <p class="realblog_license">
     This program is free software: you can redistribute it and/or modify it
