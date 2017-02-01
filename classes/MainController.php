@@ -23,8 +23,18 @@ abstract class MainController extends AbstractController
     {
         parent::__construct();
         $this->showSearch = $showSearch;
-        $this->searchTerm = isset($_GET['realblog_search']) ? $_GET['realblog_search'] : null;
-        $this->year = isset($_GET['realblog_year']) ? $_GET['realblog_year'] : date('Y');
+        $input = filter_input_array(
+            INPUT_GET,
+            array(
+                'realblog_search' => FILTER_DEFAULT,
+                'realblog_year' => array(
+                    'filter' => FILTER_VALIDATE_INT,
+                    'options' => array('default' => (int) date('Y'))
+                )
+            )
+        );
+        $this->searchTerm = $input['realblog_search'];
+        $this->year = $input['realblog_year'];
     }
 
     protected function renderSearchForm()

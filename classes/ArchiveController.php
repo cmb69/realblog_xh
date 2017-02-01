@@ -81,7 +81,7 @@ class ArchiveController extends MainController
                 array(
                     'realblog_id' => $article->id,
                     'realblog_year' => date('Y', $article->date),
-                    'realblog_search' => $_Realblog_controller->getPgParameter('realblog_search')
+                    'realblog_search' => filter_input(INPUT_GET, 'realblog_search')
                 )
             );
         };

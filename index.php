@@ -56,8 +56,13 @@ $_Realblog_controller = new Realblog\Controller();
 function Realblog_blog($showSearch = false, $category = 'all')
 {
     $controller = new Realblog\BlogController($showSearch, $category);
-    if (isset($_GET['realblog_id'])) {
-        return $controller->showArticleAction($_GET['realblog_id']);
+    if (filter_has_var(INPUT_GET, 'realblog_id')) {
+        return $controller->showArticleAction(filter_input(
+            INPUT_GET,
+            'realblog_id',
+            FILTER_VALIDATE_INT,
+            array('options' => array('min_range' => 1))
+        ));
     } else {
         return $controller->defaultAction();
     }
@@ -69,8 +74,13 @@ function Realblog_blog($showSearch = false, $category = 'all')
 function Realblog_archive($showSearch = false)
 {
     $controller = new Realblog\ArchiveController($showSearch);
-    if (isset($_GET['realblog_id'])) {
-        return $controller->showArticleAction($_GET['realblog_id']);
+    if (filter_has_var(INPUT_GET, 'realblog_id')) {
+        return $controller->showArticleAction(filter_input(
+            INPUT_GET,
+            'realblog_id',
+            FILTER_VALIDATE_INT,
+            array('options' => array('min_range' => 1))
+        ));
     } else {
         return $controller->defaultAction();
     }

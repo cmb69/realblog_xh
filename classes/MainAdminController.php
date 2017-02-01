@@ -106,13 +106,17 @@ class MainAdminController extends AbstractController
 
     private function renderArticle($action)
     {
-        global $_Realblog_controller;
 
         init_editor(array('realblog_headline_field', 'realblog_story_field'));
         if ($action === 'create') {
             $article = $this->makeArticle();
         } else {
-            $id = $_Realblog_controller->getPgParameter('realblog_id');
+            $id = filter_input(
+                INPUT_GET,
+                'realblog_id',
+                FILTER_VALIDATE_INT,
+                array('options' => array('min_range' => 1))
+            );
             $article = DB::findById($id);
             if (!$article) {
                 return XH_message('fail', $this->text['message_not_found']);
@@ -293,15 +297,21 @@ EOT;
 
     private function renderConfirmation($kind)
     {
-        global $_Realblog_controller;
-
         $view = new View("confirm-$kind");
         if ($kind === 'change-status') {
             $view->states = array(
                 'new_realblogstatus', 'readyforpublishing', 'published', 'archived'
             );
         }
-        $view->ids = $_Realblog_controller->getPgParameter('realblog_ids');
+        $view->ids = filter_input(
+            INPUT_GET,
+            'realblog_ids',
+            FILTER_VALIDATE_INT,
+            array(
+                'flags' => FILTER_REQUIRE_ARRAY,
+                'options' => array('min_range' => 1)
+            )
+        );
         $view->action = "{$this->urlPath}?&realblog&admin=plugin_main";
         $view->url = "{$this->urlPath}?&realblog&admin=plugin_main&action=plugin_text&realblog_page={$this->page}";
         $view->csrfToken = $this->getCsrfToken();
@@ -310,15 +320,17 @@ EOT;
 
     public function doDeleteSelectedAction()
     {
-        global $title, $_Realblog_controller;
+        global $title;
 
         $this->checkCsrfToken();
-        $ids = $_Realblog_controller->getPgParameter('realblog_ids');
-        $ids = array_map(
-            function ($id) {
-                return (int) $id;
-            },
-            $ids
+        $ids = filter_input(
+            INPUT_POST,
+            'realblog_ids',
+            FILTER_VALIDATE_INT,
+            array(
+                'flags' => FILTER_REQUIRE_ARRAY,
+                'options' => array('min_range' => 1)
+            )
         );
         $res = DB::deleteArticlesWithIds($ids);
         if ($res === count($ids)) {
@@ -334,22 +346,28 @@ EOT;
 
     public function doChangeStatusAction()
     {
-        global $title, $_Realblog_controller;
+        global $title;
 
         $this->checkCsrfToken();
-        $ids = $_Realblog_controller->getPgParameter('realblog_ids');
-        $status = $_Realblog_controller->getPgParameter('realblog_status');
-        $ids = array_map(
-            function ($id) {
-                return (int) $id;
-            },
-            $ids
+        $input = filter_input_array(
+            INPUT_POST,
+            array(
+                'realblog_ids' => array(
+                    'filter' => FILTER_VALIDATE_INT,
+                    'flags' => FILTER_REQUIRE_ARRAY,
+                    'options' => array('min_range' => 1)
+                ),
+                'realblog_status' => array(
+                    'filter' => FILTER_VALIDATE_INT,
+                    'options' => array('min_range' => 0, 'max_range' => 2)
+                )
+            )
         );
-        $res = DB::updateStatusOfArticlesWithIds($ids, $status);
-        if ($res === count($ids)) {
+        $res = DB::updateStatusOfArticlesWithIds($input['realblog_ids'], $input['realblog_status']);
+        if ($res === count($input['realblog_ids'])) {
             $this->redirectToOverview();
         } elseif ($res > 0) {
-            $info = XH_message('warning', $this->text['changestatus_warning'], $res, count($ids));
+            $info = XH_message('warning', $this->text['changestatus_warning'], $res, count($input['realblog_ids']));
         } else {
             $info = XH_message('fail', $this->text['changestatus_error']);
         }

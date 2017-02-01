@@ -35,7 +35,13 @@ class Controller
         }
         if ($plugin_cf['realblog']['rss_enabled']) {
             $this->emitAlternateRSSLink();
-            if (isset($_GET['realblog_feed']) && $_GET['realblog_feed'] == 'rss') {
+            $rssFeedRequested = filter_input(
+                INPUT_GET,
+                'realblog_feed',
+                FILTER_VALIDATE_REGEXP,
+                array('options' => array('regexp' => '/^rss$/'))
+            );
+            if ($rssFeedRequested) {
                 $this->deliverFeed();
             }
         }
@@ -179,21 +185,6 @@ class Controller
     }
 
     /**
-     * @param string $name
-     * @return string
-     */
-    public function getPgParameter($name)
-    {
-        if (isset($_POST[$name])) {
-            return $_POST[$name];
-        } elseif (isset($_GET[$name])) {
-            return $_GET[$name];
-        } else {
-            return null;
-        }
-    }
-
-    /**
      * @return int
      */
     public function getPage()
@@ -201,21 +192,30 @@ class Controller
         global $edit;
 
         if (defined('XH_ADM') && XH_ADM && $edit) {
-            if (isset($_GET['realblog_page'])) {
-                $page = (int) $_GET['realblog_page'];
+            if (filter_has_var(INPUT_GET, 'realblog_page')) {
+                $page = filter_input(
+                    INPUT_GET,
+                    'realblog_page',
+                    FILTER_VALIDATE_INT,
+                    array('options' => array('min_range' => 1))
+                );
                 $_COOKIE['realblog_page'] = $page;
                 setcookie('realblog_page', $page, 0, CMSIMPLE_ROOT);
-            } elseif (isset($_COOKIE['realblog_page'])) {
-                $page = (int) $_COOKIE['realblog_page'];
             } else {
-                $page = 1;
+                $page = filter_input(
+                    INPUT_COOKIE,
+                    'realblog_page',
+                    FILTER_VALIDATE_INT,
+                    array('options' => array('min_range' => 1, 'default' => 1))
+                );
             }
         } else {
-            if (isset($_GET['realblog_page'])) {
-                $page = $_GET['realblog_page'];
-            } else {
-                $page = 1;
-            }
+            $page = filter_input(
+                INPUT_GET,
+                'realblog_page',
+                FILTER_VALIDATE_INT,
+                array('options' => array('min_range' => 1, 'default' => 1))
+            );
         }
         return $page;
     }
@@ -226,14 +226,13 @@ class Controller
      */
     public function getFilter($num)
     {
-        if (isset($_GET["realblog_filter$num"])) {
-            $filter = ($_GET["realblog_filter$num"] == 'on');
-            $_COOKIE["realblog_filter$num"] = $filter ? 'on' : '';
-            setcookie("realblog_filter$num", $filter ? 'on' : '', 0, CMSIMPLE_ROOT);
-        } elseif (isset($_COOKIE["realblog_filter$num"])) {
-            $filter = ($_COOKIE["realblog_filter$num"] == 'on');
+        $varname = "realblog_filter$num";
+        if (filter_has_var(INPUT_GET, $varname)) {
+            $filter = filter_input(INPUT_GET, $varname, FILTER_VALIDATE_BOOLEAN);
+            $_COOKIE[$varname] = $filter ? 'on' : '';
+            setcookie($varname, $filter ? 'on' : '', 0, CMSIMPLE_ROOT);
         } else {
-            $filter = false;
+            $filter = filter_input(INPUT_COOKIE, $varname, FILTER_VALIDATE_BOOLEAN);
         }
         return $filter;
     }
