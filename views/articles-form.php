@@ -51,7 +51,7 @@
         </tr>
 <?php endforeach?>
         <tr>
-            <td colspan="5" class="realblog_table_footer">
+            <td colspan="8" class="realblog_table_footer">
 <?php foreach ($this->states as $i => $status):?>
                 <input type="hidden" name="realblog_filter<?=$i?>" value="">
                 <label>
@@ -63,7 +63,9 @@
                     <img src="<?=$this->imageFolder?>filter.png" alt="<?=$this->text('tooltip_filter')?>">
                 </button>
             </td>
-            <td colspan="3" class="realblog_table_footer">
+        </tr>
+        <tr>
+            <td colspan="8" class="realblog_table_footer">
                 <input type="text" name="realblog_page" value="<?=$this->page?>" size="2">
                 / <?=$this->lastPage?>
                 <button name="realblog_page" value="1" title="<?=$this->text('tooltip_first')?>">
