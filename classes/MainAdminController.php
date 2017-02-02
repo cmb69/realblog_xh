@@ -131,7 +131,7 @@ class MainAdminController extends AbstractController
             'id' => null,
             'version' => 0,
             'date' => time(),
-            'publishing_date' => time(),
+            'publishing_date' => 2147483647,
             'archiving_date' => 2147483647,
             'status' => 0,
             'categories' => '',
