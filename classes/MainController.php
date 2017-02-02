@@ -51,14 +51,12 @@ abstract class MainController extends AbstractController
     {
         global $su, $_Realblog_controller;
 
-        $key = ($what == 'archive') ? 'back_to_archive' : 'search_show_all';
-        $words = '"' . $this->searchTerm . '"';
-        return '<p>' . $this->text['search_searched_for'] . ' <b>'
-            . XH_hsc($words) . '</b></p>'
-            . '<p>' . $this->text['search_result'] . '<b> '
-            . $count . '</b></p>'
-            . '<p><a href="' . XH_hsc($_Realblog_controller->url($su)) . '"><b>'
-            . $this->text[$key] . '</b></a></p>';
+        $view = new View('search-results');
+        $view->words = '"' . $this->searchTerm . '"';
+        $view->count = $count;
+        $view->url = $_Realblog_controller->url($su);
+        $view->key = ($what == 'archive') ? 'back_to_archive' : 'search_show_all';
+        return $view->render();
     }
 
     protected function renderArticle($id)
