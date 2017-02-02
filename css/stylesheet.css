@@ -247,6 +247,13 @@ padding: 2px 5px;
 .realblog_license {
     text-align: justify;
 }
+.realblog_systemcheck {
+    list-style: none;
+    padding-left: 0;
+}
+.realblog_systemcheck img {
+    padding-right: 0.5em;
+}
 
 .realblog_filter {
     margin: 1em 0;

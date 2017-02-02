@@ -93,7 +93,8 @@ class Controller
         $view = new View('info');
         $view->logoPath = "{$pth['folder']['plugins']}realblog/realblog.png";
         $view->version = REALBLOG_VERSION;
-        return $view->render();
+        $systemCheck = new SystemCheck();
+        return $view->render() . $systemCheck->render();
     }
 
     private function handleMainAdministration()
