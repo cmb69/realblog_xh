@@ -91,6 +91,5 @@ $plugin_tx['realblog']['cf_rss_enabled']="Is de RSS feed beschikbaar?";
 $plugin_tx['realblog']['cf_rss_editor']="Het e-mailadres van u als administrator.";
 $plugin_tx['realblog']['cf_rss_logo']="De url naar het logo.";
 $plugin_tx['realblog']['cf_show_read_more_link']="Laat de link zien voor \"lees meer\" en het aantal commentaren in de voorbeschouwing?";
-$plugin_tx['realblog']['cf_teaser_multicolumns']="Laat de voorbeschouwingen zien in kolommen?";
 
 ?>

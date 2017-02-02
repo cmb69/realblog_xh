@@ -121,20 +121,42 @@ border-top: 1px solid;
 margin: 10px 0 0 0;
 }
 
-/* multi columns overwiew outer div */
-.realblog_single_entry_preview {
-width: 49.9%;
-float: left;
+/**
+ * Multi column overwiew
+ *
+ * Uncomment the following two rules to enable a tabular blog overview.
+ * Also uncomment the rules for the desired number of columns below.
+ */
+/*
+.realblog_entry_preview {
+    box-sizing: border-box;
+    padding: 0 1em;
+    float: left;
 }
+.realblog_entries_preview::after {
+    content: " ";
+    display: block;
+    height: 0;
+    clear: both;
+}
+*/
 
-/* multi columns overwiew inner div */
-.realblog_single_entry_preview_in {
-height: 250px;
-overflow: auto;
-border: 1px solid;
-padding: 10px;
-margin: 10px 10px 0 0;
-}
+/* 2 colums
+.realblog_entry_preview {width: 50%}
+.realblog_entry_preview:nth-child(2n+1) {clear: both}
+*/
+/* 3 columns
+.realblog_entry_preview {width: 33%}
+.realblog_entry_preview:nth-child(3n+1) {clear: both}
+*/
+/* 4 colums
+.realblog_entry_preview {width: 25%}
+.realblog_entry_preview:nth-child(4n+1) {clear: both}
+*/
+/* 5 colums
+.realblog_entry_preview {width: 20%}
+.realblog_entry_preview:nth-child(5n+1) {clear: both}
+*/
 
 .realblog_show_date {
 font-size: 94%;

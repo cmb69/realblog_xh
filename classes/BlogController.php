@@ -59,7 +59,6 @@ class BlogController extends MainController
         );
         $view->hasTopPagination = (bool) $this->config['pagination_top'];
         $view->hasBottomPagination = (bool) $this->config['pagination_bottom'];
-        $view->hasMultiColumns = (bool) $this->config['teaser_multicolumns'];
         $view->url = function ($article) use ($search) {
             global $su, $_Realblog_controller;
 

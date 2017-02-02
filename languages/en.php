@@ -104,6 +104,5 @@ $plugin_tx['realblog']['cf_rss_entries']="The maximum number of articles shown i
 $plugin_tx['realblog']['cf_pagination_bottom']="Show the pagination below the entries preview?";
 $plugin_tx['realblog']['cf_pagination_top']="Show the pagination above the entries preview?";
 $plugin_tx['realblog']['cf_show_read_more_link']="Display the \"read more\" link and the number of comments in the teaser?";
-$plugin_tx['realblog']['cf_teaser_multicolumns']="Display the article preview (teasers) in multiple columns?";
 
 ?>

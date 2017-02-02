@@ -14,6 +14,5 @@ $plugin_cf['realblog']['rss_entries']="20";
 $plugin_cf['realblog']['pagination_bottom']="true";
 $plugin_cf['realblog']['pagination_top']="true";
 $plugin_cf['realblog']['show_read_more_link']="true";
-$plugin_cf['realblog']['teaser_multicolumns']="";
 
 ?>
