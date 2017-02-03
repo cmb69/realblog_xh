@@ -114,7 +114,7 @@ $plugin_tx['realblog']['cf_rss_editor']="Die E-Mail-Adresse der Person, die für
 $plugin_tx['realblog']['cf_rss_logo']="Der Pfad des Logos, relativ zum Bilder-Ordner.";
 $plugin_tx['realblog']['cf_rss_entries']="Die Höchstanzahl von Artikeln, die im RSS-Feed angezeigt werden.";
 $plugin_tx['realblog']['cf_pagination_bottom']="Die Paginierung unterhalb der Artikelvorschau anzeigen?";
-$plugin_tx['realblog']['cf_pagination_entries_top']="Die Paginanierung oberhalb der Artikelvorschau anzeigen?.";
+$plugin_tx['realblog']['cf_pagination_top']="Die Paginanierung oberhalb der Artikelvorschau anzeigen?.";
 $plugin_tx['realblog']['cf_show_read_more_link']="Den Link zum Artikel und die Anzahl der Kommentare im Teaser anzeigen?";
 
 ?>
