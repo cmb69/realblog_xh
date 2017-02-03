@@ -52,7 +52,7 @@ abstract class MainController extends AbstractController
         global $su, $_Realblog_controller;
 
         $view = new View('search-results');
-        $view->words = '"' . $this->searchTerm . '"';
+        $view->words = $this->searchTerm;
         $view->count = $count;
         $view->url = $_Realblog_controller->url($su);
         $view->key = ($what == 'archive') ? 'back_to_archive' : 'search_show_all';
