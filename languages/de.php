@@ -64,6 +64,7 @@ $plugin_tx['realblog']['search_placeholder']="Suchbegriff eingeben";
 $plugin_tx['realblog']['search_result']="gefundene Artikel:";
 $plugin_tx['realblog']['search_searched_for']="gesucht wurde nach:";
 $plugin_tx['realblog']['search_show_all']="Alle Artikel anzeigen »";
+$plugin_tx['realblog']['search_back']="Zurück zu den Suchergebnissen";
 $plugin_tx['realblog']['startdate_hint']="Auto Veröffentlichung deaktiviert";
 $plugin_tx['realblog']['startdate_label']="Veröffentlichung";
 $plugin_tx['realblog']['story_added_error']="Artikel konnte nicht hinzugefügt werden!";

@@ -64,6 +64,7 @@ $plugin_tx['realblog']['search_placeholder']="Enter search term";
 $plugin_tx['realblog']['search_result']="Entries found:";
 $plugin_tx['realblog']['search_searched_for']="searched for:";
 $plugin_tx['realblog']['search_show_all']="Show all entries &raquo;";
+$plugin_tx['realblog']['search_back']="Back to the search results";
 $plugin_tx['realblog']['startdate_hint']="auto publishing disabled";
 $plugin_tx['realblog']['startdate_label']="publishing";
 $plugin_tx['realblog']['story_added_error']="Article couldn't be added!";

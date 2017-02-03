@@ -2,6 +2,9 @@
 <div class="realblog_show_box">
 
     <div class="realblog_buttons">
+<?php if (isset($this->backToSearchUrl)):?>
+        <span class="realblog_button"><a href="<?=$this->backToSearchUrl?>"><?=$this->text('search_back')?></a></span>
+<?php endif?>
         <span class="realblog_button"><a href="<?=$this->backUrl?>"><?=$this->backText?></a></span>
 <?php if ($this->isAdmin):?>
 <?php   if ($this->wantsComments):?>

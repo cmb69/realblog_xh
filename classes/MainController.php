@@ -78,8 +78,11 @@ abstract class MainController extends AbstractController
                 $params = array('realblog_page' => $_Realblog_controller->getPage());
                 $view->backText = $this->text['blog_back'];
             }
-            $params['realblog_search'] = $this->searchTerm;
             $view->backUrl = $_Realblog_controller->url($su, $params);
+            if ($this->searchTerm) {
+                $params['realblog_search'] = $this->searchTerm;
+                $view->backToSearchUrl = $_Realblog_controller->url($su, $params);
+            }
             $view->editUrl = "$sn?&realblog&admin=plugin_main"
                 . "&action=edit&realblog_id={$article->id}";
             if ($this->wantsComments()) {
