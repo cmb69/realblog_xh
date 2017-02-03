@@ -51,7 +51,11 @@ class View
     {
         global $plugin_tx;
 
-        $key = $key . XH_numberSuffix($count);
+        if ($count == 0) {
+            $key .= '_0';
+        } else {
+            $key .= XH_numberSuffix($count);
+        }
         $args = func_get_args();
         array_shift($args);
         return vsprintf($plugin_tx['realblog'][$key], $args);

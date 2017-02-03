@@ -228,6 +228,10 @@ border: 1px solid #999;
 padding: 2px 5px;
 }
 
+.realblog_searchresult_head {
+    font-weight: bold;
+}
+
 /*
  * Back-end.
  */
