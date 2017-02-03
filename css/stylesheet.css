@@ -223,15 +223,6 @@ display: block;
     list-style: none;
 }
 
-.realblog_search_text {
-text-align: right;
-font-weight: 700;
-}
-
-.realblog_search_hint {
-padding: 0 0 10px 0;
-}
-
 .realblog_search_input {
 border: 1px solid #999;
 padding: 2px 5px;
