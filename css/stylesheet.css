@@ -216,6 +216,9 @@ display: block;
     margin: 0 0 -3px 1px;
 }
 
+.realblog_archive_title {
+    font-weight: bold;
+}
 .realblog_archive {
     padding-left: 0;
 }

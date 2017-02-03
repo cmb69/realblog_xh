@@ -5,7 +5,7 @@
 <?php   if (isset($this->backUrl)):?>
     <a href="<?=$this->backUrl?>" title="<?=$this->text('tooltip_previousyear')?>">◀</a>
 <?php   endif?>
-    <b><?=$this->text('archive_year')?> <?=$this->year?></b>
+    <span class="realblog_archive_title"><?=$this->text('archive_year')?> <?=$this->year?></span>
 <?php   if (isset($this->nextUrl)):?>
     <a href="<?=$this->nextUrl?>" title="<?=$this->text('tooltip_nextyear')?>">▶</a>
 <?php   endif?>
