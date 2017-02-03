@@ -42,7 +42,9 @@ class View
     {
         global $plugin_tx;
 
-        return $this->escape($plugin_tx['realblog'][$key]);
+        $args = func_get_args();
+        array_shift($args);
+        return vsprintf($plugin_tx['realblog'][$key], $args);
     }
 
     protected function plural($key, $count)
@@ -50,7 +52,9 @@ class View
         global $plugin_tx;
 
         $key = $key . XH_numberSuffix($count);
-        return $this->escape(sprintf($plugin_tx['realblog'][$key], $count));
+        $args = func_get_args();
+        array_shift($args);
+        return vsprintf($plugin_tx['realblog'][$key], $args);
     }
 
     public function render()
