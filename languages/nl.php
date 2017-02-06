@@ -35,7 +35,6 @@ $plugin_tx['realblog']['message_comments_1']="Er is %d commentaar op dit artikel
 $plugin_tx['realblog']['message_comments_2_4']="Er zijn %d commentaren op dit artikel.";
 $plugin_tx['realblog']['message_comments_5']="Er zijn %d commentaren op dit artikele.";
 $plugin_tx['realblog']['message_datafile']="Data file bestaat niet of niet beschrijfbaar.";
-$plugin_tx['realblog']['mnu_choice']="- selecteer -";
 $plugin_tx['realblog']['month_names']="";
 $plugin_tx['realblog']['new_realblogstatus']="Kies nieuwe status";
 $plugin_tx['realblog']['no_topics']="geen artikelen beschikbaar";

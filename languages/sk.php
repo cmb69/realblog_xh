@@ -35,7 +35,6 @@ $plugin_tx['realblog']['message_comments_1']="K článku je %d komentár.";
 $plugin_tx['realblog']['message_comments_2_4']="K článku sú %d komentáre.";
 $plugin_tx['realblog']['message_comments_5']="K článku je %d komentárov.";
 $plugin_tx['realblog']['message_datafile']="Datový súbor neexistuje alebo nemá povolený zápis.";
-$plugin_tx['realblog']['mnu_choice']="- vyberte -";
 $plugin_tx['realblog']['month_names']="";
 $plugin_tx['realblog']['new_realblogstatus']="Zvoľte nový status";
 $plugin_tx['realblog']['no_topics']="Neexistujú žiadne články";

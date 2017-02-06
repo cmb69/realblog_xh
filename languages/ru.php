@@ -43,7 +43,6 @@ $plugin_tx['realblog']['menu_css']="Стиль";
 $plugin_tx['realblog']['menu_language']="Язык";
 $plugin_tx['realblog']['menu_main']="<b>Редактирование</b>";
 $plugin_tx['realblog']['menu_help']="Помощь";
-$plugin_tx['realblog']['mnu_choice']="- выбор -";
 $plugin_tx['realblog']['month_names']="январь,февраль,март,апрель,май,июнь,июль,август,сентябрь,октябрь,ноябрь,декабрь";
 $plugin_tx['realblog']['new_realblogstatus']="Укажите новое состояние ";
 $plugin_tx['realblog']['no_topics']="Записи недоступны";
