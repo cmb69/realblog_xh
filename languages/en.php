@@ -36,6 +36,7 @@ $plugin_tx['realblog']['label_status']="Status";
 $plugin_tx['realblog']['label_categories']="Categories";
 $plugin_tx['realblog']['links_visible_text']="Newest entries in Blog:";
 $plugin_tx['realblog']['menu_main']="Articles";
+$plugin_tx['realblog']['message_comments_0']="There are no comments on this article.";
 $plugin_tx['realblog']['message_comments_1']="There is %d comment on this article.";
 $plugin_tx['realblog']['message_comments_2_4']="There are %d comments on this article.";
 $plugin_tx['realblog']['message_comments_5']="There %d comments on this article.";

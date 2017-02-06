@@ -36,6 +36,7 @@ $plugin_tx['realblog']['label_status']="Status";
 $plugin_tx['realblog']['label_categories']="Kategorien";
 $plugin_tx['realblog']['links_visible_text']="Aktuelle Artikel im Blog:";
 $plugin_tx['realblog']['menu_main']="Artikel";
+$plugin_tx['realblog']['message_comments_0']="Dieser Artikel wurde nicht kommentiert.";
 $plugin_tx['realblog']['message_comments_1']="Dieser Artikel wurde %d mal kommentiert.";
 $plugin_tx['realblog']['message_comments_2_4']="Dieser Artikel wurde %d mal kommentiert.";
 $plugin_tx['realblog']['message_comments_5']="Dieser Artikel wurde %d mal kommentiert.";
