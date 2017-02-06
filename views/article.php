@@ -7,7 +7,7 @@
 <?php endif?>
         <span class="realblog_button"><a href="<?=$this->backUrl?>"><?=$this->backText?></a></span>
 <?php if ($this->isAdmin):?>
-<?php   if ($this->wantsComments):?>
+<?php   if ($this->wantsComments && isset($this->editCommentsUrl)):?>
         <span class="realblog_button"><a href="<?=$this->editCommentsUrl?>"><?=$this->text('comment_edit')?></a></span>
 <?php   endif?>
         <span class="realblog_button"><a href="<?=$this->editUrl?>"><?=$this->text('entry_edit')?></a></span>
@@ -24,7 +24,7 @@
 <?php endif?>
         <span class="realblog_button"><a href="<?=$this->backUrl?>"><?=$this->backText?></a></span>
 <?php if ($this->isAdmin):?>
-<?php   if ($this->wantsComments):?>
+<?php   if ($this->wantsComments && isset($this->editCommentsUrl)):?>
         <span class="realblog_button"><a href="<?=$this->editCommentsUrl?>"><?=$this->text('comment_edit')?></a></span>
 <?php   endif?>
         <span class="realblog_button"><a href="<?=$this->editUrl?>"><?=$this->text('entry_edit')?></a></span>
