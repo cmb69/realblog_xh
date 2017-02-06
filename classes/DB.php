@@ -312,7 +312,7 @@ EOS;
         $db = self::getConnection();
         $sql = <<<SQL
 SELECT id, date, title, teaser
-    FROM articles WHERE feedable = :feedable ORDER BY date DESC, id DESC
+    FROM articles WHERE status = 1 AND feedable = :feedable ORDER BY date DESC, id DESC
     LIMIT $count
 SQL;
         $statement = $db->prepare($sql);
