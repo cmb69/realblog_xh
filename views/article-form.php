@@ -14,6 +14,9 @@
             </tr>
             <tr>
                 <td>
+<?php if (isset($this->article->id)):?>
+                    <input type="hidden" name="realblog_date_old" value="<?=$this->formatDate($this->article->date)?>">
+<?php endif?>
                     <input type="date" name="realblog_date" id="realblog_date1" required="required" value="<?=$this->formatDate($this->article->date)?>">
                     <img src="<?=$this->calendarIcon?>" id="realblog_trig_date1" class="realblog_date_selector" title="<?=$this->text('tooltip_datepicker')?>" alt="">
                 </td>

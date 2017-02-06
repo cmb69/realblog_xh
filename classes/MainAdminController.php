@@ -266,7 +266,10 @@ EOT;
         $article = new stdClass();
         $article->id = stsl($_POST['realblog_id']);
         $article->version = stsl($_POST['realblog_version']);
-        $article->date = $this->stringToTime(stsl($_POST['realblog_date']));
+        $article->date = $this->stringToTime(
+            stsl($_POST['realblog_date']),
+            !isset($_POST['realblog_date']) || $_POST['realblog_date'] !== $_POST['realblog_date_old']
+        );
         $article->title = stsl($_POST['realblog_title']);
         $article->teaser = stsl($_POST['realblog_headline']);
         $article->body = stsl($_POST['realblog_story']);
@@ -279,10 +282,22 @@ EOT;
         return $article;
     }
 
-    private function stringToTime($date)
+    private function stringToTime($date, $withTime = false)
     {
         $parts = explode('-', $date);
-        return mktime(0, 0, 0, $parts[1], $parts[2], $parts[0]);
+        if ($withTime) {
+            $timestamp = getdate();
+        } else {
+            $timestamp = array('hours' => 0, 'minutes' => 0, 'seconds' => 0);
+        }
+        return mktime(
+            $timestamp['hours'],
+            $timestamp['minutes'],
+            $timestamp['seconds'],
+            $parts[1],
+            $parts[2],
+            $parts[0]
+        );
     }
 
     public function deleteSelectedAction()
