@@ -6,7 +6,7 @@
     <div id="realblog_entries_preview" class="realblog_entries_preview">
 <?php foreach ($this->articles as $article):?>
         <div class="realblog_entry_preview">
-            <h4>
+            <<?=$this->heading?>>
 <?php   if ($this->hasLinkedHeader($article)):?>
                 <a href="<?=$this->url($article)?>" title="<?=$this->text('tooltip_view')?>">
 <?php   endif?>
@@ -14,7 +14,7 @@
 <?php   if ($this->hasLinkedHeader($article)):?>
                 </a>
 <?php   endif?>
-            </h4>
+            </<?=$this->heading?>>
             <div class="realblog_show_date"><?=$this->date($article)?></div>
             <div class="realblog_show_story"><?=$this->teaser($article)?></div>
 <?php   if ($this->hasReadMore($article)):?>

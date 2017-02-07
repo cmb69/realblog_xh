@@ -120,6 +120,7 @@ $plugin_tx['realblog']['cf_auto_publish']="Enable automatic scheduled publishing
 $plugin_tx['realblog']['cf_comments_plugin']="The name of a compatible comments plugin. Leave blank to disable comments.";
 $plugin_tx['realblog']['cf_entries_order']="The display order of the articles. \"desc\" means newest entry on top; \"asc\" means oldest entry on top";
 $plugin_tx['realblog']['cf_entries_per_page']="number of entries on one page of entries-overview (Blog). \"0\" disables page-splitting.";
+$plugin_tx['realblog']['cf_heading_level']="HTML element to mark up headings.";
 $plugin_tx['realblog']['cf_links_visible']="number of visible entries of function realbloglink()";
 $plugin_tx['realblog']['cf_rss_enabled']="Shall the RSS feed be available?";
 $plugin_tx['realblog']['cf_rss_editor']="The email address of the person responsible for editorial content.";

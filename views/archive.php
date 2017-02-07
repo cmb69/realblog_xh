@@ -22,7 +22,7 @@
 <?php       if ($month != $currentMonth || $year != $currentYear):?>
 <?php           $currentMonth = $month?>
 <?php           $currentYear = $year?>
-<h4><?=$this->monthName($month)?> <?=$this->escape($year)?></h4>
+<<?=$this->heading?>><?=$this->monthName($month)?> <?=$this->escape($year)?></<?=$this->heading?>>
 <ul class="realblog_archive">
 <?php       endif?>
     <li>

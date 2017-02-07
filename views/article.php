@@ -14,7 +14,7 @@
 <?php endif?>
     </div>
 
-    <h4><?=$this->escape($this->article->title)?></h4>
+    <<?=$this->heading?>><?=$this->escape($this->article->title)?></<?=$this->heading?>>
     <div class="realblog_show_date"><?=$this->date?></div>
     <div class="realblog_show_story_entry"><?=$this->story?></div>
 

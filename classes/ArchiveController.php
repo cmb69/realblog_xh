@@ -66,6 +66,7 @@ class ArchiveController extends MainController
         $view = new View('archive');
         $view->isSearch = $isSearch;
         $view->articles = $articles;
+        $view->heading = $this->config['heading_level'];
         $view->year = $this->year;
         if ($back) {
             $view->backUrl = $_Realblog_controller->url($su, array('realblog_year' => $back));

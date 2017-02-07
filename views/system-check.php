@@ -1,5 +1,5 @@
 <!-- realblog system check -->
-<h4><?=$this->text('syscheck_title')?></h4>
+<<?=$this->heading?>><?=$this->text('syscheck_title')?></<?=$this->heading?>>
 <ul class="realblog_systemcheck">
 <?php foreach ($this->checks as $label => $state):?>
     <li>

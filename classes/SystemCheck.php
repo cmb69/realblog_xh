@@ -14,7 +14,10 @@ class SystemCheck
      */
     public function render()
     {
+        global $plugin_cf;
+
         $view = new View('system-check');
+        $view->heading = $plugin_cf['realblog']['heading_level'];
         $view->checks = $this->getChecks();
         $view->imageURL = function ($state) {
             global $pth;

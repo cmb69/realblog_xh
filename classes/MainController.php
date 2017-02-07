@@ -69,6 +69,7 @@ abstract class MainController extends AbstractController
             $description = $this->getDescription($article);
             $view = new View('article');
             $view->article = $article;
+            $view->heading = $this->config['heading_level'];
             $view->isAdmin = defined('XH_ADM') && XH_ADM;
             $view->wantsComments = $this->wantsComments();
             if ($article->status === 2) {
