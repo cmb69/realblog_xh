@@ -266,10 +266,11 @@ EOT;
         $article = new stdClass();
         $article->id = stsl($_POST['realblog_id']);
         $article->version = stsl($_POST['realblog_version']);
-        $article->date = $this->stringToTime(
-            stsl($_POST['realblog_date']),
-            !isset($_POST['realblog_date']) || $_POST['realblog_date'] !== $_POST['realblog_date_old']
-        );
+        if (!isset($_POST['realblog_date']) || $_POST['realblog_date'] !== $_POST['realblog_date_old']) {
+            $article->date = $this->stringToTime(stsl($_POST['realblog_date']), true);
+        } else {
+            $article->date = stsl($_POST['realblog_date_exact']);
+        }
         $article->title = stsl($_POST['realblog_title']);
         $article->teaser = stsl($_POST['realblog_headline']);
         $article->body = stsl($_POST['realblog_story']);

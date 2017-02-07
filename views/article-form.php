@@ -15,6 +15,7 @@
             <tr>
                 <td>
 <?php if (isset($this->article->id)):?>
+                    <input type="hidden" name="realblog_date_exact" value="<?=$this->escape($this->article->date)?>">
                     <input type="hidden" name="realblog_date_old" value="<?=$this->formatDate($this->article->date)?>">
 <?php endif?>
                     <input type="date" name="realblog_date" id="realblog_date1" required="required" value="<?=$this->formatDate($this->article->date)?>">
