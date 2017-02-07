@@ -128,5 +128,6 @@ $plugin_tx['realblog']['cf_rss_entries']="Die Höchstanzahl von Artikeln, die im
 $plugin_tx['realblog']['cf_pagination_bottom']="Die Paginierung unterhalb der Artikelvorschau anzeigen?";
 $plugin_tx['realblog']['cf_pagination_top']="Die Paginanierung oberhalb der Artikelvorschau anzeigen?.";
 $plugin_tx['realblog']['cf_show_read_more_link']="Den Link zum Artikel und die Anzahl der Kommentare im Teaser anzeigen?";
+$plugin_tx['realblog']['cf_show_teaser']="Soll der Teaser als Vorspann vor dem Artikel wiederholt werden?";
 
 ?>

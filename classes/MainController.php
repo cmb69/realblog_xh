@@ -93,7 +93,11 @@ abstract class MainController extends AbstractController
                 }
             }
             $view->date = date($this->text['date_format'], $article->date);
-            $story = ($article->body != '') ? $article->body : $article->teaser;
+            if ($this->config['show_teaser']) {
+                $story = '<div class="realblog_teaser">' . $article->teaser . '</div>' . $article->body;
+            } else {
+                $story = ($article->body != '') ? $article->body : $article->teaser;
+            }
             $view->story = new HtmlString(evaluate_scripting($story));
             $view->renderComments = function ($article) {
                 global $plugin_cf;
