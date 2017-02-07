@@ -109,6 +109,23 @@ finden Sie in der Beschreibung der <a href="#usage-rss">RSS page Einstellung</a>
 <p>In der Hauptadministration des Plugins können Sie die Blog-Beiträge
 verwalten. Sie können Beiträge erzeugen, bearbeiten und löschen, ihren Status
 ändern usw. Die Administration sollte weitgehend selbst erklärend sein.</p>
+<p>
+    Im "Datenaustausch" Bereich können die Artikel in eine CSV-Datei exportiert
+    und Artikel von einer CSV-Datei importiert werden. Die CSV-Datei muss direkt
+    neben der entsprechenden Datenbankdatei abgelegt sein, und den Namen
+    "realblog.csv" haben. Es ist zu beachten, dass die CSV-Datei tatsächlich
+    Tab-Delimited ist, aber nicht das gleiche Format wie das alte "realblog.txt"
+    hat, also sollte nicht versucht werden alte Daten durch den CSV-Import zu
+    importieren. Ebenfalls ist zu beachten, dass der Import alle bestenden
+    Artikel in der Datenbank überschreibt. <em>Es wird unbedingt empfohlen ein
+    Backup der Datenbankdatei anzulegen, bevor von CSV importiert wird!</em>
+</p>
+<p>
+    Soll die Export-/Import-Funktionalität verwendet werden, um Artikel offline
+    zu bearbeiten, muss sichergestellt werden, dass nach dem Export und vor dem
+    Import die Datenbank online nicht geändert wird. Andernfalls werden diese
+    Änderungen beim Re-Import der Artikel überschrieben.
+</p>
 <div class="toplink"><a href="#">zum Seitenanfang</a></div>
 
 <h3 id="usage-categories">Kategorien</h3>

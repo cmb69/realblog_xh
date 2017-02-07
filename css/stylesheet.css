@@ -259,3 +259,7 @@ padding: 2px 5px;
 .realblog_filter label {
     margin-right: 1em;
 }
+
+.realblog_data_exchange form {
+    margin: 1em 0;
+}

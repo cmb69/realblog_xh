@@ -104,6 +104,22 @@ see the description of the <a href="#usage-rss">RSS page setting</a>.</p>
 <p>In the main plugin adminstration you can manage the blog posts. You can
 create, edit and delete posts, change their status, etc. The administration is
 meant to be pretty much self explaining.</p>
+<p>
+    In the "Data Exchange" section you can export the articles to a CSV file,
+    and also import articles from a CSV file. The CSV file is supposed to be
+    placed right beside the respective database file and is named
+    "realblog.csv". Note that the CSV file is actually tab delimited, but has
+    not the same format as the old "realblog.txt", so don't try to import old
+    data via the CSV import. Note also that importing will overwrite all
+    existing articles in the database. <em>It is strongly recommended to make a
+    backup of the database file before importing from CSV!</em>
+</p>
+<p>
+    If you want to use the export/import facility to edit the articles offline,
+    make sure that after exporting and before importing no changes to the
+    database are made online. Otherwise these changes will be overwritten when
+    the articles are re-imported.
+</p>
 <div class="toplink"><a href="#">back to top</a></div>
 
 <h3 id="usage-categories">Categories</h3>

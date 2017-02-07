@@ -25,7 +25,7 @@ class Controller
      */
     public function init()
     {
-        global $plugin_cf;
+        global $sn, $plugin_cf, $plugin_tx;
 
         if ($plugin_cf['realblog']['auto_publish']) {
             $this->autoPublish();
@@ -49,6 +49,13 @@ class Controller
             if (function_exists('XH_registerStandardPluginMenuItems')) {
                 XH_registerStandardPluginMenuItems(true);
             }
+            if (function_exists('XH_registerPluginMenuItem')) {
+                XH_registerPluginMenuItem(
+                    'realblog',
+                    $plugin_tx['realblog']['exchange_heading'],
+                    "$sn?realblog&admin=data_exchange"
+                );
+            }
             if ($this->isAdministrationRequested()) {
                 $this->handleAdministration();
             }
@@ -71,15 +78,21 @@ class Controller
      */
     private function handleAdministration()
     {
-        global $admin, $action, $o;
+        global $sn, $admin, $action, $o, $plugin_tx;
 
         $o .= print_plugin_admin('on');
+        pluginMenu('ROW');
+        pluginMenu('TAB', "$sn?realblog&admin=data_exchange", '', $plugin_tx['realblog']['exchange_heading']);
+        $o .= pluginMenu('SHOW');
         switch ($admin) {
             case '':
                 $o .= $this->renderInfoView();
                 break;
             case 'plugin_main':
                 $this->handleMainAdministration();
+                break;
+            case 'data_exchange':
+                $this->handleDataExchange();
                 break;
             default:
                 $o .= plugin_admin_common($action, $admin, 'realblog');
@@ -103,6 +116,23 @@ class Controller
 
         $methodName = lcfirst(implode('', array_map('ucfirst', explode('_', $action)))) . 'Action';
         $controller = new MainAdminController();
+        $class = new ReflectionClass($controller);
+        if ($class->hasMethod($methodName)
+            && ($method = $class->getMethod($methodName))
+            && $method->isPublic()
+        ) {
+            $o .= $method->invoke($controller);
+        } else {
+            $o .= $controller->defaultAction();
+        }
+    }
+
+    private function handleDataExchange()
+    {
+        global $o, $action;
+
+        $methodName = lcfirst(implode('', array_map('ucfirst', explode('_', $action)))) . 'Action';
+        $controller = new DataExchangeController();
         $class = new ReflectionClass($controller);
         if ($class->hasMethod($methodName)
             && ($method = $class->getMethod($methodName))

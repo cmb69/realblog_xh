@@ -482,4 +482,67 @@ SQL;
         }
         return $res;
     }
+
+    /**
+     * @param string $filename
+     * @return bool
+     */
+    public static function exportToCsv($filename)
+    {
+        if (!($stream = fopen($filename, 'w'))) {
+            return false;
+        }
+        $sql = 'SELECT * FROM articles';
+        $db = self::getConnection();
+        $statement = $db->prepare($sql);
+        $result = $statement->execute();
+        while (($record = $result->fetchArray(SQLITE3_NUM)) !== false) {
+            $record = array_map('XH_rmws', $record);
+            fputs($stream, implode("\t", $record) . "\n");
+        }
+        fclose($stream);
+        return true;
+    }
+
+    /**
+     * @param string $filename
+     * @return bool
+     */
+    public static function importFromCsv($filename)
+    {
+        $db = self::getConnection();
+        $db->exec('BEGIN TRANSACTION');
+        $db->exec('DELETE FROM articles');
+        $sql = <<<'EOS'
+INSERT INTO articles
+    VALUES (
+        :id, :version, :date, :publishing_date, :archiving_date, :status,
+        :categories, :title, :teaser, :body, :feedable, :commentable
+    )
+EOS;
+        $statement = $db->prepare($sql);
+        if (!($stream = fopen($filename, 'r'))) {
+            return false;
+        }
+        while (($record = fgetcsv($stream, 0, "\t")) !== false) {
+            $statement->bindValue(':id', $record[0], SQLITE3_INTEGER);
+            $statement->bindValue(':version', $record[1], SQLITE3_INTEGER);
+            $statement->bindValue(':date', $record[2], SQLITE3_INTEGER);
+            $statement->bindValue(':publishing_date', $record[3], SQLITE3_INTEGER);
+            $statement->bindValue(':archiving_date', $record[4], SQLITE3_INTEGER);
+            $statement->bindValue(':status', $record[5], SQLITE3_INTEGER);
+            $statement->bindValue(':categories', $record[6], SQLITE3_TEXT);
+            $statement->bindValue(':title', $record[7], SQLITE3_TEXT);
+            $statement->bindValue(':teaser', $record[8], SQLITE3_TEXT);
+            $statement->bindValue(':body', $record[9], SQLITE3_TEXT);
+            $statement->bindValue(':feedable', $record[10], SQLITE3_INTEGER);
+            $statement->bindValue(':commentable', $record[11], SQLITE3_INTEGER);
+            if (!$statement->execute()) {
+                return false;
+            }
+        }
+        fclose($stream);
+        $db->exec('COMMIT');
+        return true;
+    }
 }
