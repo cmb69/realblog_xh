@@ -12,7 +12,7 @@
         <?=$this->teaser($article)?>
     </div>
     <p class="realblog_tpl_read_more">
-        <a href="<?=$this->url($article)?>"><?=$this->text('read_more')?></a>
+        <a class="realblog_button" href="<?=$this->url($article)?>"><?=$this->text('read_more')?></a>
     </p>
 <?php       endif?>
 <?php   endforeach?>

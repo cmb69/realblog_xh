@@ -3,14 +3,14 @@
 
     <div class="realblog_buttons">
 <?php if (isset($this->backToSearchUrl)):?>
-        <span class="realblog_button"><a href="<?=$this->backToSearchUrl?>"><?=$this->text('search_back')?></a></span>
+        <a class="realblog_button" href="<?=$this->backToSearchUrl?>"><?=$this->text('search_back')?></a>
 <?php endif?>
-        <span class="realblog_button"><a href="<?=$this->backUrl?>"><?=$this->backText?></a></span>
+        <a class="realblog_button" href="<?=$this->backUrl?>"><?=$this->backText?></a>
 <?php if ($this->isAdmin):?>
 <?php   if ($this->wantsComments && isset($this->editCommentsUrl)):?>
-        <span class="realblog_button"><a href="<?=$this->editCommentsUrl?>"><?=$this->text('comment_edit')?></a></span>
+        <a class="realblog_button" href="<?=$this->editCommentsUrl?>"><?=$this->text('comment_edit')?></a>
 <?php   endif?>
-        <span class="realblog_button"><a href="<?=$this->editUrl?>"><?=$this->text('entry_edit')?></a></span>
+        <a class="realblog_button" href="<?=$this->editUrl?>"><?=$this->text('entry_edit')?></a>
 <?php endif?>
     </div>
 
@@ -20,14 +20,14 @@
 
     <div class="realblog_buttons">
 <?php if (isset($this->backToSearchUrl)):?>
-        <span class="realblog_button"><a href="<?=$this->backToSearchUrl?>"><?=$this->text('search_back')?></a></span>
+        <a class="realblog_button" href="<?=$this->backToSearchUrl?>"><?=$this->text('search_back')?></a>
 <?php endif?>
-        <span class="realblog_button"><a href="<?=$this->backUrl?>"><?=$this->backText?></a></span>
+        <a class="realblog_button" href="<?=$this->backUrl?>"><?=$this->backText?></a>
 <?php if ($this->isAdmin):?>
 <?php   if ($this->wantsComments && isset($this->editCommentsUrl)):?>
-        <span class="realblog_button"><a href="<?=$this->editCommentsUrl?>"><?=$this->text('comment_edit')?></a></span>
+        <a class="realblog_button" href="<?=$this->editCommentsUrl?>"><?=$this->text('comment_edit')?></a>
 <?php   endif?>
-        <span class="realblog_button"><a href="<?=$this->editUrl?>"><?=$this->text('entry_edit')?></a></span>
+        <a class="realblog_button" href="<?=$this->editUrl?>"><?=$this->text('entry_edit')?></a>
 <?php endif?>
     </div>
 

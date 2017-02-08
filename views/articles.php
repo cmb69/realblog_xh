@@ -25,7 +25,7 @@
                 </p>
 <?php       endif?>
                 <p class="realblog_read_more">
-                    <a href="<?=$this->url($article)?>" title="<?=$this->text('tooltip_view')?>"><?=$this->text('read_more')?></a>
+                    <a class="realblog_button" href="<?=$this->url($article)?>" title="<?=$this->text('tooltip_view')?>"><?=$this->text('read_more')?></a>
                 </p>
             </div>
 <?php   endif?>

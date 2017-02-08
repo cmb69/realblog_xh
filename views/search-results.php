@@ -7,6 +7,6 @@
         <?=$this->plural('search_result', $this->count, $this->words)?>
     </p>
     <p class="realblog_searchresult_foot">
-        <span class="realblog_button"><a href="<?=$this->url?>"><?=$this->text($this->key)?></a></span>
+        <a class="realblog_button" href="<?=$this->url?>"><?=$this->text($this->key)?></a>
     </p>
 </div>

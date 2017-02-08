@@ -108,6 +108,6 @@ HTML;
             return "<span>$page</span>";
         }
         $url = XH_hsc(sprintf($this->url, $page));
-        return "<a href=\"$url\">$page</a>";
+        return "<a class=\"realblog_button\" href=\"$url\">$page</a>";
     }
 }

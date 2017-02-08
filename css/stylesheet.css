@@ -22,16 +22,10 @@ padding: 6px 0;
 .realblog_button {
     display: inline-block;
     border: 1px solid #888;
-    border-radius: 0.8em;
     padding: 0.1em 0.5em;
-    margin-right: 1em;
+    text-decoration: none;
+    cursor: pointer;
 }
-
-.realblog_button a:link {color: #258; text-decoration: none;}
-.realblog_button a:visited {color: #258; text-decoration: none;}
-.realblog_button a:hover {color: #c60; text-decoration: underline;}
-.realblog_button a:active {color: #c60; text-decoration: underline;}
-.realblog_button a:focus {color: #c60; text-decoration: underline;}
 
 .realblog_fields_block #date1 {
 margin-bottom: 12px;
