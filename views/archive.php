@@ -1,15 +1,17 @@
 <!-- realblog archive -->
+<div class="realblog_archive_container">
+
 <?php if (!$this->isSearch):?>
 
-<div class="realblog_table_paging">
+    <div class="realblog_table_paging">
 <?php   if (isset($this->backUrl)):?>
-    <a href="<?=$this->backUrl?>" title="<?=$this->text('tooltip_previousyear')?>">◀</a>
+        <a href="<?=$this->backUrl?>" title="<?=$this->text('tooltip_previousyear')?>">◀</a>
 <?php   endif?>
-    <span class="realblog_archive_title"><?=$this->text('archive_year')?> <?=$this->year?></span>
+        <span class="realblog_archive_title"><?=$this->text('archive_year')?> <?=$this->year?></span>
 <?php   if (isset($this->nextUrl)):?>
-    <a href="<?=$this->nextUrl?>" title="<?=$this->text('tooltip_nextyear')?>">▶</a>
+        <a href="<?=$this->nextUrl?>" title="<?=$this->text('tooltip_nextyear')?>">▶</a>
 <?php   endif?>
-</div>
+    </div>
 
 <?php endif?>
 
@@ -24,19 +26,21 @@
 <?php           $currentMonth = $month?>
 <?php           $currentYear = $year?>
 <?php           if (!$first):?>
-</ul>
+    </ul>
 <?php           else:?>
 <?php               $first = false?>
 <?php           endif?>
 <<?=$this->heading?>><?=$this->monthName($month)?> <?=$this->escape($year)?></<?=$this->heading?>>
-<ul class="realblog_archive">
+    <ul class="realblog_archive">
 <?php       endif?>
-    <li>
-        <?=$this->formatDate($article)?>
-        <a href="<?=$this->url($article)?>" title="<?=$this->text('tooltip_view')?>"><?=$this->escape($article->title)?></a>
-    </li>
+        <li>
+            <?=$this->formatDate($article)?>
+            <a href="<?=$this->url($article)?>" title="<?=$this->text('tooltip_view')?>"><?=$this->escape($article->title)?></a>
+        </li>
 <?php   endforeach?>
-</ul>
+    </ul>
 <?php else:?>
-<p><?=$this->text('no_topics')?></p>
+    <p><?=$this->text('no_topics')?></p>
 <?php endif?>
+
+</div>
