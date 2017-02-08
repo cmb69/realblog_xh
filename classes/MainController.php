@@ -113,13 +113,19 @@ abstract class MainController extends AbstractController
         }
     }
 
+    /**
+     * @return string
+     */
     private function getDescription(stdClass $article)
     {
-        return utf8_substr(
-            html_entity_decode(strip_tags($article->teaser), ENT_COMPAT, 'UTF-8'),
-            0,
-            150
-        );
+        $teaser = trim(html_entity_decode(strip_tags($article->teaser), ENT_COMPAT, 'UTF-8'));
+        if (utf8_strlen($teaser) <= 150) {
+            return $teaser;
+        } elseif (preg_match('/.{0,150}\b/su', $teaser, $matches)) {
+            return $matches[0] . '…';
+        } else {
+            return utf8_substr($teaser, 0, 150) . '…';
+        }
     }
 
     private function wantsComments()
