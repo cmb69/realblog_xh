@@ -157,6 +157,12 @@ automatisch einen RSS-Feed mit den veröffentlichten Blog-Beiträgen an. Optiona
 können Sie ein RSS-Feed-Icon, das auf den Feed verlinkt, im Template anzeigen
 lassen:</p>
 <pre>&lt;?php echo Realblog_feedLink();?&gt;</pre>
+<p>
+    Es ist ebenfalls möglich einen einzigen Parameter an diese Funktion zu
+    übergeben, der den Wert des target Attributs des Hyperlinks angibt. Dies
+    kann genutzt werden, um den Feed in einem neuen Window/Tab anzuzeigen:
+</p>
+<pre>&lt;?php echo Realblog_feedLink('_blank');?&gt;</pre>
 <p>Abgesehen von einigen Einstellung bzgl. des Feeds in der Konfiguration gibt
 es einige Einstellungen in der Sprachdatei im Abschnitt "RSS". Die wichtigste
 ist "page", wo Sie die URL der Seite, auf der der Hauptblog angezeigt wird,

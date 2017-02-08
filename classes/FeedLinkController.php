@@ -11,13 +11,13 @@ namespace Realblog;
 
 class FeedLinkController extends AbstractController
 {
-    public function defaultAction()
+    public function defaultAction($target)
     {
         global $sn, $pth;
 
         return <<<HTML
 <!-- realblog feed link -->
-<a href="$sn?realblog_feed=rss">
+<a href="$sn?realblog_feed=rss" target="$target">
     <img src="{$pth['folder']['plugins']}realblog/images/rss.png"
          alt="{$this->text['rss_tooltip']}" title="{$this->text['rss_tooltip']}"
          style="border: 0">

@@ -98,10 +98,10 @@ function Realblog_link($pageUrl, $showTeaser = false)
 /**
  * Returns a graphical hyperlink to the RSS feed
  */
-function Realblog_feedLink()
+function Realblog_feedLink($target = "_self")
 {
     $controller = new Realblog\FeedLinkController();
-    return $controller->defaultAction();
+    return $controller->defaultAction($target);
 }
 
 $_Realblog_controller->init();

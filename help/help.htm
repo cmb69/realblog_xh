@@ -148,6 +148,12 @@ actual blog.</p>
 with the published blog posts. Optionally, you can display an RSS feed icon that
 links to the feed in the template:</p>
 <pre>&lt;?php echo Realblog_feedLink();?&gt;</pre>
+<p>
+    You can also pass a single parameter to this function, which specifies the
+    value of the target attribute of the hyperlink. This can be used to open
+    the feed in a new window/tab:
+</p>
+<pre>&lt;?php echo Realblog_feedLink('_blank');?&gt;</pre>
 <p>Besides some feed related settings in the configuration, there are some
 settings in the language file in the section "RSS". Most important is "page",
 where you have to enter the URL of the page on which the main blog is shown.
