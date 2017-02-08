@@ -199,6 +199,10 @@ border-bottom: 1px solid;
 padding: 0 0 8px 0;
 }
 
+.realblog_most_popular a, .realblog_most_popular span {
+    display: block;
+}
+
 .realblog_admin {
 height:24px;
 background-color: #075FB9;

@@ -98,6 +98,14 @@ appropritate place in the template:</p>
 see the description of the <a href="#usage-rss">RSS page setting</a>.</p>
 <p>To also display the teasers of these articles, write:</p>
 <pre>&lt;?php echo Realblog_link('BLOG_URL', true)?&gt;</pre>
+<p>
+    To display the list of the most popular articles on each page, insert in an
+    appropriate place in the template:
+</p>
+<pre>&lt;?php echo Realblog_mostPopular('BLOG_URL')?&gt;</pre>
+<p>
+    Regarding BLOG_URL, see the note above.
+</p>
 <div class="toplink"><a href="#">back to top</a></div>
 
 <h3 id="usage-administration">Administration</h3>
@@ -118,7 +126,10 @@ meant to be pretty much self explaining.</p>
     If you want to use the export/import facility to edit the articles offline,
     make sure that after exporting and before importing no changes to the
     database are made online. Otherwise these changes will be overwritten when
-    the articles are re-imported.
+    the articles are re-imported. Also do not change any IDs (first column),
+    because these are used to refer to the page views. It's fine to delete rows,
+    but if you want to insert rows, do it at the end of the file with
+    consecutively increasing IDs.
 </p>
 <div class="toplink"><a href="#">back to top</a></div>
 

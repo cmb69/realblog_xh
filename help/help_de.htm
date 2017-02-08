@@ -103,6 +103,14 @@ fügen Sie an einer passenden Stelle des Templates folgendes ein:</p>
 finden Sie in der Beschreibung der <a href="#usage-rss">RSS page Einstellung</a>.</p>
 <p>Um ebenfalls die Teaser dieser Artikel anzuzeigen, schreiben Sie:</p>
 <pre>&lt;?php echo Realblog_link('BLOG_URL', true)?&gt;</pre>
+<p>
+    Um die Liste der beliebtesten Artikel auf jeder Seite anzuzeigen, fügen Sie
+    an einer passende Stelle des Templates folgendes ein:
+</p>
+<pre>&lt;?php echo Realblog_mostPopular('BLOG_URL')?&gt;</pre>
+<p>
+    Bezüglich BLOG_URL beachten Sie den Hinweis weiter oben.
+</p>
 <div class="toplink"><a href="#">zum Seitenanfang</a></div>
 
 <h3 id="usage-administration">Administration</h3>
@@ -124,7 +132,11 @@ verwalten. Sie können Beiträge erzeugen, bearbeiten und löschen, ihren Status
     Soll die Export-/Import-Funktionalität verwendet werden, um Artikel offline
     zu bearbeiten, muss sichergestellt werden, dass nach dem Export und vor dem
     Import die Datenbank online nicht geändert wird. Andernfalls werden diese
-    Änderungen beim Re-Import der Artikel überschrieben.
+    Änderungen beim Re-Import der Artikel überschrieben. Ebenfalls ist zu
+    beachten, dass die IDs (erste Spalte) nicht geändert werden dürfen, weil
+    diese verwendet werden, um die Page-Views zu referenzieren. Zeilen dürfen
+    beliebig gelöscht werden, aber wenn neue Zeilen eingefügt werden sollen,
+    dann ist dies am Ende der Datei mit fortlaufenden IDs zu tun.
 </p>
 <div class="toplink"><a href="#">zum Seitenanfang</a></div>
 

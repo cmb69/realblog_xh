@@ -96,6 +96,16 @@ function Realblog_link($pageUrl, $showTeaser = false)
 }
 
 /**
+ * @param string $pageUrl
+ * @return string
+ */
+function Realblog_mostPopular($pageUrl)
+{
+    $controller = new Realblog\MostPopularController($pageUrl);
+    return $controller->defaultAction();
+}
+
+/**
  * Returns a graphical hyperlink to the RSS feed
  */
 function Realblog_feedLink($target = "_self")

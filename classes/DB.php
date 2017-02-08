@@ -57,6 +57,7 @@ class DB
             $this->connection = new Sqlite3($filename);
             $this->createDatabase();
         }
+        $this->updateDatabase();
     }
 
     /**
@@ -146,6 +147,17 @@ SQL;
         );
         $field = preg_replace('/{{{rbCat\([^\)]*\);?}}}/', '', $field);
         return $categories;
+    }
+
+    private function updateDatabase()
+    {
+        $sql = <<<'EOS'
+CREATE TABLE IF NOT EXISTS page_views (
+    article_id INTEGER NOT NULL,
+    timestamp INTEGER NOT NULL
+);
+EOS;
+        $this->connection->exec($sql);
     }
 
     /**
@@ -326,6 +338,29 @@ SQL;
     }
 
     /**
+     * @param int $limit
+     * @return stdClass[]
+     */
+    public static function findMostPopularArticles($limit)
+    {
+        $sql = <<<SQL
+SELECT articles.id, articles.title, COUNT(*) AS page_views
+    FROM articles LEFT JOIN page_views ON articles.id = page_views.article_id
+    GROUP BY articles.id
+    ORDER BY page_views DESC
+    LIMIT $limit
+SQL;
+        $db = self::getConnection();
+        $statement = $db->prepare($sql);
+        $result = $statement->execute();
+        $records = array();
+        while (($record = $result->fetchArray(SQLITE3_ASSOC)) !== false) {
+            $records[] = (object) $record;
+        }
+        return $records;
+    }
+
+    /**
      * @param int $id
      * @return stdClass
      */
@@ -481,6 +516,19 @@ SQL;
             $res = $db->changes();
         }
         return $res;
+    }
+
+    /**
+     * @param int $articleId
+     */
+    public static function recordPageView($articleId)
+    {
+        $sql = 'INSERT INTO page_views VALUES (:article_id, :timestamp)';
+        $db = self::getConnection();
+        $statement = $db->prepare($sql);
+        $statement->bindValue(':article_id', $articleId, SQLITE3_INTEGER);
+        $statement->bindValue(':timestamp', time());
+        $statement->execute();
     }
 
     /**

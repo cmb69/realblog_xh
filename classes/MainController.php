@@ -64,6 +64,9 @@ abstract class MainController extends AbstractController
         global $sn, $su, $h, $s, $title, $description, $_Realblog_controller;
 
         $article = DB::findById($id);
+        if (isset($article) && !XH_ADM && $article->status > 0) {
+            DB::recordPageView($id);
+        }
         if (isset($article) && ((defined('XH_ADM') && XH_ADM) || $article->status > 0)) {
             $title .= $h[$s] . " \xE2\x80\x93 " . $article->title;
             $description = $this->getDescription($article);
