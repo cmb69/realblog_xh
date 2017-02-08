@@ -77,7 +77,6 @@ $plugin_tx['realblog']['cf_admin_records_page']="Počet článkov na stránke s 
 $plugin_tx['realblog']['cf_auto_archive']="Povoliť automatickú plánovanú archiváciu?";
 $plugin_tx['realblog']['cf_auto_publish']="Povoliť automatické plánované zverejňovanie?";
 $plugin_tx['realblog']['cf_comments_plugin']="Názov kompatibilného pluginu pre komentáre. AK necháte prázdne, bude funkcia komentárov vypnutá.";
-$plugin_tx['realblog']['cf_entries_order']="Poradie zobrazovaných článkov. \"desc\" najnovšie navrchu; \"asc\" najstaršie navrchu";
 $plugin_tx['realblog']['cf_entries_per_page']="Počet článkov na stránke s prehľadom (Blog). \"0\" zruší stránkovanie.";
 $plugin_tx['realblog']['cf_links_visible']="počet viditeľných článkov pre funkciu realbloglink()";
 $plugin_tx['realblog']['cf_rss_enabled']="Aktivovať RSS feed?";

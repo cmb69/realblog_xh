@@ -31,7 +31,7 @@ class BlogController extends MainController
         }
         $order = ($this->config['entries_order'] == 'desc')
             ? -1 : 1;
-        $limit = $this->config['entries_per_page'];
+        $limit = max(1, $this->config['entries_per_page']);
         $page = $_Realblog_controller->getPage();
         $articleCount = DB::countArticlesWithStatus(array(1), $this->category, $this->searchTerm);
         $pageCount = ceil($articleCount / $limit);
