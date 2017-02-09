@@ -42,7 +42,6 @@ $plugin_tx['realblog']['nothing_selected']="geen artikelen geselecteerd";
 $plugin_tx['realblog']['published']="gepubliceerd";
 $plugin_tx['realblog']['read_more']="lees meer »";
 $plugin_tx['realblog']['readyforpublishing']="niet gepubliceerd";
-$plugin_tx['realblog']['record_count']="totaal aantal artikelen";
 $plugin_tx['realblog']['return']="terug";
 $plugin_tx['realblog']['rss_copyright']="";
 $plugin_tx['realblog']['rss_description']="De weblog van ...";

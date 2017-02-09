@@ -43,7 +43,6 @@ $plugin_tx['realblog']['page_label']="strana";
 $plugin_tx['realblog']['published']="zverejnené";
 $plugin_tx['realblog']['read_more']="Čítať ďalej »";
 $plugin_tx['realblog']['readyforpublishing']="nezverejnené";
-$plugin_tx['realblog']['record_count']="počet článkov spolu";
 $plugin_tx['realblog']['return']="naspäť";
 $plugin_tx['realblog']['rss_copyright']="";
 $plugin_tx['realblog']['rss_description']="Weblog ...";

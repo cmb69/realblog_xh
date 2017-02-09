@@ -50,7 +50,7 @@ class BlogController extends MainController
         $view->articles = $articles;
         $view->heading = $this->config['heading_level'];
         $search = $this->searchTerm;
-        $view->pagination = new PaginationView(
+        $view->pagination = new Pagination(
             $articleCount,
             $page,
             $pageCount,
