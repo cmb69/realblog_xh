@@ -46,6 +46,7 @@ $plugin_tx['realblog']['id_label']="ID";
 $plugin_tx['realblog']['label_rss']="RSS feed";
 $plugin_tx['realblog']['label_status']="Status";
 $plugin_tx['realblog']['label_categories']="Categories";
+$plugin_tx['realblog']['label_category_add']="Add Category:";
 $plugin_tx['realblog']['links_visible_text']="Newest entries in Blog:";
 $plugin_tx['realblog']['menu_main']="Articles";
 $plugin_tx['realblog']['message_comments_0']="There are no comments on this article.";

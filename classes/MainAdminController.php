@@ -157,7 +157,9 @@ class MainAdminController extends AbstractController
                 assert(false);
         }
         $this->useCalendar();
-        $bjs .= '<script type="text/javascript" src="' . $pth['folder']['plugins']
+        $bjs .= '<script type="text/javascript">REALBLOG.categories = '
+            . json_encode(DB::findAllCategories()) . ';</script>'
+            . '<script type="text/javascript" src="' . $pth['folder']['plugins']
             . 'realblog/realblog.js"></script>';
         $view = new View('article-form');
         $view->article = $article;
