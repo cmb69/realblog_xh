@@ -49,19 +49,19 @@ abstract class MainController extends AbstractController
 
     protected function renderSearchResults($what, $count)
     {
-        global $su, $_Realblog_controller;
+        global $su;
 
         $view = new View('search-results');
         $view->words = $this->searchTerm;
         $view->count = $count;
-        $view->url = $_Realblog_controller->url($su);
+        $view->url = Realblog::url($su);
         $view->key = ($what == 'archive') ? 'back_to_archive' : 'search_show_all';
         return $view->render();
     }
 
     protected function renderArticle($id)
     {
-        global $sn, $su, $h, $s, $title, $description, $_Realblog_controller;
+        global $sn, $su, $h, $s, $title, $description;
 
         $article = DB::findById($id);
         if (isset($article) && !XH_ADM && $article->status > 0) {
@@ -79,13 +79,13 @@ abstract class MainController extends AbstractController
                 $params = array('realblog_year' => $this->year);
                 $view->backText = $this->text['archiv_back'];
             } else {
-                $params = array('realblog_page' => $_Realblog_controller->getPage());
+                $params = array('realblog_page' => Realblog::getPage());
                 $view->backText = $this->text['blog_back'];
             }
-            $view->backUrl = $_Realblog_controller->url($su, $params);
+            $view->backUrl = Realblog::url($su, $params);
             if ($this->searchTerm) {
                 $params['realblog_search'] = $this->searchTerm;
-                $view->backToSearchUrl = $_Realblog_controller->url($su, $params);
+                $view->backToSearchUrl = Realblog::url($su, $params);
             }
             $view->editUrl = "$sn?&realblog&admin=plugin_main"
                 . "&action=edit&realblog_id={$article->id}";

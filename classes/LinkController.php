@@ -38,9 +38,7 @@ class LinkController extends AbstractController
         };
         $pageUrl = $this->pageUrl;
         $view->url = function ($article) use ($pageUrl) {
-            global $_Realblog_controller;
-
-            return $_Realblog_controller->url($pageUrl, array('realblog_id' => $article->id));
+            return Realblog::url($pageUrl, array('realblog_id' => $article->id));
         };
         $view->showTeaser = $this->showTeaser;
         $view->teaser = function ($article) {

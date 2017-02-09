@@ -43,13 +43,6 @@ require_once $pth['folder']['plugin'] . 'compat.php';
 
 class_alias('\Realblog\CommentsBridge', 'Realblog_CommentsBridge');
 
-const REALBLOG_VERSION = '@REALBLOG_VERSION@';
-
-/**
- * @var Realblog\Controller
- */
-$_Realblog_controller = new Realblog\Controller();
-
 /**
  * Displays the realblog's topic with status = published.
  */
@@ -114,4 +107,4 @@ function Realblog_feedLink($target = "_self")
     return $controller->defaultAction($target);
 }
 
-$_Realblog_controller->init();
+Realblog\Realblog::init();

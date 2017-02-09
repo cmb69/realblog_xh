@@ -17,24 +17,26 @@ namespace Realblog;
 use stdClass;
 use ReflectionClass;
 
-class Controller
+class Realblog
 {
+    const VERSION = '@REALBLOG_VERSION@';
+
     /**
      * @return void
      * @global array $plugin_cf
      */
-    public function init()
+    public static function init()
     {
-        global $sn, $plugin_cf, $plugin_tx;
+        global $plugin_cf;
 
         if ($plugin_cf['realblog']['auto_publish']) {
-            $this->autoPublish();
+            self::autoPublish();
         }
         if ($plugin_cf['realblog']['auto_archive']) {
-            $this->autoArchive();
+            self::autoArchive();
         }
         if ($plugin_cf['realblog']['rss_enabled']) {
-            $this->emitAlternateRSSLink();
+            self::emitAlternateRSSLink();
             $rssFeedRequested = filter_input(
                 INPUT_GET,
                 'realblog_feed',
@@ -42,23 +44,30 @@ class Controller
                 array('options' => array('regexp' => '/^rss$/'))
             );
             if ($rssFeedRequested) {
-                $this->deliverFeed();
+                self::deliverFeed();
             }
         }
         if (defined('XH_ADM') && XH_ADM) {
-            if (function_exists('XH_registerStandardPluginMenuItems')) {
-                XH_registerStandardPluginMenuItems(true);
+            self::registerPluginMenu();
+            if (self::isAdministrationRequested()) {
+                self::handleAdministration();
             }
-            if (function_exists('XH_registerPluginMenuItem')) {
-                XH_registerPluginMenuItem(
-                    'realblog',
-                    $plugin_tx['realblog']['exchange_heading'],
-                    "$sn?realblog&admin=data_exchange"
-                );
-            }
-            if ($this->isAdministrationRequested()) {
-                $this->handleAdministration();
-            }
+        }
+    }
+
+    private static function registerPluginMenu()
+    {
+        global $sn, $plugin_tx;
+
+        if (function_exists('XH_registerStandardPluginMenuItems')) {
+            XH_registerStandardPluginMenuItems(true);
+        }
+        if (function_exists('XH_registerPluginMenuItem')) {
+            XH_registerPluginMenuItem(
+                'realblog',
+                $plugin_tx['realblog']['exchange_heading'],
+                "$sn?realblog&admin=data_exchange"
+            );
         }
     }
 
@@ -66,7 +75,7 @@ class Controller
      * @return bool
      * @global string $realblog
      */
-    private function isAdministrationRequested()
+    private static function isAdministrationRequested()
     {
         global $realblog, $su;
 
@@ -76,7 +85,7 @@ class Controller
     /**
      * @return void
      */
-    private function handleAdministration()
+    private static function handleAdministration()
     {
         global $sn, $admin, $action, $o, $plugin_tx;
 
@@ -86,31 +95,31 @@ class Controller
         $o .= pluginMenu('SHOW');
         switch ($admin) {
             case '':
-                $o .= $this->renderInfoView();
+                $o .= self::renderInfoView();
                 break;
             case 'plugin_main':
-                $this->handleMainAdministration();
+                self::handleMainAdministration();
                 break;
             case 'data_exchange':
-                $this->handleDataExchange();
+                self::handleDataExchange();
                 break;
             default:
                 $o .= plugin_admin_common($action, $admin, 'realblog');
         }
     }
 
-    private function renderInfoView()
+    private static function renderInfoView()
     {
         global $pth;
 
         $view = new View('info');
         $view->logoPath = "{$pth['folder']['plugins']}realblog/realblog.png";
-        $view->version = REALBLOG_VERSION;
+        $view->version = Realblog::VERSION;
         $systemCheck = new SystemCheck();
         return $view->render() . $systemCheck->render();
     }
 
-    private function handleMainAdministration()
+    private static function handleMainAdministration()
     {
         global $o, $action;
 
@@ -127,7 +136,7 @@ class Controller
         }
     }
 
-    private function handleDataExchange()
+    private static function handleDataExchange()
     {
         global $o, $action;
 
@@ -148,7 +157,7 @@ class Controller
      * @return void
      * @global string $hjs
      */
-    private function emitAlternateRSSLink()
+    private static function emitAlternateRSSLink()
     {
         global $hjs;
 
@@ -161,7 +170,7 @@ class Controller
     /**
      * @return void
      */
-    private function deliverFeed()
+    private static function deliverFeed()
     {
         global $sn, $pth, $plugin_cf, $plugin_tx;
 
@@ -179,10 +188,8 @@ class Controller
         $count = $plugin_cf['realblog']['rss_entries'];
         $view->articles = DB::findFeedableArticles($count);
         $view->articleUrl = function ($article) use ($sn, $plugin_tx) {
-            global $_Realblog_controller;
-
             return CMSIMPLE_URL . substr(
-                $_Realblog_controller->url(
+                Realblog::url(
                     $plugin_tx['realblog']["rss_page"],
                     array('realblog_id' => $article->id)
                 ),
@@ -202,7 +209,7 @@ class Controller
     /**
      * @return void
      */
-    private function autoPublish()
+    private static function autoPublish()
     {
         DB::autoChangeStatus('publishing_date', 1);
     }
@@ -210,7 +217,7 @@ class Controller
     /**
      * @return void
      */
-    private function autoArchive()
+    private static function autoArchive()
     {
         DB::autoChangeStatus('archiving_date', 2);
     }
@@ -218,7 +225,7 @@ class Controller
     /**
      * @return int
      */
-    public function getPage()
+    public static function getPage()
     {
         global $edit;
 
@@ -255,7 +262,7 @@ class Controller
      * @param int $num
      * @return bool
      */
-    public function getFilter($num)
+    public static function getFilter($num)
     {
         $varname = "realblog_filter$num";
         if (filter_has_var(INPUT_GET, $varname)) {
@@ -273,7 +280,7 @@ class Controller
      * @param array  $params
      * @return string
      */
-    public function url($pageUrl, $params = array())
+    public static function url($pageUrl, $params = array())
     {
         global $sn;
 

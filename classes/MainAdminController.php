@@ -19,11 +19,11 @@ class MainAdminController extends AbstractController
 
     public function __construct()
     {
-        global $sn, $_Realblog_controller;
+        global $sn;
 
         parent::__construct();
         $this->urlPath = $sn;
-        $this->page = $_Realblog_controller->getPage();
+        $this->page = Realblog::getPage();
     }
 
     public function defaultAction()
@@ -40,11 +40,9 @@ class MainAdminController extends AbstractController
 
     private function getFilterStatuses()
     {
-        global $_Realblog_controller;
-
         $statuses = array();
         for ($i = 0; $i <= 2; $i++) {
-            if ($_Realblog_controller->getFilter($i)) {
+            if (Realblog::getFilter($i)) {
                 $statuses[] = $i;
             }
         }
@@ -77,9 +75,7 @@ class MainAdminController extends AbstractController
         };
         $view->states = array('readyforpublishing', 'published', 'archived');
         $view->hasFilter = function ($num) {
-            global $_Realblog_controller;
-
-            return $_Realblog_controller->getFilter($num);
+            return Realblog::getFilter($num);
         };
         $view->formatDate = function ($article) {
             global $plugin_tx;

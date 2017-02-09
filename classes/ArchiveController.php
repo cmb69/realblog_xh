@@ -61,7 +61,7 @@ class ArchiveController extends MainController
 
     private function renderArchivedArticles(array $articles, $isSearch, $back, $next)
     {
-        global $su, $plugin_tx, $_Realblog_controller;
+        global $su, $plugin_tx;
 
         $view = new View('archive');
         $view->isSearch = $isSearch;
@@ -69,15 +69,15 @@ class ArchiveController extends MainController
         $view->heading = $this->config['heading_level'];
         $view->year = $this->year;
         if ($back) {
-            $view->backUrl = $_Realblog_controller->url($su, array('realblog_year' => $back));
+            $view->backUrl = Realblog::url($su, array('realblog_year' => $back));
         }
         if ($next) {
-            $view->nextUrl = $_Realblog_controller->url($su, array('realblog_year' => $next));
+            $view->nextUrl = Realblog::url($su, array('realblog_year' => $next));
         }
         $view->url = function (stdClass $article) {
-            global $su, $_Realblog_controller;
+            global $su;
 
-            return $_Realblog_controller->url(
+            return Realblog::url(
                 $su,
                 array(
                     'realblog_id' => $article->id,

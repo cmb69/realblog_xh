@@ -23,8 +23,6 @@ class BlogController extends MainController
 
     public function defaultAction()
     {
-        global $_Realblog_controller;
-
         $html = '';
         if ($this->showSearch) {
             $html .= $this->renderSearchForm();
@@ -32,7 +30,7 @@ class BlogController extends MainController
         $order = ($this->config['entries_order'] == 'desc')
             ? -1 : 1;
         $limit = max(1, $this->config['entries_per_page']);
-        $page = $_Realblog_controller->getPage();
+        $page = Realblog::getPage();
         $articleCount = DB::countArticlesWithStatus(array(1), $this->category, $this->searchTerm);
         $pageCount = ceil($articleCount / $limit);
         $page = min(max($page, 1), $pageCount);
@@ -46,7 +44,7 @@ class BlogController extends MainController
 
     private function renderArticles(array $articles, $articleCount, $page, $pageCount)
     {
-        global $su, $_Realblog_controller;
+        global $su;
 
         $view = new View('articles');
         $view->articles = $articles;
@@ -56,18 +54,18 @@ class BlogController extends MainController
             $articleCount,
             $page,
             $pageCount,
-            $_Realblog_controller->url($su, array('realblog_page' => '%s', 'realblog_search' => $search))
+            Realblog::url($su, array('realblog_page' => '%s', 'realblog_search' => $search))
         );
         $view->hasTopPagination = (bool) $this->config['pagination_top'];
         $view->hasBottomPagination = (bool) $this->config['pagination_bottom'];
         $view->url = function ($article) use ($search) {
-            global $su, $_Realblog_controller;
+            global $su;
 
-            return $_Realblog_controller->url(
+            return Realblog::url(
                 $su,
                 array(
                     'realblog_id' => $article->id,
-                    'realblog_page' => $_Realblog_controller->getPage(),
+                    'realblog_page' => Realblog::getPage(),
                     'realblog_search' => $search
                 )
             );
