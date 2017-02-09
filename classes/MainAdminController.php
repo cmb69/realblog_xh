@@ -173,6 +173,7 @@ class MainAdminController extends AbstractController
         $view->isAutoArchive = $this->config['auto_archive'];
         $view->states = array('readyforpublishing', 'published', 'archived');
         $view->categories = trim($article->categories, ',');
+        $view->allCategories = DB::findAllArticles();
         $view->button = "btn_{$action}";
         return $view->render();
     }

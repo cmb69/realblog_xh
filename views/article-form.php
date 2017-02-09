@@ -68,7 +68,12 @@
         </table>
         <p>
             <label for="realblog_categories" class="realblog_label"><?=$this->text('label_categories')?></label>
-            <input type="text" id="realblog_categories" name="realblog_categories" value="<?=$this->categories?>" size="50">
+            <input type="text" id="realblog_categories" name="realblog_categories" list="realblog_all_categories" value="<?=$this->categories?>" size="50">
+            <datalist id="realblog_all_categories">
+<?php foreach ($this->allCategories as $category):?>
+                <option value="<?=$this->escape($category)?>">
+<?php endforeach?>
+            </datalist>
         </p>
         <p>
             <label for="realblog_title" class="realblog_label"><?=$this->text('title_label')?></label>

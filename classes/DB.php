@@ -379,6 +379,24 @@ SQL;
     }
 
     /**
+     * @return array
+     */
+    public static function findAllArticles()
+    {
+        $db = self::getConnection();
+        $statement = $db->prepare('SELECT DISTINCT categories FROM articles');
+        $result = $statement->execute();
+        $categories = array();
+        while (($record = $result->fetchArray(SQLITE3_ASSOC)) !== false) {
+            if ($record['categories'] === ',,') continue;
+            $categories = array_merge($categories, explode(',', trim($record['categories'], ',')));
+        }
+        $categories = array_unique($categories);
+        sort($categories);
+        return $categories;
+    }
+
+    /**
      * @return int
      */
     public static function insertArticle(stdClass $article)
