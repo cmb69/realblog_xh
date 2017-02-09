@@ -28,7 +28,7 @@ function showrealblog($options = null, $category = 'all')
                 break;
         }
     }
-    return Realblog_blog($includesearch, $category);
+    return Realblog\Realblog::blogCommand($includesearch, $category);
 }
 
 /**
@@ -53,7 +53,7 @@ function showrealblogarchive($options = null)
                 break;
         }
     }
-    return Realblog_archive($includesearch);
+    return Realblog\Realblog::archiveCommand($includesearch);
 }
 
 /**
@@ -68,7 +68,7 @@ function realbloglink($options)
     if (isset($arguments['realblogpage'])) {
         $realblog_page = $arguments['realblogpage'];
     }
-    return Realblog_link($realblog_page);
+    return Realblog\Realblog::linkCommand($realblog_page);
 }
 
 /**
@@ -95,7 +95,7 @@ function realblog_rss_adv()
 {
     $function = __FUNCTION__;
     trigger_error("$function() is deprecated; use Realblog_feedLink() instead", E_USER_DEPRECATED);
-    return Realblog_feedLink();
+    return Realblog\Realblog::feedLinkCommand();
 }
 
 /**

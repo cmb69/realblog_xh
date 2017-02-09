@@ -29,6 +29,7 @@ class Realblog
     {
         global $plugin_cf;
 
+        self::registerCommands();
         if ($plugin_cf['realblog']['auto_publish']) {
             self::autoPublish();
         }
@@ -52,6 +53,32 @@ class Realblog
             if (self::isAdministrationRequested()) {
                 self::handleAdministration();
             }
+        }
+    }
+
+    private static function registerCommands()
+    {
+        $class = new ReflectionClass('\Realblog\Realblog');
+        $commands = array();
+        foreach ($class->getMethods() as $method) {
+            $methodName = $method->getName();
+            if (preg_match('/.*(?=Command$)/', $methodName, $m)) {
+                $commands[$m[0]] = $method->getParameters();
+            }
+        }
+        foreach ($commands as $name => $params) {
+            $paramList = $argList = array();
+            foreach ($params as $param) {
+                $string = '$' . $param->getName();
+                $argList[] = $string;
+                if ($param->isOptional()) {
+                    $string .= '=' . var_export($param->getDefaultValue(), true);
+                }
+                $paramList[] = $string;
+            }
+            $paramString = implode(',', $paramList);
+            $argString = implode(',', $argList);
+            eval("function Realblog_$name($paramString) {return \\Realblog\\Realblog::{$name}Command($argString);}");
         }
     }
 
@@ -220,6 +247,76 @@ class Realblog
     private static function autoArchive()
     {
         DB::autoChangeStatus('archiving_date', 2);
+    }
+
+    /**
+     * @param bool $showSearch
+     * @param string $category
+     * @return string
+     */
+    public static function blogCommand($showSearch = false, $category = 'all')
+    {
+        $controller = new BlogController($showSearch, $category);
+        if (filter_has_var(INPUT_GET, 'realblog_id')) {
+            return $controller->showArticleAction(filter_input(
+                INPUT_GET,
+                'realblog_id',
+                FILTER_VALIDATE_INT,
+                array('options' => array('min_range' => 1))
+            ));
+        } else {
+            return $controller->defaultAction();
+        }
+    }
+
+    /**
+     * @param bool $showSearch
+     * @return string
+     */
+    public static function archiveCommand($showSearch = false)
+    {
+        $controller = new ArchiveController($showSearch);
+        if (filter_has_var(INPUT_GET, 'realblog_id')) {
+            return $controller->showArticleAction(filter_input(
+                INPUT_GET,
+                'realblog_id',
+                FILTER_VALIDATE_INT,
+                array('options' => array('min_range' => 1))
+            ));
+        } else {
+            return $controller->defaultAction();
+        }
+    }
+
+    /**
+     * @param string $pageUrl
+     * @param bool $showTeaser
+     * @return string
+     */
+    public static function linkCommand($pageUrl, $showTeaser = false)
+    {
+        $controller = new LinkController($pageUrl, $showTeaser);
+        return $controller->defaultAction();
+    }
+
+    /**
+     * @param string $pageUrl
+     * @return string
+     */
+    public static function mostPopularCommand($pageUrl)
+    {
+        $controller = new MostPopularController($pageUrl);
+        return $controller->defaultAction();
+    }
+
+    /**
+     * @param string $target
+     * @return string
+     */
+    public static function feedLinkCommand($target = '_self')
+    {
+        $controller = new FeedLinkController();
+        return $controller->defaultAction($target);
     }
 
     /**
