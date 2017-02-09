@@ -69,6 +69,9 @@
         <p>
             <label for="realblog_categories" class="realblog_label"><?=$this->text('label_categories')?></label>
             <input type="text" id="realblog_categories" name="realblog_categories" value="<?=$this->categories?>" size="50">
+            <select id="realblog_category_select">
+                <option><?=$this->text('label_category_add')?></option>
+            </select>
         </p>
         <p>
             <label for="realblog_title" class="realblog_label"><?=$this->text('title_label')?></label>

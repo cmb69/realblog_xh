@@ -48,3 +48,34 @@ REALBLOG.initDatePickers = function () {
 }
 
 REALBLOG.initDatePickers();
+
+(function () {
+    var select, i, option;
+
+    if (REALBLOG.categories) {
+        select = document.getElementById("realblog_category_select");
+        if (select) {
+            for (i = 0; i < REALBLOG.categories.length; i++) {
+                option = document.createElement("option");
+                option.text = option.value = REALBLOG.categories[i];
+                select.add(option);
+            }
+            select.onchange = function (event) {
+                var target, input, category;
+    
+                event = event || window.event;
+                target = event.target || event.srcElement;
+                input = document.getElementById("realblog_categories");
+                if (input && target.selectedIndex) {
+                    category = target[target.selectedIndex].value;
+                    if (input.value) {
+                        input.value += "," + category;
+                    } else {
+                        input.value = category;
+                    }
+                }
+                target.selectedIndex = 0;
+            };
+        }
+    }
+}());
