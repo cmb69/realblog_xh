@@ -125,10 +125,10 @@ class Realblog
                 $o .= self::renderInfoView();
                 break;
             case 'plugin_main':
-                self::handleMainAdministration();
+                self::routeTo('\Realblog\MainAdminController');
                 break;
             case 'data_exchange':
-                self::handleDataExchange();
+                self::routeTo('\Realblog\DataExchangeController');
                 break;
             default:
                 $o .= plugin_admin_common($action, $admin, 'realblog');
@@ -146,29 +146,12 @@ class Realblog
         return $view->render() . $systemCheck->render();
     }
 
-    private static function handleMainAdministration()
+    private static function routeTo($controllerClassName)
     {
         global $o, $action;
 
         $methodName = lcfirst(implode('', array_map('ucfirst', explode('_', $action)))) . 'Action';
-        $controller = new MainAdminController();
-        $class = new ReflectionClass($controller);
-        if ($class->hasMethod($methodName)
-            && ($method = $class->getMethod($methodName))
-            && $method->isPublic()
-        ) {
-            $o .= $method->invoke($controller);
-        } else {
-            $o .= $controller->defaultAction();
-        }
-    }
-
-    private static function handleDataExchange()
-    {
-        global $o, $action;
-
-        $methodName = lcfirst(implode('', array_map('ucfirst', explode('_', $action)))) . 'Action';
-        $controller = new DataExchangeController();
+        $controller = new $controllerClassName();
         $class = new ReflectionClass($controller);
         if ($class->hasMethod($methodName)
             && ($method = $class->getMethod($methodName))
