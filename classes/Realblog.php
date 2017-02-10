@@ -213,7 +213,7 @@ class Realblog
             . $plugin_cf['realblog']['rss_logo']
         );
         $count = $plugin_cf['realblog']['rss_entries'];
-        $view->articles = DB::findFeedableArticles($count);
+        $view->articles = Finder::findFeedableArticles($count);
         $view->articleUrl = function ($article) use ($sn, $plugin_tx) {
             return CMSIMPLE_URL . substr(
                 Realblog::url(

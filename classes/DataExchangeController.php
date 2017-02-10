@@ -19,7 +19,7 @@ class DataExchangeController extends AbstractController
         $view = new View('data-exchange');
         $view->csrfToken = $this->getCsrfToken();
         $view->url = "$sn?realblog";
-        $view->articleCount = DB::countArticlesWithStatus(array(0, 1, 2));
+        $view->articleCount = Finder::countArticlesWithStatus(array(0, 1, 2));
         $filename = $this->getCsvFilename();
         if (file_exists($filename)) {
             $view->filename = $filename;

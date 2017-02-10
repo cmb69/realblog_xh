@@ -29,12 +29,12 @@ class MainAdminController extends AbstractController
     public function defaultAction()
     {
         $statuses = $this->getFilterStatuses();
-        $total = DB::countArticlesWithStatus($statuses);
+        $total = Finder::countArticlesWithStatus($statuses);
         $limit = $this->config['admin_records_page'];
         $pageCount = ceil($total / $limit);
         $page = max(min($this->page, $pageCount), 1);
         $offset = ($page - 1) * $limit;
-        $articles = DB::findArticlesWithStatus($statuses, $limit, $offset);
+        $articles = Finder::findArticlesWithStatus($statuses, $limit, $offset);
         return $this->renderArticles($articles, $pageCount);
     }
 
@@ -113,7 +113,7 @@ class MainAdminController extends AbstractController
                 FILTER_VALIDATE_INT,
                 array('options' => array('min_range' => 1))
             );
-            $article = DB::findById($id);
+            $article = Finder::findById($id);
             if (!$article) {
                 return XH_message('fail', $this->text['message_not_found']);
             }
@@ -158,7 +158,7 @@ class MainAdminController extends AbstractController
         }
         $this->useCalendar();
         $bjs .= '<script type="text/javascript">REALBLOG.categories = '
-            . json_encode(DB::findAllCategories()) . ';</script>'
+            . json_encode(Finder::findAllCategories()) . ';</script>'
             . '<script type="text/javascript" src="' . $pth['folder']['plugins']
             . 'realblog/realblog.js"></script>';
         $view = new View('article-form');

@@ -31,10 +31,10 @@ class BlogController extends MainController
             ? -1 : 1;
         $limit = max(1, $this->config['entries_per_page']);
         $page = Realblog::getPage();
-        $articleCount = DB::countArticlesWithStatus(array(1), $this->category, $this->searchTerm);
+        $articleCount = Finder::countArticlesWithStatus(array(1), $this->category, $this->searchTerm);
         $pageCount = ceil($articleCount / $limit);
         $page = min(max($page, 1), $pageCount);
-        $articles = DB::findArticles(1, $limit, ($page-1) * $limit, $order, $this->category, $this->searchTerm);
+        $articles = Finder::findArticles(1, $limit, ($page-1) * $limit, $order, $this->category, $this->searchTerm);
         if ($this->searchTerm) {
             $html .= $this->renderSearchResults('blog', $articleCount);
         }

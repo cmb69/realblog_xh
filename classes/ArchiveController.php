@@ -26,7 +26,7 @@ class ArchiveController extends MainController
         }
 
         if ($this->searchTerm) {
-            $articles = DB::findArchivedArticlesContaining($this->searchTerm);
+            $articles = Finder::findArchivedArticlesContaining($this->searchTerm);
             $articleCount = count($articles);
             $html .= $this->renderSearchResults('archive', $articleCount);
         } else {
@@ -41,7 +41,7 @@ class ArchiveController extends MainController
     {
         if (!$this->searchTerm) {
             $year = $this->year;
-            $years = DB::findArchiveYears();
+            $years = Finder::findArchiveYears();
             $key = array_search($year, $years);
             if ($key === false) {
                 $key = count($years) - 1;
@@ -49,7 +49,7 @@ class ArchiveController extends MainController
             }
             $back = ($key > 0) ? $years[$key - 1] : null;
             $next = ($key < count($years) - 1) ? $years[$key + 1] : null;
-            $articles = DB::findArchivedArticlesInPeriod(
+            $articles = Finder::findArchivedArticlesInPeriod(
                 mktime(0, 0, 0, 1, 1, $year),
                 mktime(0, 0, 0, 1, 1, $year + 1)
             );

@@ -63,7 +63,7 @@ abstract class MainController extends AbstractController
     {
         global $sn, $su, $h, $s, $title, $description;
 
-        $article = DB::findById($id);
+        $article = Finder::findById($id);
         if (isset($article) && !XH_ADM && $article->status > 0) {
             DB::recordPageView($id);
         }

@@ -30,7 +30,7 @@ class LinkController extends AbstractController
             return;
         }
         $view = new View('latest');
-        $view->articles = DB::findArticles(1, $this->config['links_visible']);
+        $view->articles = Finder::findArticles(1, $this->config['links_visible']);
         $view->formatDate = function ($article) {
             global $plugin_tx;
 
