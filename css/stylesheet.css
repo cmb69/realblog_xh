@@ -127,10 +127,9 @@ margin: 10px 0 0 0;
     padding: 0 1em;
     float: left;
 }
-.realblog_entries_preview::after {
-    content: " ";
-    display: block;
-    height: 0;
+.realblog_entries_preview:after {
+    content: "";
+    display: table;
     clear: both;
 }
 */
@@ -162,6 +161,11 @@ margin: 6px 0 10px 0;
 .realblog_show_story {
 width: 100%;
 border-bottom: 1px solid;
+}
+.realblog_show_story:after {
+    content: "";
+    display: table;
+    clear: both;
 }
 
 .realblog_show_story_entry {
