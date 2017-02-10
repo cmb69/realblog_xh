@@ -226,8 +226,9 @@ SQL;
         $result = $statement->execute();
         $categories = array();
         while (($record = $result->fetchArray(SQLITE3_ASSOC)) !== false) {
-            if ($record['categories'] === ',,') continue;
-            $categories = array_merge($categories, explode(',', trim($record['categories'], ',')));
+            if ($record['categories'] !== ',,') {
+                $categories = array_merge($categories, explode(',', trim($record['categories'], ',')));
+            }
         }
         $categories = array_unique($categories);
         sort($categories);
