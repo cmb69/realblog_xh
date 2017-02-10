@@ -59,61 +59,73 @@ abstract class MainController extends AbstractController
         return $view->render();
     }
 
+    /**
+     * @param int $id
+     * @return string
+     */
     protected function renderArticle($id)
     {
-        global $sn, $su, $h, $s, $title, $description;
-
         $article = Finder::findById($id);
         if (isset($article) && !XH_ADM && $article->status > 0) {
             DB::recordPageView($id);
         }
         if (isset($article) && ((defined('XH_ADM') && XH_ADM) || $article->status > 0)) {
-            $title .= $h[$s] . " \xE2\x80\x93 " . $article->title;
-            $description = $this->getDescription($article);
-            $view = new View('article');
-            $view->article = $article;
-            $view->heading = $this->config['heading_level'];
-            $view->isAdmin = defined('XH_ADM') && XH_ADM;
-            $view->wantsComments = $this->wantsComments();
-            if ($article->status === 2) {
-                $params = array('realblog_year' => $this->year);
-                $view->backText = $this->text['archiv_back'];
-            } else {
-                $params = array('realblog_page' => Realblog::getPage());
-                $view->backText = $this->text['blog_back'];
-            }
-            $view->backUrl = Realblog::url($su, $params);
-            if ($this->searchTerm) {
-                $params['realblog_search'] = $this->searchTerm;
-                $view->backToSearchUrl = Realblog::url($su, $params);
-            }
-            $view->editUrl = "$sn?&realblog&admin=plugin_main"
-                . "&action=edit&realblog_id={$article->id}";
-            if ($this->wantsComments()) {
-                $bridge = "{$this->config['comments_plugin']}_RealblogBridge";
-                $commentsUrl = call_user_func(array($bridge, 'getEditUrl'), 'realblog' . $article->id);
-                if ($commentsUrl !== false) {
-                    $view->editCommentsUrl = $commentsUrl;
-                }
-            }
-            $view->date = date($this->text['date_format'], $article->date);
-            if ($this->config['show_teaser']) {
-                $story = '<div class="realblog_teaser">' . $article->teaser . '</div>' . $article->body;
-            } else {
-                $story = ($article->body != '') ? $article->body : $article->teaser;
-            }
-            $view->story = new HtmlString(evaluate_scripting($story));
-            $view->renderComments = function ($article) {
-                global $plugin_cf;
-
-                if ($article->commentable) {
-                    $commentId = 'comments' . $article->id;
-                    $bridge = $plugin_cf['realblog']['comments_plugin'] . '_RealblogBridge';
-                    return new HtmlString(call_user_func(array($bridge, 'handle'), $commentId));
-                }
-            };
-            return $view->render();
+            return $this->doRenderArticle($article);
         }
+    }
+
+    /**
+     * @return string
+     */
+    private function doRenderArticle(stdClass $article)
+    {
+        global $sn, $su, $h, $s, $title, $description;
+
+        $title .= $h[$s] . " \xE2\x80\x93 " . $article->title;
+        $description = $this->getDescription($article);
+        $view = new View('article');
+        $view->article = $article;
+        $view->heading = $this->config['heading_level'];
+        $view->isAdmin = defined('XH_ADM') && XH_ADM;
+        $view->wantsComments = $this->wantsComments();
+        if ($article->status === 2) {
+            $params = array('realblog_year' => $this->year);
+            $view->backText = $this->text['archiv_back'];
+        } else {
+            $params = array('realblog_page' => Realblog::getPage());
+            $view->backText = $this->text['blog_back'];
+        }
+        $view->backUrl = Realblog::url($su, $params);
+        if ($this->searchTerm) {
+            $params['realblog_search'] = $this->searchTerm;
+            $view->backToSearchUrl = Realblog::url($su, $params);
+        }
+        $view->editUrl = "$sn?&realblog&admin=plugin_main"
+            . "&action=edit&realblog_id={$article->id}";
+        if ($this->wantsComments()) {
+            $bridge = "{$this->config['comments_plugin']}_RealblogBridge";
+            $commentsUrl = call_user_func(array($bridge, 'getEditUrl'), 'realblog' . $article->id);
+            if ($commentsUrl !== false) {
+                $view->editCommentsUrl = $commentsUrl;
+            }
+        }
+        $view->date = date($this->text['date_format'], $article->date);
+        if ($this->config['show_teaser']) {
+            $story = '<div class="realblog_teaser">' . $article->teaser . '</div>' . $article->body;
+        } else {
+            $story = ($article->body != '') ? $article->body : $article->teaser;
+        }
+        $view->story = new HtmlString(evaluate_scripting($story));
+        $view->renderComments = function ($article) {
+            global $plugin_cf;
+
+            if ($article->commentable) {
+                $commentId = 'comments' . $article->id;
+                $bridge = $plugin_cf['realblog']['comments_plugin'] . '_RealblogBridge';
+                return new HtmlString(call_user_func(array($bridge, 'handle'), $commentId));
+            }
+        };
+        return $view->render();
     }
 
     /**
