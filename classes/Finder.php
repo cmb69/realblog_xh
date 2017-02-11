@@ -23,7 +23,6 @@ class Finder
      */
     public static function findArticles($status, $limit, $offset = 0, $order = -1, $category = 'all', $search = null)
     {
-        $db = DB::getConnection();
         if ($order === -1) {
             $order = 'DESC';
         } else {
@@ -42,16 +41,12 @@ SELECT id, date, title, teaser, commentable, length(body) AS body_length
     ORDER BY date $order, id $order
     LIMIT $limit OFFSET $offset
 EOS;
-        $statement = $db->prepare($sql);
-        $statement->bindValue(':status', $status, SQLITE3_INTEGER);
-        $statement->bindValue(':category', "%,$category,%", SQLITE3_TEXT);
-        $statement->bindValue(':search', "%$search%", SQLITE3_TEXT);
-        $result = $statement->execute();
-        $records = array();
-        while (($record = $result->fetchArray(SQLITE3_ASSOC)) !== false) {
-            $records[] = (object) $record;
-        }
-        return $records;
+        $bindings = array(
+            array(':status', $status, SQLITE3_INTEGER),
+            array(':category', "%,$category,%", SQLITE3_TEXT),
+            array(':search', "%$search%", SQLITE3_TEXT)
+        );
+        return self::fetchAllAsObject($sql, $bindings);
     }
 
     /**
@@ -61,22 +56,17 @@ EOS;
      */
     public static function findArchivedArticlesInPeriod($start, $end)
     {
-        $db = DB::getConnection();
         $sql = <<<'EOS'
 SELECT id, date, title FROM articles
     WHERE status = :status AND date >= :start AND date < :end
     ORDER BY date DESC, id DESC
 EOS;
-        $stmt = $db->prepare($sql);
-        $stmt->bindValue(':status', 2, SQLITE3_INTEGER);
-        $stmt->bindValue(':start', $start, SQLITE3_INTEGER);
-        $stmt->bindValue(':end', $end, SQLITE3_INTEGER);
-        $result = $stmt->execute();
-        $records = array();
-        while (($record = $result->fetchArray(SQLITE3_ASSOC)) !== false) {
-            $records[] = (object) $record;
-        }
-        return $records;
+        $bindings = array(
+            array(':status', 2, SQLITE3_INTEGER),
+            array(':start', $start, SQLITE3_INTEGER),
+            array(':end', $end, SQLITE3_INTEGER)
+        );
+        return self::fetchAllAsObject($sql, $bindings);
     }
 
     public static function findArchiveYears()
@@ -105,15 +95,10 @@ SELECT id, date, title FROM articles
     WHERE (title LIKE :text OR body LIKE :text) AND status = 2
     ORDER BY date DESC, id DESC
 EOS;
-        $db = DB::getConnection();
-        $stmt = $db->prepare($sql);
-        $stmt->bindValue(':text', '%' . $search . '%', SQLITE3_TEXT);
-        $result = $stmt->execute();
-        $records = array();
-        while (($record = $result->fetchArray(SQLITE3_ASSOC)) !== false) {
-            $records[] = (object) $record;
-        }
-        return $records;
+        $bindings = array(
+            array(':text', '%' . $search . '%', SQLITE3_TEXT)
+        );
+        return self::fetchAllAsObject($sql, $bindings);
     }
 
     /**
@@ -153,7 +138,6 @@ SQL;
      */
     public static function findArticlesWithStatus(array $statuses, $limit, $offset)
     {
-        $db = DB::getConnection();
         if (empty($statuses)) {
             $whereClause = '';
         } else {
@@ -163,12 +147,7 @@ SQL;
 SELECT id, date, status, title, feedable, commentable
     FROM articles $whereClause ORDER BY id DESC LIMIT $limit OFFSET $offset
 EOS;
-        $result = $db->query($sql);
-        $records = array();
-        while (($record = $result->fetchArray(SQLITE3_ASSOC)) !== false) {
-            $records[] = (object) $record;
-        }
-        return $records;
+        return self::fetchAllAsObject($sql);
     }
 
     /**
@@ -177,20 +156,15 @@ EOS;
      */
     public static function findFeedableArticles($count)
     {
-        $db = DB::getConnection();
         $sql = <<<SQL
 SELECT id, date, title, teaser
     FROM articles WHERE status = 1 AND feedable = :feedable ORDER BY date DESC, id DESC
     LIMIT $count
 SQL;
-        $statement = $db->prepare($sql);
-        $statement->bindValue(':feedable', 1, SQLITE3_INTEGER);
-        $result = $statement->execute();
-        $records = array();
-        while (($record = $result->fetchArray(SQLITE3_ASSOC)) !== false) {
-            $records[] = (object) $record;
-        }
-        return $records;
+        $bindings = array(
+            array(':feedable', 1, SQLITE3_INTEGER)
+        );
+        return self::fetchAllAsObject($sql, $bindings);
     }
 
     /**
@@ -206,14 +180,30 @@ SELECT articles.id, articles.title, COUNT(*) AS page_views
     ORDER BY page_views DESC
     LIMIT $limit
 SQL;
-        $db = DB::getConnection();
-        $statement = $db->prepare($sql);
-        $result = $statement->execute();
-        $records = array();
-        while (($record = $result->fetchArray(SQLITE3_ASSOC)) !== false) {
-            $records[] = (object) $record;
+        return self::fetchAllAsObject($sql);
+    }
+
+    /**
+     * @param string $sql
+     * @return stdClass[]
+     */
+    private static function fetchAllAsObject($sql, array $bindings = null)
+    {
+        $connection = DB::getConnection();
+        if (isset($bindings)) {
+            $statement = $connection->prepare($sql);
+            foreach ($bindings as $binding) {
+                call_user_func_array(array($statement, 'bindValue'), $binding);
+            }
+            $result = $statement->execute();
+        } else {
+            $result = $connection->query($sql);
         }
-        return $records;
+        $objects = array();
+        while (($record = $result->fetchArray(SQLITE3_ASSOC)) !== false) {
+            $objects[] = (object) $record;
+        }
+        return $objects;
     }
 
     /**
