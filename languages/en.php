@@ -136,6 +136,7 @@ $plugin_tx['realblog']['cf_rss_logo']="The path of the logo, relative to the ima
 $plugin_tx['realblog']['cf_rss_entries']="The maximum number of articles shown in the RSS feed.";
 $plugin_tx['realblog']['cf_pagination_bottom']="Show the pagination below the entries preview?";
 $plugin_tx['realblog']['cf_pagination_top']="Show the pagination above the entries preview?";
+$plugin_tx['realblog']['cf_pagination_radius']="The number of pagelinks to show before and after the current page in the pagination.";
 $plugin_tx['realblog']['cf_show_read_more_link']="Display the \"read more\" link and the number of comments in the teaser?";
 $plugin_tx['realblog']['cf_show_teaser']="Repeat the teaser as lead above the article?";
 
