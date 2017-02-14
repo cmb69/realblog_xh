@@ -60,18 +60,18 @@ padding-bottom: 12px;
     border: 1px solid;
     border-collapse: collapse;
 }
-.realblog_table tr:nth-child(even) {
+.realblog_table tr:nth-child(odd) {
     border: 1px solid;
     border-bottom: none;
 }
-.realblog_table_header, .realblog_table_footer {
+.realblog_table thead th, .realblog_table tfoot td {
     background: #555;
     color: #fff;
     padding: 0.5em 0;
     font-weight: bold;
     text-align: center;
 }
-.realblog_table_header button, .realblog_table_footer button {
+.realblog_table thead th button, .realblog_table tfoot td button {
     background: none;
     border: none;
     cursor: pointer;
@@ -81,23 +81,24 @@ padding-bottom: 12px;
 border: 1px solid #075FB9;
 }
 
-.realblog_table_line {
+.realblog_table tbody td {
     padding: 0.3em;
     text-align: center;
 }
-.realblog_table_line:nth-child(4), .realblog_table_line:nth-child(6),
-.realblog_table_line:nth-child(7), .realblog_table_line:nth-child(8) {
+.realblog_table tbody td:nth-child(4), .realblog_table tbody td:nth-child(6),
+.realblog_table tbody td:nth-child(7), .realblog_table tbody td:nth-child(8) {
     font-weight: bold;
 }
 
-.realblog_table_title {
+.realblog_table tbody td.realblog_table_title {
     padding: 0.3em 1em;
+    text-align: left;
 }
-.realblog_table_categories {
+.realblog_table tbody td.realblog_table_categories {
     padding: 0.3em 1em;
     text-align: right;
 }
-.realblog_table_line img, .realblog_table_header img {
+.realblog_table tbody td img, .realblog_table thead th img {
 border: 0;
 }
 
