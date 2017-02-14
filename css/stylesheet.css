@@ -60,7 +60,10 @@ padding-bottom: 12px;
     border: 1px solid;
     border-collapse: collapse;
 }
-
+.realblog_table tr:nth-child(even) {
+    border: 1px solid;
+    border-bottom: none;
+}
 .realblog_table_header, .realblog_table_footer {
     background: #555;
     color: #fff;
@@ -89,9 +92,11 @@ border: 1px solid #075FB9;
 
 .realblog_table_title {
     padding: 0.3em 1em;
-    border-bottom: 1px solid;
 }
-
+.realblog_table_categories {
+    padding: 0.3em 1em;
+    text-align: right;
+}
 .realblog_table_line img, .realblog_table_header img {
 border: 0;
 }

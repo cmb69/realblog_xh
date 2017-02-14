@@ -144,7 +144,7 @@ SQL;
             $whereClause = sprintf('WHERE status IN (%s)', implode(', ', $statuses));
         }
         $sql = <<<EOS
-SELECT id, date, status, title, feedable, commentable
+SELECT id, date, status, trim(categories, ',') as categories, title, feedable, commentable
     FROM articles $whereClause ORDER BY id DESC LIMIT $limit OFFSET $offset
 EOS;
         return self::fetchAllAsObject($sql);

@@ -48,7 +48,8 @@
                 <td class="realblog_table_line"><?=$this->escape($article->commentable)?></td>
             </tr>
             <tr>
-                <td colspan="8" class="realblog_table_title"><?=$this->escape($article->title)?></td>
+                <td colspan="5" class="realblog_table_title"><?=$this->escape($article->title)?></td>
+                <td colspan="3" class="realblog_table_categories"><?=$this->escape($article->categories)?></td>
             </tr>
 <?php endforeach?>
             <tr>
