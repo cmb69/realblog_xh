@@ -91,13 +91,13 @@ class BlogController extends MainController
             global $plugin_cf;
 
             return $plugin_cf['realblog']['comments_plugin']
-                && class_exists("{$plugin_cf['realblog']['comments_plugin']}_RealblogBridge")
+                && class_exists(ucfirst($plugin_cf['realblog']['comments_plugin']) . '\\RealblogBridge')
                 && $article->commentable;
         };
         $view->commentCount = function ($article) {
             global $plugin_cf;
 
-            $bridge = $plugin_cf['realblog']['comments_plugin'] . '_RealblogBridge';
+            $bridge = ucfirst($plugin_cf['realblog']['comments_plugin']) . '\\RealblogBridge';
             $commentsId = "comments{$article->id}";
             return call_user_func(array($bridge, 'count'), $commentsId);
         };

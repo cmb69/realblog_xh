@@ -177,10 +177,10 @@ from the browser's address bar.</p>
 <p>To add a commenting facility to your blog, you have to install a compatible
 comments plugin and enter its name in Realblog_XH's configuration.</p>
 <p>Note for implementers: to be compatible with Realblog_XH you have to write a
-class named %YOURPLUGIN%_RealblogBridge which implements the interface
+class named %YOURPLUGIN%\RealblogBridge which implements the interface
 Realblog\CommentsBridge, which is defined and documented in
 plugins/realblog/classes/CommentsBridge.php. Make sure this class and its
-dependencies are loaded when Realblog_XH needs it.</p>
+dependencies are loaded when Realblog_XH needs it; autoloading is recommended.</p>
 <div class="toplink"><a href="#">back to top</a></div>
 
 <h2 id="bc">Backward compatibility</h2>
