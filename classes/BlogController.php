@@ -102,7 +102,7 @@ class BlogController extends MainController
             global $plugin_cf;
 
             $bridge = ucfirst($plugin_cf['realblog']['comments_plugin']) . '\\RealblogBridge';
-            $commentsId = "comments{$article->id}";
+            $commentsId = "realblog{$article->id}";
             return call_user_func(array($bridge, 'count'), $commentsId);
         };
         return $view->render();
