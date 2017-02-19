@@ -31,6 +31,7 @@ class LinkController extends AbstractController
         }
         $view = new View('latest');
         $view->articles = Finder::findArticles(1, $this->config['links_visible']);
+        $view->heading = $this->config['heading_level'];
         $view->formatDate = function ($article) {
             global $plugin_tx;
 

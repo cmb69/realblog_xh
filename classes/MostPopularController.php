@@ -26,6 +26,7 @@ class MostPopularController extends AbstractController
         }
         $view = new View('most-popular');
         $view->articles = Finder::findMostPopularArticles($this->config['links_visible']);
+        $view->heading = $this->config['heading_level'];
         $pageUrl = $this->pageUrl;
         $view->url = function ($article) use ($pageUrl) {
             return Realblog::url($pageUrl, array('realblog_id' => $article->id));

@@ -1,6 +1,6 @@
 <!-- realblog most popular -->
 <div class="realblog_most_popular">
-    <p class="realbloglink"><?=$this->text('most_popular')?></p>
+    <<?=$this->heading?>><?=$this->text('most_popular')?></<?=$this->heading?>>
 <?php if (!empty($this->articles)):?>
 <?php   foreach ($this->articles as $article):?>
     <p>

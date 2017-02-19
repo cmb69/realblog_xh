@@ -1,6 +1,6 @@
 <!-- realblog latest -->
 <div class="realblog_latest">
-    <p class="realbloglink"><?=$this->text('links_visible_text')?></p>
+    <<?=$this->heading?>><?=$this->text('links_visible_text')?></<?=$this->heading?>>
 <?php if (!empty($this->articles)):?>
     <div class="realblog_tpl_show_box">
 <?php   foreach ($this->articles as $article):?>

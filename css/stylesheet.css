@@ -185,10 +185,6 @@ overflow: hidden;
 
 /* tpl_classes for function realbloglink */
 
-.realbloglink {
-    font-weight: 700;
-}
-
 .realblog_tpl_show_date {
 font-style: italic;
 border-top: 1px solid;
