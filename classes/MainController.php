@@ -111,7 +111,7 @@ abstract class MainController extends AbstractController
             if ($commentsUrl !== false) {
                 $view->editCommentsUrl = $commentsUrl;
             }
-            $view->commentCount = call_user_func(array($bridge, 'count'), "comments{$article->id}");
+            $view->commentCount = call_user_func(array($bridge, 'count'), "realblog{$article->id}");
         }
         $view->date = date($this->text['date_format'], $article->date);
         $categories = explode(',', trim($article->categories, ','));
