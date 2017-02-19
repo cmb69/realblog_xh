@@ -42,11 +42,6 @@ margin-bottom: 12px;
     overflow: auto;
 }
 
-.realblog_number_of_comments {
-float: left;
-font-style: italic;
-}
-
 .realblog_read_more {
 float: right;
 padding-bottom: 12px;
@@ -173,7 +168,10 @@ border-bottom: 1px solid;
     display: table;
     clear: both;
 }
-
+.realblog_article_meta {
+    font-size: 0.85em;
+    font-style: italic;
+}
 .realblog_show_story_entry {
 width: 100%;
 border-bottom: 0;

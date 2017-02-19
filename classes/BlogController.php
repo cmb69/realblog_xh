@@ -70,6 +70,10 @@ class BlogController extends MainController
                 )
             );
         };
+        $view->categories = function ($article) {
+            $categories = explode(',', trim($article->categories, ','));
+            return implode(', ', $categories);
+        };
         $view->hasLinkedHeader = function ($article) {
             return $article->body_length || (defined('XH_ADM') && XH_ADM);
         };

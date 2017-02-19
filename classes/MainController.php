@@ -103,13 +103,16 @@ abstract class MainController extends AbstractController
         $view->editUrl = "$sn?&realblog&admin=plugin_main"
             . "&action=edit&realblog_id={$article->id}";
         if ($this->wantsComments()) {
-            $bridge = "{$this->config['comments_plugin']}\\RealblogBridge";
-            $commentsUrl = call_user_func(array($bridge, 'getEditUrl'), 'realblog' . $article->id);
+            $bridge = ucfirst($this->config['comments_plugin']) . '\\RealblogBridge';
+            $commentsUrl = call_user_func(array($bridge, 'getEditUrl'), 'comments' . $article->id);
             if ($commentsUrl !== false) {
                 $view->editCommentsUrl = $commentsUrl;
             }
+            $view->commentCount = call_user_func(array($bridge, 'count'), "comments{$article->id}");
         }
         $view->date = date($this->text['date_format'], $article->date);
+        $categories = explode(',', trim($article->categories, ','));
+        $view->categories = implode(', ', $categories);
         if ($this->config['show_teaser']) {
             $story = '<div class="realblog_teaser">' . $article->teaser . '</div>' . $article->body;
         } else {
@@ -121,7 +124,7 @@ abstract class MainController extends AbstractController
 
             if ($article->commentable) {
                 $commentId = 'comments' . $article->id;
-                $bridge = $plugin_cf['realblog']['comments_plugin'] . '\\RealblogBridge';
+                $bridge = ucfirst($plugin_cf['realblog']['comments_plugin']) . '\\RealblogBridge';
                 return new HtmlString(call_user_func(array($bridge, 'handle'), $commentId));
             }
         };

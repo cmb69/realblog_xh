@@ -17,7 +17,13 @@
         </div>
     
         <<?=$this->heading?>><?=$this->escape($this->article->title)?></<?=$this->heading?>>
-        <div class="realblog_show_date"><?=$this->date?></div>
+        <div class="realblog_article_meta">
+            <span class="realblog_meta_date"><?=$this->text('message_published_on', $this->date)?></span>
+            <span class="realblog_meta_categories"><?=$this->text('message_filed_under', $this->categories)?></span>
+<?php if (isset($this->commentCount)):?>
+            <span class="realblog_meta_comments"><?=$this->plural('message_comments', $this->commentCount)?></span>
+<?php endif?>
+        </div>
         <div class="realblog_show_story_entry"><?=$this->story?></div>
     
         <div class="realblog_buttons">
