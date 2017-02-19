@@ -21,7 +21,9 @@
 <?php endif?>
         <div class="realblog_article_meta">
             <span class="realblog_meta_date"><?=$this->text('message_published_on', $this->date)?></span>
+<?php if ($this->categories):?>
             <span class="realblog_meta_categories"><?=$this->text('message_filed_under', $this->categories)?></span>
+<?php endif?>
 <?php if (isset($this->commentCount)):?>
             <span class="realblog_meta_comments"><?=$this->plural('message_comments', $this->commentCount)?></span>
 <?php endif?>

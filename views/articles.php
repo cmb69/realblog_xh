@@ -9,7 +9,9 @@
 <?php if ($this->isHeadingAboveMeta):?>
             <div class="realblog_article_meta">
                 <span class="realblog_meta_date"><?=$this->text('message_published_on', $this->date($article))?></span>
+<?php   if ($this->categories($article)):?>
                 <span class="realblog_meta_categories"><?=$this->text('message_filed_under', $this->categories($article))?></span>
+<?php   endif?>
 <?php   if ($this->isCommentable($article)):?>
                 <span class="realblog_meta_comments"><?=$this->plural('message_comments', $this->commentCount($article))?></span>
 <?php   endif?>
@@ -27,7 +29,9 @@
 <?php if (!$this->isHeadingAboveMeta):?>
             <div class="realblog_article_meta">
                 <span class="realblog_meta_date"><?=$this->text('message_published_on', $this->date($article))?></span>
+<?php   if ($this->categories($article)):?>
                 <span class="realblog_meta_categories"><?=$this->text('message_filed_under', $this->categories($article))?></span>
+<?php   endif?>
 <?php   if ($this->isCommentable($article)):?>
                 <span class="realblog_meta_comments"><?=$this->plural('message_comments', $this->commentCount($article))?></span>
 <?php   endif?>
