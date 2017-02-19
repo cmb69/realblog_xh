@@ -79,13 +79,14 @@ abstract class MainController extends AbstractController
      */
     private function doRenderArticle(stdClass $article)
     {
-        global $sn, $su, $h, $s, $title, $description;
+        global $sn, $su, $h, $s, $title, $description, $plugin_cf;
 
         $title .= $h[$s] . " \xE2\x80\x93 " . $article->title;
         $description = $this->getDescription($article);
         $view = new View('article');
         $view->article = $article;
         $view->heading = $this->config['heading_level'];
+        $view->isHeadingAboveMeta = $plugin_cf['realblog']['heading_above_meta'];
         $view->isAdmin = defined('XH_ADM') && XH_ADM;
         $view->wantsComments = $this->wantsComments();
         if ($article->status === 2) {
@@ -103,13 +104,18 @@ abstract class MainController extends AbstractController
         $view->editUrl = "$sn?&realblog&admin=plugin_main"
             . "&action=edit&realblog_id={$article->id}";
         if ($this->wantsComments()) {
+
+            $bridge = ucfirst($this->config['comments_plugin']) . '\\RealblogBridge';
             $bridge = "{$this->config['comments_plugin']}\\RealblogBridge";
             $commentsUrl = call_user_func(array($bridge, 'getEditUrl'), "realblog{$article->id}");
             if ($commentsUrl !== false) {
                 $view->editCommentsUrl = $commentsUrl;
             }
+            $view->commentCount = call_user_func(array($bridge, 'count'), "comments{$article->id}");
         }
         $view->date = date($this->text['date_format'], $article->date);
+        $categories = explode(',', trim($article->categories, ','));
+        $view->categories = implode(', ', $categories);
         if ($this->config['show_teaser']) {
             $story = '<div class="realblog_teaser">' . $article->teaser . '</div>' . $article->body;
         } else {
@@ -121,7 +127,7 @@ abstract class MainController extends AbstractController
 
             if ($article->commentable) {
                 $commentId = "realblog{$article->id}";
-                $bridge = $plugin_cf['realblog']['comments_plugin'] . '\\RealblogBridge';
+                $bridge = ucfirst($plugin_cf['realblog']['comments_plugin']) . '\\RealblogBridge';
                 return new HtmlString(call_user_func(array($bridge, 'handle'), $commentId));
             }
         };

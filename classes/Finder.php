@@ -35,7 +35,7 @@ class Finder
             ? 'AND (title LIKE :search OR body LIKE :search)'
             : '';
         $sql = <<<EOS
-SELECT id, date, title, teaser, commentable, length(body) AS body_length
+SELECT id, date, title, teaser, categories, commentable, length(body) AS body_length
     FROM articles
     WHERE status = :status $categoryClause $searchClause
     ORDER BY date $order, id $order

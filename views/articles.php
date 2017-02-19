@@ -6,6 +6,15 @@
     <div id="realblog_entries_preview" class="realblog_entries_preview">
 <?php foreach ($this->articles as $article):?>
         <div class="realblog_entry_preview">
+<?php if ($this->isHeadingAboveMeta):?>
+            <div class="realblog_article_meta">
+                <span class="realblog_meta_date"><?=$this->text('message_published_on', $this->date($article))?></span>
+                <span class="realblog_meta_categories"><?=$this->text('message_filed_under', $this->categories($article))?></span>
+<?php   if ($this->isCommentable($article)):?>
+                <span class="realblog_meta_comments"><?=$this->plural('message_comments', $this->commentCount($article))?></span>
+<?php   endif?>
+            </div>
+<?php endif?>
             <<?=$this->heading?>>
 <?php   if ($this->hasLinkedHeader($article)):?>
                 <a href="<?=$this->url($article)?>" title="<?=$this->text('tooltip_view')?>">
@@ -15,15 +24,18 @@
                 </a>
 <?php   endif?>
             </<?=$this->heading?>>
-            <div class="realblog_show_date"><?=$this->date($article)?></div>
+<?php if (!$this->isHeadingAboveMeta):?>
+            <div class="realblog_article_meta">
+                <span class="realblog_meta_date"><?=$this->text('message_published_on', $this->date($article))?></span>
+                <span class="realblog_meta_categories"><?=$this->text('message_filed_under', $this->categories($article))?></span>
+<?php   if ($this->isCommentable($article)):?>
+                <span class="realblog_meta_comments"><?=$this->plural('message_comments', $this->commentCount($article))?></span>
+<?php   endif?>
+            </div>
+<?php endif?>
             <div class="realblog_show_story"><?=$this->teaser($article)?></div>
 <?php   if ($this->hasReadMore($article)):?>
             <div class="realblog_entry_footer">
-<?php       if ($this->isCommentable($article)):?>
-                <p class="realblog_number_of_comments">
-                    <?=$this->plural('message_comments', $this->commentCount($article))?>
-                </p>
-<?php       endif?>
                 <p class="realblog_read_more">
                     <a class="realblog_button" href="<?=$this->url($article)?>" title="<?=$this->text('tooltip_view')?>"><?=$this->text('read_more')?></a>
                 </p>
