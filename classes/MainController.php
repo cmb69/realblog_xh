@@ -104,7 +104,7 @@ abstract class MainController extends AbstractController
             . "&action=edit&realblog_id={$article->id}";
         if ($this->wantsComments()) {
             $bridge = "{$this->config['comments_plugin']}\\RealblogBridge";
-            $commentsUrl = call_user_func(array($bridge, 'getEditUrl'), 'realblog' . $article->id);
+            $commentsUrl = call_user_func(array($bridge, 'getEditUrl'), "realblog{$article->id}");
             if ($commentsUrl !== false) {
                 $view->editCommentsUrl = $commentsUrl;
             }
@@ -120,7 +120,7 @@ abstract class MainController extends AbstractController
             global $plugin_cf;
 
             if ($article->commentable) {
-                $commentId = 'comments' . $article->id;
+                $commentId = "realblog{$article->id}";
                 $bridge = $plugin_cf['realblog']['comments_plugin'] . '\\RealblogBridge';
                 return new HtmlString(call_user_func(array($bridge, 'handle'), $commentId));
             }
