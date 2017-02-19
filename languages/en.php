@@ -131,6 +131,7 @@ $plugin_tx['realblog']['cf_comments_plugin']="The name of a compatible comments 
 $plugin_tx['realblog']['cf_entries_order']="The display order of the articles. \"desc\" means newest entry on top; \"asc\" means oldest entry on top";
 $plugin_tx['realblog']['cf_entries_per_page']="Number of articles on one page of the article overview, with a minimum of \"1\". Use a very large number such as \"1000000000\" to suppress the pagination altogether.";
 $plugin_tx['realblog']['cf_heading_level']="HTML element to mark up headings.";
+$plugin_tx['realblog']['cf_heading_above_meta']="Whether to show the article meta information above the article heading. Normally, it is shown below.";
 $plugin_tx['realblog']['cf_links_visible']="Maximum number of articles shown by Realblog_link() and Realblog_mostPopular().";
 $plugin_tx['realblog']['cf_rss_enabled']="Shall the RSS feed be available?";
 $plugin_tx['realblog']['cf_rss_editor']="The email address of the person responsible for editorial content.";

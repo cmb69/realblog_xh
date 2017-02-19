@@ -44,11 +44,12 @@ class BlogController extends MainController
 
     private function renderArticles(array $articles, $articleCount, $page, $pageCount)
     {
-        global $su;
+        global $su, $plugin_cf;
 
         $view = new View('articles');
         $view->articles = $articles;
         $view->heading = $this->config['heading_level'];
+        $view->isHeadingAboveMeta = $plugin_cf['realblog']['heading_above_meta'];
         $search = $this->searchTerm;
         $view->pagination = new Pagination(
             $articleCount,

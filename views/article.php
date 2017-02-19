@@ -15,8 +15,10 @@
             <a class="realblog_button" href="<?=$this->editUrl?>"><?=$this->text('entry_edit')?></a>
 <?php endif?>
         </div>
-    
+
+<?php if (!$this->isHeadingAboveMeta):?>
         <<?=$this->heading?>><?=$this->escape($this->article->title)?></<?=$this->heading?>>
+<?php endif?>
         <div class="realblog_article_meta">
             <span class="realblog_meta_date"><?=$this->text('message_published_on', $this->date)?></span>
             <span class="realblog_meta_categories"><?=$this->text('message_filed_under', $this->categories)?></span>
@@ -24,6 +26,9 @@
             <span class="realblog_meta_comments"><?=$this->plural('message_comments', $this->commentCount)?></span>
 <?php endif?>
         </div>
+<?php if ($this->isHeadingAboveMeta):?>
+        <<?=$this->heading?>><?=$this->escape($this->article->title)?></<?=$this->heading?>>
+<?php endif?>
         <div class="realblog_show_story_entry"><?=$this->story?></div>
     
         <div class="realblog_buttons">

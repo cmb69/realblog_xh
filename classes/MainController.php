@@ -79,13 +79,14 @@ abstract class MainController extends AbstractController
      */
     private function doRenderArticle(stdClass $article)
     {
-        global $sn, $su, $h, $s, $title, $description;
+        global $sn, $su, $h, $s, $title, $description, $plugin_cf;
 
         $title .= $h[$s] . " \xE2\x80\x93 " . $article->title;
         $description = $this->getDescription($article);
         $view = new View('article');
         $view->article = $article;
         $view->heading = $this->config['heading_level'];
+        $view->isHeadingAboveMeta = $plugin_cf['realblog']['heading_above_meta'];
         $view->isAdmin = defined('XH_ADM') && XH_ADM;
         $view->wantsComments = $this->wantsComments();
         if ($article->status === 2) {
