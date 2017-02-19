@@ -104,7 +104,6 @@ abstract class MainController extends AbstractController
         $view->editUrl = "$sn?&realblog&admin=plugin_main"
             . "&action=edit&realblog_id={$article->id}";
         if ($this->wantsComments()) {
-
             $bridge = ucfirst($this->config['comments_plugin']) . '\\RealblogBridge';
             $bridge = "{$this->config['comments_plugin']}\\RealblogBridge";
             $commentsUrl = call_user_func(array($bridge, 'getEditUrl'), "realblog{$article->id}");
