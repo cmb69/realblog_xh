@@ -115,7 +115,8 @@ class Realblog
     {
         global $realblog, $su;
 
-        return isset($realblog) && $realblog == 'true' || $su === 'realblog';
+        return function_exists('XH_wantsPluginAdministration') && XH_wantsPluginAdministration('realblog')
+            || isset($realblog) && $realblog == 'true' || $su === 'realblog';
     }
 
     /**
