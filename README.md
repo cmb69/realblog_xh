@@ -1,7 +1,7 @@
 Realblog_XH – a CMSimple_XH plugin
 ====================================
 
-[![beta: 3.0beta8](https://img.shields.io/badge/beta-3.0beta8-red.svg)](https://github.com/cmb69/realblog_xh/releases/tag/3.0beta8)
+[![beta: 3.0beta9](https://img.shields.io/badge/beta-3.0beta9-red.svg)](https://github.com/cmb69/realblog_xh/releases/tag/3.0beta9)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
 
 Copyright (c) 2006-2010 Jan Kanters  
@@ -27,4 +27,4 @@ Christoph M. Becker
 Rheinstraße 147  
 55424 Münster-Sarmsheim  
 GERMANY  
-mailto:cmbecker69@gmx.de
+cmbecker69@gmx.de
