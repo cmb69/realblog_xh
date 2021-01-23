@@ -57,7 +57,7 @@
   <!-- Template Categories, i.e. cssonly,onepage. -->
   <!-- You can currently define your own tags. These are displayed, but not filtered. -->
   <!-- All available categories can be found on the website. -->
-  <tags></tags>
+  <tags>content</tags>
   <!-- full URLs with http(s) -->
   <url>
     <!-- URL where you can download the plugin -->
