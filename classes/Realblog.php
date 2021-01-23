@@ -28,7 +28,7 @@ use ReflectionClass;
 
 class Realblog
 {
-    const VERSION = '@REALBLOG_VERSION@';
+    const VERSION = '3.0beta9';
 
     /**
      * @return void
