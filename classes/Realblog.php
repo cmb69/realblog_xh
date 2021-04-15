@@ -119,7 +119,7 @@ class Realblog
      */
     private static function handleAdministration()
     {
-        global $sn, $admin, $action, $o, $plugin_tx;
+        global $sn, $admin, $o, $plugin_tx;
 
         $o .= print_plugin_admin('on');
         pluginMenu('ROW');
