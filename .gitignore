@@ -1,3 +1,4 @@
 tests/coverage
+tools
 vendor
 /composer.lock
