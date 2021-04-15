@@ -26,9 +26,13 @@
     </target>
 
     <target name="sniff" description="checks adherence to the coding standard">
-        <phpcodesniffer standard="PSR2" format="full">
-            <fileset refid="php-sources"/>
-        </phpcodesniffer>
+        <exec executable="phpcs" passthru="true" checkreturn="true">
+            <arg value="--standard=PSR2"/>
+            <arg line="--runtime-set ignore_warnings_on_exit true"/>
+            <arg file="classes"/>
+            <arg file="compat.php"/>
+            <arg file="index.php"/>
+        </exec>
     </target>
 
     <target name="mess" description="detects code flaws">
