@@ -55,7 +55,7 @@ class SystemCheck
         foreach (array('filter', 'sqlite3') as $extension) {
             $checks[sprintf($ptx['syscheck_extension'], $extension)] = $this->checkExtension($extension);
         }
-        $xhVersion = '1.6.3';
+        $xhVersion = '1.7.0';
         $checks[sprintf($ptx['syscheck_xhversion'], $xhVersion)] = $this->checkXHVersion($xhVersion);
         $folders = array(
             "{$pth['folder']['plugins']}realblog/config",

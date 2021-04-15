@@ -90,7 +90,8 @@ class BlogController extends MainController
             return implode(', ', $categories);
         };
         $view->hasLinkedHeader = function ($article) {
-            return $article->body_length || (defined('XH_ADM') && XH_ADM);
+            /** @psalm-suppress UndefinedConstant */
+            return $article->body_length || XH_ADM;
         };
         $view->date = function ($article) {
             global $plugin_tx;

@@ -89,7 +89,28 @@ function XH_message($type, $message, ...$args) {}
 function XH_numberSuffix($count) {}
 
 /**
+ * @param string $plugin
+ * @param string $label
+ * @param string $url
+ * @param string $target
+ * @return mixed
+ */
+function XH_registerPluginMenuItem($plugin, $label = null, $url = null, $target = null) {}
+
+/**
+ * @param bool $showMain
+ * @return void
+ */
+function XH_registerStandardPluginMenuItems($showMain) {}
+
+/**
  * @param string $str
  * @return string
  */
 function XH_rmws($str) {}
+
+/**
+ * @param string $pluginName
+ * @return bool
+ */
+function XH_wantsPluginAdministration($pluginName) {}

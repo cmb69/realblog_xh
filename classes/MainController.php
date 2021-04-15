@@ -84,7 +84,8 @@ abstract class MainController extends AbstractController
         if (isset($article) && !XH_ADM && $article->status > 0) {
             DB::recordPageView($id);
         }
-        if (isset($article) && ((defined('XH_ADM') && XH_ADM) || $article->status > 0)) {
+        /** @psalm-suppress UndefinedConstant */
+        if (isset($article) && (XH_ADM || $article->status > 0)) {
             return $this->doRenderArticle($article);
         }
     }
@@ -102,7 +103,8 @@ abstract class MainController extends AbstractController
         $view->article = $article;
         $view->heading = $this->config['heading_level'];
         $view->isHeadingAboveMeta = $plugin_cf['realblog']['heading_above_meta'];
-        $view->isAdmin = defined('XH_ADM') && XH_ADM;
+        /** @psalm-suppress UndefinedConstant */
+        $view->isAdmin = XH_ADM;
         $view->wantsComments = $this->wantsComments();
         if ($article->status === 2) {
             $params = array('realblog_year' => $this->year);

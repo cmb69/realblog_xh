@@ -57,7 +57,8 @@ class Realblog
                 self::deliverFeed();
             }
         }
-        if (defined('XH_ADM') && XH_ADM) {
+        /** @psalm-suppress UndefinedConstant */
+        if (XH_ADM) {
             self::registerPluginMenu();
             if (self::isAdministrationRequested()) {
                 self::handleAdministration();
@@ -95,28 +96,22 @@ class Realblog
     {
         global $sn, $plugin_tx;
 
-        if (function_exists('XH_registerStandardPluginMenuItems')) {
-            XH_registerStandardPluginMenuItems(true);
-        }
-        if (function_exists('XH_registerPluginMenuItem')) {
-            XH_registerPluginMenuItem(
-                'realblog',
-                $plugin_tx['realblog']['exchange_heading'],
-                "$sn?realblog&admin=data_exchange"
-            );
-        }
+        XH_registerStandardPluginMenuItems(true);
+        XH_registerPluginMenuItem(
+            'realblog',
+            $plugin_tx['realblog']['exchange_heading'],
+            "$sn?realblog&admin=data_exchange"
+        );
     }
 
     /**
      * @return bool
-     * @global string $realblog
      */
     private static function isAdministrationRequested()
     {
-        global $realblog, $su;
+        global $su;
 
-        return function_exists('XH_wantsPluginAdministration') && XH_wantsPluginAdministration('realblog')
-            || isset($realblog) && $realblog == 'true' || $su === 'realblog';
+        return XH_wantsPluginAdministration('realblog') || $su === 'realblog';
     }
 
     /**
@@ -141,7 +136,7 @@ class Realblog
                 self::routeTo('\Realblog\DataExchangeController');
                 break;
             default:
-                $o .= plugin_admin_common($action, $admin, 'realblog');
+                $o .= plugin_admin_common();
         }
     }
 
@@ -319,7 +314,8 @@ class Realblog
     {
         global $edit;
 
-        if (defined('XH_ADM') && XH_ADM && $edit) {
+        /** @psalm-suppress UndefinedConstant */
+        if (XH_ADM && $edit) {
             if (filter_has_var(INPUT_GET, 'realblog_page')) {
                 $page = filter_input(
                     INPUT_GET,
