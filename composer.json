@@ -6,7 +6,6 @@
         "bartlett/php-compatinfo": "5.0.*",
         "phpunit/phpunit": "5.7.*",
         "mikey179/vfsStream": "1.6.*",
-        "bartlett/umlwriter": "1.2.*",
         "tedivm/jshrink": "1.2.*"
     }
 }
