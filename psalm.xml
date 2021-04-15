@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<psalm errorLevel="4">
+  <projectFiles>
+    <directory name="classes"/>
+    <file name="compat.php"/>
+    <file name="index.php"/>
+  </projectFiles>
+  <stubs>
+    <file name="stubs.php"/>
+  </stubs>
+  <globals>
+    <var name="pth" type="array{folder:array&lt;string,string&gt;,files:array}"/>
+  </globals>
+</psalm>

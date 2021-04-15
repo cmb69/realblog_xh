@@ -307,9 +307,9 @@ EOT;
             $timestamp['hours'],
             $timestamp['minutes'],
             $timestamp['seconds'],
-            $parts[1],
-            $parts[2],
-            $parts[0]
+            (int) $parts[1],
+            (int) $parts[2],
+            (int) $parts[0]
         );
     }
 

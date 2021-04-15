@@ -75,11 +75,12 @@ abstract class MainController extends AbstractController
 
     /**
      * @param int $id
-     * @return string
+     * @return string|null
      */
     protected function renderArticle($id)
     {
         $article = Finder::findById($id);
+        /** @psalm-suppress UndefinedConstant */
         if (isset($article) && !XH_ADM && $article->status > 0) {
             DB::recordPageView($id);
         }

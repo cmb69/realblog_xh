@@ -87,7 +87,7 @@ class View
     protected function escape($value)
     {
         if (is_scalar($value)) {
-            return XH_hsc($value);
+            return XH_hsc((string) $value);
         } else {
             return $value;
         }

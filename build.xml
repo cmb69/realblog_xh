@@ -23,6 +23,12 @@
         </exec>
     </target>
 
+    <target name="psalm" description="run static analysis">
+        <exec executable="psalm" passthru="true" checkreturn="true">
+            <arg value="--no-cache"/>
+        </exec>
+    </target>
+
     <target name="compat" description="checks PHP requirements">
         <exec command="phpcompatinfo analyser:run --alias current" logoutput="true"/>
     </target>
@@ -62,7 +68,9 @@
                 <exclude name="coverage.xml"/>
                 <exclude name="pax_global_header"/>
                 <exclude name="phpcompatinfo.*"/>
+                <exclude name="psalm.xml"/>
                 <exclude name="README.md"/>
+                <exclude name="stubs.php"/>
                 <exclude name="TODO"/>
             </fileset>
         </move>

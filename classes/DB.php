@@ -29,9 +29,9 @@ use SQLite3;
 class DB
 {
     /**
-     * @var self
+     * @var self|null
      */
-    private static $instance;
+    private static $instance = null;
 
     /**
      * @var SQLite3
@@ -43,7 +43,7 @@ class DB
      */
     public static function getConnection()
     {
-        if (!isset(self::$instance)) {
+        if (self::$instance === null) {
             self::$instance = new self();
         }
         return self::$instance->connection;
@@ -143,7 +143,7 @@ SQL;
     }
 
     /**
-     * @param int &$field
+     * @param string &$field
      * @return array
      */
     private function getAndRemoveCategories(&$field)
@@ -295,7 +295,7 @@ SQL;
 
     /**
      * @param array<int> $ids
-     * @return int
+     * @return int|false
      */
     public static function deleteArticlesWithIds(array $ids)
     {

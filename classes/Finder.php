@@ -238,7 +238,7 @@ SQL;
 
      /**
      * @param int $id
-     * @return stdClass
+     * @return stdClass|null
      */
     public static function findById($id)
     {

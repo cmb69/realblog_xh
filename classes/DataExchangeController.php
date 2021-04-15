@@ -76,7 +76,7 @@ class DataExchangeController extends AbstractController
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     private function getCsrfToken()
     {
