@@ -276,22 +276,22 @@ EOT;
     private function getArticleFromParameters()
     {
         $article = new stdClass();
-        $article->id = stsl($_POST['realblog_id']);
-        $article->version = stsl($_POST['realblog_version']);
+        $article->id = $_POST['realblog_id'];
+        $article->version = $_POST['realblog_version'];
         if (!isset($_POST['realblog_date']) || $_POST['realblog_date'] !== $_POST['realblog_date_old']) {
-            $article->date = $this->stringToTime(stsl($_POST['realblog_date']), true);
+            $article->date = $this->stringToTime($_POST['realblog_date'], true);
         } else {
-            $article->date = stsl($_POST['realblog_date_exact']);
+            $article->date = $_POST['realblog_date_exact'];
         }
-        $article->title = stsl($_POST['realblog_title']);
-        $article->teaser = stsl($_POST['realblog_headline']);
-        $article->body = stsl($_POST['realblog_story']);
-        $article->publishing_date = $this->stringToTime(stsl($_POST['realblog_startdate']));
-        $article->archiving_date = $this->stringToTime(stsl($_POST['realblog_enddate']));
-        $article->status = stsl($_POST['realblog_status']);
-        $article->feedable = (bool) stsl($_POST['realblog_rssfeed']);
-        $article->commentable = (bool) stsl($_POST['realblog_comments']);
-        $article->categories = ',' . trim(stsl($_POST['realblog_categories'])) . ',';
+        $article->title = $_POST['realblog_title'];
+        $article->teaser = $_POST['realblog_headline'];
+        $article->body = $_POST['realblog_story'];
+        $article->publishing_date = $this->stringToTime($_POST['realblog_startdate']);
+        $article->archiving_date = $this->stringToTime($_POST['realblog_enddate']);
+        $article->status = $_POST['realblog_status'];
+        $article->feedable = (bool) $_POST['realblog_rssfeed'];
+        $article->commentable = (bool) $_POST['realblog_comments'];
+        $article->categories = ',' . trim($_POST['realblog_categories']) . ',';
         return $article;
     }
 

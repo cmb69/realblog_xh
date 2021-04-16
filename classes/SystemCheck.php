@@ -50,7 +50,7 @@ class SystemCheck
 
         $ptx = $plugin_tx['realblog'];
         $checks = array();
-        $phpVersion = '5.3.0';
+        $phpVersion = '5.4.0';
         $checks[sprintf($ptx['syscheck_phpversion'], $phpVersion)] = $this->checkPHPVersion($phpVersion);
         foreach (array('filter', 'sqlite3') as $extension) {
             $checks[sprintf($ptx['syscheck_extension'], $extension)] = $this->checkExtension($extension);

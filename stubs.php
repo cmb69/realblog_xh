@@ -42,12 +42,6 @@ function print_plugin_admin($main) {}
 function pluginMenu($add = '', $link = '', $target = '', $text = '', array $style = array()) {}
 
 /**
- * @param string $t
- * @return string
- */
-function stsl($t) {}
-
-/**
  * @param string $s
  * @return string
  * @deprecated since 1.7
