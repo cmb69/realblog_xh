@@ -42,13 +42,6 @@ function print_plugin_admin($main) {}
 function pluginMenu($add = '', $link = '', $target = '', $text = '', array $style = array()) {}
 
 /**
- * @param string $s
- * @return string
- * @deprecated since 1.7
- */
-function tag($s) {}
-
-/**
  * @param string $string
  * @return int
  */

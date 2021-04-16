@@ -171,9 +171,9 @@ class MainAdminController extends AbstractController
                 assert(false);
         }
         $this->useCalendar();
-        $bjs .= '<script type="text/javascript">REALBLOG.categories = '
+        $bjs .= '<script>REALBLOG.categories = '
             . json_encode(Finder::findAllCategories()) . ';</script>'
-            . '<script type="text/javascript" src="' . $pth['folder']['plugins']
+            . '<script src="' . $pth['folder']['plugins']
             . 'realblog/realblog.js"></script>';
         $view = new View('article-form');
         $view->article = $article;
@@ -206,7 +206,7 @@ class MainAdminController extends AbstractController
         }
         $setupScript = $calendarFolder . 'calendar-setup.js';
         $hjs .= <<<EOT
-<script type="text/javascript">/* <![CDATA[ */
+<script>/* <![CDATA[ */
 var REALBLOG = REALBLOG || {};
 (function () {
     var input = document.createElement("input");
@@ -215,9 +215,9 @@ var REALBLOG = REALBLOG || {};
     if (!REALBLOG.hasNativeDatePicker) {
         document.write(
             '<link rel="stylesheet" type="text/css" href="$stylesheet">' +
-            '<script type="text/javascript" src="$mainScript"><\/script>' +
-            '<script type="text/javascript" src="$languageScript"><\/script>' +
-            '<script type="text/javascript" src="$setupScript"><\/script>'
+            '<script src="$mainScript"><\/script>' +
+            '<script src="$languageScript"><\/script>' +
+            '<script src="$setupScript"><\/script>'
         );
     }
 }());
