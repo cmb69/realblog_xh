@@ -53,10 +53,10 @@ class Pagination
      */
     public function __construct($itemCount, $page, $pageCount, $url)
     {
-        $this->itemCount = (int) $itemCount;
-        $this->page = (int) $page;
-        $this->pageCount = (int) $pageCount;
-        $this->url = (string) $url;
+        $this->itemCount = $itemCount;
+        $this->page = $page;
+        $this->pageCount = $pageCount;
+        $this->url = $url;
     }
 
     /**
@@ -72,9 +72,14 @@ class Pagination
         $view->currentPage = $this->page;
         $view->pages = $this->gatherPages();
         $url = $this->url;
-        $view->url = function ($page) use ($url) {
-            return sprintf($url, $page);
-        };
+        $view->url =
+            /**
+             * @param int $page
+             * @return string
+             */
+            function ($page) use ($url) {
+                return sprintf($url, $page);
+            };
         return $view->render();
     }
 

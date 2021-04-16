@@ -50,6 +50,7 @@ this program; if not, see <http://www.gnu.org/licenses>.
 */
 ////////////////////////////////////////////////// HISTORIC LICENSE SECTION END
 
+/** @psalm-suppress UnresolvableInclude */
 require_once $pth['folder']['plugin'] . 'compat.php';
 
 Realblog\Realblog::init();

@@ -66,6 +66,9 @@ class Realblog
         }
     }
 
+    /**
+     * @return void
+     */
     private static function registerCommands()
     {
         $class = new ReflectionClass(Realblog::class);
@@ -92,6 +95,9 @@ class Realblog
         }
     }
 
+    /**
+     * @return void
+     */
     private static function registerPluginMenu()
     {
         global $sn, $plugin_tx;
@@ -140,6 +146,9 @@ class Realblog
         }
     }
 
+    /**
+     * @return string
+     */
     private static function renderInfoView()
     {
         global $pth;
@@ -151,6 +160,10 @@ class Realblog
         return $view->render() . $systemCheck->render();
     }
 
+    /**
+     * @param class-string $controllerClassName
+     * @return void
+     */
     private static function routeTo($controllerClassName)
     {
         global $o, $action;
@@ -200,21 +213,36 @@ class Realblog
         );
         $count = $plugin_cf['realblog']['rss_entries'];
         $view->articles = Finder::findFeedableArticles($count);
-        $view->articleUrl = function ($article) use ($sn, $plugin_tx) {
-            return CMSIMPLE_URL . substr(
-                Realblog::url(
-                    $plugin_tx['realblog']["rss_page"],
-                    array('realblog_id' => $article->id)
-                ),
-                strlen($sn)
-            );
-        };
-        $view->evaluatedTeaser = function ($article) {
-            return evaluate_scripting($article->teaser);
-        };
-        $view->rssDate = function ($article) {
-            return date('r', $article->date);
-        };
+        $view->articleUrl =
+            /**
+             * @param stdClass $article
+             * @return string
+             */
+            function ($article) use ($sn, $plugin_tx) {
+                return CMSIMPLE_URL . substr(
+                    Realblog::url(
+                        $plugin_tx['realblog']["rss_page"],
+                        array('realblog_id' => $article->id)
+                    ),
+                    strlen($sn)
+                );
+            };
+        $view->evaluatedTeaser =
+            /**
+             * @param stdClass $article
+             * @return string
+             */
+            function ($article) {
+                return evaluate_scripting($article->teaser);
+            };
+        $view->rssDate =
+            /**
+             * @param stdClass $article
+             * @return string
+             */
+            function ($article) {
+                return (string) date('r', $article->date);
+            };
         echo '<?xml version="1.0" encoding="UTF-8"?>', PHP_EOL, $view->render();
         exit;
     }
@@ -244,7 +272,7 @@ class Realblog
     {
         $controller = new BlogController($showSearch, $category);
         if (filter_has_var(INPUT_GET, 'realblog_id')) {
-            return $controller->showArticleAction(filter_input(
+            return (string) $controller->showArticleAction(filter_input(
                 INPUT_GET,
                 'realblog_id',
                 FILTER_VALIDATE_INT,
@@ -263,7 +291,7 @@ class Realblog
     {
         $controller = new ArchiveController($showSearch);
         if (filter_has_var(INPUT_GET, 'realblog_id')) {
-            return $controller->showArticleAction(filter_input(
+            return (string) $controller->showArticleAction(filter_input(
                 INPUT_GET,
                 'realblog_id',
                 FILTER_VALIDATE_INT,

@@ -25,6 +25,10 @@ namespace Realblog;
 
 class FeedLinkController extends AbstractController
 {
+    /**
+     * @param string $target
+     * @return string
+     */
     public function defaultAction($target)
     {
         global $sn, $pth;

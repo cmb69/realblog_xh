@@ -22,9 +22,12 @@
  */
 
 /**
+ * @param string $options
+ * @param string $category
+ * @return string
  * @deprecated as of 3.0beta6
  */
-function showrealblog($options = null, $category = 'all')
+function showrealblog($options = "", $category = 'all')
 {
     $function = __FUNCTION__;
     trigger_error("$function() is deprecated; use Realblog_blog() instead", E_USER_DEPRECATED);
@@ -46,9 +49,11 @@ function showrealblog($options = null, $category = 'all')
 }
 
 /**
+ * @param string $options
+ * @return string
  * @deprecated as of 3.0beta6
  */
-function showrealblogarchive($options = null)
+function showrealblogarchive($options = "")
 {
     $function = __FUNCTION__;
     trigger_error("$function() is deprecated; use Realblog_archive() instead", E_USER_DEPRECATED);
@@ -71,6 +76,8 @@ function showrealblogarchive($options = null)
 }
 
 /**
+ * @param string $options
+ * @return string
  * @deprecated as of 3.0beta6
  */
 function realbloglink($options)
@@ -103,6 +110,7 @@ function Realblog_getArguments($arguments)
 }
 
 /**
+ * @return string
  * @deprecated as of 3.0beta6
  */
 function realblog_rss_adv()
@@ -113,6 +121,7 @@ function realblog_rss_adv()
 }
 
 /**
+ * @return void
  * @deprecated as of 3.0beta6
  */
 function rbCat()
@@ -122,6 +131,7 @@ function rbCat()
 }
 
 /**
+ * @return void
  * @deprecated as of 3.0beta4
  */
 function commentsMembersOnly()

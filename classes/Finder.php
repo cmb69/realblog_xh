@@ -29,7 +29,11 @@ class Finder
 {
     /**
      * @param int $status
+     * @param int $limit
+     * @param int $offset
      * @param int $order
+     * @param string $category
+     * @param string|null $search
      * @return array<stdClass>
      */
     public static function findArticles($status, $limit, $offset = 0, $order = -1, $category = 'all', $search = null)
@@ -80,6 +84,9 @@ EOS;
         return self::fetchAllAsObject($sql, $bindings);
     }
 
+    /**
+     * @return list<int>
+     */
     public static function findArchiveYears()
     {
         $db = DB::getConnection();
@@ -114,6 +121,8 @@ EOS;
 
     /**
      * @param array<int> $statuses
+     * @param string $category
+     * @param string|null $search
      * @return int
      */
     public static function countArticlesWithStatus(array $statuses, $category = 'all', $search = null)

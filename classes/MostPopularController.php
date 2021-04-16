@@ -21,30 +21,44 @@
 
 namespace Realblog;
 
+use stdClass;
+
 class MostPopularController extends AbstractController
 {
+    /** @var string */
     private $pageUrl;
 
+    /**
+     * @param string $pageUrl
+     */
     public function __construct($pageUrl)
     {
         parent::__construct();
         $this->pageUrl = $pageUrl;
     }
 
+    /**
+     * @return string
+     */
     public function defaultAction()
     {
         global $u;
 
         if (!in_array($this->pageUrl, $u) || $this->config['links_visible'] <= 0) {
-            return;
+            return "";
         }
         $view = new View('most-popular');
-        $view->articles = Finder::findMostPopularArticles($this->config['links_visible']);
+        $view->articles = Finder::findMostPopularArticles((int) $this->config['links_visible']);
         $view->heading = $this->config['heading_level'];
         $pageUrl = $this->pageUrl;
-        $view->url = function ($article) use ($pageUrl) {
-            return Realblog::url($pageUrl, array('realblog_id' => $article->id));
-        };
+        $view->url =
+            /**
+             * @param stdClass $article
+             * @return string
+             */
+            function ($article) use ($pageUrl) {
+                return Realblog::url($pageUrl, array('realblog_id' => $article->id));
+            };
         return $view->render();
     }
 }

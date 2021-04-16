@@ -160,6 +160,9 @@ SQL;
         return $categories;
     }
 
+    /**
+     * @return void
+     */
     private function updateDatabase()
     {
         $sql = <<<'EOS'
@@ -277,6 +280,7 @@ SQL;
     }
 
     /**
+     * @param stdClass $article
      * @return int
      */
     public static function deleteArticle($article)
@@ -313,6 +317,7 @@ SQL;
 
     /**
      * @param int $articleId
+     * @return void
      */
     public static function recordPageView($articleId)
     {

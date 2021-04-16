@@ -25,8 +25,10 @@ namespace Realblog;
 
 abstract class AbstractController
 {
+    /** @var array<string,string> */
     protected $config;
 
+    /** @var array<string,string> */
     protected $text;
 
     public function __construct()

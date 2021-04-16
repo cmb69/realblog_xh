@@ -43,6 +43,9 @@ class DataExchangeController extends AbstractController
         return $view->render();
     }
 
+    /**
+     * @return string
+     */
     public function exportToCsvAction()
     {
         $this->checkCsrfToken();
@@ -54,6 +57,9 @@ class DataExchangeController extends AbstractController
         }
     }
 
+    /**
+     * @return string
+     */
     public function importFromCsvAction()
     {
         $this->checkCsrfToken();
@@ -88,6 +94,9 @@ class DataExchangeController extends AbstractController
         }
     }
 
+    /**
+     * @return void
+     */
     private function checkCsrfToken()
     {
         global $_XH_csrfProtection;
@@ -95,6 +104,9 @@ class DataExchangeController extends AbstractController
         $_XH_csrfProtection->check();
     }
 
+    /**
+     * @return no-return
+     */
     private function redirectToDefault()
     {
         $url = CMSIMPLE_URL . "?&realblog&admin=data_exchange";

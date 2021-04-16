@@ -27,11 +27,17 @@ use stdClass;
 
 class ArchiveController extends MainController
 {
+    /**
+     * @param bool $showSearch
+     */
     public function __construct($showSearch = false)
     {
         parent::__construct($showSearch);
     }
 
+    /**
+     * @return string
+     */
     public function defaultAction()
     {
         $html = '';
@@ -51,6 +57,9 @@ class ArchiveController extends MainController
         return $html;
     }
 
+    /**
+     * @return string
+     */
     private function renderArchive(array $articles)
     {
         if (!$this->searchTerm) {
@@ -61,8 +70,8 @@ class ArchiveController extends MainController
                 $key = count($years) - 1;
                 $year = $years[$key];
             }
-            $back = ($key > 0) ? $years[$key - 1] : null;
-            $next = ($key < count($years) - 1) ? $years[$key + 1] : null;
+            $back = ($key > 0) ? $years[(int) $key - 1] : null;
+            $next = ($key < count($years) - 1) ? $years[(int) $key + 1] : null;
             $articles = Finder::findArchivedArticlesInPeriod(
                 mktime(0, 0, 0, 1, 1, $year),
                 mktime(0, 0, 0, 1, 1, $year + 1)
@@ -73,6 +82,12 @@ class ArchiveController extends MainController
         }
     }
 
+    /**
+     * @param bool $isSearch
+     * @param int|null $back
+     * @param int|null $next
+     * @return string
+     */
     private function renderArchivedArticles(array $articles, $isSearch, $back, $next)
     {
         global $su, $plugin_tx;
@@ -88,7 +103,7 @@ class ArchiveController extends MainController
         if ($next) {
             $view->nextUrl = Realblog::url($su, array('realblog_year' => $next));
         }
-        $view->url = function (stdClass $article) {
+        $view->url = /** @return string */ function (stdClass $article) {
             global $su;
 
             return Realblog::url(
@@ -100,26 +115,35 @@ class ArchiveController extends MainController
                 )
             );
         };
-        $view->formatDate = function (stdClass $article) {
+        $view->formatDate = /** @return string */ function (stdClass $article) {
             global $plugin_tx;
 
-            return date($plugin_tx['realblog']['date_format'], $article->date);
+            return (string) date($plugin_tx['realblog']['date_format'], $article->date);
         };
-        $view->yearOf = function (stdClass $article) {
-            return date('Y', $article->date);
+        $view->yearOf = /** @return string */ function (stdClass $article) {
+            return (string) date('Y', $article->date);
         };
-        $view->monthOf = function (stdClass $article) {
-            return date('n', $article->date);
+        $view->monthOf = /** @return string */ function (stdClass $article) {
+            return (string) date('n', $article->date);
         };
-        $view->monthName = function ($month) {
-            global $plugin_tx;
-    
-            $monthNames = explode(',', $plugin_tx['realblog']['date_months']);
-            return $monthNames[$month - 1];
-        };
+        $view->monthName =
+            /**
+             * @param int $month
+             * @return string
+             */
+            function ($month) {
+                global $plugin_tx;
+        
+                $monthNames = explode(',', $plugin_tx['realblog']['date_months']);
+                return $monthNames[$month - 1];
+            };
         return $view->render();
     }
 
+    /**
+     * @param int $id
+     * @return string|null
+     */
     public function showArticleAction($id)
     {
         return $this->renderArticle($id);

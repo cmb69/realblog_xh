@@ -27,14 +27,22 @@ use stdClass;
 
 class BlogController extends MainController
 {
+    /** @var string */
     private $category;
 
+    /**
+     * @param bool $showSearch
+     * @param string $category
+     */
     public function __construct($showSearch = false, $category = 'all')
     {
         parent::__construct($showSearch);
         $this->category = $category;
     }
 
+    /**
+     * @return string
+     */
     public function defaultAction()
     {
         $html = '';
@@ -43,10 +51,10 @@ class BlogController extends MainController
         }
         $order = ($this->config['entries_order'] == 'desc')
             ? -1 : 1;
-        $limit = max(1, $this->config['entries_per_page']);
+        $limit = max(1, (int) $this->config['entries_per_page']);
         $page = Realblog::getPage();
         $articleCount = Finder::countArticlesWithStatus(array(1), $this->category, $this->searchTerm);
-        $pageCount = ceil($articleCount / $limit);
+        $pageCount = (int) ceil($articleCount / $limit);
         $page = min(max($page, 1), $pageCount);
         $articles = Finder::findArticles(1, $limit, ($page-1) * $limit, $order, $this->category, $this->searchTerm);
         if ($this->searchTerm) {
@@ -56,6 +64,12 @@ class BlogController extends MainController
         return $html;
     }
 
+    /**
+     * @param int $articleCount
+     * @param int $page
+     * @param int $pageCount
+     * @return string
+     */
     private function renderArticles(array $articles, $articleCount, $page, $pageCount)
     {
         global $su, $plugin_cf;
@@ -73,57 +87,101 @@ class BlogController extends MainController
         );
         $view->hasTopPagination = (bool) $this->config['pagination_top'];
         $view->hasBottomPagination = (bool) $this->config['pagination_bottom'];
-        $view->url = function ($article) use ($search) {
-            global $su;
+        $view->url =
+            /**
+             * @param stdClass $article
+             * @return string
+             */
+            function ($article) use ($search) {
+                global $su;
 
-            return Realblog::url(
-                $su,
-                array(
-                    'realblog_id' => $article->id,
-                    'realblog_page' => Realblog::getPage(),
-                    'realblog_search' => $search
-                )
-            );
-        };
-        $view->categories = function ($article) {
-            $categories = explode(',', trim($article->categories, ','));
-            return implode(', ', $categories);
-        };
-        $view->hasLinkedHeader = function ($article) {
-            /** @psalm-suppress UndefinedConstant */
-            return $article->body_length || XH_ADM;
-        };
-        $view->date = function ($article) {
-            global $plugin_tx;
+                return Realblog::url(
+                    $su,
+                    array(
+                        'realblog_id' => $article->id,
+                        'realblog_page' => Realblog::getPage(),
+                        'realblog_search' => $search
+                    )
+                );
+            };
+        $view->categories =
+            /**
+             * @param stdClass $article
+             * @return string
+             */
+            function ($article) {
+                $categories = explode(',', trim($article->categories, ','));
+                return implode(', ', $categories);
+            };
+        $view->hasLinkedHeader =
+            /**
+             * @param stdClass $article
+             * @return bool
+             */
+            function ($article) {
+                /** @psalm-suppress UndefinedConstant */
+                return $article->body_length || XH_ADM;
+            };
+        $view->date =
+            /**
+             * @param stdClass $article
+             * @return string
+             */
+            function ($article) {
+                global $plugin_tx;
 
-            return date($plugin_tx['realblog']['date_format'], $article->date);
-        };
-        $view->teaser = function ($article) {
-            return new HtmlString(evaluate_scripting($article->teaser));
-        };
-        $view->hasReadMore = function ($article) {
-            global $plugin_cf;
+                return (string) date($plugin_tx['realblog']['date_format'], $article->date);
+            };
+        $view->teaser =
+            /**
+             * @param stdClass $article
+             * @return HtmlString
+             */
+            function ($article) {
+                return new HtmlString(evaluate_scripting($article->teaser));
+            };
+        $view->hasReadMore =
+            /**
+             * @param stdClass $article
+             * @return bool
+             */
+            function ($article) {
+                global $plugin_cf;
 
-            return $plugin_cf['realblog']['show_read_more_link']
-                && $article->body_length;
-        };
-        $view->isCommentable = function ($article) {
-            global $plugin_cf;
+                return $plugin_cf['realblog']['show_read_more_link']
+                    && $article->body_length;
+            };
+        $view->isCommentable =
+            /**
+             * @param stdClass $article
+             * @return bool
+             */
+            function ($article) {
+                global $plugin_cf;
 
-            return $plugin_cf['realblog']['comments_plugin']
-                && class_exists(ucfirst($plugin_cf['realblog']['comments_plugin']) . '\\RealblogBridge')
-                && $article->commentable;
-        };
-        $view->commentCount = function ($article) {
-            global $plugin_cf;
+                return $plugin_cf['realblog']['comments_plugin']
+                    && class_exists(ucfirst($plugin_cf['realblog']['comments_plugin']) . '\\RealblogBridge')
+                    && $article->commentable;
+            };
+        $view->commentCount =
+            /**
+             * @param stdClass $article
+             * @return int
+             */
+            function ($article) {
+                global $plugin_cf;
 
-            $bridge = ucfirst($plugin_cf['realblog']['comments_plugin']) . '\\RealblogBridge';
-            $commentsId = "realblog{$article->id}";
-            return call_user_func(array($bridge, 'count'), $commentsId);
-        };
+                $bridge = ucfirst($plugin_cf['realblog']['comments_plugin']) . '\\RealblogBridge';
+                $commentsId = "realblog{$article->id}";
+                return call_user_func(array($bridge, 'count'), $commentsId);
+            };
         return $view->render();
     }
 
+    /**
+     * @param int $id
+     * @return string|null
+     */
     public function showArticleAction($id)
     {
         return $this->renderArticle($id);

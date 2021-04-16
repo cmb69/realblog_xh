@@ -23,12 +23,20 @@
 
 namespace Realblog;
 
+use stdClass;
+
 class LinkController extends AbstractController
 {
+    /** @var string */
     private $pageUrl;
 
+    /** @var bool */
     private $showTeaser;
 
+    /**
+     * @param string $pageUrl
+     * @param bool $showTeaser
+     */
     public function __construct($pageUrl, $showTeaser)
     {
         parent::__construct();
@@ -36,29 +44,47 @@ class LinkController extends AbstractController
         $this->showTeaser = $showTeaser;
     }
 
+    /**
+     * @return string
+     */
     public function defaultAction()
     {
         global $u;
 
         if (!in_array($this->pageUrl, $u) || $this->config['links_visible'] <= 0) {
-            return;
+            return "";
         }
         $view = new View('latest');
-        $view->articles = Finder::findArticles(1, $this->config['links_visible']);
+        $view->articles = Finder::findArticles(1, (int) $this->config['links_visible']);
         $view->heading = $this->config['heading_level'];
-        $view->formatDate = function ($article) {
-            global $plugin_tx;
+        $view->formatDate =
+            /**
+             * @param stdClass $article
+             * @return string
+             */
+            function ($article) {
+                global $plugin_tx;
 
-            return date($plugin_tx['realblog']['date_format'], $article->date);
-        };
+                return date($plugin_tx['realblog']['date_format'], $article->date);
+            };
         $pageUrl = $this->pageUrl;
-        $view->url = function ($article) use ($pageUrl) {
-            return Realblog::url($pageUrl, array('realblog_id' => $article->id));
-        };
+        $view->url =
+            /**
+             * @param stdClass $article
+             * @return string
+             */
+            function ($article) use ($pageUrl) {
+                return Realblog::url($pageUrl, array('realblog_id' => $article->id));
+            };
         $view->showTeaser = $this->showTeaser;
-        $view->teaser = function ($article) {
-            return new HtmlString(evaluate_scripting($article->teaser));
-        };
+        $view->teaser =
+            /**
+             * @param stdClass $article
+             * @return HtmlString
+             */
+            function ($article) {
+                return new HtmlString(evaluate_scripting($article->teaser));
+            };
         return $view->render();
     }
 }

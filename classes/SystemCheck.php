@@ -33,11 +33,16 @@ class SystemCheck
         $view = new View('system-check');
         $view->heading = $plugin_cf['realblog']['heading_level'];
         $view->checks = $this->getChecks();
-        $view->imageURL = function ($state) {
-            global $pth;
+        $view->imageURL =
+            /**
+             * @param string $state
+             * @return string
+             */
+            function ($state) {
+                global $pth;
 
-            return "{$pth['folder']['plugins']}realblog/images/$state.png";
-        };
+                return "{$pth['folder']['plugins']}realblog/images/$state.png";
+            };
         return $view->render();
     }
 

@@ -23,35 +23,61 @@ namespace Realblog;
 
 class View
 {
+    /** @var string */
     private $template;
 
+    /** @var array<string,mixed> */
     private $data = array();
 
+    /**
+     * @param string $template
+     */
     public function __construct($template)
     {
         $this->template = $template;
     }
 
+    /**
+     * @param string $name
+     * @param mixed $value
+     * @return void
+     */
     public function __set($name, $value)
     {
         $this->data[$name] = $value;
     }
 
+    /**
+     * @param string $name
+     * @return string
+     */
     public function __get($name)
     {
         return $this->escape($this->data[$name]);
     }
 
+    /**
+     * @param string $name
+     * @return bool
+     */
     public function __isset($name)
     {
         return isset($this->data[$name]);
     }
 
+    /**
+     * @param string $name
+     * @return string
+     */
     public function __call($name, array $args)
     {
         return $this->escape(call_user_func_array($this->data[$name], $args));
     }
 
+    /**
+     * @param string $key
+     * @return string
+     */
     protected function text($key)
     {
         global $plugin_tx;
@@ -61,6 +87,11 @@ class View
         return vsprintf($plugin_tx['realblog'][$key], $args);
     }
 
+    /**
+     * @param string $key
+     * @param int $count
+     * @return string
+     */
     protected function plural($key, $count)
     {
         global $plugin_tx;
@@ -75,15 +106,23 @@ class View
         return vsprintf($plugin_tx['realblog'][$key], $args);
     }
 
+    /**
+     * @return string
+     */
     public function render()
     {
         global $pth;
 
         ob_start();
+        /** @psalm-suppress UnresolvableInclude */
         include "{$pth['folder']['plugins']}realblog/views/{$this->template}.php";
-        return ob_get_clean();
+        return (string) ob_get_clean();
     }
 
+    /**
+     * @param mixed $value
+     * @return string
+     */
     protected function escape($value)
     {
         if (is_scalar($value)) {

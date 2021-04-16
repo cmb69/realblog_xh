@@ -27,8 +27,10 @@ use stdClass;
 
 class MainAdminController extends AbstractController
 {
+    /** @var string */
     private $urlPath;
 
+    /** @var int */
     private $page;
 
     public function __construct()
@@ -40,18 +42,24 @@ class MainAdminController extends AbstractController
         $this->page = Realblog::getPage();
     }
 
+    /**
+     * @return string
+     */
     public function defaultAction()
     {
         $statuses = $this->getFilterStatuses();
         $total = Finder::countArticlesWithStatus($statuses);
-        $limit = $this->config['admin_records_page'];
-        $pageCount = ceil($total / $limit);
+        $limit = (int) $this->config['admin_records_page'];
+        $pageCount = (int) ceil($total / $limit);
         $page = max(min($this->page, $pageCount), 1);
         $offset = ($page - 1) * $limit;
         $articles = Finder::findArticlesWithStatus($statuses, $limit, $offset);
         return $this->renderArticles($articles, $pageCount);
     }
 
+    /**
+     * @return int[]
+     */
     private function getFilterStatuses()
     {
         $statuses = array();
@@ -63,6 +71,11 @@ class MainAdminController extends AbstractController
         return $statuses;
     }
 
+    /**
+     * @param stdClass[] $articles
+     * @param int $pageCount
+     * @return string
+     */
     private function renderArticles($articles, $pageCount)
     {
         global $pth;
@@ -75,45 +88,78 @@ class MainAdminController extends AbstractController
         $view->lastPage = $pageCount;
         $view->articles = $articles;
         $view->actionUrl = $this->urlPath;
-        $view->deleteUrl = function ($article) use ($page) {
-            global $sn;
+        $view->deleteUrl =
+            /**
+             * @param stdClass $article
+             * @return string
+             */
+            function ($article) use ($page) {
+                global $sn;
 
-            return "$sn?&realblog&admin=plugin_main&action=delete"
-                . "&realblog_id={$article->id}&realblog_page=$page";
-        };
-        $view->editUrl = function ($article) use ($page) {
-            global $sn;
+                return "$sn?&realblog&admin=plugin_main&action=delete"
+                    . "&realblog_id={$article->id}&realblog_page=$page";
+            };
+        $view->editUrl =
+            /**
+             * @param stdClass $article
+             * @return string
+             */
+            function ($article) use ($page) {
+                global $sn;
 
-            return "$sn?&realblog&admin=plugin_main&action=edit"
-                . "&realblog_id={$article->id}&realblog_page=$page";
-        };
+                return "$sn?&realblog&admin=plugin_main&action=edit"
+                    . "&realblog_id={$article->id}&realblog_page=$page";
+            };
         $view->states = array('readyforpublishing', 'published', 'archived');
-        $view->hasFilter = function ($num) {
-            return Realblog::getFilter($num);
-        };
-        $view->formatDate = function ($article) {
-            global $plugin_tx;
+        $view->hasFilter =
+            /**
+             * @param int $num
+             * @return bool
+             */
+            function ($num) {
+                return Realblog::getFilter($num);
+            };
+        $view->formatDate =
+            /**
+             * @param stdClass $article
+             * @return string
+             */
+            function ($article) {
+                global $plugin_tx;
 
-            return date($plugin_tx['realblog']['date_format'], $article->date);
-        };
+                return (string) date($plugin_tx['realblog']['date_format'], $article->date);
+            };
         return $view->render();
     }
 
+    /**
+     * @return string
+     */
     public function createAction()
     {
         return $this->renderArticle('create');
     }
 
+    /**
+     * @return string
+     */
     public function editAction()
     {
         return $this->renderArticle('edit');
     }
 
+    /**
+     * @return string
+     */
     public function deleteAction()
     {
         return $this->renderArticle('delete');
     }
 
+    /**
+     * @param string $action
+     * @return string
+     */
     private function renderArticle($action)
     {
 
@@ -135,6 +181,9 @@ class MainAdminController extends AbstractController
         return $this->renderForm($article, $action);
     }
 
+    /**
+     * @return stdClass
+     */
     private function makeArticle()
     {
         return (object) array(
@@ -153,6 +202,10 @@ class MainAdminController extends AbstractController
         );
     }
 
+    /**
+     * @param string $action
+     * @return string
+     */
     private function renderForm(stdClass $article, $action)
     {
         global $pth, $sn, $title, $bjs;
@@ -182,9 +235,14 @@ class MainAdminController extends AbstractController
         $view->action = "do_{$action}";
         $view->csrfToken = $this->getCsrfToken();
         $view->calendarIcon = "{$pth['folder']['plugins']}realblog/images/calendar.png";
-        $view->formatDate = function ($time) {
-            return date('Y-m-d', $time);
-        };
+        $view->formatDate =
+            /**
+             * @param int $time
+             * @return string
+             */
+            function ($time) {
+                return (string) date('Y-m-d', $time);
+            };
         $view->isAutoPublish = $this->config['auto_publish'];
         $view->isAutoArchive = $this->config['auto_archive'];
         $view->states = array('readyforpublishing', 'published', 'archived');
@@ -193,6 +251,9 @@ class MainAdminController extends AbstractController
         return $view->render();
     }
 
+    /**
+     * @return void
+     */
     private function useCalendar()
     {
         global $pth, $sl, $hjs;
@@ -225,6 +286,9 @@ var REALBLOG = REALBLOG || {};
 EOT;
     }
 
+    /**
+     * @return string
+     */
     public function doCreateAction()
     {
         global $title;
@@ -241,6 +305,9 @@ EOT;
         return $this->renderInfo($title, $info);
     }
 
+    /**
+     * @return string
+     */
     public function doEditAction()
     {
         global $title;
@@ -257,6 +324,9 @@ EOT;
         return $this->renderInfo($title, $info);
     }
 
+    /**
+     * @return string
+     */
     public function doDeleteAction()
     {
         global $title;
@@ -273,6 +343,9 @@ EOT;
         return $this->renderInfo($title, $info);
     }
 
+    /**
+     * @return stdClass
+     */
     private function getArticleFromParameters()
     {
         $article = new stdClass();
@@ -295,6 +368,11 @@ EOT;
         return $article;
     }
 
+    /**
+     * @param string $date
+     * @param bool $withTime
+     * @return int
+     */
     private function stringToTime($date, $withTime = false)
     {
         $parts = explode('-', $date);
@@ -313,16 +391,26 @@ EOT;
         );
     }
 
+    /**
+     * @return string
+     */
     public function deleteSelectedAction()
     {
         return $this->renderConfirmation('delete');
     }
 
+    /**
+     * @return string
+     */
     public function changeStatusAction()
     {
         return $this->renderConfirmation('change-status');
     }
 
+    /**
+     * @param string $kind
+     * @return string
+     */
     private function renderConfirmation($kind)
     {
         $view = new View("confirm-$kind");
@@ -346,6 +434,9 @@ EOT;
         return $view->render();
     }
 
+    /**
+     * @return string
+     */
     public function doDeleteSelectedAction()
     {
         global $title;
@@ -372,6 +463,9 @@ EOT;
         return $this->renderInfo($title, $info);
     }
 
+    /**
+     * @return string
+     */
     public function doChangeStatusAction()
     {
         global $title;
@@ -403,6 +497,9 @@ EOT;
         return $this->renderInfo($title, $info);
     }
 
+    /**
+     * @return string|null
+     */
     private function getCsrfToken()
     {
         global $_XH_csrfProtection;
@@ -413,6 +510,9 @@ EOT;
         }
     }
 
+    /**
+     * @return void
+     */
     private function checkCsrfToken()
     {
         global $_XH_csrfProtection;
@@ -420,6 +520,11 @@ EOT;
         $_XH_csrfProtection->check();
     }
 
+    /**
+     * @param string $title
+     * @param string $message
+     * @return string
+     */
     private function renderInfo($title, $message)
     {
         $url = XH_hsc("{$this->urlPath}?&realblog&admin=plugin_main&action=plugin_text&realblog_page={$this->page}");
@@ -430,6 +535,9 @@ $message
 HTML;
     }
 
+    /**
+     * @return no-return
+     */
     private function redirectToOverview()
     {
         $url = CMSIMPLE_URL . "?&realblog&admin=plugin_main&action=plugin_text&realblog_page={$this->page}";

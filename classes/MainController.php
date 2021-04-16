@@ -27,12 +27,18 @@ use stdClass;
 
 abstract class MainController extends AbstractController
 {
+    /** @var bool */
     protected $showSearch;
 
+    /** @var string */
     protected $searchTerm;
 
+    /** @var int */
     protected $year;
 
+    /**
+     * @param bool $showSearch
+     */
     public function __construct($showSearch)
     {
         parent::__construct();
@@ -51,6 +57,9 @@ abstract class MainController extends AbstractController
         $this->year = $input['realblog_year'];
     }
 
+    /**
+     * @return string
+     */
     protected function renderSearchForm()
     {
         global $su, $sn;
@@ -61,6 +70,11 @@ abstract class MainController extends AbstractController
         return $view->render();
     }
 
+    /**
+     * @param string $what
+     * @param int $count
+     * @return string
+     */
     protected function renderSearchResults($what, $count)
     {
         global $su;
@@ -138,15 +152,20 @@ abstract class MainController extends AbstractController
             $story = ($article->body != '') ? $article->body : $article->teaser;
         }
         $view->story = new HtmlString(evaluate_scripting($story));
-        $view->renderComments = function ($article) {
-            global $plugin_cf;
+        $view->renderComments =
+            /**
+             * @param stdClass $article
+             * @return HtmlString|null
+             */
+            function ($article) {
+                global $plugin_cf;
 
-            if ($article->commentable) {
-                $commentId = "realblog{$article->id}";
-                $bridge = ucfirst($plugin_cf['realblog']['comments_plugin']) . '\\RealblogBridge';
-                return new HtmlString(call_user_func(array($bridge, 'handle'), $commentId));
-            }
-        };
+                if ($article->commentable) {
+                    $commentId = "realblog{$article->id}";
+                    $bridge = ucfirst($plugin_cf['realblog']['comments_plugin']) . '\\RealblogBridge';
+                    return new HtmlString(call_user_func(array($bridge, 'handle'), $commentId));
+                }
+            };
         return $view->render();
     }
 
@@ -165,6 +184,9 @@ abstract class MainController extends AbstractController
         }
     }
 
+    /**
+     * @return bool
+     */
     private function wantsComments()
     {
         return $this->config['comments_plugin']

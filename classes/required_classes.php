@@ -20,9 +20,13 @@
  */
 
 spl_autoload_register(
+    /**
+     * @param string $class
+     */
     function ($class) {
         $parts = explode('\\', $class, 2);
         if ($parts[0] == 'Realblog') {
+            /** @psalm-suppress UnresolvableInclude */
             include_once dirname(__FILE__) . '/' . $parts[1] . '.php';
         }
     }
