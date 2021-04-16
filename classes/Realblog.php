@@ -68,7 +68,7 @@ class Realblog
 
     private static function registerCommands()
     {
-        $class = new ReflectionClass('\Realblog\Realblog');
+        $class = new ReflectionClass(Realblog::class);
         $commands = array();
         foreach ($class->getMethods() as $method) {
             $methodName = $method->getName();
@@ -130,10 +130,10 @@ class Realblog
                 $o .= self::renderInfoView();
                 break;
             case 'plugin_main':
-                self::routeTo('\Realblog\MainAdminController');
+                self::routeTo(MainAdminController::class);
                 break;
             case 'data_exchange':
-                self::routeTo('\Realblog\DataExchangeController');
+                self::routeTo(DataExchangeController::class);
                 break;
             default:
                 $o .= plugin_admin_common();
