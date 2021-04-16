@@ -76,23 +76,23 @@ class View
 
     /**
      * @param string $key
+     * @param float|int|string $args
      * @return string
      */
-    protected function text($key)
+    protected function text($key, ...$args)
     {
         global $plugin_tx;
 
-        $args = func_get_args();
-        array_shift($args);
-        return vsprintf($plugin_tx['realblog'][$key], $args);
+        return sprintf($plugin_tx['realblog'][$key], ...$args);
     }
 
     /**
      * @param string $key
      * @param int $count
+     * @param float|int|string $args
      * @return string
      */
-    protected function plural($key, $count)
+    protected function plural($key, $count, ...$args)
     {
         global $plugin_tx;
 
@@ -101,9 +101,7 @@ class View
         } else {
             $key .= XH_numberSuffix($count);
         }
-        $args = func_get_args();
-        array_shift($args);
-        return vsprintf($plugin_tx['realblog'][$key], $args);
+        return sprintf($plugin_tx['realblog'][$key], ...$args);
     }
 
     /**
