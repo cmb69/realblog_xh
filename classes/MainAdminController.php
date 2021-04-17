@@ -351,7 +351,7 @@ EOT;
         $article = new stdClass();
         $article->id = $_POST['realblog_id'];
         $article->version = $_POST['realblog_version'];
-        if (!isset($_POST['realblog_date']) || $_POST['realblog_date'] !== $_POST['realblog_date_old']) {
+        if (!isset($_POST['realblog_date_exact']) || $_POST['realblog_date'] !== $_POST['realblog_date_old']) {
             $article->date = $this->stringToTime($_POST['realblog_date'], true);
         } else {
             $article->date = $_POST['realblog_date_exact'];
@@ -362,8 +362,8 @@ EOT;
         $article->publishing_date = $this->stringToTime($_POST['realblog_startdate']);
         $article->archiving_date = $this->stringToTime($_POST['realblog_enddate']);
         $article->status = $_POST['realblog_status'];
-        $article->feedable = (bool) $_POST['realblog_rssfeed'];
-        $article->commentable = (bool) $_POST['realblog_comments'];
+        $article->feedable = isset($_POST['realblog_rssfeed']);
+        $article->commentable = isset($_POST['realblog_comments']);
         $article->categories = ',' . trim($_POST['realblog_categories']) . ',';
         return $article;
     }
