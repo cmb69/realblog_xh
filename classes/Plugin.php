@@ -54,7 +54,11 @@ class Plugin
                 array('options' => array('regexp' => '/^rss$/'))
             );
             if ($rssFeedRequested) {
-                $controller = new FeedController($plugin_cf['realblog'], $plugin_tx['realblog'], new Finder());
+                $controller = new FeedController(
+                    $plugin_cf['realblog'],
+                    $plugin_tx['realblog'],
+                    new Finder(self::getDb())
+                );
                 echo $controller->defaultAction();
                 exit;
             }
@@ -133,7 +137,8 @@ class Plugin
                 $controller = new MainAdminController(
                     $plugin_cf['realblog'],
                     $plugin_tx['realblog'],
-                    new Finder(),
+                    self::getDb(),
+                    new Finder(self::getDb()),
                     $_XH_csrfProtection,
                     new View()
                 );
@@ -146,7 +151,8 @@ class Plugin
             case 'data_exchange':
                 $controller = new DataExchangeController(
                     $plugin_tx['realblog'],
-                    new Finder(),
+                    self::getDb(),
+                    new Finder(self::getDb()),
                     $_XH_csrfProtection,
                     new View()
                 );
@@ -178,7 +184,7 @@ class Plugin
      */
     private static function autoPublish()
     {
-        DB::autoChangeStatus('publishing_date', 1);
+        self::getDb()->autoChangeStatus('publishing_date', 1);
     }
 
     /**
@@ -186,7 +192,7 @@ class Plugin
      */
     private static function autoArchive()
     {
-        DB::autoChangeStatus('archiving_date', 2);
+        self::getDb()->autoChangeStatus('archiving_date', 2);
     }
 
     /**
@@ -202,7 +208,8 @@ class Plugin
             $plugin_cf['realblog'],
             $plugin_tx['realblog'],
             $showSearch,
-            new Finder(),
+            self::getDb(),
+            new Finder(self::getDb()),
             new View(),
             $category
         );
@@ -230,7 +237,8 @@ class Plugin
             $plugin_cf['realblog'],
             $plugin_tx['realblog'],
             $showSearch,
-            new Finder(),
+            self::getDb(),
+            new Finder(self::getDb()),
             new View()
         );
         if (filter_has_var(INPUT_GET, 'realblog_id')) {
@@ -259,7 +267,7 @@ class Plugin
             $plugin_tx['realblog'],
             $pageUrl,
             $showTeaser,
-            new Finder(),
+            new Finder(self::getDb()),
             new View()
         );
         return $controller->defaultAction();
@@ -277,7 +285,7 @@ class Plugin
             $plugin_cf['realblog'],
             $plugin_tx['realblog'],
             $pageUrl,
-            new Finder(),
+            new Finder(self::getDb()),
             new View()
         );
         return $controller->defaultAction();
@@ -293,6 +301,21 @@ class Plugin
 
         $controller = new FeedLinkController($plugin_cf['realblog'], $plugin_tx['realblog']);
         return $controller->defaultAction($target);
+    }
+
+    /**
+     * @return DB
+     */
+    private static function getDb()
+    {
+        static $db = null;
+        global $pth;
+
+        $filename = "{$pth['folder']['content']}realblog/realblog.db";
+        if ($db === null) {
+            $db = new DB($filename);
+        }
+        return $db;
     }
 
     /**

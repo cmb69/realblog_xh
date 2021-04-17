@@ -32,9 +32,9 @@ class ArchiveController extends MainController
      * @param array<string,string> $text
      * @param bool $showSearch
      */
-    public function __construct(array $config, array $text, $showSearch, Finder $finder, View $view)
+    public function __construct(array $config, array $text, $showSearch, DB $db, Finder $finder, View $view)
     {
-        parent::__construct($config, $text, $showSearch, $finder, $view);
+        parent::__construct($config, $text, $showSearch, $db, $finder, $view);
     }
 
     /**

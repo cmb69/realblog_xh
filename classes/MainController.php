@@ -36,6 +36,9 @@ abstract class MainController
     /** @var bool */
     protected $showSearch;
 
+    /** @var DB */
+    protected $db;
+
     /** @var Finder */
     protected $finder;
 
@@ -53,11 +56,12 @@ abstract class MainController
      * @param array<string,string> $text
      * @param bool $showSearch
      */
-    public function __construct(array $config, array $text, $showSearch, Finder $finder, View $view)
+    public function __construct(array $config, array $text, $showSearch, DB $db, Finder $finder, View $view)
     {
         $this->config = $config;
         $this->text = $text;
         $this->showSearch = $showSearch;
+        $this->db = $db;
         $this->finder = $finder;
         $this->view = $view;
         $input = filter_input_array(
@@ -115,7 +119,7 @@ abstract class MainController
         $article = $this->finder->findById($id);
         /** @psalm-suppress UndefinedConstant */
         if (isset($article) && !XH_ADM && $article->status > 0) {
-            DB::recordPageView($id);
+            $this->db->recordPageView($id);
         }
         /** @psalm-suppress UndefinedConstant */
         if (isset($article) && (XH_ADM || $article->status > 0)) {

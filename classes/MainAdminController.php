@@ -34,6 +34,9 @@ class MainAdminController
     /** @var array<string,string> */
     private $text;
 
+    /** @var DB */
+    private $db;
+
     /** @var Finder */
     private $finder;
 
@@ -53,12 +56,19 @@ class MainAdminController
      * @param array<string,string> $config
      * @param array<string,string> $text
      */
-    public function __construct(array $config, array $text, Finder $finder, CsrfProtector $csrfProtector, View $view)
-    {
+    public function __construct(
+        array $config,
+        array $text,
+        DB $db,
+        Finder $finder,
+        CsrfProtector $csrfProtector,
+        View $view
+    ) {
         global $sn;
 
         $this->config = $config;
         $this->text = $text;
+        $this->db = $db;
         $this->finder = $finder;
         $this->csrfProtector = $csrfProtector;
         $this->view = $view;
@@ -319,7 +329,7 @@ EOT;
 
         $this->csrfProtector->check();
         $article = $this->getArticleFromParameters();
-        $res = DB::insertArticle($article);
+        $res = $this->db->insertArticle($article);
         if ($res === 1) {
             $this->redirectToOverview();
         } else {
@@ -338,7 +348,7 @@ EOT;
 
         $this->csrfProtector->check();
         $article = $this->getArticleFromParameters();
-        $res = DB::updateArticle($article);
+        $res = $this->db->updateArticle($article);
         if ($res === 1) {
             $this->redirectToOverview();
         } else {
@@ -357,7 +367,7 @@ EOT;
 
         $this->csrfProtector->check();
         $article = $this->getArticleFromParameters();
-        $res = DB::deleteArticle($article);
+        $res = $this->db->deleteArticle($article);
         if ($res === 1) {
             $this->redirectToOverview();
         } else {
@@ -476,7 +486,7 @@ EOT;
                 'options' => array('min_range' => 1)
             )
         );
-        $res = DB::deleteArticlesWithIds($ids);
+        $res = $this->db->deleteArticlesWithIds($ids);
         if ($res === count($ids)) {
             $this->redirectToOverview();
         } elseif ($res > 0) {
@@ -510,7 +520,7 @@ EOT;
                 )
             )
         );
-        $res = DB::updateStatusOfArticlesWithIds($input['realblog_ids'], $input['realblog_status']);
+        $res = $this->db->updateStatusOfArticlesWithIds($input['realblog_ids'], $input['realblog_status']);
         if ($res === count($input['realblog_ids'])) {
             $this->redirectToOverview();
         } elseif ($res > 0) {

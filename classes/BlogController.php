@@ -36,9 +36,16 @@ class BlogController extends MainController
      * @param bool $showSearch
      * @param string $category
      */
-    public function __construct(array $config, array $text, $showSearch, Finder $finder, View $view, $category = 'all')
-    {
-        parent::__construct($config, $text, $showSearch, $finder, $view);
+    public function __construct(
+        array $config,
+        array $text,
+        $showSearch,
+        DB $db,
+        Finder $finder,
+        View $view,
+        $category = 'all'
+    ) {
+        parent::__construct($config, $text, $showSearch, $db, $finder, $view);
         $this->category = $category;
     }
 

@@ -27,6 +27,14 @@ use stdClass;
 
 class Finder
 {
+    /** @var DB */
+    private $db;
+
+    public function __construct(DB $db)
+    {
+        $this->db = $db;
+    }
+
     /**
      * @param int $status
      * @param int $limit
@@ -89,7 +97,7 @@ EOS;
      */
     public function findArchiveYears()
     {
-        $db = DB::getConnection();
+        $db = $this->db->getConnection();
         $sql = <<<'SQL'
 SELECT DISTINCT strftime('%Y', date, 'unixepoch') AS year
     FROM articles ORDER BY year
@@ -127,7 +135,7 @@ EOS;
      */
     public function countArticlesWithStatus(array $statuses, $category = 'all', $search = null)
     {
-        $db = DB::getConnection();
+        $db = $this->db->getConnection();
         if (empty($statuses)) {
             $whereClause = 'WHERE 1 = 1';
         } else {
@@ -209,7 +217,7 @@ SQL;
      */
     private function fetchAllAsObject($sql, array $bindings = null)
     {
-        $connection = DB::getConnection();
+        $connection = $this->db->getConnection();
         if (isset($bindings)) {
             $statement = $connection->prepare($sql);
             foreach ($bindings as $binding) {
@@ -231,7 +239,7 @@ SQL;
      */
     public function findAllCategories()
     {
-        $db = DB::getConnection();
+        $db = $this->db->getConnection();
         $statement = $db->prepare('SELECT DISTINCT categories FROM articles');
         $result = $statement->execute();
         $categories = array();
@@ -251,7 +259,7 @@ SQL;
      */
     public function findById($id)
     {
-        $db = DB::getConnection();
+        $db = $this->db->getConnection();
         $statement = $db->prepare('SELECT * FROM articles WHERE id = :id');
         $statement->bindValue(':id', $id, SQLITE3_INTEGER);
         $result = $statement->execute();

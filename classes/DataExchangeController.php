@@ -28,6 +28,9 @@ class DataExchangeController
     /** @var array<string,string> */
     private $text;
 
+    /** @var DB */
+    private $db;
+
     /** @var Finder */
     private $finder;
 
@@ -40,9 +43,10 @@ class DataExchangeController
     /**
      * @param array<string,string> $text
      */
-    public function __construct(array $text, Finder $finder, CsrfProtector $csrfProtector, View $view)
+    public function __construct(array $text, DB $db, Finder $finder, CsrfProtector $csrfProtector, View $view)
     {
         $this->text = $text;
+        $this->db = $db;
         $this->finder = $finder;
         $this->csrfProtector = $csrfProtector;
         $this->view = $view;
@@ -75,7 +79,7 @@ class DataExchangeController
     public function exportToCsvAction()
     {
         $this->csrfProtector->check();
-        if (DB::exportToCsv($this->getCsvFilename())) {
+        if ($this->db->exportToCsv($this->getCsvFilename())) {
             $this->redirectToDefault();
         } else {
             return "<h1>Realblog &ndash; {$this->text['exchange_heading']}</h1>"
@@ -89,7 +93,7 @@ class DataExchangeController
     public function importFromCsvAction()
     {
         $this->csrfProtector->check();
-        if (DB::importFromCsv($this->getCsvFilename())) {
+        if ($this->db->importFromCsv($this->getCsvFilename())) {
             $this->redirectToDefault();
         } else {
             return "<h1>Realblog &ndash; {$this->text['exchange_heading']}</h1>"

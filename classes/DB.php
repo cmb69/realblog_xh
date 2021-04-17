@@ -28,44 +28,46 @@ use SQLite3;
 
 class DB
 {
-    /**
-     * @var self|null
-     */
-    private static $instance = null;
+    /** @var string */
+    private $filename;
 
     /**
-     * @var SQLite3
+     * @var SQLite3|null
      */
-    private $connection;
+    private $connection = null;
+
+    /**
+     * @param string $filename
+     */
+    public function __construct($filename)
+    {
+        $this->filename = $filename;
+    }
 
     /**
      * @return SQLite3
      */
-    public static function getConnection()
+    public function getConnection()
     {
-        if (self::$instance === null) {
-            self::$instance = new self();
-        }
-        return self::$instance->connection;
+        $this->init();
+        assert($this->connection !== null);
+        return $this->connection;
     }
 
     /**
-     * @global array $pth
+     * @return void
      */
-    private function __construct()
+    private function init()
     {
-        global $pth;
-
-        $filename = "{$pth['folder']['content']}realblog/realblog.db";
         try {
-            $this->connection = new Sqlite3($filename, SQLITE3_OPEN_READWRITE);
+            $this->connection = new Sqlite3($this->filename, SQLITE3_OPEN_READWRITE);
         } catch (\Exception $ex) {
-            $dirname = dirname($filename);
+            $dirname = dirname($this->filename);
             if (!file_exists($dirname)) {
                 mkdir($dirname, 0777);
                 chmod($dirname, 0777);
             }
-            $this->connection = new Sqlite3($filename);
+            $this->connection = new Sqlite3($this->filename);
             $this->createDatabase();
         }
         $this->updateDatabase();
@@ -94,21 +96,20 @@ CREATE TABLE articles (
 CREATE INDEX status ON articles (status, date, id);
 CREATE INDEX feedable ON articles (feedable, date, id);
 EOS;
+        assert($this->connection !== null);
         $this->connection->exec($sql);
         $this->importFlatfile();
     }
 
     /**
      * @return void
-     * @global array $pth
      */
     private function importFlatfile()
     {
-        global $pth;
-
-        $filename = "{$pth['folder']['content']}realblog/realblog.txt";
+        $filename = dirname($this->filename) . "/realblog.txt";
         if (file_exists($filename)) {
             $lines = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            assert($this->connection !== null);
             $this->connection->exec('BEGIN TRANSACTION');
             $sql = <<<'SQL'
 INSERT INTO articles VALUES (
@@ -171,15 +172,16 @@ CREATE TABLE IF NOT EXISTS page_views (
     timestamp INTEGER NOT NULL
 );
 EOS;
+        assert($this->connection !== null);
         $this->connection->exec($sql);
     }
 
     /**
      * @return int
      */
-    public static function insertArticle(stdClass $article)
+    public function insertArticle(stdClass $article)
     {
-        $db = self::getConnection();
+        $conn = $this->getConnection();
         $sql = <<<'EOS'
 INSERT INTO articles
     VALUES (
@@ -187,7 +189,7 @@ INSERT INTO articles
         :categories, :title, :teaser, :body, :feedable, :commentable
     )
 EOS;
-        $statement = $db->prepare($sql);
+        $statement = $conn->prepare($sql);
         $statement->bindValue(':id', null, SQLITE3_NULL);
         $statement->bindValue(':date', $article->date, SQLITE3_INTEGER);
         $statement->bindValue(':publishing_date', $article->publishing_date, SQLITE3_INTEGER);
@@ -201,7 +203,7 @@ EOS;
         $statement->bindValue(':commentable', $article->commentable, SQLITE3_INTEGER);
         $res = $statement->execute();
         if ($res) {
-            $res = $db->changes();
+            $res = $conn->changes();
         }
         return $res;
     }
@@ -209,9 +211,9 @@ EOS;
     /**
      * @return int
      */
-    public static function updateArticle(stdClass $article)
+    public function updateArticle(stdClass $article)
     {
-        $db = self::getConnection();
+        $conn = $this->getConnection();
         $sql = <<<'EOS'
 UPDATE articles
     SET version = version + 1, date = :date, publishing_date = :publishing_date,
@@ -220,7 +222,7 @@ UPDATE articles
         feedable = :feedable, commentable = :commentable
     WHERE id = :id AND version = :version
 EOS;
-        $statement = $db->prepare($sql);
+        $statement = $conn->prepare($sql);
         $statement->bindValue(':id', $article->id, SQLITE3_INTEGER);
         $statement->bindValue(':version', $article->version, SQLITE3_INTEGER);
         $statement->bindValue(':date', $article->date, SQLITE3_INTEGER);
@@ -235,7 +237,7 @@ EOS;
         $statement->bindValue(':commentable', $article->commentable, SQLITE3_INTEGER);
         $res = $statement->execute();
         if ($res) {
-            $res = $db->changes();
+            $res = $conn->changes();
         }
         return $res;
     }
@@ -245,14 +247,14 @@ EOS;
      * @param int $status
      * @return void
      */
-    public static function autoChangeStatus($field, $status)
+    public function autoChangeStatus($field, $status)
     {
-        $db = self::getConnection();
+        $conn = $this->getConnection();
         $sql = <<<SQL
 UPDATE articles SET version = version + 1, status = :status
     WHERE status < :status AND $field <= :date
 SQL;
-        $statement = $db->prepare($sql);
+        $statement = $conn->prepare($sql);
         $statement->bindValue(':status', $status, SQLITE3_INTEGER);
         $statement->bindValue(':date', strtotime('midnight'), SQLITE3_INTEGER);
         $statement->execute();
@@ -263,18 +265,18 @@ SQL;
      * @param int $status
      * @return int
      */
-    public static function updateStatusOfArticlesWithIds(array $ids, $status)
+    public function updateStatusOfArticlesWithIds(array $ids, $status)
     {
         $sql = sprintf(
             'UPDATE articles SET version = version + 1, status = :status WHERE id in (%s)',
             implode(',', $ids)
         );
-        $db = self::getConnection();
-        $stmt = $db->prepare($sql);
+        $conn = $this->getConnection();
+        $stmt = $conn->prepare($sql);
         $stmt->bindValue(':status', $status, SQLITE3_INTEGER);
         $res = $stmt->execute();
         if ($res) {
-            $res = $db->changes();
+            $res = $conn->changes();
         }
         return $res;
     }
@@ -283,16 +285,16 @@ SQL;
      * @param stdClass $article
      * @return int
      */
-    public static function deleteArticle($article)
+    public function deleteArticle($article)
     {
         $sql = 'DELETE FROM articles WHERE id = :id AND version = :version';
-        $db = self::getConnection();
-        $stmt = $db->prepare($sql);
+        $conn = $this->getConnection();
+        $stmt = $conn->prepare($sql);
         $stmt->bindValue(':id', $article->id, SQLITE3_INTEGER);
         $stmt->bindValue(':version', $article->version, SQLITE3_INTEGER);
         $res = $stmt->execute();
         if ($res) {
-            $res = $db->changes();
+            $res = $conn->changes();
         }
         return $res;
     }
@@ -301,16 +303,16 @@ SQL;
      * @param array<int> $ids
      * @return int|false
      */
-    public static function deleteArticlesWithIds(array $ids)
+    public function deleteArticlesWithIds(array $ids)
     {
         $sql = sprintf(
             'DELETE FROM articles WHERE id in (%s)',
             implode(',', $ids)
         );
-        $db = self::getConnection();
-        $res = $db->exec($sql);
+        $conn = $this->getConnection();
+        $res = $conn->exec($sql);
         if ($res) {
-            $res = $db->changes();
+            $res = $conn->changes();
         }
         return $res;
     }
@@ -319,11 +321,11 @@ SQL;
      * @param int $articleId
      * @return void
      */
-    public static function recordPageView($articleId)
+    public function recordPageView($articleId)
     {
         $sql = 'INSERT INTO page_views VALUES (:article_id, :timestamp)';
-        $db = self::getConnection();
-        $statement = $db->prepare($sql);
+        $conn = $this->getConnection();
+        $statement = $conn->prepare($sql);
         $statement->bindValue(':article_id', $articleId, SQLITE3_INTEGER);
         $statement->bindValue(':timestamp', time());
         $statement->execute();
@@ -333,14 +335,14 @@ SQL;
      * @param string $filename
      * @return bool
      */
-    public static function exportToCsv($filename)
+    public function exportToCsv($filename)
     {
         if (!($stream = fopen($filename, 'w'))) {
             return false;
         }
         $sql = 'SELECT * FROM articles';
-        $db = self::getConnection();
-        $statement = $db->prepare($sql);
+        $conn = $this->getConnection();
+        $statement = $conn->prepare($sql);
         $result = $statement->execute();
         while (($record = $result->fetchArray(SQLITE3_NUM)) !== false) {
             $record = array_map('XH_rmws', $record);
@@ -354,11 +356,11 @@ SQL;
      * @param string $filename
      * @return bool
      */
-    public static function importFromCsv($filename)
+    public function importFromCsv($filename)
     {
-        $db = self::getConnection();
-        $db->exec('BEGIN TRANSACTION');
-        $db->exec('DELETE FROM articles');
+        $conn = $this->getConnection();
+        $conn->exec('BEGIN TRANSACTION');
+        $conn->exec('DELETE FROM articles');
         $sql = <<<'EOS'
 INSERT INTO articles
     VALUES (
@@ -366,7 +368,7 @@ INSERT INTO articles
         :categories, :title, :teaser, :body, :feedable, :commentable
     )
 EOS;
-        $statement = $db->prepare($sql);
+        $statement = $conn->prepare($sql);
         if (!($stream = fopen($filename, 'r'))) {
             return false;
         }
@@ -388,7 +390,7 @@ EOS;
             }
         }
         fclose($stream);
-        $db->exec('COMMIT');
+        $conn->exec('COMMIT');
         return true;
     }
 }
