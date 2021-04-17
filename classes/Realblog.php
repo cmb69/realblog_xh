@@ -145,7 +145,6 @@ class Realblog
                 break;
             case 'data_exchange':
                 $controller = new DataExchangeController(
-                    $plugin_cf['realblog'],
                     $plugin_tx['realblog'],
                     new Finder(),
                     $_XH_csrfProtection,

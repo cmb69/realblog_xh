@@ -26,9 +26,6 @@ use XH\CSRFProtection as CsrfProtector;
 class DataExchangeController
 {
     /** @var array<string,string> */
-    private $config;
-
-    /** @var array<string,string> */
     private $text;
 
     /** @var Finder */
@@ -41,12 +38,10 @@ class DataExchangeController
     private $view;
 
     /**
-     * @param array<string,string> $config
      * @param array<string,string> $text
      */
-    public function __construct(array $config, array $text, Finder $finder, CsrfProtector $csrfProtector, View $view)
+    public function __construct(array $text, Finder $finder, CsrfProtector $csrfProtector, View $view)
     {
-        $this->config = $config;
         $this->text = $text;
         $this->finder = $finder;
         $this->csrfProtector = $csrfProtector;
