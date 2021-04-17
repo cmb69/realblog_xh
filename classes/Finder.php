@@ -85,7 +85,7 @@ EOS;
     }
 
     /**
-     * @return list<int>
+     * @return int[]
      */
     public static function findArchiveYears()
     {
