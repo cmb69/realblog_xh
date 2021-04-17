@@ -151,13 +151,7 @@ class Realblog
      */
     private static function renderInfoView()
     {
-        global $pth;
-
-        $view = new View('info');
-        $view->logoPath = "{$pth['folder']['plugins']}realblog/realblog.png";
-        $view->version = Realblog::VERSION;
-        $systemCheck = new SystemCheck();
-        return $view->render() . $systemCheck->render();
+        return (new InfoController)->defaultAction();
     }
 
     /**

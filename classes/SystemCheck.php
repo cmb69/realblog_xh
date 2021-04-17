@@ -24,32 +24,9 @@ namespace Realblog;
 class SystemCheck
 {
     /**
-     * @return string
-     */
-    public function render()
-    {
-        global $plugin_cf;
-
-        $view = new View('system-check');
-        $view->heading = $plugin_cf['realblog']['heading_level'];
-        $view->checks = $this->getChecks();
-        $view->imageURL =
-            /**
-             * @param string $state
-             * @return string
-             */
-            function ($state) {
-                global $pth;
-
-                return "{$pth['folder']['plugins']}realblog/images/$state.png";
-            };
-        return $view->render();
-    }
-
-    /**
      * @return array
      */
-    private function getChecks()
+    public function getChecks()
     {
         global $pth, $plugin_tx;
 
