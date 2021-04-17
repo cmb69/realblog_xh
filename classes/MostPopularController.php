@@ -34,6 +34,9 @@ class MostPopularController
     /** @var string */
     private $pageUrl;
 
+    /** @var Finder */
+    private $finder;
+
     /** @var View */
     private $view;
 
@@ -42,11 +45,12 @@ class MostPopularController
      * @param array<string,string> $text
      * @param string $pageUrl
      */
-    public function __construct(array $config, array $text, $pageUrl, View $view)
+    public function __construct(array $config, array $text, $pageUrl, Finder $finder, View $view)
     {
         $this->config = $config;
         $this->text = $text;
         $this->pageUrl = $pageUrl;
+        $this->finder = $finder;
         $this->view = $view;
     }
 
@@ -62,7 +66,7 @@ class MostPopularController
         }
         $pageUrl = $this->pageUrl;
         $data = [
-            'articles' => Finder::findMostPopularArticles((int) $this->config['links_visible']),
+            'articles' => $this->finder->findMostPopularArticles((int) $this->config['links_visible']),
             'heading' => $this->config['heading_level'],
             'url' =>
             /**

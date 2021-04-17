@@ -53,7 +53,7 @@ class Realblog
                 array('options' => array('regexp' => '/^rss$/'))
             );
             if ($rssFeedRequested) {
-                $controller = new FeedController($plugin_cf['realblog'], $plugin_tx['realblog']);
+                $controller = new FeedController($plugin_cf['realblog'], $plugin_tx['realblog'], new Finder());
                 echo $controller->defaultAction();
                 exit;
             }
@@ -149,6 +149,7 @@ class Realblog
         $controller = new $controllerClassName(
             $plugin_cf['realblog'],
             $plugin_tx['realblog'],
+            new Finder(),
             $_XH_csrfProtection,
             new View()
         );
@@ -204,6 +205,7 @@ class Realblog
             $plugin_cf['realblog'],
             $plugin_tx['realblog'],
             $showSearch,
+            new Finder(),
             new View(),
             $category
         );
@@ -227,7 +229,13 @@ class Realblog
     {
         global $plugin_cf, $plugin_tx;
 
-        $controller = new ArchiveController($plugin_cf['realblog'], $plugin_tx['realblog'], $showSearch, new View());
+        $controller = new ArchiveController(
+            $plugin_cf['realblog'],
+            $plugin_tx['realblog'],
+            $showSearch,
+            new Finder(),
+            new View()
+        );
         if (filter_has_var(INPUT_GET, 'realblog_id')) {
             return (string) $controller->showArticleAction(filter_input(
                 INPUT_GET,
@@ -254,6 +262,7 @@ class Realblog
             $plugin_tx['realblog'],
             $pageUrl,
             $showTeaser,
+            new Finder(),
             new View()
         );
         return $controller->defaultAction();
@@ -267,7 +276,13 @@ class Realblog
     {
         global $plugin_cf, $plugin_tx;
 
-        $controller = new MostPopularController($plugin_cf['realblog'], $plugin_tx['realblog'], $pageUrl, new View());
+        $controller = new MostPopularController(
+            $plugin_cf['realblog'],
+            $plugin_tx['realblog'],
+            $pageUrl,
+            new Finder(),
+            new View()
+        );
         return $controller->defaultAction();
     }
 

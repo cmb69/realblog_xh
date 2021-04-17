@@ -39,6 +39,9 @@ class LinkController
     /** @var bool */
     private $showTeaser;
 
+    /** @var Finder */
+    private $finder;
+
     /** @var View */
     private $view;
 
@@ -48,12 +51,13 @@ class LinkController
      * @param string $pageUrl
      * @param bool $showTeaser
      */
-    public function __construct(array $config, array $text, $pageUrl, $showTeaser, View $view)
+    public function __construct(array $config, array $text, $pageUrl, $showTeaser, Finder $finder, View $view)
     {
         $this->config = $config;
         $this->text = $text;
         $this->pageUrl = $pageUrl;
         $this->showTeaser = $showTeaser;
+        $this->finder = $finder;
         $this->view = $view;
     }
 
@@ -69,7 +73,7 @@ class LinkController
         }
         $pageUrl = $this->pageUrl;
         $data = [
-            'articles' => Finder::findArticles(1, (int) $this->config['links_visible']),
+            'articles' => $this->finder->findArticles(1, (int) $this->config['links_visible']),
             'heading' => $this->config['heading_level'],
             'formatDate' =>
             /**

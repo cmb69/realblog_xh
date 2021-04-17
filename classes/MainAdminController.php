@@ -34,6 +34,9 @@ class MainAdminController
     /** @var array<string,string> */
     private $text;
 
+    /** @var Finder */
+    private $finder;
+
     /** @var CsrfProtector */
     private $csrfProtector;
 
@@ -50,12 +53,13 @@ class MainAdminController
      * @param array<string,string> $config
      * @param array<string,string> $text
      */
-    public function __construct(array $config, array $text, CsrfProtector $csrfProtector, View $view)
+    public function __construct(array $config, array $text, Finder $finder, CsrfProtector $csrfProtector, View $view)
     {
         global $sn;
 
         $this->config = $config;
         $this->text = $text;
+        $this->finder = $finder;
         $this->csrfProtector = $csrfProtector;
         $this->view = $view;
         $this->urlPath = $sn;
@@ -68,12 +72,12 @@ class MainAdminController
     public function defaultAction()
     {
         $statuses = $this->getFilterStatuses();
-        $total = Finder::countArticlesWithStatus($statuses);
+        $total = $this->finder->countArticlesWithStatus($statuses);
         $limit = (int) $this->config['admin_records_page'];
         $pageCount = (int) ceil($total / $limit);
         $page = max(min($this->page, $pageCount), 1);
         $offset = ($page - 1) * $limit;
-        $articles = Finder::findArticlesWithStatus($statuses, $limit, $offset);
+        $articles = $this->finder->findArticlesWithStatus($statuses, $limit, $offset);
         return $this->renderArticles($articles, $pageCount);
     }
 
@@ -192,7 +196,7 @@ class MainAdminController
                 FILTER_VALIDATE_INT,
                 array('options' => array('min_range' => 1))
             );
-            $article = Finder::findById($id);
+            $article = $this->finder->findById($id);
             if (!$article) {
                 return XH_message('fail', $this->text['message_not_found']);
             }
@@ -244,7 +248,7 @@ class MainAdminController
         }
         $this->useCalendar();
         $bjs .= '<script>REALBLOG.categories = '
-            . json_encode(Finder::findAllCategories()) . ';</script>'
+            . json_encode($this->finder->findAllCategories()) . ';</script>'
             . '<script src="' . $pth['folder']['plugins']
             . 'realblog/realblog.js"></script>';
         $data = [

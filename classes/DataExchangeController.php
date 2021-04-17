@@ -31,6 +31,9 @@ class DataExchangeController
     /** @var array<string,string> */
     private $text;
 
+    /** @var Finder */
+    private $finder;
+
     /** @var CsrfProtector */
     private $csrfProtector;
 
@@ -41,10 +44,11 @@ class DataExchangeController
      * @param array<string,string> $config
      * @param array<string,string> $text
      */
-    public function __construct(array $config, array $text, CsrfProtector $csrfProtector, View $view)
+    public function __construct(array $config, array $text, Finder $finder, CsrfProtector $csrfProtector, View $view)
     {
         $this->config = $config;
         $this->text = $text;
+        $this->finder = $finder;
         $this->csrfProtector = $csrfProtector;
         $this->view = $view;
     }
@@ -59,7 +63,7 @@ class DataExchangeController
         $data = [
             'csrfToken' => $this->getCsrfToken(),
             'url' => "$sn?realblog",
-            'articleCount' => Finder::countArticlesWithStatus(array(0, 1, 2)),
+            'articleCount' => $this->finder->countArticlesWithStatus(array(0, 1, 2)),
             'confirmImport' => json_encode($this->text['exchange_confirm_import']),
         ];
         $filename = $this->getCsvFilename();

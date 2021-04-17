@@ -36,9 +36,9 @@ class BlogController extends MainController
      * @param bool $showSearch
      * @param string $category
      */
-    public function __construct(array $config, array $text, $showSearch, View $view, $category = 'all')
+    public function __construct(array $config, array $text, $showSearch, Finder $finder, View $view, $category = 'all')
     {
-        parent::__construct($config, $text, $showSearch, $view);
+        parent::__construct($config, $text, $showSearch, $finder, $view);
         $this->category = $category;
     }
 
@@ -55,10 +55,17 @@ class BlogController extends MainController
             ? -1 : 1;
         $limit = max(1, (int) $this->config['entries_per_page']);
         $page = Realblog::getPage();
-        $articleCount = Finder::countArticlesWithStatus(array(1), $this->category, $this->searchTerm);
+        $articleCount = $this->finder->countArticlesWithStatus(array(1), $this->category, $this->searchTerm);
         $pageCount = (int) ceil($articleCount / $limit);
         $page = min(max($page, 1), $pageCount);
-        $articles = Finder::findArticles(1, $limit, ($page-1) * $limit, $order, $this->category, $this->searchTerm);
+        $articles = $this->finder->findArticles(
+            1,
+            $limit,
+            ($page-1) * $limit,
+            $order,
+            $this->category,
+            $this->searchTerm
+        );
         if ($this->searchTerm) {
             $html .= $this->renderSearchResults('blog', $articleCount);
         }

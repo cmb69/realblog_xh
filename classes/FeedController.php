@@ -33,10 +33,14 @@ class FeedController
     /** @var array<string,string> */
     private $text;
 
-    public function __construct(array $config, array $text)
+    /** @var Finder */
+    private $finder;
+
+    public function __construct(array $config, array $text, Finder $finder)
     {
         $this->config = $config;
         $this->text = $text;
+        $this->finder = $finder;
     }
 
     /**
@@ -58,7 +62,7 @@ class FeedController
                 CMSIMPLE_URL . $pth['folder']['images']
                 . $this->config['rss_logo']
             ),
-            'articles' => Finder::findFeedableArticles($count),
+            'articles' => $this->finder->findFeedableArticles($count),
             'articleUrl' =>
             /**
              * @param stdClass $article

@@ -36,7 +36,7 @@ class Finder
      * @param string|null $search
      * @return array<stdClass>
      */
-    public static function findArticles($status, $limit, $offset = 0, $order = -1, $category = 'all', $search = null)
+    public function findArticles($status, $limit, $offset = 0, $order = -1, $category = 'all', $search = null)
     {
         if ($order === -1) {
             $order = 'DESC';
@@ -61,7 +61,7 @@ EOS;
             array(':category', "%,$category,%", SQLITE3_TEXT),
             array(':search', "%$search%", SQLITE3_TEXT)
         );
-        return self::fetchAllAsObject($sql, $bindings);
+        return $this->fetchAllAsObject($sql, $bindings);
     }
 
     /**
@@ -69,7 +69,7 @@ EOS;
      * @param int $end
      * @return array<stdClass>
      */
-    public static function findArchivedArticlesInPeriod($start, $end)
+    public function findArchivedArticlesInPeriod($start, $end)
     {
         $sql = <<<'EOS'
 SELECT id, date, title FROM articles
@@ -81,13 +81,13 @@ EOS;
             array(':start', $start, SQLITE3_INTEGER),
             array(':end', $end, SQLITE3_INTEGER)
         );
-        return self::fetchAllAsObject($sql, $bindings);
+        return $this->fetchAllAsObject($sql, $bindings);
     }
 
     /**
      * @return int[]
      */
-    public static function findArchiveYears()
+    public function findArchiveYears()
     {
         $db = DB::getConnection();
         $sql = <<<'SQL'
@@ -106,7 +106,7 @@ SQL;
      * @param string $search
      * @return array<stdClass>
      */
-    public static function findArchivedArticlesContaining($search)
+    public function findArchivedArticlesContaining($search)
     {
         $sql = <<<'EOS'
 SELECT id, date, title FROM articles
@@ -116,7 +116,7 @@ EOS;
         $bindings = array(
             array(':text', '%' . $search . '%', SQLITE3_TEXT)
         );
-        return self::fetchAllAsObject($sql, $bindings);
+        return $this->fetchAllAsObject($sql, $bindings);
     }
 
     /**
@@ -125,7 +125,7 @@ EOS;
      * @param string|null $search
      * @return int
      */
-    public static function countArticlesWithStatus(array $statuses, $category = 'all', $search = null)
+    public function countArticlesWithStatus(array $statuses, $category = 'all', $search = null)
     {
         $db = DB::getConnection();
         if (empty($statuses)) {
@@ -156,7 +156,7 @@ SQL;
      * @param int $offset
      * @return array<stdClass>
      */
-    public static function findArticlesWithStatus(array $statuses, $limit, $offset)
+    public function findArticlesWithStatus(array $statuses, $limit, $offset)
     {
         if (empty($statuses)) {
             $whereClause = '';
@@ -167,14 +167,14 @@ SQL;
 SELECT id, date, status, trim(categories, ',') as categories, title, feedable, commentable
     FROM articles $whereClause ORDER BY id DESC LIMIT $limit OFFSET $offset
 EOS;
-        return self::fetchAllAsObject($sql);
+        return $this->fetchAllAsObject($sql);
     }
 
     /**
      * @param int $count
      * @return array<stdClass>
      */
-    public static function findFeedableArticles($count)
+    public function findFeedableArticles($count)
     {
         $sql = <<<SQL
 SELECT id, date, title, teaser
@@ -184,14 +184,14 @@ SQL;
         $bindings = array(
             array(':feedable', 1, SQLITE3_INTEGER)
         );
-        return self::fetchAllAsObject($sql, $bindings);
+        return $this->fetchAllAsObject($sql, $bindings);
     }
 
     /**
      * @param int $limit
      * @return stdClass[]
      */
-    public static function findMostPopularArticles($limit)
+    public function findMostPopularArticles($limit)
     {
         $sql = <<<SQL
 SELECT articles.id, articles.title, COUNT(*) AS page_views
@@ -200,14 +200,14 @@ SELECT articles.id, articles.title, COUNT(*) AS page_views
     ORDER BY page_views DESC
     LIMIT $limit
 SQL;
-        return self::fetchAllAsObject($sql);
+        return $this->fetchAllAsObject($sql);
     }
 
     /**
      * @param string $sql
      * @return stdClass[]
      */
-    private static function fetchAllAsObject($sql, array $bindings = null)
+    private function fetchAllAsObject($sql, array $bindings = null)
     {
         $connection = DB::getConnection();
         if (isset($bindings)) {
@@ -229,7 +229,7 @@ SQL;
     /**
      * @return array
      */
-    public static function findAllCategories()
+    public function findAllCategories()
     {
         $db = DB::getConnection();
         $statement = $db->prepare('SELECT DISTINCT categories FROM articles');
@@ -249,7 +249,7 @@ SQL;
      * @param int $id
      * @return stdClass|null
      */
-    public static function findById($id)
+    public function findById($id)
     {
         $db = DB::getConnection();
         $statement = $db->prepare('SELECT * FROM articles WHERE id = :id');
