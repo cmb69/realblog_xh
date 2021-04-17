@@ -44,7 +44,7 @@ class DataExchangeController
      */
     public function defaultAction()
     {
-        global $sn, $plugin_tx;
+        global $sn;
 
         $view = new View('data-exchange');
         $view->csrfToken = $this->getCsrfToken();
@@ -55,7 +55,7 @@ class DataExchangeController
             $view->filename = $filename;
             $view->filemtime = date('c', filemtime($filename));
         }
-        $view->confirmImport = json_encode($plugin_tx['realblog']['exchange_confirm_import']);
+        $view->confirmImport = json_encode($this->text['exchange_confirm_import']);
         return $view->render();
     }
 

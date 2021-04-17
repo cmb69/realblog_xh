@@ -118,14 +118,14 @@ abstract class MainController
      */
     private function doRenderArticle(stdClass $article)
     {
-        global $sn, $su, $h, $s, $title, $description, $plugin_cf;
+        global $sn, $su, $h, $s, $title, $description;
 
         $title .= $h[$s] . " \xE2\x80\x93 " . $article->title;
         $description = $this->getDescription($article);
         $view = new View('article');
         $view->article = $article;
         $view->heading = $this->config['heading_level'];
-        $view->isHeadingAboveMeta = $plugin_cf['realblog']['heading_above_meta'];
+        $view->isHeadingAboveMeta = $this->config['heading_above_meta'];
         /** @psalm-suppress UndefinedConstant */
         $view->isAdmin = XH_ADM;
         $view->wantsComments = $this->wantsComments();
@@ -167,11 +167,9 @@ abstract class MainController
              * @return HtmlString|null
              */
             function ($article) {
-                global $plugin_cf;
-
                 if ($article->commentable) {
                     $commentId = "realblog{$article->id}";
-                    $bridge = ucfirst($plugin_cf['realblog']['comments_plugin']) . '\\RealblogBridge';
+                    $bridge = ucfirst($this->config['comments_plugin']) . '\\RealblogBridge';
                     return new HtmlString(call_user_func(array($bridge, 'handle'), $commentId));
                 }
             };

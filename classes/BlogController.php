@@ -74,12 +74,12 @@ class BlogController extends MainController
      */
     private function renderArticles(array $articles, $articleCount, $page, $pageCount)
     {
-        global $su, $plugin_cf;
+        global $su;
 
         $view = new View('articles');
         $view->articles = $articles;
         $view->heading = $this->config['heading_level'];
-        $view->isHeadingAboveMeta = $plugin_cf['realblog']['heading_above_meta'];
+        $view->isHeadingAboveMeta = $this->config['heading_above_meta'];
         $search = $this->searchTerm;
         $view->pagination = new Pagination(
             $articleCount,
@@ -130,9 +130,7 @@ class BlogController extends MainController
              * @return string
              */
             function ($article) {
-                global $plugin_tx;
-
-                return (string) date($plugin_tx['realblog']['date_format'], $article->date);
+                return (string) date($this->text['date_format'], $article->date);
             };
         $view->teaser =
             /**
@@ -148,9 +146,7 @@ class BlogController extends MainController
              * @return bool
              */
             function ($article) {
-                global $plugin_cf;
-
-                return $plugin_cf['realblog']['show_read_more_link']
+                return $this->config['show_read_more_link']
                     && $article->body_length;
             };
         $view->isCommentable =
@@ -159,10 +155,8 @@ class BlogController extends MainController
              * @return bool
              */
             function ($article) {
-                global $plugin_cf;
-
-                return $plugin_cf['realblog']['comments_plugin']
-                    && class_exists(ucfirst($plugin_cf['realblog']['comments_plugin']) . '\\RealblogBridge')
+                return $this->config['comments_plugin']
+                    && class_exists(ucfirst($this->config['comments_plugin']) . '\\RealblogBridge')
                     && $article->commentable;
             };
         $view->commentCount =
@@ -171,9 +165,7 @@ class BlogController extends MainController
              * @return int
              */
             function ($article) {
-                global $plugin_cf;
-
-                $bridge = ucfirst($plugin_cf['realblog']['comments_plugin']) . '\\RealblogBridge';
+                $bridge = ucfirst($this->config['comments_plugin']) . '\\RealblogBridge';
                 $commentsId = "realblog{$article->id}";
                 return call_user_func(array($bridge, 'count'), $commentsId);
             };

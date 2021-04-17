@@ -72,9 +72,7 @@ class LinkController
              * @return string
              */
             function ($article) {
-                global $plugin_tx;
-
-                return date($plugin_tx['realblog']['date_format'], $article->date);
+                return date($this->text['date_format'], $article->date);
             };
         $pageUrl = $this->pageUrl;
         $view->url =

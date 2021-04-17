@@ -136,9 +136,7 @@ class MainAdminController
              * @return string
              */
             function ($article) {
-                global $plugin_tx;
-
-                return (string) date($plugin_tx['realblog']['date_format'], $article->date);
+                return (string) date($this->text['date_format'], $article->date);
             };
         return $view->render();
     }

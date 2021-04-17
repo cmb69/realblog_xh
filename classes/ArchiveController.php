@@ -92,7 +92,7 @@ class ArchiveController extends MainController
      */
     private function renderArchivedArticles(array $articles, $isSearch, $back, $next)
     {
-        global $su, $plugin_tx;
+        global $su;
 
         $view = new View('archive');
         $view->isSearch = $isSearch;
@@ -118,9 +118,7 @@ class ArchiveController extends MainController
             );
         };
         $view->formatDate = /** @return string */ function (stdClass $article) {
-            global $plugin_tx;
-
-            return (string) date($plugin_tx['realblog']['date_format'], $article->date);
+            return (string) date($this->text['date_format'], $article->date);
         };
         $view->yearOf = /** @return string */ function (stdClass $article) {
             return (string) date('Y', $article->date);
@@ -134,9 +132,7 @@ class ArchiveController extends MainController
              * @return string
              */
             function ($month) {
-                global $plugin_tx;
-        
-                $monthNames = explode(',', $plugin_tx['realblog']['date_months']);
+                $monthNames = explode(',', $this->text['date_months']);
                 return $monthNames[$month - 1];
             };
         return $view->render();
