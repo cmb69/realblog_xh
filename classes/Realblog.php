@@ -133,7 +133,7 @@ class Realblog
         $o .= pluginMenu('SHOW');
         switch ($admin) {
             case '':
-                $o .= self::renderInfoView();
+                $o .= (new InfoController(new View()))->defaultAction();
                 break;
             case 'plugin_main':
                 self::routeTo(MainAdminController::class);
@@ -144,14 +144,6 @@ class Realblog
             default:
                 $o .= plugin_admin_common();
         }
-    }
-
-    /**
-     * @return string
-     */
-    private static function renderInfoView()
-    {
-        return (new InfoController(new View()))->defaultAction();
     }
 
     /**
