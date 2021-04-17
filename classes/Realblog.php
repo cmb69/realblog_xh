@@ -146,7 +146,12 @@ class Realblog
         global $o, $action, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
 
         $methodName = lcfirst(implode('', array_map('ucfirst', explode('_', $action)))) . 'Action';
-        $controller = new $controllerClassName($plugin_cf['realblog'], $plugin_tx['realblog'], $_XH_csrfProtection, new View());
+        $controller = new $controllerClassName(
+            $plugin_cf['realblog'],
+            $plugin_tx['realblog'],
+            $_XH_csrfProtection,
+            new View()
+        );
         $class = new ReflectionClass($controller);
         if ($class->hasMethod($methodName)
             && ($method = $class->getMethod($methodName))
