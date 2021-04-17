@@ -28,11 +28,13 @@ use stdClass;
 class ArchiveController extends MainController
 {
     /**
+     * @param array<string,string> $config
+     * @param array<string,string> $text
      * @param bool $showSearch
      */
-    public function __construct($showSearch = false)
+    public function __construct(array $config, array $text, $showSearch = false)
     {
-        parent::__construct($showSearch);
+        parent::__construct($config, $text, $showSearch);
     }
 
     /**

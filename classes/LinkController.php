@@ -25,8 +25,14 @@ namespace Realblog;
 
 use stdClass;
 
-class LinkController extends AbstractController
+class LinkController
 {
+    /** @var array<string,string> */
+    private $config;
+
+    /** @var array<string,string> */
+    private $text;
+
     /** @var string */
     private $pageUrl;
 
@@ -34,12 +40,15 @@ class LinkController extends AbstractController
     private $showTeaser;
 
     /**
+     * @param array<string,string> $config
+     * @param array<string,string> $text
      * @param string $pageUrl
      * @param bool $showTeaser
      */
-    public function __construct($pageUrl, $showTeaser)
+    public function __construct(array $config, array $text, $pageUrl, $showTeaser)
     {
-        parent::__construct();
+        $this->config = $config;
+        $this->text = $text;
         $this->pageUrl = $pageUrl;
         $this->showTeaser = $showTeaser;
     }

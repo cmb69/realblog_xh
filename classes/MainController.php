@@ -25,8 +25,14 @@ namespace Realblog;
 
 use stdClass;
 
-abstract class MainController extends AbstractController
+abstract class MainController
 {
+    /** @var array<string,string> */
+    protected $config;
+
+    /** @var array<string,string> */
+    protected $text;
+
     /** @var bool */
     protected $showSearch;
 
@@ -37,11 +43,14 @@ abstract class MainController extends AbstractController
     protected $year;
 
     /**
+     * @param array<string,string> $config
+     * @param array<string,string> $text
      * @param bool $showSearch
      */
-    public function __construct($showSearch)
+    public function __construct(array $config, array $text, $showSearch)
     {
-        parent::__construct();
+        $this->config = $config;
+        $this->text = $text;
         $this->showSearch = $showSearch;
         $input = filter_input_array(
             INPUT_GET,

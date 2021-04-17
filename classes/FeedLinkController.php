@@ -23,8 +23,24 @@
 
 namespace Realblog;
 
-class FeedLinkController extends AbstractController
+class FeedLinkController
 {
+    /** @var array<string,string> */
+    private $config;
+
+    /** @var array<string,string> */
+    private $text;
+
+    /**
+     * @param array<string,string> $config
+     * @param array<string,string> $text
+     */
+    public function __construct(array $config, array $text)
+    {
+        $this->config = $config;
+        $this->text = $text;
+    }
+
     /**
      * @param string $target
      * @return string

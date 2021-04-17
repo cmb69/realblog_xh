@@ -25,19 +25,30 @@ namespace Realblog;
 
 use stdClass;
 
-class MainAdminController extends AbstractController
+class MainAdminController
 {
+    /** @var array<string,string> */
+    private $config;
+
+    /** @var array<string,string> */
+    private $text;
+
     /** @var string */
     private $urlPath;
 
     /** @var int */
     private $page;
 
-    public function __construct()
+    /**
+     * @param array<string,string> $config
+     * @param array<string,string> $text
+     */
+    public function __construct(array $config, array $text)
     {
         global $sn;
 
-        parent::__construct();
+        $this->config = $config;
+        $this->text = $text;
         $this->urlPath = $sn;
         $this->page = Realblog::getPage();
     }

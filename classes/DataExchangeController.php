@@ -21,8 +21,24 @@
 
 namespace Realblog;
 
-class DataExchangeController extends AbstractController
+class DataExchangeController
 {
+    /** @var array<string,string> */
+    private $config;
+
+    /** @var array<string,string> */
+    private $text;
+
+    /**
+     * @param array<string,string> $config
+     * @param array<string,string> $text
+     */
+    public function __construct(array $config, array $text)
+    {
+        $this->config = $config;
+        $this->text = $text;
+    }
+
     /**
      * @return string
      */

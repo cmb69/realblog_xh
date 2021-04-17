@@ -23,17 +23,26 @@ namespace Realblog;
 
 use stdClass;
 
-class MostPopularController extends AbstractController
+class MostPopularController
 {
+    /** @var array<string,string> */
+    private $config;
+
+    /** @var array<string,string> */
+    private $text;
+
     /** @var string */
     private $pageUrl;
 
     /**
+     * @param array<string,string> $config
+     * @param array<string,string> $text
      * @param string $pageUrl
      */
-    public function __construct($pageUrl)
+    public function __construct(array $config, array $text, $pageUrl)
     {
-        parent::__construct();
+        $this->config = $config;
+        $this->text = $text;
         $this->pageUrl = $pageUrl;
     }
 

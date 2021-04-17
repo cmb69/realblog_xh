@@ -166,10 +166,10 @@ class Realblog
      */
     private static function routeTo($controllerClassName)
     {
-        global $o, $action;
+        global $o, $action, $plugin_cf, $plugin_tx;
 
         $methodName = lcfirst(implode('', array_map('ucfirst', explode('_', $action)))) . 'Action';
-        $controller = new $controllerClassName();
+        $controller = new $controllerClassName($plugin_cf['realblog'], $plugin_tx['realblog']);
         $class = new ReflectionClass($controller);
         if ($class->hasMethod($methodName)
             && ($method = $class->getMethod($methodName))
@@ -270,7 +270,9 @@ class Realblog
      */
     public static function blogCommand($showSearch = false, $category = 'all')
     {
-        $controller = new BlogController($showSearch, $category);
+        global $plugin_cf, $plugin_tx;
+
+        $controller = new BlogController($plugin_cf['realblog'], $plugin_tx['realblog'], $showSearch, $category);
         if (filter_has_var(INPUT_GET, 'realblog_id')) {
             return (string) $controller->showArticleAction(filter_input(
                 INPUT_GET,
@@ -289,7 +291,9 @@ class Realblog
      */
     public static function archiveCommand($showSearch = false)
     {
-        $controller = new ArchiveController($showSearch);
+        global $plugin_cf, $plugin_tx;
+
+        $controller = new ArchiveController($plugin_cf['realblog'], $plugin_tx['realblog'], $showSearch);
         if (filter_has_var(INPUT_GET, 'realblog_id')) {
             return (string) $controller->showArticleAction(filter_input(
                 INPUT_GET,
@@ -309,7 +313,9 @@ class Realblog
      */
     public static function linkCommand($pageUrl, $showTeaser = false)
     {
-        $controller = new LinkController($pageUrl, $showTeaser);
+        global $plugin_cf, $plugin_tx;
+
+        $controller = new LinkController($plugin_cf['realblog'], $plugin_tx['realblog'], $pageUrl, $showTeaser);
         return $controller->defaultAction();
     }
 
@@ -319,7 +325,9 @@ class Realblog
      */
     public static function mostPopularCommand($pageUrl)
     {
-        $controller = new MostPopularController($pageUrl);
+        global $plugin_cf, $plugin_tx;
+
+        $controller = new MostPopularController($plugin_cf['realblog'], $plugin_tx['realblog'], $pageUrl);
         return $controller->defaultAction();
     }
 
@@ -329,7 +337,9 @@ class Realblog
      */
     public static function feedLinkCommand($target = '_self')
     {
-        $controller = new FeedLinkController();
+        global $plugin_cf, $plugin_tx;
+
+        $controller = new FeedLinkController($plugin_cf['realblog'], $plugin_tx['realblog']);
         return $controller->defaultAction($target);
     }
 

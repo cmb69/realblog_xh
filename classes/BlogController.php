@@ -31,12 +31,14 @@ class BlogController extends MainController
     private $category;
 
     /**
+     * @param array<string,string> $config
+     * @param array<string,string> $text
      * @param bool $showSearch
      * @param string $category
      */
-    public function __construct($showSearch = false, $category = 'all')
+    public function __construct(array $config, array $text, $showSearch = false, $category = 'all')
     {
-        parent::__construct($showSearch);
+        parent::__construct($config, $text, $showSearch);
         $this->category = $category;
     }
 
