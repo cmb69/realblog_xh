@@ -63,7 +63,7 @@ class DataExchangeController
             $data['filename'] = $filename;
             $data['filemtime'] = date('c', filemtime($filename));
         }
-        return (new View('data-exchange'))->render($data);
+        return (new View)->render('data-exchange', $data);
     }
 
     /**

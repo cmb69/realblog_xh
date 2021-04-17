@@ -238,7 +238,7 @@ class Realblog
                 return (string) date('r', $article->date);
             },
         ];
-        echo '<?xml version="1.0" encoding="UTF-8"?>', PHP_EOL, (new View('feed'))->render($data);
+        echo '<?xml version="1.0" encoding="UTF-8"?>', PHP_EOL, (new View)->render('feed', $data);
         exit;
     }
 

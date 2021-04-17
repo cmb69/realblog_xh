@@ -93,6 +93,6 @@ class LinkController
                 return new HtmlString(evaluate_scripting($article->teaser));
             },
         ];
-        return (new View('latest'))->render($data);
+        return (new View)->render('latest', $data);
     }
 }

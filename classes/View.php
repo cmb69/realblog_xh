@@ -23,19 +23,8 @@ namespace Realblog;
 
 class View
 {
-    /** @var string */
-    private $template;
-
     /** @var array<string,mixed> */
     private $data = array();
-
-    /**
-     * @param string $template
-     */
-    public function __construct($template)
-    {
-        $this->template = $template;
-    }
 
     /**
      * @param string $name
@@ -95,10 +84,11 @@ class View
     }
 
     /**
+     * @param string $_template
      * @param array<string,mixed>|null $_data
      * @return string
      */
-    public function render(array $_data = null)
+    public function render($_template, array $_data = null)
     {
         global $pth;
 
@@ -107,7 +97,7 @@ class View
         }
         ob_start();
         /** @psalm-suppress UnresolvableInclude */
-        include "{$pth['folder']['plugins']}realblog/views/{$this->template}.php";
+        include "{$pth['folder']['plugins']}realblog/views/{$_template}.php";
         return (string) ob_get_clean();
     }
 

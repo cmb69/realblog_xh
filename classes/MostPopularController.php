@@ -69,6 +69,6 @@ class MostPopularController
                 return Realblog::url($pageUrl, array('realblog_id' => $article->id));
             },
         ];
-        return (new View('most-popular'))->render($data);
+        return (new View)->render('most-popular', $data);
     }
 }

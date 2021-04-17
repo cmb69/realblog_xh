@@ -77,7 +77,7 @@ abstract class MainController
             'actionUrl' => $sn,
             'pageUrl' => $su,
         ];
-        return (new View('search-form'))->render($data);
+        return (new View)->render('search-form', $data);
     }
 
     /**
@@ -95,7 +95,7 @@ abstract class MainController
             'url' => Realblog::url($su),
             'key' => ($what == 'archive') ? 'back_to_archive' : 'search_show_all',
         ];
-        return (new View('search-results'))->render($data);
+        return (new View)->render('search-results', $data);
     }
 
     /**
@@ -175,7 +175,7 @@ abstract class MainController
                     return new HtmlString(call_user_func(array($bridge, 'handle'), $commentId));
                 }
             };
-        return (new View('article'))->render($data);
+        return (new View)->render('article', $data);
     }
 
     /**

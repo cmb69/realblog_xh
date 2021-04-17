@@ -170,7 +170,7 @@ class BlogController extends MainController
                 return call_user_func(array($bridge, 'count'), $commentsId);
             },
         ];
-        return (new View('articles'))->render($data);
+        return (new View)->render('articles', $data);
     }
 
     /**

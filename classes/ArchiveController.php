@@ -136,7 +136,7 @@ class ArchiveController extends MainController
         if ($next) {
             $data['nextUrl'] = Realblog::url($su, array('realblog_year' => $next));
         }
-        return (new View('archive'))->render($data);
+        return (new View)->render('archive', $data);
     }
 
     /**

@@ -144,7 +144,7 @@ class MainAdminController
                 return (string) date($this->text['date_format'], $article->date);
             },
         ];
-        return (new View('articles-form'))->render($data);
+        return (new View)->render('articles-form', $data);
     }
 
     /**
@@ -264,7 +264,7 @@ class MainAdminController
             'categories' => trim($article->categories, ','),
             'button' => "btn_{$action}",
         ];
-        return (new View('article-form'))->render($data);
+        return (new View)->render('article-form', $data);
     }
 
     /**
@@ -448,7 +448,7 @@ EOT;
                 'new_realblogstatus', 'readyforpublishing', 'published', 'archived'
             );
         }
-        return (new View("confirm-$kind"))->render($data);
+        return (new View)->render("confirm-$kind", $data);
     }
 
     /**

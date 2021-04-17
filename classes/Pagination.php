@@ -81,7 +81,7 @@ class Pagination
                 return sprintf($url, $page);
             },
         ];
-        return (new View('pagination'))->render($data);
+        return (new View)->render('pagination', $data);
     }
 
     /**

@@ -45,6 +45,6 @@ class InfoController
                     return "{$pth['folder']['plugins']}realblog/images/$state.png";
                 },
         ];
-        return (new View('info'))->render($data);
+        return (new View)->render('info', $data);
     }
 }
