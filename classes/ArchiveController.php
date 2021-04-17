@@ -102,7 +102,7 @@ class ArchiveController extends MainController
             'url' => /** @return string */ function (stdClass $article) {
                 global $su;
 
-                return Realblog::url(
+                return Plugin::url(
                     $su,
                     array(
                         'realblog_id' => $article->id,
@@ -131,10 +131,10 @@ class ArchiveController extends MainController
             },
         ];
         if ($back) {
-            $data['backUrl'] = Realblog::url($su, array('realblog_year' => $back));
+            $data['backUrl'] = Plugin::url($su, array('realblog_year' => $back));
         }
         if ($next) {
-            $data['nextUrl'] = Realblog::url($su, array('realblog_year' => $next));
+            $data['nextUrl'] = Plugin::url($su, array('realblog_year' => $next));
         }
         return $this->view->render('archive', $data);
     }

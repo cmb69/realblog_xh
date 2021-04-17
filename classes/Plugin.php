@@ -27,7 +27,7 @@ use stdClass;
 use ReflectionClass;
 use XH\CSRFProtection as CsrfProtector;
 
-class Realblog
+class Plugin
 {
     const VERSION = '3.0beta9';
 
@@ -73,7 +73,7 @@ class Realblog
      */
     private static function registerCommands()
     {
-        $class = new ReflectionClass(Realblog::class);
+        $class = new ReflectionClass(self::class);
         $commands = array();
         foreach ($class->getMethods() as $method) {
             $methodName = $method->getName();
@@ -93,7 +93,7 @@ class Realblog
             }
             $paramString = implode(',', $paramList);
             $argString = implode(',', $argList);
-            eval("function Realblog_$name($paramString) {return \\Realblog\\Realblog::{$name}Command($argString);}");
+            eval("function Realblog_$name($paramString) {return \\Realblog\\Plugin::{$name}Command($argString);}");
         }
     }
 

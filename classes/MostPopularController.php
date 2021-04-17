@@ -74,7 +74,7 @@ class MostPopularController
              * @return string
              */
             function ($article) use ($pageUrl) {
-                return Realblog::url($pageUrl, array('realblog_id' => $article->id));
+                return Plugin::url($pageUrl, array('realblog_id' => $article->id));
             },
         ];
         return $this->view->render('most-popular', $data);

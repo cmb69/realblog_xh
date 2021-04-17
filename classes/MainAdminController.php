@@ -63,7 +63,7 @@ class MainAdminController
         $this->csrfProtector = $csrfProtector;
         $this->view = $view;
         $this->urlPath = $sn;
-        $this->page = Realblog::getPage();
+        $this->page = Plugin::getPage();
     }
 
     /**
@@ -88,7 +88,7 @@ class MainAdminController
     {
         $statuses = array();
         for ($i = 0; $i <= 2; $i++) {
-            if (Realblog::getFilter($i)) {
+            if (Plugin::getFilter($i)) {
                 $statuses[] = $i;
             }
         }
@@ -141,7 +141,7 @@ class MainAdminController
              * @return bool
              */
             function ($num) {
-                return Realblog::getFilter($num);
+                return Plugin::getFilter($num);
             },
             'formatDate' =>
             /**

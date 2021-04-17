@@ -54,7 +54,7 @@ class BlogController extends MainController
         $order = ($this->config['entries_order'] == 'desc')
             ? -1 : 1;
         $limit = max(1, (int) $this->config['entries_per_page']);
-        $page = Realblog::getPage();
+        $page = Plugin::getPage();
         $articleCount = $this->finder->countArticlesWithStatus(array(1), $this->category, $this->searchTerm);
         $pageCount = (int) ceil($articleCount / $limit);
         $page = min(max($page, 1), $pageCount);
@@ -92,7 +92,7 @@ class BlogController extends MainController
                 $articleCount,
                 $page,
                 $pageCount,
-                Realblog::url($su, array('realblog_page' => '%s', 'realblog_search' => $search)),
+                Plugin::url($su, array('realblog_page' => '%s', 'realblog_search' => $search)),
                 $this->view
             ),
             'hasTopPagination' => (bool) $this->config['pagination_top'],
@@ -105,11 +105,11 @@ class BlogController extends MainController
             function ($article) use ($search) {
                 global $su;
 
-                return Realblog::url(
+                return Plugin::url(
                     $su,
                     array(
                         'realblog_id' => $article->id,
-                        'realblog_page' => Realblog::getPage(),
+                        'realblog_page' => Plugin::getPage(),
                         'realblog_search' => $search
                     )
                 );

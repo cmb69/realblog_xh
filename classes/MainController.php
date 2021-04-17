@@ -100,7 +100,7 @@ abstract class MainController
         $data = [
             'words' => $this->searchTerm,
             'count' => $count,
-            'url' => Realblog::url($su),
+            'url' => Plugin::url($su),
             'key' => ($what == 'archive') ? 'back_to_archive' : 'search_show_all',
         ];
         return $this->view->render('search-results', $data);
@@ -135,7 +135,7 @@ abstract class MainController
         if ($article->status === 2) {
             $params = array('realblog_year' => $this->year);
         } else {
-            $params = array('realblog_page' => Realblog::getPage());
+            $params = array('realblog_page' => Plugin::getPage());
         }
         /** @psalm-suppress UndefinedConstant */
         $data = [
@@ -145,11 +145,11 @@ abstract class MainController
             'isAdmin' => XH_ADM,
             'wantsComments' => $this->wantsComments(),
             'backText' => $article->status === 2 ? $this->text['archiv_back'] : $this->text['blog_back'],
-            'backUrl' => Realblog::url($su, $params),
+            'backUrl' => Plugin::url($su, $params),
         ];
         if ($this->searchTerm) {
             $params['realblog_search'] = $this->searchTerm;
-            $data['backToSearchUrl'] = Realblog::url($su, $params);
+            $data['backToSearchUrl'] = Plugin::url($su, $params);
         }
         $data['editUrl'] = "$sn?&realblog&admin=plugin_main"
             . "&action=edit&realblog_id={$article->id}";

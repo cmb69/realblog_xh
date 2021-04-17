@@ -21,6 +21,8 @@
  * along with Realblog_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Realblog\Plugin;
+
 /**
  * @param string $options
  * @param string $category
@@ -45,7 +47,7 @@ function showrealblog($options = "", $category = 'all')
                 break;
         }
     }
-    return Realblog\Realblog::blogCommand($includesearch, $category);
+    return Plugin::blogCommand($includesearch, $category);
 }
 
 /**
@@ -72,7 +74,7 @@ function showrealblogarchive($options = "")
                 break;
         }
     }
-    return Realblog\Realblog::archiveCommand($includesearch);
+    return Plugin::archiveCommand($includesearch);
 }
 
 /**
@@ -89,7 +91,7 @@ function realbloglink($options)
     if (isset($arguments['realblogpage'])) {
         $realblog_page = $arguments['realblogpage'];
     }
-    return Realblog\Realblog::linkCommand($realblog_page);
+    return Plugin::linkCommand($realblog_page);
 }
 
 /**
@@ -117,7 +119,7 @@ function realblog_rss_adv()
 {
     $function = __FUNCTION__;
     trigger_error("$function() is deprecated; use Realblog_feedLink() instead", E_USER_DEPRECATED);
-    return Realblog\Realblog::feedLinkCommand();
+    return Plugin::feedLinkCommand();
 }
 
 /**

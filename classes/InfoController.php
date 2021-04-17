@@ -41,7 +41,7 @@ class InfoController
         global $pth, $plugin_cf;
 
         $data = [
-            'version' => Realblog::VERSION,
+            'version' => Plugin::VERSION,
             'heading' => $plugin_cf['realblog']['heading_level'],
             'checks' => (new SystemCheck)->getChecks(),
             'imageURL' =>

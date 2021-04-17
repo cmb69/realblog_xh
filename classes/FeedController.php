@@ -70,7 +70,7 @@ class FeedController
              */
             function ($article) use ($sn) {
                 return CMSIMPLE_URL . substr(
-                    Realblog::url(
+                    Plugin::url(
                         $this->text["rss_page"],
                         array('realblog_id' => $article->id)
                     ),
