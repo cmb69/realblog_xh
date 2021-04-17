@@ -36,7 +36,7 @@ class Realblog
      */
     public static function init()
     {
-        global $plugin_cf;
+        global $su, $plugin_cf;
 
         self::registerCommands();
         if ($plugin_cf['realblog']['auto_publish']) {
@@ -60,7 +60,7 @@ class Realblog
         /** @psalm-suppress UndefinedConstant */
         if (XH_ADM) {
             self::registerPluginMenu();
-            if (self::isAdministrationRequested()) {
+            if (XH_wantsPluginAdministration('realblog') || $su === 'realblog') {
                 self::handleAdministration();
             }
         }
@@ -108,16 +108,6 @@ class Realblog
             $plugin_tx['realblog']['exchange_heading'],
             "$sn?realblog&admin=data_exchange"
         );
-    }
-
-    /**
-     * @return bool
-     */
-    private static function isAdministrationRequested()
-    {
-        global $su;
-
-        return XH_wantsPluginAdministration('realblog') || $su === 'realblog';
     }
 
     /**
