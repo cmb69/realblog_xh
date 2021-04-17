@@ -24,6 +24,7 @@
 namespace Realblog;
 
 use stdClass;
+use XH\CSRFProtection as CsrfProtector;
 
 class MainAdminController
 {
@@ -32,6 +33,9 @@ class MainAdminController
 
     /** @var array<string,string> */
     private $text;
+
+    /** @var CsrfProtector */
+    private $csrfProtector;
 
     /** @var string */
     private $urlPath;
@@ -43,12 +47,13 @@ class MainAdminController
      * @param array<string,string> $config
      * @param array<string,string> $text
      */
-    public function __construct(array $config, array $text)
+    public function __construct(array $config, array $text, CsrfProtector $csrfProtector)
     {
         global $sn;
 
         $this->config = $config;
         $this->text = $text;
+        $this->csrfProtector = $csrfProtector;
         $this->urlPath = $sn;
         $this->page = Realblog::getPage();
     }
@@ -302,7 +307,7 @@ EOT;
     {
         global $title;
 
-        $this->checkCsrfToken();
+        $this->csrfProtector->check();
         $article = $this->getArticleFromParameters();
         $res = DB::insertArticle($article);
         if ($res === 1) {
@@ -321,7 +326,7 @@ EOT;
     {
         global $title;
 
-        $this->checkCsrfToken();
+        $this->csrfProtector->check();
         $article = $this->getArticleFromParameters();
         $res = DB::updateArticle($article);
         if ($res === 1) {
@@ -340,7 +345,7 @@ EOT;
     {
         global $title;
 
-        $this->checkCsrfToken();
+        $this->csrfProtector->check();
         $article = $this->getArticleFromParameters();
         $res = DB::deleteArticle($article);
         if ($res === 1) {
@@ -450,7 +455,7 @@ EOT;
     {
         global $title;
 
-        $this->checkCsrfToken();
+        $this->csrfProtector->check();
         $ids = filter_input(
             INPUT_POST,
             'realblog_ids',
@@ -479,7 +484,7 @@ EOT;
     {
         global $title;
 
-        $this->checkCsrfToken();
+        $this->csrfProtector->check();
         $input = filter_input_array(
             INPUT_POST,
             array(
@@ -511,22 +516,10 @@ EOT;
      */
     private function getCsrfToken()
     {
-        global $_XH_csrfProtection;
-
-        $html = $_XH_csrfProtection->tokenInput();
+        $html = $this->csrfProtector->tokenInput();
         if (preg_match('/value="([0-9a-f]+)"/', $html, $matches)) {
             return $matches[1];
         }
-    }
-
-    /**
-     * @return void
-     */
-    private function checkCsrfToken()
-    {
-        global $_XH_csrfProtection;
-
-        $_XH_csrfProtection->check();
     }
 
     /**

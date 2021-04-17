@@ -21,6 +21,8 @@
 
 namespace Realblog;
 
+use XH\CSRFProtection as CsrfProtector;
+
 class DataExchangeController
 {
     /** @var array<string,string> */
@@ -29,14 +31,18 @@ class DataExchangeController
     /** @var array<string,string> */
     private $text;
 
+    /** @var CsrfProtector */
+    private $csrfProtector;
+
     /**
      * @param array<string,string> $config
      * @param array<string,string> $text
      */
-    public function __construct(array $config, array $text)
+    public function __construct(array $config, array $text, CsrfProtector $csrfProtector)
     {
         $this->config = $config;
         $this->text = $text;
+        $this->csrfProtector = $csrfProtector;
     }
 
     /**
@@ -64,7 +70,7 @@ class DataExchangeController
      */
     public function exportToCsvAction()
     {
-        $this->checkCsrfToken();
+        $this->csrfProtector->check();
         if (DB::exportToCsv($this->getCsvFilename())) {
             $this->redirectToDefault();
         } else {
@@ -78,7 +84,7 @@ class DataExchangeController
      */
     public function importFromCsvAction()
     {
-        $this->checkCsrfToken();
+        $this->csrfProtector->check();
         if (DB::importFromCsv($this->getCsvFilename())) {
             $this->redirectToDefault();
         } else {
@@ -102,22 +108,10 @@ class DataExchangeController
      */
     private function getCsrfToken()
     {
-        global $_XH_csrfProtection;
-
-        $html = $_XH_csrfProtection->tokenInput();
+        $html = $this->csrfProtector->tokenInput();
         if (preg_match('/value="([0-9a-f]+)"/', $html, $matches)) {
             return $matches[1];
         }
-    }
-
-    /**
-     * @return void
-     */
-    private function checkCsrfToken()
-    {
-        global $_XH_csrfProtection;
-
-        $_XH_csrfProtection->check();
     }
 
     /**

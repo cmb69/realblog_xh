@@ -166,10 +166,10 @@ class Realblog
      */
     private static function routeTo($controllerClassName)
     {
-        global $o, $action, $plugin_cf, $plugin_tx;
+        global $o, $action, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
 
         $methodName = lcfirst(implode('', array_map('ucfirst', explode('_', $action)))) . 'Action';
-        $controller = new $controllerClassName($plugin_cf['realblog'], $plugin_tx['realblog']);
+        $controller = new $controllerClassName($plugin_cf['realblog'], $plugin_tx['realblog'], $_XH_csrfProtection);
         $class = new ReflectionClass($controller);
         if ($class->hasMethod($methodName)
             && ($method = $class->getMethod($methodName))

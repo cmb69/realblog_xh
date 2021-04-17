@@ -9,6 +9,7 @@
     <file name="stubs.php"/>
   </stubs>
   <globals>
+    <var name="_XH_csrfProtection" type="\XH\CSRFProtection|null"/>
     <var name="pth" type="array{folder:array&lt;string,string&gt;,files:array}"/>
   </globals>
 </psalm>
