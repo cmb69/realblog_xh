@@ -25,6 +25,7 @@ namespace Realblog;
 
 use stdClass;
 use ReflectionClass;
+use XH\CSRFProtection as CsrfProtector;
 
 class Realblog
 {
@@ -116,51 +117,48 @@ class Realblog
      */
     private static function handleAdministration()
     {
-        global $sn, $admin, $o, $plugin_tx;
+        global $sn, $admin, $action, $o, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
 
+        assert($_XH_csrfProtection instanceof CsrfProtector);
         $o .= print_plugin_admin('on');
         pluginMenu('ROW');
         pluginMenu('TAB', "$sn?realblog&admin=data_exchange", '', $plugin_tx['realblog']['exchange_heading']);
         $o .= pluginMenu('SHOW');
+        $methodName = lcfirst(implode('', array_map('ucfirst', explode('_', $action)))) . 'Action';
         switch ($admin) {
             case '':
                 $o .= (new InfoController(new View()))->defaultAction();
                 break;
             case 'plugin_main':
-                self::routeTo(MainAdminController::class);
+                $controller = new MainAdminController(
+                    $plugin_cf['realblog'],
+                    $plugin_tx['realblog'],
+                    new Finder(),
+                    $_XH_csrfProtection,
+                    new View()
+                );
+                if (method_exists($controller, $methodName)) {
+                    $o .= $controller->{$methodName}();
+                } else {
+                    $o .= $controller->defaultAction();
+                }
                 break;
             case 'data_exchange':
-                self::routeTo(DataExchangeController::class);
+                $controller = new DataExchangeController(
+                    $plugin_cf['realblog'],
+                    $plugin_tx['realblog'],
+                    new Finder(),
+                    $_XH_csrfProtection,
+                    new View()
+                );
+                if (method_exists($controller, $methodName)) {
+                    $o .= $controller->{$methodName}();
+                } else {
+                    $o .= $controller->defaultAction();
+                }
                 break;
             default:
                 $o .= plugin_admin_common();
-        }
-    }
-
-    /**
-     * @param class-string $controllerClassName
-     * @return void
-     */
-    private static function routeTo($controllerClassName)
-    {
-        global $o, $action, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
-
-        $methodName = lcfirst(implode('', array_map('ucfirst', explode('_', $action)))) . 'Action';
-        $controller = new $controllerClassName(
-            $plugin_cf['realblog'],
-            $plugin_tx['realblog'],
-            new Finder(),
-            $_XH_csrfProtection,
-            new View()
-        );
-        $class = new ReflectionClass($controller);
-        if ($class->hasMethod($methodName)
-            && ($method = $class->getMethod($methodName))
-            && $method->isPublic()
-        ) {
-            $o .= $method->invoke($controller);
-        } else {
-            $o .= $controller->defaultAction();
         }
     }
 
