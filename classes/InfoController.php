@@ -25,6 +25,14 @@ namespace Realblog;
 
 class InfoController
 {
+    /** @var View */
+    private $view;
+
+    public function __construct(View $view)
+    {
+        $this->view = $view;
+    }
+
     /**
      * @return string
      */
@@ -45,6 +53,6 @@ class InfoController
                     return "{$pth['folder']['plugins']}realblog/images/$state.png";
                 },
         ];
-        return (new View)->render('info', $data);
+        return $this->view->render('info', $data);
     }
 }

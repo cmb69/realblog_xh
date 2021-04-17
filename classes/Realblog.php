@@ -151,7 +151,7 @@ class Realblog
      */
     private static function renderInfoView()
     {
-        return (new InfoController)->defaultAction();
+        return (new InfoController(new View()))->defaultAction();
     }
 
     /**
@@ -163,7 +163,7 @@ class Realblog
         global $o, $action, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
 
         $methodName = lcfirst(implode('', array_map('ucfirst', explode('_', $action)))) . 'Action';
-        $controller = new $controllerClassName($plugin_cf['realblog'], $plugin_tx['realblog'], $_XH_csrfProtection);
+        $controller = new $controllerClassName($plugin_cf['realblog'], $plugin_tx['realblog'], $_XH_csrfProtection, new View());
         $class = new ReflectionClass($controller);
         if ($class->hasMethod($methodName)
             && ($method = $class->getMethod($methodName))
@@ -267,7 +267,13 @@ class Realblog
     {
         global $plugin_cf, $plugin_tx;
 
-        $controller = new BlogController($plugin_cf['realblog'], $plugin_tx['realblog'], $showSearch, $category);
+        $controller = new BlogController(
+            $plugin_cf['realblog'],
+            $plugin_tx['realblog'],
+            $showSearch,
+            new View(),
+            $category
+        );
         if (filter_has_var(INPUT_GET, 'realblog_id')) {
             return (string) $controller->showArticleAction(filter_input(
                 INPUT_GET,
@@ -288,7 +294,7 @@ class Realblog
     {
         global $plugin_cf, $plugin_tx;
 
-        $controller = new ArchiveController($plugin_cf['realblog'], $plugin_tx['realblog'], $showSearch);
+        $controller = new ArchiveController($plugin_cf['realblog'], $plugin_tx['realblog'], $showSearch, new View());
         if (filter_has_var(INPUT_GET, 'realblog_id')) {
             return (string) $controller->showArticleAction(filter_input(
                 INPUT_GET,
@@ -310,7 +316,13 @@ class Realblog
     {
         global $plugin_cf, $plugin_tx;
 
-        $controller = new LinkController($plugin_cf['realblog'], $plugin_tx['realblog'], $pageUrl, $showTeaser);
+        $controller = new LinkController(
+            $plugin_cf['realblog'],
+            $plugin_tx['realblog'],
+            $pageUrl,
+            $showTeaser,
+            new View()
+        );
         return $controller->defaultAction();
     }
 
@@ -322,7 +334,7 @@ class Realblog
     {
         global $plugin_cf, $plugin_tx;
 
-        $controller = new MostPopularController($plugin_cf['realblog'], $plugin_tx['realblog'], $pageUrl);
+        $controller = new MostPopularController($plugin_cf['realblog'], $plugin_tx['realblog'], $pageUrl, new View());
         return $controller->defaultAction();
     }
 

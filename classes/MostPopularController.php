@@ -34,16 +34,20 @@ class MostPopularController
     /** @var string */
     private $pageUrl;
 
+    /** @var View */
+    private $view;
+
     /**
      * @param array<string,string> $config
      * @param array<string,string> $text
      * @param string $pageUrl
      */
-    public function __construct(array $config, array $text, $pageUrl)
+    public function __construct(array $config, array $text, $pageUrl, View $view)
     {
         $this->config = $config;
         $this->text = $text;
         $this->pageUrl = $pageUrl;
+        $this->view = $view;
     }
 
     /**
@@ -69,6 +73,6 @@ class MostPopularController
                 return Realblog::url($pageUrl, array('realblog_id' => $article->id));
             },
         ];
-        return (new View)->render('most-popular', $data);
+        return $this->view->render('most-popular', $data);
     }
 }

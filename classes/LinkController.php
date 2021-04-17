@@ -39,18 +39,22 @@ class LinkController
     /** @var bool */
     private $showTeaser;
 
+    /** @var View */
+    private $view;
+
     /**
      * @param array<string,string> $config
      * @param array<string,string> $text
      * @param string $pageUrl
      * @param bool $showTeaser
      */
-    public function __construct(array $config, array $text, $pageUrl, $showTeaser)
+    public function __construct(array $config, array $text, $pageUrl, $showTeaser, View $view)
     {
         $this->config = $config;
         $this->text = $text;
         $this->pageUrl = $pageUrl;
         $this->showTeaser = $showTeaser;
+        $this->view = $view;
     }
 
     /**
@@ -93,6 +97,6 @@ class LinkController
                 return new HtmlString(evaluate_scripting($article->teaser));
             },
         ];
-        return (new View)->render('latest', $data);
+        return $this->view->render('latest', $data);
     }
 }

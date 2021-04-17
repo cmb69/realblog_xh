@@ -37,6 +37,9 @@ class MainAdminController
     /** @var CsrfProtector */
     private $csrfProtector;
 
+    /** @var View */
+    private $view;
+
     /** @var string */
     private $urlPath;
 
@@ -47,13 +50,14 @@ class MainAdminController
      * @param array<string,string> $config
      * @param array<string,string> $text
      */
-    public function __construct(array $config, array $text, CsrfProtector $csrfProtector)
+    public function __construct(array $config, array $text, CsrfProtector $csrfProtector, View $view)
     {
         global $sn;
 
         $this->config = $config;
         $this->text = $text;
         $this->csrfProtector = $csrfProtector;
+        $this->view = $view;
         $this->urlPath = $sn;
         $this->page = Realblog::getPage();
     }
@@ -144,7 +148,7 @@ class MainAdminController
                 return (string) date($this->text['date_format'], $article->date);
             },
         ];
-        return (new View)->render('articles-form', $data);
+        return $this->view->render('articles-form', $data);
     }
 
     /**
@@ -264,7 +268,7 @@ class MainAdminController
             'categories' => trim($article->categories, ','),
             'button' => "btn_{$action}",
         ];
-        return (new View)->render('article-form', $data);
+        return $this->view->render('article-form', $data);
     }
 
     /**
@@ -448,7 +452,7 @@ EOT;
                 'new_realblogstatus', 'readyforpublishing', 'published', 'archived'
             );
         }
-        return (new View)->render("confirm-$kind", $data);
+        return $this->view->render("confirm-$kind", $data);
     }
 
     /**

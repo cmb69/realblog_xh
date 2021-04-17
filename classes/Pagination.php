@@ -45,18 +45,22 @@ class Pagination
      */
     private $url;
 
+    /** @var View */
+    private $view;
+
     /**
      * @param int $itemCount
      * @param int $page
      * @param int $pageCount
      * @param string $url
      */
-    public function __construct($itemCount, $page, $pageCount, $url)
+    public function __construct($itemCount, $page, $pageCount, $url, View $view)
     {
         $this->itemCount = $itemCount;
         $this->page = $page;
         $this->pageCount = $pageCount;
         $this->url = $url;
+        $this->view = $view;
     }
 
     /**
@@ -81,7 +85,7 @@ class Pagination
                 return sprintf($url, $page);
             },
         ];
-        return (new View)->render('pagination', $data);
+        return $this->view->render('pagination', $data);
     }
 
     /**

@@ -36,9 +36,9 @@ class BlogController extends MainController
      * @param bool $showSearch
      * @param string $category
      */
-    public function __construct(array $config, array $text, $showSearch = false, $category = 'all')
+    public function __construct(array $config, array $text, $showSearch, View $view, $category = 'all')
     {
-        parent::__construct($config, $text, $showSearch);
+        parent::__construct($config, $text, $showSearch, $view);
         $this->category = $category;
     }
 
@@ -85,7 +85,8 @@ class BlogController extends MainController
                 $articleCount,
                 $page,
                 $pageCount,
-                Realblog::url($su, array('realblog_page' => '%s', 'realblog_search' => $search))
+                Realblog::url($su, array('realblog_page' => '%s', 'realblog_search' => $search)),
+                $this->view
             ),
             'hasTopPagination' => (bool) $this->config['pagination_top'],
             'hasBottomPagination' => (bool) $this->config['pagination_bottom'],
@@ -170,7 +171,7 @@ class BlogController extends MainController
                 return call_user_func(array($bridge, 'count'), $commentsId);
             },
         ];
-        return (new View)->render('articles', $data);
+        return $this->view->render('articles', $data);
     }
 
     /**

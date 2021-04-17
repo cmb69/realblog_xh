@@ -34,15 +34,19 @@ class DataExchangeController
     /** @var CsrfProtector */
     private $csrfProtector;
 
+    /** @var View */
+    private $view;
+
     /**
      * @param array<string,string> $config
      * @param array<string,string> $text
      */
-    public function __construct(array $config, array $text, CsrfProtector $csrfProtector)
+    public function __construct(array $config, array $text, CsrfProtector $csrfProtector, View $view)
     {
         $this->config = $config;
         $this->text = $text;
         $this->csrfProtector = $csrfProtector;
+        $this->view = $view;
     }
 
     /**
@@ -63,7 +67,7 @@ class DataExchangeController
             $data['filename'] = $filename;
             $data['filemtime'] = date('c', filemtime($filename));
         }
-        return (new View)->render('data-exchange', $data);
+        return $this->view->render('data-exchange', $data);
     }
 
     /**

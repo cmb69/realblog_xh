@@ -36,6 +36,9 @@ abstract class MainController
     /** @var bool */
     protected $showSearch;
 
+    /** @var View */
+    protected $view;
+
     /** @var string */
     protected $searchTerm;
 
@@ -47,11 +50,12 @@ abstract class MainController
      * @param array<string,string> $text
      * @param bool $showSearch
      */
-    public function __construct(array $config, array $text, $showSearch)
+    public function __construct(array $config, array $text, $showSearch, View $view)
     {
         $this->config = $config;
         $this->text = $text;
         $this->showSearch = $showSearch;
+        $this->view = $view;
         $input = filter_input_array(
             INPUT_GET,
             array(
@@ -77,7 +81,7 @@ abstract class MainController
             'actionUrl' => $sn,
             'pageUrl' => $su,
         ];
-        return (new View)->render('search-form', $data);
+        return $this->view->render('search-form', $data);
     }
 
     /**
@@ -95,7 +99,7 @@ abstract class MainController
             'url' => Realblog::url($su),
             'key' => ($what == 'archive') ? 'back_to_archive' : 'search_show_all',
         ];
-        return (new View)->render('search-results', $data);
+        return $this->view->render('search-results', $data);
     }
 
     /**
@@ -175,7 +179,7 @@ abstract class MainController
                     return new HtmlString(call_user_func(array($bridge, 'handle'), $commentId));
                 }
             };
-        return (new View)->render('article', $data);
+        return $this->view->render('article', $data);
     }
 
     /**

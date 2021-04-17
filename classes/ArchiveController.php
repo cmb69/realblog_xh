@@ -32,9 +32,9 @@ class ArchiveController extends MainController
      * @param array<string,string> $text
      * @param bool $showSearch
      */
-    public function __construct(array $config, array $text, $showSearch = false)
+    public function __construct(array $config, array $text, $showSearch, View $view)
     {
-        parent::__construct($config, $text, $showSearch);
+        parent::__construct($config, $text, $showSearch, $view);
     }
 
     /**
@@ -136,7 +136,7 @@ class ArchiveController extends MainController
         if ($next) {
             $data['nextUrl'] = Realblog::url($su, array('realblog_year' => $next));
         }
-        return (new View)->render('archive', $data);
+        return $this->view->render('archive', $data);
     }
 
     /**
