@@ -32,11 +32,10 @@ class Realblog
 
     /**
      * @return void
-     * @global array $plugin_cf
      */
     public static function init()
     {
-        global $su, $plugin_cf;
+        global $su, $plugin_cf, $plugin_tx;
 
         self::registerCommands();
         if ($plugin_cf['realblog']['auto_publish']) {
@@ -54,7 +53,9 @@ class Realblog
                 array('options' => array('regexp' => '/^rss$/'))
             );
             if ($rssFeedRequested) {
-                self::deliverFeed();
+                $controller = new FeedController($plugin_cf['realblog'], $plugin_tx['realblog']);
+                echo $controller->defaultAction();
+                exit;
             }
         }
         /** @psalm-suppress UndefinedConstant */
@@ -167,61 +168,6 @@ class Realblog
 
         $hjs .= '<link rel="alternate" type="application/rss+xml"'
             . ' href="./?realblog_feed=rss">';
-    }
-
-    /**
-     * @return void
-     */
-    private static function deliverFeed()
-    {
-        global $sn, $pth, $plugin_cf, $plugin_tx;
-
-        header('Content-Type: application/rss+xml; charset=UTF-8');
-        $count = $plugin_cf['realblog']['rss_entries'];
-        $data = [
-            'url' => CMSIMPLE_URL . '?' . $plugin_tx['realblog']['rss_page'],
-            'managingEditor' => $plugin_cf['realblog']['rss_editor'],
-            'hasLogo' => (bool) $plugin_cf['realblog']['rss_logo'],
-            'imageUrl' => preg_replace(
-                array('/\/[^\/]+\/\.\.\//', '/\/\.\//'),
-                '/',
-                CMSIMPLE_URL . $pth['folder']['images']
-                . $plugin_cf['realblog']['rss_logo']
-            ),
-            'articles' => Finder::findFeedableArticles($count),
-            'articleUrl' =>
-            /**
-             * @param stdClass $article
-             * @return string
-             */
-            function ($article) use ($sn, $plugin_tx) {
-                return CMSIMPLE_URL . substr(
-                    Realblog::url(
-                        $plugin_tx['realblog']["rss_page"],
-                        array('realblog_id' => $article->id)
-                    ),
-                    strlen($sn)
-                );
-            },
-            'evaluatedTeaser' =>
-            /**
-             * @param stdClass $article
-             * @return string
-             */
-            function ($article) {
-                return evaluate_scripting($article->teaser);
-            },
-            'rssDate' =>
-            /**
-             * @param stdClass $article
-             * @return string
-             */
-            function ($article) {
-                return (string) date('r', $article->date);
-            },
-        ];
-        echo '<?xml version="1.0" encoding="UTF-8"?>', PHP_EOL, (new View)->render('feed', $data);
-        exit;
     }
 
     /**
