@@ -96,15 +96,15 @@ class MainAdminController
     {
         global $pth;
 
-        $view = new View('articles-form');
-        $view->imageFolder = "{$pth['folder']['plugins']}realblog/images/";
-        $view->page = $page = min(max($this->page, 0), $pageCount);
-        $view->prevPage = max($page - 1, 1);
-        $view->nextPage = min($page + 1, $pageCount);
-        $view->lastPage = $pageCount;
-        $view->articles = $articles;
-        $view->actionUrl = $this->urlPath;
-        $view->deleteUrl =
+        $data = [
+            'imageFolder' => "{$pth['folder']['plugins']}realblog/images/",
+            'page' => $page = min(max($this->page, 0), $pageCount),
+            'prevPage' => max($page - 1, 1),
+            'nextPage' => min($page + 1, $pageCount),
+            'lastPage' => $pageCount,
+            'articles' => $articles,
+            'actionUrl' => $this->urlPath,
+            'deleteUrl' =>
             /**
              * @param stdClass $article
              * @return string
@@ -114,8 +114,8 @@ class MainAdminController
 
                 return "$sn?&realblog&admin=plugin_main&action=delete"
                     . "&realblog_id={$article->id}&realblog_page=$page";
-            };
-        $view->editUrl =
+            },
+            'editUrl' =>
             /**
              * @param stdClass $article
              * @return string
@@ -125,25 +125,26 @@ class MainAdminController
 
                 return "$sn?&realblog&admin=plugin_main&action=edit"
                     . "&realblog_id={$article->id}&realblog_page=$page";
-            };
-        $view->states = array('readyforpublishing', 'published', 'archived');
-        $view->hasFilter =
+            },
+            'states' => array('readyforpublishing', 'published', 'archived'),
+            'hasFilter' =>
             /**
              * @param int $num
              * @return bool
              */
             function ($num) {
                 return Realblog::getFilter($num);
-            };
-        $view->formatDate =
+            },
+            'formatDate' =>
             /**
              * @param stdClass $article
              * @return string
              */
             function ($article) {
                 return (string) date($this->text['date_format'], $article->date);
-            };
-        return $view->render();
+            },
+        ];
+        return (new View('articles-form'))->render($data);
     }
 
     /**
@@ -242,27 +243,28 @@ class MainAdminController
             . json_encode(Finder::findAllCategories()) . ';</script>'
             . '<script src="' . $pth['folder']['plugins']
             . 'realblog/realblog.js"></script>';
-        $view = new View('article-form');
-        $view->article = $article;
-        $view->title = $title;
-        $view->actionUrl = "$sn?&realblog&admin=plugin_main";
-        $view->action = "do_{$action}";
-        $view->csrfToken = $this->getCsrfToken();
-        $view->calendarIcon = "{$pth['folder']['plugins']}realblog/images/calendar.png";
-        $view->formatDate =
+        $data = [
+            'article' => $article,
+            'title' => $title,
+            'actionUrl' => "$sn?&realblog&admin=plugin_main",
+            'action' => "do_{$action}",
+            'csrfToken' => $this->getCsrfToken(),
+            'calendarIcon' => "{$pth['folder']['plugins']}realblog/images/calendar.png",
+            'formatDate' =>
             /**
              * @param int $time
              * @return string
              */
             function ($time) {
                 return (string) date('Y-m-d', $time);
-            };
-        $view->isAutoPublish = $this->config['auto_publish'];
-        $view->isAutoArchive = $this->config['auto_archive'];
-        $view->states = array('readyforpublishing', 'published', 'archived');
-        $view->categories = trim($article->categories, ',');
-        $view->button = "btn_{$action}";
-        return $view->render();
+            },
+            'isAutoPublish' => $this->config['auto_publish'],
+            'isAutoArchive' => $this->config['auto_archive'],
+            'states' => array('readyforpublishing', 'published', 'archived'),
+            'categories' => trim($article->categories, ','),
+            'button' => "btn_{$action}",
+        ];
+        return (new View('article-form'))->render($data);
     }
 
     /**
@@ -427,25 +429,26 @@ EOT;
      */
     private function renderConfirmation($kind)
     {
-        $view = new View("confirm-$kind");
+        $data = [
+            'ids' => filter_input(
+                INPUT_GET,
+                'realblog_ids',
+                FILTER_VALIDATE_INT,
+                array(
+                    'flags' => FILTER_REQUIRE_ARRAY,
+                    'options' => array('min_range' => 1)
+                )
+            ),
+            'action' => "{$this->urlPath}?&realblog&admin=plugin_main",
+            'url' => "{$this->urlPath}?&realblog&admin=plugin_main&action=plugin_text&realblog_page={$this->page}",
+            'csrfToken' => $this->getCsrfToken(),
+        ];
         if ($kind === 'change-status') {
-            $view->states = array(
+            $data['states'] = array(
                 'new_realblogstatus', 'readyforpublishing', 'published', 'archived'
             );
         }
-        $view->ids = filter_input(
-            INPUT_GET,
-            'realblog_ids',
-            FILTER_VALIDATE_INT,
-            array(
-                'flags' => FILTER_REQUIRE_ARRAY,
-                'options' => array('min_range' => 1)
-            )
-        );
-        $view->action = "{$this->urlPath}?&realblog&admin=plugin_main";
-        $view->url = "{$this->urlPath}?&realblog&admin=plugin_main&action=plugin_text&realblog_page={$this->page}";
-        $view->csrfToken = $this->getCsrfToken();
-        return $view->render();
+        return (new View("confirm-$kind"))->render($data);
     }
 
     /**

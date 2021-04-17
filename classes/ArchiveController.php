@@ -94,39 +94,33 @@ class ArchiveController extends MainController
     {
         global $su;
 
-        $view = new View('archive');
-        $view->isSearch = $isSearch;
-        $view->articles = $articles;
-        $view->heading = $this->config['heading_level'];
-        $view->year = $this->year;
-        if ($back) {
-            $view->backUrl = Realblog::url($su, array('realblog_year' => $back));
-        }
-        if ($next) {
-            $view->nextUrl = Realblog::url($su, array('realblog_year' => $next));
-        }
-        $view->url = /** @return string */ function (stdClass $article) {
-            global $su;
+        $data = [
+            'isSearch' => $isSearch,
+            'articles' => $articles,
+            'heading' => $this->config['heading_level'],
+            'year' => $this->year,
+            'url' => /** @return string */ function (stdClass $article) {
+                global $su;
 
-            return Realblog::url(
-                $su,
-                array(
-                    'realblog_id' => $article->id,
-                    'realblog_year' => date('Y', $article->date),
-                    'realblog_search' => filter_input(INPUT_GET, 'realblog_search')
-                )
-            );
-        };
-        $view->formatDate = /** @return string */ function (stdClass $article) {
-            return (string) date($this->text['date_format'], $article->date);
-        };
-        $view->yearOf = /** @return string */ function (stdClass $article) {
-            return (string) date('Y', $article->date);
-        };
-        $view->monthOf = /** @return string */ function (stdClass $article) {
-            return (string) date('n', $article->date);
-        };
-        $view->monthName =
+                return Realblog::url(
+                    $su,
+                    array(
+                        'realblog_id' => $article->id,
+                        'realblog_year' => date('Y', $article->date),
+                        'realblog_search' => filter_input(INPUT_GET, 'realblog_search')
+                    )
+                );
+            },
+            'formatDate' => /** @return string */ function (stdClass $article) {
+                return (string) date($this->text['date_format'], $article->date);
+            },
+            'yearOf' => /** @return string */ function (stdClass $article) {
+                return (string) date('Y', $article->date);
+            },
+            'monthOf' => /** @return string */ function (stdClass $article) {
+                return (string) date('n', $article->date);
+            },
+            'monthName' =>
             /**
              * @param int $month
              * @return string
@@ -134,8 +128,15 @@ class ArchiveController extends MainController
             function ($month) {
                 $monthNames = explode(',', $this->text['date_months']);
                 return $monthNames[$month - 1];
-            };
-        return $view->render();
+            },
+        ];
+        if ($back) {
+            $data['backUrl'] = Realblog::url($su, array('realblog_year' => $back));
+        }
+        if ($next) {
+            $data['nextUrl'] = Realblog::url($su, array('realblog_year' => $next));
+        }
+        return (new View('archive'))->render($data);
     }
 
     /**

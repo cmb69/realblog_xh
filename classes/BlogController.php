@@ -76,20 +76,20 @@ class BlogController extends MainController
     {
         global $su;
 
-        $view = new View('articles');
-        $view->articles = $articles;
-        $view->heading = $this->config['heading_level'];
-        $view->isHeadingAboveMeta = $this->config['heading_above_meta'];
         $search = $this->searchTerm;
-        $view->pagination = new Pagination(
-            $articleCount,
-            $page,
-            $pageCount,
-            Realblog::url($su, array('realblog_page' => '%s', 'realblog_search' => $search))
-        );
-        $view->hasTopPagination = (bool) $this->config['pagination_top'];
-        $view->hasBottomPagination = (bool) $this->config['pagination_bottom'];
-        $view->url =
+        $data = [
+            'articles' => $articles,
+            'heading' => $this->config['heading_level'],
+            'isHeadingAboveMeta' => $this->config['heading_above_meta'],
+            'pagination' => new Pagination(
+                $articleCount,
+                $page,
+                $pageCount,
+                Realblog::url($su, array('realblog_page' => '%s', 'realblog_search' => $search))
+            ),
+            'hasTopPagination' => (bool) $this->config['pagination_top'],
+            'hasBottomPagination' => (bool) $this->config['pagination_bottom'],
+            'url' =>
             /**
              * @param stdClass $article
              * @return string
@@ -105,8 +105,8 @@ class BlogController extends MainController
                         'realblog_search' => $search
                     )
                 );
-            };
-        $view->categories =
+            },
+            'categories' =>
             /**
              * @param stdClass $article
              * @return string
@@ -114,8 +114,8 @@ class BlogController extends MainController
             function ($article) {
                 $categories = explode(',', trim($article->categories, ','));
                 return implode(', ', $categories);
-            };
-        $view->hasLinkedHeader =
+            },
+            'hasLinkedHeader' =>
             /**
              * @param stdClass $article
              * @return bool
@@ -123,24 +123,24 @@ class BlogController extends MainController
             function ($article) {
                 /** @psalm-suppress UndefinedConstant */
                 return $article->body_length || XH_ADM;
-            };
-        $view->date =
+            },
+            'date' =>
             /**
              * @param stdClass $article
              * @return string
              */
             function ($article) {
                 return (string) date($this->text['date_format'], $article->date);
-            };
-        $view->teaser =
+            },
+            'teaser' =>
             /**
              * @param stdClass $article
              * @return HtmlString
              */
             function ($article) {
                 return new HtmlString(evaluate_scripting($article->teaser));
-            };
-        $view->hasReadMore =
+            },
+            'hasReadMore' =>
             /**
              * @param stdClass $article
              * @return bool
@@ -148,8 +148,8 @@ class BlogController extends MainController
             function ($article) {
                 return $this->config['show_read_more_link']
                     && $article->body_length;
-            };
-        $view->isCommentable =
+            },
+            'isCommentable' =>
             /**
              * @param stdClass $article
              * @return bool
@@ -158,8 +158,8 @@ class BlogController extends MainController
                 return $this->config['comments_plugin']
                     && class_exists(ucfirst($this->config['comments_plugin']) . '\\RealblogBridge')
                     && $article->commentable;
-            };
-        $view->commentCount =
+            },
+            'commentCount' =>
             /**
              * @param stdClass $article
              * @return int
@@ -168,8 +168,9 @@ class BlogController extends MainController
                 $bridge = ucfirst($this->config['comments_plugin']) . '\\RealblogBridge';
                 $commentsId = "realblog{$article->id}";
                 return call_user_func(array($bridge, 'count'), $commentsId);
-            };
-        return $view->render();
+            },
+        ];
+        return (new View('articles'))->render($data);
     }
 
     /**

@@ -39,16 +39,6 @@ class View
 
     /**
      * @param string $name
-     * @param mixed $value
-     * @return void
-     */
-    public function __set($name, $value)
-    {
-        $this->data[$name] = $value;
-    }
-
-    /**
-     * @param string $name
      * @return string
      */
     public function __get($name)
@@ -105,12 +95,16 @@ class View
     }
 
     /**
+     * @param array<string,mixed>|null $_data
      * @return string
      */
-    public function render()
+    public function render(array $_data = null)
     {
         global $pth;
 
+        if ($_data !== null) {
+            $this->data = $_data;
+        }
         ob_start();
         /** @psalm-suppress UnresolvableInclude */
         include "{$pth['folder']['plugins']}realblog/views/{$this->template}.php";

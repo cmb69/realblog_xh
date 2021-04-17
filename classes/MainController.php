@@ -73,10 +73,11 @@ abstract class MainController
     {
         global $su, $sn;
 
-        $view = new View('search-form');
-        $view->actionUrl = $sn;
-        $view->pageUrl = $su;
-        return $view->render();
+        $data = [
+            'actionUrl' => $sn,
+            'pageUrl' => $su,
+        ];
+        return (new View('search-form'))->render($data);
     }
 
     /**
@@ -88,12 +89,13 @@ abstract class MainController
     {
         global $su;
 
-        $view = new View('search-results');
-        $view->words = $this->searchTerm;
-        $view->count = $count;
-        $view->url = Realblog::url($su);
-        $view->key = ($what == 'archive') ? 'back_to_archive' : 'search_show_all';
-        return $view->render();
+        $data = [
+            'words' => $this->searchTerm,
+            'count' => $count,
+            'url' => Realblog::url($su),
+            'key' => ($what == 'archive') ? 'back_to_archive' : 'search_show_all',
+        ];
+        return (new View('search-results'))->render($data);
     }
 
     /**
@@ -122,46 +124,46 @@ abstract class MainController
 
         $title .= $h[$s] . " \xE2\x80\x93 " . $article->title;
         $description = $this->getDescription($article);
-        $view = new View('article');
-        $view->article = $article;
-        $view->heading = $this->config['heading_level'];
-        $view->isHeadingAboveMeta = $this->config['heading_above_meta'];
-        /** @psalm-suppress UndefinedConstant */
-        $view->isAdmin = XH_ADM;
-        $view->wantsComments = $this->wantsComments();
         if ($article->status === 2) {
             $params = array('realblog_year' => $this->year);
-            $view->backText = $this->text['archiv_back'];
         } else {
             $params = array('realblog_page' => Realblog::getPage());
-            $view->backText = $this->text['blog_back'];
         }
-        $view->backUrl = Realblog::url($su, $params);
+        /** @psalm-suppress UndefinedConstant */
+        $data = [
+            'article' => $article,
+            'heading' => $this->config['heading_level'],
+            'isHeadingAboveMeta' => $this->config['heading_above_meta'],
+            'isAdmin' => XH_ADM,
+            'wantsComments' => $this->wantsComments(),
+            'backText' => $article->status === 2 ? $this->text['archiv_back'] : $this->text['blog_back'],
+            'backUrl' => Realblog::url($su, $params),
+        ];
         if ($this->searchTerm) {
             $params['realblog_search'] = $this->searchTerm;
-            $view->backToSearchUrl = Realblog::url($su, $params);
+            $data['backToSearchUrl'] = Realblog::url($su, $params);
         }
-        $view->editUrl = "$sn?&realblog&admin=plugin_main"
+        $data['editUrl'] = "$sn?&realblog&admin=plugin_main"
             . "&action=edit&realblog_id={$article->id}";
         if ($this->wantsComments()) {
             $bridge = ucfirst($this->config['comments_plugin']) . '\\RealblogBridge';
             $bridge = "{$this->config['comments_plugin']}\\RealblogBridge";
             $commentsUrl = call_user_func(array($bridge, 'getEditUrl'), "realblog{$article->id}");
             if ($commentsUrl !== false) {
-                $view->editCommentsUrl = $commentsUrl;
+                $data['editCommentsUrl'] = $commentsUrl;
             }
-            $view->commentCount = call_user_func(array($bridge, 'count'), "realblog{$article->id}");
+            $data['commentCount'] = call_user_func(array($bridge, 'count'), "realblog{$article->id}");
         }
-        $view->date = date($this->text['date_format'], $article->date);
+        $data['date'] = date($this->text['date_format'], $article->date);
         $categories = explode(',', trim($article->categories, ','));
-        $view->categories = implode(', ', $categories);
+        $data['categories'] = implode(', ', $categories);
         if ($this->config['show_teaser']) {
             $story = '<div class="realblog_teaser">' . $article->teaser . '</div>' . $article->body;
         } else {
             $story = ($article->body != '') ? $article->body : $article->teaser;
         }
-        $view->story = new HtmlString(evaluate_scripting($story));
-        $view->renderComments =
+        $data['story'] = new HtmlString(evaluate_scripting($story));
+        $data['renderComments'] =
             /**
              * @param stdClass $article
              * @return HtmlString|null
@@ -173,7 +175,7 @@ abstract class MainController
                     return new HtmlString(call_user_func(array($bridge, 'handle'), $commentId));
                 }
             };
-        return $view->render();
+        return (new View('article'))->render($data);
     }
 
     /**

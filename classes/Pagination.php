@@ -67,20 +67,21 @@ class Pagination
         if ($this->pageCount <= 1) {
             return '';
         }
-        $view = new View('pagination');
-        $view->itemCount = $this->itemCount;
-        $view->currentPage = $this->page;
-        $view->pages = $this->gatherPages();
         $url = $this->url;
-        $view->url =
+        $data = [
+            'itemCount' => $this->itemCount,
+            'currentPage' => $this->page,
+            'pages' => $this->gatherPages(),
+            'url' =>
             /**
              * @param int $page
              * @return string
              */
             function ($page) use ($url) {
                 return sprintf($url, $page);
-            };
-        return $view->render();
+            },
+        ];
+        return (new View('pagination'))->render($data);
     }
 
     /**

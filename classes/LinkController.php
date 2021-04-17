@@ -63,35 +63,36 @@ class LinkController
         if (!in_array($this->pageUrl, $u) || $this->config['links_visible'] <= 0) {
             return "";
         }
-        $view = new View('latest');
-        $view->articles = Finder::findArticles(1, (int) $this->config['links_visible']);
-        $view->heading = $this->config['heading_level'];
-        $view->formatDate =
+        $pageUrl = $this->pageUrl;
+        $data = [
+            'articles' => Finder::findArticles(1, (int) $this->config['links_visible']),
+            'heading' => $this->config['heading_level'],
+            'formatDate' =>
             /**
              * @param stdClass $article
              * @return string
              */
             function ($article) {
                 return date($this->text['date_format'], $article->date);
-            };
-        $pageUrl = $this->pageUrl;
-        $view->url =
+            },
+            'url' =>
             /**
              * @param stdClass $article
              * @return string
              */
             function ($article) use ($pageUrl) {
                 return Realblog::url($pageUrl, array('realblog_id' => $article->id));
-            };
-        $view->showTeaser = $this->showTeaser;
-        $view->teaser =
+            },
+            'showTeaser' => $this->showTeaser,
+            'teaser' =>
             /**
              * @param stdClass $article
              * @return HtmlString
              */
             function ($article) {
                 return new HtmlString(evaluate_scripting($article->teaser));
-            };
-        return $view->render();
+            },
+        ];
+        return (new View('latest'))->render($data);
     }
 }

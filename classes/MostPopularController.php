@@ -56,18 +56,19 @@ class MostPopularController
         if (!in_array($this->pageUrl, $u) || $this->config['links_visible'] <= 0) {
             return "";
         }
-        $view = new View('most-popular');
-        $view->articles = Finder::findMostPopularArticles((int) $this->config['links_visible']);
-        $view->heading = $this->config['heading_level'];
         $pageUrl = $this->pageUrl;
-        $view->url =
+        $data = [
+            'articles' => Finder::findMostPopularArticles((int) $this->config['links_visible']),
+            'heading' => $this->config['heading_level'],
+            'url' =>
             /**
              * @param stdClass $article
              * @return string
              */
             function ($article) use ($pageUrl) {
                 return Realblog::url($pageUrl, array('realblog_id' => $article->id));
-            };
-        return $view->render();
+            },
+        ];
+        return (new View('most-popular'))->render($data);
     }
 }

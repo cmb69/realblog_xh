@@ -195,19 +195,19 @@ class Realblog
         global $sn, $pth, $plugin_cf, $plugin_tx;
 
         header('Content-Type: application/rss+xml; charset=UTF-8');
-        $view = new View('feed');
-        $view->url = CMSIMPLE_URL . '?' . $plugin_tx['realblog']['rss_page'];
-        $view->managingEditor = $plugin_cf['realblog']['rss_editor'];
-        $view->hasLogo = (bool) $plugin_cf['realblog']['rss_logo'];
-        $view->imageUrl = preg_replace(
-            array('/\/[^\/]+\/\.\.\//', '/\/\.\//'),
-            '/',
-            CMSIMPLE_URL . $pth['folder']['images']
-            . $plugin_cf['realblog']['rss_logo']
-        );
         $count = $plugin_cf['realblog']['rss_entries'];
-        $view->articles = Finder::findFeedableArticles($count);
-        $view->articleUrl =
+        $data = [
+            'url' => CMSIMPLE_URL . '?' . $plugin_tx['realblog']['rss_page'],
+            'managingEditor' => $plugin_cf['realblog']['rss_editor'],
+            'hasLogo' => (bool) $plugin_cf['realblog']['rss_logo'],
+            'imageUrl' => preg_replace(
+                array('/\/[^\/]+\/\.\.\//', '/\/\.\//'),
+                '/',
+                CMSIMPLE_URL . $pth['folder']['images']
+                . $plugin_cf['realblog']['rss_logo']
+            ),
+            'articles' => Finder::findFeedableArticles($count),
+            'articleUrl' =>
             /**
              * @param stdClass $article
              * @return string
@@ -220,24 +220,25 @@ class Realblog
                     ),
                     strlen($sn)
                 );
-            };
-        $view->evaluatedTeaser =
+            },
+            'evaluatedTeaser' =>
             /**
              * @param stdClass $article
              * @return string
              */
             function ($article) {
                 return evaluate_scripting($article->teaser);
-            };
-        $view->rssDate =
+            },
+            'rssDate' =>
             /**
              * @param stdClass $article
              * @return string
              */
             function ($article) {
                 return (string) date('r', $article->date);
-            };
-        echo '<?xml version="1.0" encoding="UTF-8"?>', PHP_EOL, $view->render();
+            },
+        ];
+        echo '<?xml version="1.0" encoding="UTF-8"?>', PHP_EOL, (new View('feed'))->render($data);
         exit;
     }
 

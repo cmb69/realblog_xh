@@ -32,18 +32,19 @@ class InfoController
     {
         global $pth, $plugin_cf;
 
-        $view = new View('info');
-        $view->version = Realblog::VERSION;
-        $view->heading = $plugin_cf['realblog']['heading_level'];
-        $view->checks = (new SystemCheck)->getChecks();
-        $view->imageURL =
-            /**
-             * @param string $state
-             * @return string
-             */
-            function ($state) use ($pth) {
-                return "{$pth['folder']['plugins']}realblog/images/$state.png";
-            };
-        return $view->render();
+        $data = [
+            'version' => Realblog::VERSION,
+            'heading' => $plugin_cf['realblog']['heading_level'],
+            'checks' => (new SystemCheck)->getChecks(),
+            'imageURL' =>
+                /**
+                 * @param string $state
+                 * @return string
+                 */
+                function ($state) use ($pth) {
+                    return "{$pth['folder']['plugins']}realblog/images/$state.png";
+                },
+        ];
+        return (new View('info'))->render($data);
     }
 }

@@ -52,17 +52,18 @@ class DataExchangeController
     {
         global $sn;
 
-        $view = new View('data-exchange');
-        $view->csrfToken = $this->getCsrfToken();
-        $view->url = "$sn?realblog";
-        $view->articleCount = Finder::countArticlesWithStatus(array(0, 1, 2));
+        $data = [
+            'csrfToken' => $this->getCsrfToken(),
+            'url' => "$sn?realblog",
+            'articleCount' => Finder::countArticlesWithStatus(array(0, 1, 2)),
+            'confirmImport' => json_encode($this->text['exchange_confirm_import']),
+        ];
         $filename = $this->getCsvFilename();
         if (file_exists($filename)) {
-            $view->filename = $filename;
-            $view->filemtime = date('c', filemtime($filename));
+            $data['filename'] = $filename;
+            $data['filemtime'] = date('c', filemtime($filename));
         }
-        $view->confirmImport = json_encode($this->text['exchange_confirm_import']);
-        return $view->render();
+        return (new View('data-exchange'))->render($data);
     }
 
     /**
