@@ -1,6 +1,5 @@
 <?php
 
-$plugin_tx['realblog']['alt_logo']="Ring file with pencil";
 $plugin_tx['realblog']['archiv_back']="archief overzicht";
 $plugin_tx['realblog']['archive_year']="archief per jaar:";
 $plugin_tx['realblog']['archived']="gearchiveerd";
@@ -40,7 +39,7 @@ $plugin_tx['realblog']['new_realblogstatus']="Kies nieuwe status";
 $plugin_tx['realblog']['no_topics']="geen artikelen beschikbaar";
 $plugin_tx['realblog']['nothing_selected']="geen artikelen geselecteerd";
 $plugin_tx['realblog']['published']="gepubliceerd";
-$plugin_tx['realblog']['read_more']="lees meer »";
+$plugin_tx['realblog']['read_more']="lees meer Â»";
 $plugin_tx['realblog']['readyforpublishing']="niet gepubliceerd";
 $plugin_tx['realblog']['return']="terug";
 $plugin_tx['realblog']['rss_copyright']="";

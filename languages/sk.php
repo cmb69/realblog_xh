@@ -1,6 +1,5 @@
 <?php
 
-$plugin_tx['realblog']['alt_logo']="Ring file with pencil";
 $plugin_tx['realblog']['archiv_back']="Prahľad archívu";
 $plugin_tx['realblog']['archive_year']="Ročný archív:";
 $plugin_tx['realblog']['archived']="archívované";

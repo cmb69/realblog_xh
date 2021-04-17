@@ -240,13 +240,6 @@ padding: 2px 5px;
 /*
  * Back-end.
  */
-.realblog_logo {
-    float: left;
-    margin-right: 16px;
-}
-.realblog_license {
-    text-align: justify;
-}
 .realblog_systemcheck {
     list-style: none;
     padding-left: 0;

@@ -33,7 +33,6 @@ class InfoController
         global $pth, $plugin_cf;
 
         $view = new View('info');
-        $view->logoPath = "{$pth['folder']['plugins']}realblog/realblog.png";
         $view->version = Realblog::VERSION;
         $view->heading = $plugin_cf['realblog']['heading_level'];
         $view->checks = (new SystemCheck)->getChecks();
