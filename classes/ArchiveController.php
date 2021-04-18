@@ -95,7 +95,7 @@ class ArchiveController extends MainController
 
         $data = [
             'isSearch' => $isSearch,
-            'articles' => $articles,
+            'articles' => $this->groupArticlesByMonth($articles),
             'heading' => $this->config['heading_level'],
             'year' => $this->year,
             'url' => /** @return string */ function (Article $article) {
@@ -136,6 +136,34 @@ class ArchiveController extends MainController
             $data['nextUrl'] = Plugin::url($su, array('realblog_year' => $next));
         }
         return $this->view->render('archive', $data);
+    }
+
+    /**
+     * @param Article[] $articles
+     * @return Article[][]
+     */
+    private function groupArticlesByMonth(array $articles)
+    {
+        $currentYear = $currentMonth = null;
+        $groups = $currentGroup = [];
+        foreach ($articles as $article) {
+            $year = (int) date('Y', $article->date);
+            $month = (int) date('n', $article->date);
+            if ($year !== $currentYear || $month !== $currentMonth) {
+                $currentYear = $year;
+                $currentMonth = $month;
+                if (!empty($currentGroup)) {
+                    $groups[] = $currentGroup;
+                }
+                $currentGroup = [];
+            } else {
+            }
+            $currentGroup[] = $article;
+        }
+        if (!empty($currentGroup)) {
+            $groups[] = $currentGroup;
+        }
+        return $groups;
     }
 
     /**

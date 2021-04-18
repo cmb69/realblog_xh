@@ -15,30 +15,18 @@
 
 <?php endif?>
 
-<?php if (count($this->articles) > 0):?>
-<?php   $first = true?>
-<?php   $currentMonth = -1?>
-<?php   $currentYear = -1?>
-<?php   foreach ($this->articles as $article):?>
-<?php       $month = $this->monthOf($article)?>
-<?php       $year = $this->yearOf($article)?>
-<?php       if ($month != $currentMonth || $year != $currentYear):?>
-<?php           $currentMonth = $month?>
-<?php           $currentYear = $year?>
-<?php           if (!$first):?>
-    </ul>
-<?php           else:?>
-<?php               $first = false?>
-<?php           endif?>
-<<?=$this->heading?>><?=$this->monthName($month)?> <?=$this->escape($year)?></<?=$this->heading?>>
+<?php if (!empty($this->articles)):?>
+<?php   foreach ($this->articles as $group):?>
+    <<?=$this->heading?>><?=$this->monthName($this->monthOf($group[0]))?> <?=$this->escape($this->yearOf($group[0]))?></<?=$this->heading?>>
     <ul class="realblog_archive">
-<?php       endif?>
+<?php       foreach ($group as $article):?>
         <li>
             <?=$this->formatDate($article)?>
             <a href="<?=$this->url($article)?>" title="<?=$this->text('tooltip_view')?>"><?=$this->escape($article->title)?></a>
         </li>
-<?php   endforeach?>
+<?php       endforeach?>
     </ul>
+<?php   endforeach?>
 <?php else:?>
     <p><?=$this->text('no_topics')?></p>
 <?php endif?>
