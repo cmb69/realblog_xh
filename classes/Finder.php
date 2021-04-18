@@ -187,7 +187,8 @@ SQL;
             $whereClause = sprintf('WHERE status IN (%s)', implode(', ', $statuses));
         }
         $sql = <<<SQL
-SELECT id, date, status, trim(categories, ',') as categories, title, teaser, length(body) AS hasBody, feedable, commentable
+SELECT id, date, status, trim(categories, ',') as categories, title, teaser,
+        length(body) AS hasBody, feedable, commentable
     FROM articles $whereClause ORDER BY id DESC LIMIT $limit OFFSET $offset
 SQL;
         $connection = $this->db->getConnection();
