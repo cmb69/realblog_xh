@@ -50,7 +50,7 @@ class View
      */
     public function __call($name, array $args)
     {
-        return $this->escape(call_user_func_array($this->data[$name], $args));
+        return $this->escape($this->data[$name](...$args));
     }
 
     /**

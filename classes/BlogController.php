@@ -138,9 +138,10 @@ class BlogController extends MainController
                     && $article->commentable;
             },
             'commentCount' => /** @return int */ function (Article $article) {
+                /** @var class-string $bridge */
                 $bridge = ucfirst($this->config['comments_plugin']) . '\\RealblogBridge';
                 $commentsId = "realblog{$article->id}";
-                return call_user_func(array($bridge, 'count'), $commentsId);
+                return $bridge::count($commentsId);
             },
         ];
         return $this->view->render('articles', $data);
