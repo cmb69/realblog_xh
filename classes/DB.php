@@ -23,7 +23,6 @@
 
 namespace Realblog;
 
-use stdClass;
 use SQLite3;
 
 class DB
@@ -179,7 +178,7 @@ EOS;
     /**
      * @return int
      */
-    public function insertArticle(stdClass $article)
+    public function insertArticle(FullArticle $article)
     {
         $conn = $this->getConnection();
         $sql = <<<'EOS'
@@ -192,8 +191,8 @@ EOS;
         $statement = $conn->prepare($sql);
         $statement->bindValue(':id', null, SQLITE3_NULL);
         $statement->bindValue(':date', $article->date, SQLITE3_INTEGER);
-        $statement->bindValue(':publishing_date', $article->publishing_date, SQLITE3_INTEGER);
-        $statement->bindValue(':archiving_date', $article->archiving_date, SQLITE3_INTEGER);
+        $statement->bindValue(':publishing_date', $article->publishingDate, SQLITE3_INTEGER);
+        $statement->bindValue(':archiving_date', $article->archivingDate, SQLITE3_INTEGER);
         $statement->bindValue(':status', $article->status, SQLITE3_INTEGER);
         $statement->bindValue(':categories', $article->categories, SQLITE3_TEXT);
         $statement->bindValue(':title', $article->title, SQLITE3_TEXT);
@@ -211,7 +210,7 @@ EOS;
     /**
      * @return int
      */
-    public function updateArticle(stdClass $article)
+    public function updateArticle(FullArticle $article)
     {
         $conn = $this->getConnection();
         $sql = <<<'EOS'
@@ -226,8 +225,8 @@ EOS;
         $statement->bindValue(':id', $article->id, SQLITE3_INTEGER);
         $statement->bindValue(':version', $article->version, SQLITE3_INTEGER);
         $statement->bindValue(':date', $article->date, SQLITE3_INTEGER);
-        $statement->bindValue(':publishing_date', $article->publishing_date, SQLITE3_INTEGER);
-        $statement->bindValue(':archiving_date', $article->archiving_date, SQLITE3_INTEGER);
+        $statement->bindValue(':publishing_date', $article->publishingDate, SQLITE3_INTEGER);
+        $statement->bindValue(':archiving_date', $article->archivingDate, SQLITE3_INTEGER);
         $statement->bindValue(':status', $article->status, SQLITE3_INTEGER);
         $statement->bindValue(':categories', $article->categories, SQLITE3_TEXT);
         $statement->bindValue(':title', $article->title, SQLITE3_TEXT);
@@ -282,10 +281,9 @@ SQL;
     }
 
     /**
-     * @param stdClass $article
      * @return int
      */
-    public function deleteArticle($article)
+    public function deleteArticle(FullArticle $article)
     {
         $sql = 'DELETE FROM articles WHERE id = :id AND version = :version';
         $conn = $this->getConnection();

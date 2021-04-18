@@ -23,8 +23,6 @@
 
 namespace Realblog;
 
-use stdClass;
-
 class ArchiveController extends MainController
 {
     /**
@@ -85,6 +83,7 @@ class ArchiveController extends MainController
     }
 
     /**
+     * @param Article[] $articles
      * @param bool $isSearch
      * @param int|null $back
      * @param int|null $next
@@ -99,7 +98,7 @@ class ArchiveController extends MainController
             'articles' => $articles,
             'heading' => $this->config['heading_level'],
             'year' => $this->year,
-            'url' => /** @return string */ function (stdClass $article) {
+            'url' => /** @return string */ function (Article $article) {
                 global $su;
 
                 return Plugin::url(
@@ -111,13 +110,13 @@ class ArchiveController extends MainController
                     )
                 );
             },
-            'formatDate' => /** @return string */ function (stdClass $article) {
+            'formatDate' => /** @return string */ function (Article $article) {
                 return (string) date($this->text['date_format'], $article->date);
             },
-            'yearOf' => /** @return string */ function (stdClass $article) {
+            'yearOf' => /** @return string */ function (Article $article) {
                 return (string) date('Y', $article->date);
             },
-            'monthOf' => /** @return string */ function (stdClass $article) {
+            'monthOf' => /** @return string */ function (Article $article) {
                 return (string) date('n', $article->date);
             },
             'monthName' =>

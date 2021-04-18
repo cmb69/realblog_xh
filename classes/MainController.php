@@ -23,8 +23,6 @@
 
 namespace Realblog;
 
-use stdClass;
-
 abstract class MainController
 {
     /** @var array<string,string> */
@@ -130,7 +128,7 @@ abstract class MainController
     /**
      * @return string
      */
-    private function doRenderArticle(stdClass $article)
+    private function doRenderArticle(FullArticle $article)
     {
         global $sn, $su, $h, $s, $title, $description;
 
@@ -175,7 +173,7 @@ abstract class MainController
             $story = ($article->body != '') ? $article->body : $article->teaser;
         }
         $data['story'] = new HtmlString(evaluate_scripting($story));
-        $data['renderComments'] = /** @return HtmlString|null */ function (stdClass $article) {
+        $data['renderComments'] = /** @return HtmlString|null */ function (Article $article) {
             if ($article->commentable) {
                 $commentId = "realblog{$article->id}";
                 $bridge = ucfirst($this->config['comments_plugin']) . '\\RealblogBridge';
@@ -188,7 +186,7 @@ abstract class MainController
     /**
      * @return string
      */
-    private function getDescription(stdClass $article)
+    private function getDescription(FullArticle $article)
     {
         $teaser = trim(html_entity_decode(strip_tags($article->teaser), ENT_COMPAT, 'UTF-8'));
         if (utf8_strlen($teaser) <= 150) {

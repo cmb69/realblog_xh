@@ -23,8 +23,6 @@
 
 namespace Realblog;
 
-use stdClass;
-
 class FeedController
 {
     /** @var array<string,string> */
@@ -63,7 +61,7 @@ class FeedController
                 . $this->config['rss_logo']
             ),
             'articles' => $this->finder->findFeedableArticles($count),
-            'articleUrl' => /** @return string */ function (stdClass $article) use ($sn) {
+            'articleUrl' => /** @return string */ function (Article $article) use ($sn) {
                 return CMSIMPLE_URL . substr(
                     Plugin::url(
                         $this->text["rss_page"],
@@ -72,10 +70,10 @@ class FeedController
                     strlen($sn)
                 );
             },
-            'evaluatedTeaser' => /** @return string */ function (stdClass $article) {
+            'evaluatedTeaser' => /** @return string */ function (Article $article) {
                 return evaluate_scripting($article->teaser);
             },
-            'rssDate' => /** @return string */ function (stdClass $article) {
+            'rssDate' => /** @return string */ function (Article $article) {
                 return (string) date('r', $article->date);
             },
         ];

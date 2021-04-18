@@ -23,7 +23,6 @@
 
 namespace Realblog;
 
-use stdClass;
 use ReflectionClass;
 use XH\CSRFProtection as CsrfProtector;
 

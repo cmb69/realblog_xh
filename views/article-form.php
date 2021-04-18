@@ -14,7 +14,7 @@
             </tr>
             <tr>
                 <td>
-<?php if (isset($this->article->id)):?>
+<?php if ($this->article->id === 0):?>
                     <input type="hidden" name="realblog_date_exact" value="<?=$this->escape($this->article->date)?>">
                     <input type="hidden" name="realblog_date_old" value="<?=$this->formatDate($this->article->date)?>">
 <?php endif?>
@@ -23,20 +23,20 @@
                 </td>
                 <td>
 <?php if ($this->isAutoPublish):?>
-                    <input type="date" name="realblog_startdate" id="realblog_date2" required="required" value="<?=$this->formatDate($this->article->publishing_date)?>">
+                    <input type="date" name="realblog_startdate" id="realblog_date2" required="required" value="<?=$this->formatDate($this->article->publishingDate)?>">
                     <img src="<?=$this->calendarIcon?>" id="realblog_trig_date2" class="realblog_date_selector" title="<?=$this->text('tooltip_datepicker')?>" alt="">
 <?php else:?>
                     <span><?=$this->text('startdate_hint')?></span>
-                    <input type="hidden" name="realblog_startdate" value="<?=$this->formatDate($this->article->publishing_date)?>">
+                    <input type="hidden" name="realblog_startdate" value="<?=$this->formatDate($this->article->publishingDate)?>">
 <?php endif?>
                 </td>
                 <td>
 <?php if ($this->isAutoArchive):?>
-                    <input type="date" name="realblog_enddate" id="realblog_date3" required="required" value="<?=$this->formatDate($this->article->archiving_date)?>">
+                    <input type="date" name="realblog_enddate" id="realblog_date3" required="required" value="<?=$this->formatDate($this->article->archivingDate)?>">
                     <img src="<?=$this->calendarIcon?>" id="realblog_trig_date3" class="realblog_date_selector" title="<?=$this->text('tooltip_datepicker')?>" alt="">
 <?php else:?>
                     <span><?=$this->text('enddate_hint')?></span>
-                    <input type="hidden" name="realblog_enddate" value="<?=$this->formatDate($this->article->archiving_date)?>">
+                    <input type="hidden" name="realblog_enddate" value="<?=$this->formatDate($this->article->archivingDate)?>">
 <?php endif?>
                 </td>
             </tr>
@@ -87,4 +87,4 @@
         </p>
         <p style="text-align: center"><input type="submit" name="save" value="<?=$this->text($this->button)?>"></p>
     </form>
-</div>    
+</div>

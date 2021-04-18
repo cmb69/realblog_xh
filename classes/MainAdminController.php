@@ -23,7 +23,6 @@
 
 namespace Realblog;
 
-use stdClass;
 use XH\CSRFProtection as CsrfProtector;
 
 class MainAdminController
@@ -106,11 +105,11 @@ class MainAdminController
     }
 
     /**
-     * @param stdClass[] $articles
+     * @param Article[] $articles
      * @param int $pageCount
      * @return string
      */
-    private function renderArticles($articles, $pageCount)
+    private function renderArticles(array $articles, $pageCount)
     {
         global $pth;
 
@@ -122,13 +121,13 @@ class MainAdminController
             'lastPage' => $pageCount,
             'articles' => $articles,
             'actionUrl' => $this->urlPath,
-            'deleteUrl' => /** @return string */ function (stdClass $article) use ($page) {
+            'deleteUrl' => /** @return string */ function (Article $article) use ($page) {
                 global $sn;
 
                 return "$sn?&realblog&admin=plugin_main&action=delete"
                     . "&realblog_id={$article->id}&realblog_page=$page";
             },
-            'editUrl' => /** @return string */ function (stdClass $article) use ($page) {
+            'editUrl' => /** @return string */ function (Article $article) use ($page) {
                 global $sn;
 
                 return "$sn?&realblog&admin=plugin_main&action=edit"
@@ -143,7 +142,7 @@ class MainAdminController
             function ($num) {
                 return Plugin::getFilter($num);
             },
-            'formatDate' => /** @return string */ function (stdClass $article) {
+            'formatDate' => /** @return string */ function (Article $article) {
                 return (string) date($this->text['date_format'], $article->date);
             },
         ];
@@ -183,7 +182,7 @@ class MainAdminController
 
         init_editor(array('realblog_headline_field', 'realblog_story_field'));
         if ($action === 'create') {
-            $article = $this->makeArticle();
+            $article = new FullArticle(0, 0, time(), 2147483647, 2147483647, 0, '', '', '', '', false, false);
         } else {
             $id = filter_input(
                 INPUT_GET,
@@ -200,31 +199,10 @@ class MainAdminController
     }
 
     /**
-     * @return stdClass
-     */
-    private function makeArticle()
-    {
-        return (object) array(
-            'id' => null,
-            'version' => 0,
-            'date' => time(),
-            'publishing_date' => 2147483647,
-            'archiving_date' => 2147483647,
-            'status' => 0,
-            'categories' => '',
-            'title' => '',
-            'teaser' => '',
-            'body' => '',
-            'feedable' => 0,
-            'commentable' => 0
-        );
-    }
-
-    /**
      * @param string $action
      * @return string
      */
-    private function renderForm(stdClass $article, $action)
+    private function renderForm(FullArticle $article, $action)
     {
         global $pth, $sn, $title, $bjs;
 
@@ -363,28 +341,26 @@ EOT;
     }
 
     /**
-     * @return stdClass
+     * @return FullArticle
      */
     private function getArticleFromParameters()
     {
-        $article = new stdClass();
-        $article->id = $_POST['realblog_id'];
-        $article->version = $_POST['realblog_version'];
-        if (!isset($_POST['realblog_date_exact']) || $_POST['realblog_date'] !== $_POST['realblog_date_old']) {
-            $article->date = $this->stringToTime($_POST['realblog_date'], true);
-        } else {
-            $article->date = $_POST['realblog_date_exact'];
-        }
-        $article->title = $_POST['realblog_title'];
-        $article->teaser = $_POST['realblog_headline'];
-        $article->body = $_POST['realblog_story'];
-        $article->publishing_date = $this->stringToTime($_POST['realblog_startdate']);
-        $article->archiving_date = $this->stringToTime($_POST['realblog_enddate']);
-        $article->status = $_POST['realblog_status'];
-        $article->feedable = isset($_POST['realblog_rssfeed']);
-        $article->commentable = isset($_POST['realblog_comments']);
-        $article->categories = ',' . trim($_POST['realblog_categories']) . ',';
-        return $article;
+        return new FullArticle(
+            $_POST['realblog_id'],
+            $_POST['realblog_version'],
+            !isset($_POST['realblog_date_exact']) || $_POST['realblog_date'] !== $_POST['realblog_date_old']
+            ? $this->stringToTime($_POST['realblog_date'], true)
+            : $_POST['realblog_date_exact'],
+            $this->stringToTime($_POST['realblog_startdate']),
+            $this->stringToTime($_POST['realblog_enddate']),
+            $_POST['realblog_status'],
+            ',' . trim($_POST['realblog_categories']) . ',',
+            $_POST['realblog_title'],
+            $_POST['realblog_headline'],
+            $_POST['realblog_story'],
+            isset($_POST['realblog_rssfeed']),
+            isset($_POST['realblog_comments'])
+        );
     }
 
     /**

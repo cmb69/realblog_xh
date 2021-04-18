@@ -23,8 +23,6 @@
 
 namespace Realblog;
 
-use stdClass;
-
 class BlogController extends MainController
 {
     /** @var string */
@@ -104,7 +102,7 @@ class BlogController extends MainController
             ),
             'hasTopPagination' => (bool) $this->config['pagination_top'],
             'hasBottomPagination' => (bool) $this->config['pagination_bottom'],
-            'url' => /** @return string */ function (stdClass $article) use ($search) {
+            'url' => /** @return string */ function (Article $article) use ($search) {
                 global $su;
 
                 return Plugin::url(
@@ -116,30 +114,30 @@ class BlogController extends MainController
                     )
                 );
             },
-            'categories' => /** @return string */ function (stdClass $article) {
+            'categories' => /** @return string */ function (Article $article) {
                 $categories = explode(',', trim($article->categories, ','));
                 return implode(', ', $categories);
             },
-            'hasLinkedHeader' => /** @return bool */ function (stdClass $article) {
+            'hasLinkedHeader' => /** @return bool */ function (Article $article) {
                 /** @psalm-suppress UndefinedConstant */
-                return $article->body_length || XH_ADM;
+                return $article->hasBody || XH_ADM;
             },
-            'date' => /** @return string */ function (stdClass $article) {
+            'date' => /** @return string */ function (Article $article) {
                 return (string) date($this->text['date_format'], $article->date);
             },
-            'teaser' => /** @return HtmlString */ function (stdClass $article) {
+            'teaser' => /** @return HtmlString */ function (Article $article) {
                 return new HtmlString(evaluate_scripting($article->teaser));
             },
-            'hasReadMore' => /** @return bool */ function (stdClass $article) {
+            'hasReadMore' => /** @return bool */ function (Article $article) {
                 return $this->config['show_read_more_link']
-                    && $article->body_length;
+                    && $article->hasBody;
             },
-            'isCommentable' => /** @return bool */ function (stdClass $article) {
+            'isCommentable' => /** @return bool */ function (Article $article) {
                 return $this->config['comments_plugin']
                     && class_exists(ucfirst($this->config['comments_plugin']) . '\\RealblogBridge')
                     && $article->commentable;
             },
-            'commentCount' => /** @return int */ function (stdClass $article) {
+            'commentCount' => /** @return int */ function (Article $article) {
                 $bridge = ucfirst($this->config['comments_plugin']) . '\\RealblogBridge';
                 $commentsId = "realblog{$article->id}";
                 return call_user_func(array($bridge, 'count'), $commentsId);

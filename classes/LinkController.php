@@ -23,8 +23,6 @@
 
 namespace Realblog;
 
-use stdClass;
-
 class LinkController
 {
     /** @var array<string,string> */
@@ -75,14 +73,14 @@ class LinkController
         $data = [
             'articles' => $this->finder->findArticles(1, (int) $this->config['links_visible']),
             'heading' => $this->config['heading_level'],
-            'formatDate' => /** @return string */ function (stdClass $article) {
+            'formatDate' => /** @return string */ function (Article $article) {
                 return date($this->text['date_format'], $article->date);
             },
-            'url' => /** @return string */ function (stdClass $article) use ($pageUrl) {
+            'url' => /** @return string */ function (Article $article) use ($pageUrl) {
                 return Plugin::url($pageUrl, array('realblog_id' => $article->id));
             },
             'showTeaser' => $this->showTeaser,
-            'teaser' => /** @return HtmlString */ function (stdClass $article) {
+            'teaser' => /** @return HtmlString */ function (Article $article) {
                 return new HtmlString(evaluate_scripting($article->teaser));
             },
         ];
