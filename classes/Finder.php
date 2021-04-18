@@ -125,11 +125,12 @@ SQL;
      */
     public function findArchivedArticlesContaining($search)
     {
-        $sql = <<<'EOS'
-SELECT id, date, title FROM articles
+        $sql = <<<'SQL'
+SELECT id, date, status, categories, title, teaser, length(body) AS hasBody, feedable, commentable
+    FROM articles
     WHERE (title LIKE :text OR body LIKE :text) AND status = 2
     ORDER BY date DESC, id DESC
-EOS;
+SQL;
         $connection = $this->db->getConnection();
         $statement = $connection->prepare($sql);
         $statement->bindValue(':text', '%' . $search . '%', SQLITE3_TEXT);
