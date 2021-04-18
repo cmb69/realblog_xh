@@ -68,12 +68,7 @@ class MostPopularController
         $data = [
             'articles' => $this->finder->findMostPopularArticles((int) $this->config['links_visible']),
             'heading' => $this->config['heading_level'],
-            'url' =>
-            /**
-             * @param stdClass $article
-             * @return string
-             */
-            function ($article) use ($pageUrl) {
+            'url' => /** @return string */ function (stdClass $article) use ($pageUrl) {
                 return Plugin::url($pageUrl, array('realblog_id' => $article->id));
             },
         ];

@@ -104,12 +104,7 @@ class BlogController extends MainController
             ),
             'hasTopPagination' => (bool) $this->config['pagination_top'],
             'hasBottomPagination' => (bool) $this->config['pagination_bottom'],
-            'url' =>
-            /**
-             * @param stdClass $article
-             * @return string
-             */
-            function ($article) use ($search) {
+            'url' => /** @return string */ function (stdClass $article) use ($search) {
                 global $su;
 
                 return Plugin::url(
@@ -121,65 +116,30 @@ class BlogController extends MainController
                     )
                 );
             },
-            'categories' =>
-            /**
-             * @param stdClass $article
-             * @return string
-             */
-            function ($article) {
+            'categories' => /** @return string */ function (stdClass $article) {
                 $categories = explode(',', trim($article->categories, ','));
                 return implode(', ', $categories);
             },
-            'hasLinkedHeader' =>
-            /**
-             * @param stdClass $article
-             * @return bool
-             */
-            function ($article) {
+            'hasLinkedHeader' => /** @return bool */ function (stdClass $article) {
                 /** @psalm-suppress UndefinedConstant */
                 return $article->body_length || XH_ADM;
             },
-            'date' =>
-            /**
-             * @param stdClass $article
-             * @return string
-             */
-            function ($article) {
+            'date' => /** @return string */ function (stdClass $article) {
                 return (string) date($this->text['date_format'], $article->date);
             },
-            'teaser' =>
-            /**
-             * @param stdClass $article
-             * @return HtmlString
-             */
-            function ($article) {
+            'teaser' => /** @return HtmlString */ function (stdClass $article) {
                 return new HtmlString(evaluate_scripting($article->teaser));
             },
-            'hasReadMore' =>
-            /**
-             * @param stdClass $article
-             * @return bool
-             */
-            function ($article) {
+            'hasReadMore' => /** @return bool */ function (stdClass $article) {
                 return $this->config['show_read_more_link']
                     && $article->body_length;
             },
-            'isCommentable' =>
-            /**
-             * @param stdClass $article
-             * @return bool
-             */
-            function ($article) {
+            'isCommentable' => /** @return bool */ function (stdClass $article) {
                 return $this->config['comments_plugin']
                     && class_exists(ucfirst($this->config['comments_plugin']) . '\\RealblogBridge')
                     && $article->commentable;
             },
-            'commentCount' =>
-            /**
-             * @param stdClass $article
-             * @return int
-             */
-            function ($article) {
+            'commentCount' => /** @return int */ function (stdClass $article) {
                 $bridge = ucfirst($this->config['comments_plugin']) . '\\RealblogBridge';
                 $commentsId = "realblog{$article->id}";
                 return call_user_func(array($bridge, 'count'), $commentsId);

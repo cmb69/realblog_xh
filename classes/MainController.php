@@ -175,18 +175,13 @@ abstract class MainController
             $story = ($article->body != '') ? $article->body : $article->teaser;
         }
         $data['story'] = new HtmlString(evaluate_scripting($story));
-        $data['renderComments'] =
-            /**
-             * @param stdClass $article
-             * @return HtmlString|null
-             */
-            function ($article) {
-                if ($article->commentable) {
-                    $commentId = "realblog{$article->id}";
-                    $bridge = ucfirst($this->config['comments_plugin']) . '\\RealblogBridge';
-                    return new HtmlString(call_user_func(array($bridge, 'handle'), $commentId));
-                }
-            };
+        $data['renderComments'] = /** @return HtmlString|null */ function (stdClass $article) {
+            if ($article->commentable) {
+                $commentId = "realblog{$article->id}";
+                $bridge = ucfirst($this->config['comments_plugin']) . '\\RealblogBridge';
+                return new HtmlString(call_user_func(array($bridge, 'handle'), $commentId));
+            }
+        };
         return $this->view->render('article', $data);
     }
 

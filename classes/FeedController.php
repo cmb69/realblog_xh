@@ -63,12 +63,7 @@ class FeedController
                 . $this->config['rss_logo']
             ),
             'articles' => $this->finder->findFeedableArticles($count),
-            'articleUrl' =>
-            /**
-             * @param stdClass $article
-             * @return string
-             */
-            function ($article) use ($sn) {
+            'articleUrl' => /** @return string */ function (stdClass $article) use ($sn) {
                 return CMSIMPLE_URL . substr(
                     Plugin::url(
                         $this->text["rss_page"],
@@ -77,20 +72,10 @@ class FeedController
                     strlen($sn)
                 );
             },
-            'evaluatedTeaser' =>
-            /**
-             * @param stdClass $article
-             * @return string
-             */
-            function ($article) {
+            'evaluatedTeaser' => /** @return string */ function (stdClass $article) {
                 return evaluate_scripting($article->teaser);
             },
-            'rssDate' =>
-            /**
-             * @param stdClass $article
-             * @return string
-             */
-            function ($article) {
+            'rssDate' => /** @return string */ function (stdClass $article) {
                 return (string) date('r', $article->date);
             },
         ];

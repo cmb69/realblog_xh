@@ -122,23 +122,13 @@ class MainAdminController
             'lastPage' => $pageCount,
             'articles' => $articles,
             'actionUrl' => $this->urlPath,
-            'deleteUrl' =>
-            /**
-             * @param stdClass $article
-             * @return string
-             */
-            function ($article) use ($page) {
+            'deleteUrl' => /** @return string */ function (stdClass $article) use ($page) {
                 global $sn;
 
                 return "$sn?&realblog&admin=plugin_main&action=delete"
                     . "&realblog_id={$article->id}&realblog_page=$page";
             },
-            'editUrl' =>
-            /**
-             * @param stdClass $article
-             * @return string
-             */
-            function ($article) use ($page) {
+            'editUrl' => /** @return string */ function (stdClass $article) use ($page) {
                 global $sn;
 
                 return "$sn?&realblog&admin=plugin_main&action=edit"
@@ -153,12 +143,7 @@ class MainAdminController
             function ($num) {
                 return Plugin::getFilter($num);
             },
-            'formatDate' =>
-            /**
-             * @param stdClass $article
-             * @return string
-             */
-            function ($article) {
+            'formatDate' => /** @return string */ function (stdClass $article) {
                 return (string) date($this->text['date_format'], $article->date);
             },
         ];

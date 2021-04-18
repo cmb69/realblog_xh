@@ -75,29 +75,14 @@ class LinkController
         $data = [
             'articles' => $this->finder->findArticles(1, (int) $this->config['links_visible']),
             'heading' => $this->config['heading_level'],
-            'formatDate' =>
-            /**
-             * @param stdClass $article
-             * @return string
-             */
-            function ($article) {
+            'formatDate' => /** @return string */ function (stdClass $article) {
                 return date($this->text['date_format'], $article->date);
             },
-            'url' =>
-            /**
-             * @param stdClass $article
-             * @return string
-             */
-            function ($article) use ($pageUrl) {
+            'url' => /** @return string */ function (stdClass $article) use ($pageUrl) {
                 return Plugin::url($pageUrl, array('realblog_id' => $article->id));
             },
             'showTeaser' => $this->showTeaser,
-            'teaser' =>
-            /**
-             * @param stdClass $article
-             * @return HtmlString
-             */
-            function ($article) {
+            'teaser' => /** @return HtmlString */ function (stdClass $article) {
                 return new HtmlString(evaluate_scripting($article->teaser));
             },
         ];
