@@ -82,11 +82,12 @@ SQL;
      */
     public function findArchivedArticlesInPeriod($start, $end)
     {
-        $sql = <<<'EOS'
-SELECT id, date, title FROM articles
+        $sql = <<<'SQL'
+SELECT id, date, status, categories, title, teaser, length(body) AS hasBody, feedable, commentable
+    FROM articles
     WHERE status = :status AND date >= :start AND date < :end
     ORDER BY date DESC, id DESC
-EOS;
+SQL;
         $connection = $this->db->getConnection();
         $statement = $connection->prepare($sql);
         $statement->bindValue(':status', 2, SQLITE3_INTEGER);
