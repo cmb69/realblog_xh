@@ -80,7 +80,7 @@ class View
         } else {
             $key .= XH_numberSuffix($count);
         }
-        return sprintf($plugin_tx['realblog'][$key], ...$args);
+        return sprintf($plugin_tx['realblog'][$key], $count, ...$args);
     }
 
     /**
