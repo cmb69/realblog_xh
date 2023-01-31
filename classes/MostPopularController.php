@@ -29,6 +29,9 @@ class MostPopularController
     /** @var string */
     private $pageUrl;
 
+    /** @var list<string> */
+    private $urls;
+
     /** @var Finder */
     private $finder;
 
@@ -38,11 +41,13 @@ class MostPopularController
     /**
      * @param array<string,string> $config
      * @param string $pageUrl
+     * @param list<string> $urls
      */
-    public function __construct(array $config, $pageUrl, Finder $finder, View $view)
+    public function __construct(array $config, $pageUrl, $urls, Finder $finder, View $view)
     {
         $this->config = $config;
         $this->pageUrl = $pageUrl;
+        $this->urls = $urls;
         $this->finder = $finder;
         $this->view = $view;
     }
@@ -52,9 +57,7 @@ class MostPopularController
      */
     public function defaultAction()
     {
-        global $u;
-
-        if (!in_array($this->pageUrl, $u) || $this->config['links_visible'] <= 0) {
+        if (!in_array($this->pageUrl, $this->urls) || $this->config['links_visible'] <= 0) {
             return "";
         }
         $pageUrl = $this->pageUrl;

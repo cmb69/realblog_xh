@@ -287,11 +287,12 @@ class Plugin
      */
     public static function mostPopularCommand($pageUrl)
     {
-        global $pth, $plugin_cf, $plugin_tx;
+        global $pth, $plugin_cf, $plugin_tx, $u;
 
         $controller = new MostPopularController(
             $plugin_cf['realblog'],
             $pageUrl,
+            $u,
             new Finder(self::getDb()),
             new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog'])
         );
