@@ -70,15 +70,16 @@
         </move>
         <move todir="dist">
             <fileset dir="export">
+                <exclude name=".github/**"/>
                 <exclude name="tests/**"/>
+                <exclude name="help/template.htm"/>
+                <exclude name="README*.md"/>
                 <exclude name="build.xml"/>
                 <exclude name="composer.*"/>
                 <exclude name="coverage.xml"/>
-                <exclude name="pax_global_header"/>
+                <exclude name="phpunit.xml"/>
                 <exclude name="phpstan.*"/>
-                <exclude name="README*.md"/>
-                <exclude name="stubs.php"/>
-                <exclude name="TODO"/>
+                <exclude name="teplad.xml"/>
             </fileset>
         </move>
         <delete dir="export"/>
