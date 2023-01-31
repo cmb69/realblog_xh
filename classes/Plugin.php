@@ -158,7 +158,9 @@ class Plugin
                 break;
             case 'data_exchange':
                 $controller = new DataExchangeController(
+                    "{$pth['folder']['content']}realblog/",
                     $plugin_tx['realblog'],
+                    $sn,
                     self::getDb(),
                     new Finder(self::getDb()),
                     $_XH_csrfProtection,

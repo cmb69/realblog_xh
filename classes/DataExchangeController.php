@@ -25,8 +25,14 @@ use XH\CSRFProtection as CsrfProtector;
 
 class DataExchangeController
 {
+    /** @var string */
+    private $contentFolder;
+
     /** @var array<string,string> */
     private $text;
+
+    /** @var string */
+    private $scriptName;
 
     /** @var DB */
     private $db;
@@ -41,11 +47,22 @@ class DataExchangeController
     private $view;
 
     /**
+     * @param string $contentFolder
      * @param array<string,string> $text
+     * @param string $scriptName
      */
-    public function __construct(array $text, DB $db, Finder $finder, CsrfProtector $csrfProtector, View $view)
-    {
+    public function __construct(
+        $contentFolder,
+        array $text,
+        $scriptName,
+        DB $db,
+        Finder $finder,
+        CsrfProtector $csrfProtector,
+        View $view
+    ) {
+        $this->contentFolder = $contentFolder;
         $this->text = $text;
+        $this->scriptName = $scriptName;
         $this->db = $db;
         $this->finder = $finder;
         $this->csrfProtector = $csrfProtector;
@@ -57,11 +74,9 @@ class DataExchangeController
      */
     public function defaultAction()
     {
-        global $sn;
-
         $data = [
             'csrfToken' => $this->getCsrfToken(),
-            'url' => "$sn?realblog",
+            'url' => "{$this->scriptName}?realblog",
             'articleCount' => $this->finder->countArticlesWithStatus(array(0, 1, 2)),
             'confirmImport' => json_encode($this->text['exchange_confirm_import']),
         ];
@@ -106,9 +121,7 @@ class DataExchangeController
      */
     private function getCsvFilename()
     {
-        global $pth;
-
-        return "{$pth['folder']['content']}realblog/realblog.csv";
+        return "{$this->contentFolder}realblog.csv";
     }
 
     /**
