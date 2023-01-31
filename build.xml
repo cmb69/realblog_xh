@@ -30,7 +30,7 @@
     </target>
 
     <target name="compat" description="checks PHP requirements">
-        <exec command="phpcompatinfo analyser:run --alias current" logoutput="true"/>
+        <exec command="phpcompatinfo analyser:run classes" logoutput="true"/>
     </target>
 
     <target name="attack-tests" description="runs all attack tests">
@@ -67,7 +67,6 @@
                 <exclude name="composer.*"/>
                 <exclude name="coverage.xml"/>
                 <exclude name="pax_global_header"/>
-                <exclude name="phpcompatinfo.*"/>
                 <exclude name="psalm.xml"/>
                 <exclude name="README.md"/>
                 <exclude name="stubs.php"/>
