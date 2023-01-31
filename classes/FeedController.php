@@ -74,7 +74,6 @@ class FeedController
      */
     public function defaultAction()
     {
-        header('Content-Type: application/rss+xml; charset=UTF-8');
         $count = (int) $this->config['rss_entries'];
         $data = [
             'url' => CMSIMPLE_URL . '?' . $this->text['rss_page'],
@@ -103,7 +102,7 @@ class FeedController
                 return (string) date('r', $article->date);
             },
         ];
-        $view = new View("$this->pluginFolder}views/", $this->text);
+        $view = new View("{$this->pluginFolder}views/", $this->text);
         return '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . $view->render('feed', $data);
     }
 }

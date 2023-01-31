@@ -62,6 +62,7 @@ class Plugin
                     new Finder(self::getDb()),
                     new ScriptEvaluator()
                 );
+                header('Content-Type: application/rss+xml; charset=UTF-8');
                 echo $controller->defaultAction();
                 exit;
             }
