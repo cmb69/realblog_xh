@@ -91,7 +91,7 @@ class DataExchangeController
         if ($this->db->exportToCsv($this->getCsvFilename())) {
             return $this->redirectToDefaultResponse();
         } else {
-            $output = "<h1>Realblog &ndash; {$this->text['exchange_heading']}</h1>"
+            $output = "<h1>Realblog &ndash; {$this->text['exchange_heading']}</h1>\n"
                 . XH_message('fail', $this->text['exchange_export_failure'], $this->getCsvFilename());
             return Response::create($output);
         }
@@ -103,7 +103,7 @@ class DataExchangeController
         if ($this->db->importFromCsv($this->getCsvFilename())) {
             return $this->redirectToDefaultResponse();
         } else {
-            $output = "<h1>Realblog &ndash; {$this->text['exchange_heading']}</h1>"
+            $output = "<h1>Realblog &ndash; {$this->text['exchange_heading']}</h1>\n"
                 . XH_message('fail', $this->text['exchange_import_failure'], $this->getCsvFilename());
             return Response::create($output);
         }
