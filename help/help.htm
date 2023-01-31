@@ -1,239 +1,133 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<meta http-equiv="content-type" content="text/html;charset=utf-8">
-<title>Realblog_XH - Manual</title>
-<link rel="stylesheet" type="text/css" href="./stylesheet.css">
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Realblog_XH – User Manual</title>
+  <style type="text/css">
+    body {
+        font-family: Georgia, serif;
+        line-height: 1.5;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 0.5em;
+        padding-right: 0.5em;
+        background: #ffffe1;
+        max-width: 32em;
+    }
+    p {
+        text-align: justify;
+    }
+    pre {
+        color: black;
+        background: #ffe;
+        overflow: auto;
+        padding: 0.2em 0.5em;
+        border: 1px solid silver;
+    }
+  </style>
 </head>
-
 <body>
-
-<h1>Realblog_XH – a CMSimple_XH Plugin</h1>
-<img src="../realblog.png" style="float:left; margin-right:16px" alt="Ring file
-with pencil">
-<p>Realblog_XH facilitates presenting a blog on your CMSimple_XH website. It
-offers the basic blogging features, such as an displaying a chronological
-overview of the posts, an optional yearly archive, automatic scheduled
-publishing and archiving of posts, searching contents, an RSS feed and very
-simplistic categorization. Separately written teasers are supported. Teasers and
-articles may contain arbitrary CMSimple_XH scripting. Each blog post can be made
-commentable individually, what requires a compatible comments plugin.</p>
-<p>For multilingual websites, each language will have its own blog; besides
-that, Realblog_XH doesn't have any multilingual capabilities.</p>
-
-<ul id="nav">
-<li><a href="#notice">Important Notice</a></li>
+<h1 id="realblog_xh">Realblog_XH</h1>
+<p>Realblog_XH facilitates presenting a blog on your CMSimple_XH Website. It offers the basic blogging features, such as an displaying a chronological overview of the posts, an optional yearly archive, automatic scheduled publishing and archiving of posts, searching contents, an RSS feed and very simplistic categorization. Separately written teasers are supported. Teasers and articles may contain arbitrary CMSimple_XH scripting. Each blog post can be made commentable individually, what requires a compatible comments plugin.</p>
+<p>For multilingual websites, each language will have its own blog; besides that, Realblog_XH doesn’t have any multilingual capabilities.</p>
+<ul>
 <li><a href="#requirements">Requirements</a></li>
+<li><a href="#download">Download</a></li>
 <li><a href="#installation">Installation</a></li>
 <li><a href="#settings">Settings</a></li>
 <li><a href="#usage">Usage</a>
 <ul>
-<li><a href="#usage-administration">Administration</a></li>
-<li><a href="#usage-categories">Categories</a></li>
-<li><a href="#usage-archive">Archive</a></li>
-<li><a href="#usage-rss">RSS feed</a></li>
-<li><a href="#usage-comments">Comments</a></li>
-</ul>
-</li>
-<li><a href="#bc">Backward compatibility</a></li>
+<li><a href="#administration">Adminstration</a></li>
+<li><a href="#categories">Categories</a></li>
+<li><a href="#archive">Archive</a></li>
+<li><a href="#rss-feed">RSS Feed</a></li>
+<li><a href="#comments">Comments</a></li>
+</ul></li>
+<li><a href="#backward-compatibility">Backward Compatibility</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
 <li><a href="#license">License</a></li>
 <li><a href="#credits">Credits</a></li>
 </ul>
-
-<div id="body">
-
-<p><strong>Please do read this documentation <em>before</em> you encounter any
-problems!</strong></p>
-
-<h2 id="notice">Important Notice</h2>
-<p><strong>Realblog_XH couldn't be tested so far in various environments. It is
-a so called beta version. Use with caution!</strong></p>
-<div class="toplink"><a href="#">back to top</a></div>
-
 <h2 id="requirements">Requirements</h2>
-<p>Realblog_XH is a plugin for CMSimple_XH. It requires CMSimple_XH &ge; 1.7.0 and
-PHP &ge; 5.6.0 with the sqlite3 extension.</p>
-<div class="toplink"><a href="#">back to top</a></div>
-
+<p>Realblog_XH is a plugin for CMSimple_XH. It requires CMSimple_XH ≥ 1.7.0 and PHP ≥ 5.6.0 with the sqlite3 extension.</p>
+<h2 id="download">Download</h2>
+<p>The <a href="https://github.com/cmb69/realblog_xh/releases/latest">lastest release</a> is available for download on Github.</p>
 <h2 id="installation">Installation</h2>
-<p>The installation is done as with many other CMSimple_XH plugins.
-See the <a href="http://www.cmsimple-xh.org/wiki/doku.php/installation">
-CMSimple_XH wiki</a> for further details.</p>
-<ol>
-<li>Backup the data on your server.</li>
+<p>The installation is done as with many other CMSimple_XH plugins. See the <a href="https://wiki.cmsimple-xh.org/?for-users/working-with-the-cms/plugins">CMSimple_XH Wiki</a> for further details.</p>
+<ol type="1">
+<li><strong>Backup the data on your server.</strong></li>
 <li>Unzip the distribution on your computer.</li>
-<li>Upload the whole directory realblog/ to your server into CMSimple_XH's
-plugins/ directory.</li>
-<li>Set write permissions for the subdirectories css/, config/ and
-languages/.</li>
-<li>Browse to Realblog_XH's administration (Plugins &rarr; Realblog),
-and check if all requirements are fulfilled.</li>
+<li>Upload the whole directory <code>realblog/</code> to your server into the <code>plugins/</code> directory of CMSimple_XH.</li>
+<li>Set write permissions for the subdirectories <code>css/</code>, <code>config/</code> and <code>languages/</code>.</li>
+<li>Navigate <code>Plugins</code> → <code>Realblog</code> in the back-end to check if all requirements are fulfilled.</li>
 </ol>
-<div class="toplink"><a href="#">back to top</a></div>
-
 <h2 id="settings">Settings</h2>
-<p>The plugin's configuration is done as with many other CMSimple_XH plugins in
-the website's back-end. Select "Realblog" from "Plugins".</p>
-<p>You can change the default settings of Realblog_XH under "Config". Hints for
-the options will be displayed when hovering over the help icon with your
-mouse.</p>
-<p>Localization is done under "Language". You can translate the character
-strings to your own language (if there is no appropriate language file
-available), or customize them according to your needs.</p>
-<p>The look of Realblog_XH can be customized under "Stylesheet".
-You can also replace the icons used in the plugin administration; there are
-alternative icon sets available in the images/ folder.</p>
-<div class="toplink"><a href="#">back to top</a></div>
-
+<p>The configuration of the plugin is done as with many other CMSimple_XH plugins in the back-end of the Website. Navigate to <code>Plugins</code> → <code>Realblog</code>.</p>
+<p>You can change the default settings of Realblog_XH under <code>Config</code>. Hints for the options will be displayed when hovering over the help icon with your mouse.</p>
+<p>Localization is done under <code>Language</code>. You can translate the character strings to your own language (if there is no appropriate language file available), or customize them according to your needs.</p>
+<p>The look of Realblog_XH can be customized under <code>Stylesheet</code>. You can also replace the icons used in the plugin administration; there are alternative icon sets available in the <code>images/</code> folder.</p>
 <h2 id="usage">Usage</h2>
 <p>To display the blog on a CMSimple_XH page, write:</p>
-<pre>{{{Realblog_blog();}}}</pre>
+<pre><code>{{{Realblog_blog()}}}</code></pre>
 <p>To also display the search form, write:</p>
-<pre>{{{Realblog_blog(true);}}}</pre>
-<p>To display the list of the most recent articles on each page, insert in an
-appropritate place in the template:</p>
-<pre>&lt;?php echo Realblog_link('BLOG_URL')?&gt;</pre>
-<p>BLOG_URL has to be replaced by the URL of the main blog page. For details
-see the description of the <a href="#usage-rss">RSS page setting</a>.</p>
+<pre><code>{{{Realblog_blog(true)}}}</code></pre>
+<p>To display the list of the most recent articles on each page, insert in an appropritate place in the template:</p>
+<pre><code>&lt;?=Realblog_link(&#39;%BLOG_URL%&#39;)?&gt;</code></pre>
+<p><code>%BLOG_URL%</code> has to be replaced by the URL of the main blog page. For details see the description of the <a href="#rss-feed">RSS page setting</a>.</p>
 <p>To also display the teasers of these articles, write:</p>
-<pre>&lt;?php echo Realblog_link('BLOG_URL', true)?&gt;</pre>
-<p>
-    To display the list of the most popular articles on each page, insert in an
-    appropriate place in the template:
-</p>
-<pre>&lt;?php echo Realblog_mostPopular('BLOG_URL')?&gt;</pre>
-<p>
-    Regarding BLOG_URL, see the note above.
-</p>
-<div class="toplink"><a href="#">back to top</a></div>
-
-<h3 id="usage-administration">Administration</h3>
-<p>In the main plugin adminstration you can manage the blog posts. You can
-create, edit and delete posts, change their status, etc. The administration is
-meant to be pretty much self explaining.</p>
-<p>
-    In the "Data Exchange" section you can export the articles to a CSV file,
-    and also import articles from a CSV file. The CSV file is supposed to be
-    placed right beside the respective database file and is named
-    "realblog.csv". Note that the CSV file is actually tab delimited, but has
-    not the same format as the old "realblog.txt", so don't try to import old
-    data via the CSV import. Note also that importing will overwrite all
-    existing articles in the database. <em>It is strongly recommended to make a
-    backup of the database file before importing from CSV!</em>
-</p>
-<p>
-    If you want to use the export/import facility to edit the articles offline,
-    make sure that after exporting and before importing no changes to the
-    database are made online. Otherwise these changes will be overwritten when
-    the articles are re-imported. Also do not change any IDs (first column),
-    because these are used to refer to the page views. It's fine to delete rows,
-    but if you want to insert rows, do it at the end of the file with
-    consecutively increasing IDs.
-</p>
-<div class="toplink"><a href="#">back to top</a></div>
-
-<h3 id="usage-categories">Categories</h3>
-<p>Realblog_XH currently has only very basic support for categories. To define
-the categories a post belongs to, enter a <em>comma separated</em> list of
-category names in the respective field of the article form:</p>
-<pre>Category 1,Category 2</pre>
+<pre><code>&lt;?=Realblog_link(&#39;%BLOG_URL%&#39;, true)?&gt;</code></pre>
+<p>To display the list of the most popular articles on each page, insert in an appropriate place in the template:</p>
+<pre><code>&lt;?=Realblog_mostPopular(&#39;%BLOG_URL%&#39;)?&gt;</code></pre>
+<p>Regarding <code>%BLOG_URL%</code>, see the note above.</p>
+<h3 id="administration">Administration</h3>
+<p>You can manage the blog posts in the main plugin adminstration. You can create, edit and delete posts, change their status, etc. The administration is meant to be pretty much self explaining.</p>
+<p>In the <code>Data Exchange</code> section you can export the articles to a CSV file, and also import articles from a CSV file. The CSV file is supposed to be placed right beside the respective database file and is named <code>realblog.csv</code>. Note that the CSV file is actually tab delimited, but has not the same format as the old <code>realblog.txt</code>, so do not try to import old data via the CSV import. Note also that importing will overwrite all existing articles in the database. <em>It is strongly recommended to make a backup of the database file before importing from CSV!</em></p>
+<p>If you want to use the export/import facility to edit the articles offline, make sure that after exporting and before importing no changes to the database are made online. Otherwise these changes will be overwritten when the articles are re-imported. Also do not change any IDs (first column), because these are used to refer to the page views. It is fine to delete rows, but if you want to insert rows, do it at the end of the file with consecutively increasing IDs.</p>
+<h3 id="categories">Categories</h3>
+<p>Realblog_XH currently has only very basic support for categories. To define the categories a post belongs to, enter a <em>comma separated</em> list of category names in the respective field of the article form:</p>
+<pre><code>Category 1,Category 2</code></pre>
 <p>Note that you can define as many categories as you like.</p>
-<p>It is not possible for visitors to filter for categories, but you can prepare
-separate CMSimple_XH pages for each category, and display the respective posts
-on these pages by passing a second argument to Realblog_blog():</p>
-<pre>{{{Realblog_blog(false, 'Category 1');}}}</pre>
-<div class="toplink"><a href="#">back to top</a></div>
-
-<h3 id="usage-archive">Archive</h3>
+<p>It is not possible for visitors to filter for categories, but you can prepare separate CMSimple_XH pages for each category, and display the respective posts on these pages by passing a second argument to <code>Realblog_blog()</code>:</p>
+<pre><code>{{{Realblog_blog(false, &#39;Category 1&#39;)}}}</code></pre>
+<h3 id="archive">Archive</h3>
 <p>To display the blog archive on a CMSimple_XH page, write:</p>
-<pre>{{{Realblog_archive();}}}</pre>
+<pre><code>{{{Realblog_archive()}}}</code></pre>
 <p>To also display the search form, write:</p>
-<pre>{{{Realblog_archive(true);}}}</pre>
-<p>Note that the blog archive must <em>not</em> be on the same page as the
-actual blog.</p>
-<div class="toplink"><a href="#">back to top</a></div>
-
-<h3 id="usage-rss">RSS feed</h3>
-<p>If enabled in the configuration, Realblog_XH automatically offers an RSS feed
-with the published blog posts. Optionally, you can display an RSS feed icon that
-links to the feed in the template:</p>
-<pre>&lt;?php echo Realblog_feedLink();?&gt;</pre>
-<p>
-    You can also pass a single parameter to this function, which specifies the
-    value of the target attribute of the hyperlink. This can be used to open
-    the feed in a new window/tab:
-</p>
-<pre>&lt;?php echo Realblog_feedLink('_blank');?&gt;</pre>
-<p>Besides some feed related settings in the configuration, there are some
-settings in the language file in the section "RSS". Most important is "page",
-where you have to enter the URL of the page on which the main blog is shown.
-It's best to navigate to this page and copy and paste everything after the
-question mark up to, but not including, the first ampersand (&amp;), if any,
-from the browser's address bar.</p>
-<div class="toplink"><a href="#">back to top</a></div>
-
-<h3 id="usage-comments">Comments</h3>
-<p>To add a commenting facility to your blog, you have to install a compatible
-comments plugin and enter its name in Realblog_XH's configuration.</p>
-<p>Note for implementers: to be compatible with Realblog_XH you have to write a
-class named %YOURPLUGIN%\RealblogBridge which implements the interface
-Realblog\CommentsBridge, which is defined and documented in
-plugins/realblog/classes/CommentsBridge.php. Make sure this class and its
-dependencies are loaded when Realblog_XH needs it; autoloading is recommended.</p>
-<div class="toplink"><a href="#">back to top</a></div>
-
-<h2 id="bc">Backward compatibility</h2>
-<p>Realblog_XH is mostly backward compatible to Realblog 2.8, so you can reuse
-its data files (realblog.txt) and use its plugin calls. However, the old plugin
-calls are deprecated, and may be removed in the future.</p>
-<p>The RSS feed files (realblog_rss_feed.xml) are not used anymore&mdash;instead
-the feeds are built dynamically. You should delete the old files, so that news
-readers will not grab the old contents.</p>
-<div class="toplink"><a href="#">back to top</a></div>
-
+<pre><code>{{{Realblog_archive(true)}}}</code></pre>
+<p>Note that the blog archive must <em>not</em> be on the same page as the actual blog.</p>
+<h3 id="rss-feed">RSS Feed</h3>
+<p>If enabled in the configuration, Realblog_XH automatically offers an RSS feed with the published blog posts. Optionally, you can display an RSS feed icon that links to the feed in the template:</p>
+<pre><code>&lt;?=Realblog_feedLink()?&gt;</code></pre>
+<p>You can also pass a single parameter to this function, which specifies the value of the target attribute of the hyperlink. This can be used to open the feed in a new window/tab:</p>
+<pre><code>&lt;?=Realblog_feedLink(&#39;_blank&#39;)?&gt;</code></pre>
+<p>Besides some feed related settings in the configuration, there are some settings in the language file in the section <code>RSS</code>. Most important is <code>page</code>, where you have to enter the URL of the page on which the main blog is shown. It is best to navigate to this page and copy and paste everything after the question mark up to, but not including, the first ampersand (<code>&amp;</code>), if any, from the address bar of the browser.</p>
+<h3 id="comments">Comments</h3>
+<p>To add a commenting facility to your blog, you have to install a compatible comments plugin and enter its name in the configuration of Realblog_XH.</p>
+<p>Note for implementers: to be compatible with Realblog_XH you have to write a class named <code>%YOURPLUGIN%\RealblogBridge</code> which implements the interface <code>Realblog\CommentsBridge</code>, which is defined and documented in <code>plugins/realblog/classes/CommentsBridge.php</code>. Make sure this class and its dependencies are loaded when Realblog_XH needs it; autoloading is recommended.</p>
+<h2 id="backward-compatibility">Backward Compatibility</h2>
+<p>Realblog_XH is mostly backward compatible to Realblog 2.8, so you can reuse its data files (<code>realblog.txt</code>) and use its plugin calls. However, the old plugin calls are deprecated, and may be removed in the future.</p>
+<p>The RSS feed files (<code>realblog_rss_feed.xml</code>) are not used anymore; instead the feeds are built dynamically. You should delete the old files, so that news readers will not grab the old contents.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<p>Report bugs and ask for support either on <a href="https://github.com/cmb69/realblog_xh/issues">Github</a> or in the <a href="https://cmsimpleforum.com/">CMSimple_XH Forum</a>.</p>
 <h2 id="license">License</h2>
-<p>Realblog_XH is licensed under <a
-href="http://www.gnu.org/licenses/gpl.html">GPLv3</a>.</p>
-<p>&copy; 2006-2010 Jan Kanters<br>
-&copy; 2010-2014 Gert Ebersbach<br>
-&copy; 2014-2017 Christoph M. Becker</p>
-<p>Russian translation &copy; 2012 Lybomyr Kydray<br>
-Slovak translation &copy; 2014 Dr. Martin Sereday<br>
-Dutch translation &copy; 2015 Emile Bastings</p>
-<div class="toplink"><a href="#">back to top</a></div>
-
+<p>Realblog_XH is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p>
+<p>Realblog_XH is distributed in the hope that it will be useful, but without any warranty; without even the implied warranty of merchantibility or fitness for a particular purpose. See the GNU General Public License for more details.</p>
+<p>You should have received a copy of the GNU General Public License along with Realblog_XH. If not, see https://www.gnu.org/licenses/.</p>
+<p>© 2006-2010 Jan Kanters<br />
+© 2010-2014 Gert Ebersbach<br />
+© 2014-2017 Christoph M. Becker</p>
+<p>Russian translation © 2012 Lybomyr Kydray<br />
+Slovak translation © 2014 Dr. Martin Sereday<br />
+Dutch translation © 2015 Emile Bastings</p>
 <h2 id="credits">Credits</h2>
-<p>Realblog_XH is a <a
-href="http://en.wikipedia.org/wiki/Fork_(software_development)">fork</a> of
-Realblog 2.8, which is developed by <a href="http://www.ge-webdesign.de/">Gert
-Ebersbach</a>. Realblog (which was formerly called Realblog_XH) is based on
-Advancednews 1.0.5 by Jan Kanters. Many thanks to both for making these popular
-and useful plugins available under GPL.</p>
-<p>Realblog_XH uses jscalendar
-developed by <a href="http://www.dynarch.com/">Mihai Bazon</a>. Many thanks to
-the developer for publishing this component under LGPL.</p>
-<p>The plugin icon is designed by <a href="http://www.mentalrey.it/">Alessandro
-Rei</a>. Many thanks for publishing the icon under GPL.</p>
-<p>The feed icon is designed by <a
-href="http://en.wikipedia.org/wiki/User:Anomie">Anomie</a>. Many thanks for
-releasing it under GPL.</p>
-<p>This plugin uses material icons from <a
-href="https://design.google.com/icons/">Google</a> and free applications icons
-from <a href="http://www.aha-soft.com/">Aha-Soft</a>. Many thanks for making
-these icons freely available.</p>
-<p>Many thanks to the community at the <a
-href="http://www.cmsimpleforum.com/">CMSimple_XH forum</a> for tips and
-suggestions and testing. Particularly, I want to thank frase for many good
-suggestions and for pushing the development.</p>
-<p>And last but not least many thanks to <a href="http://harteg.dk/">Peter
-Harteg</a>, the "father" of CMSimple, and all developers of <a
-href="http://www.cmsimple-xh.org/"> CMSimple_XH</a> without whom this amazing
-CMS wouldn't exist.</p>
-<div class="toplink"><a href="#">back to top</a></div>
-
-</div>
-
+<p>Realblog_XH is a <a href="https://en.wikipedia.org/wiki/Fork_(software_development)">Fork</a> of Realblog 2.8, which is developed by <a href="https://www.ge-webdesign.de/">Gert Ebersbach</a>. Realblog (which was formerly called Realblog_XH) is based on Advancednews 1.0.5 by Jan Kanters. Many thanks to both for making these popular and useful plugins available under GPL.</p>
+<p>Realblog_XH uses jscalendar developed by <a href="http://www.dynarch.com/">Mihai Bazon</a>. Many thanks to the developer for publishing this component under LGPL.</p>
+<p>The plugin icon is designed by <a href="http://www.mentalrey.it/">Alessandro Rei</a>. Many thanks for publishing the icon under GPL.</p>
+<p>The feed icon is designed by <a href="https://en.wikipedia.org/wiki/User:Anomie">Anomie</a>. Many thanks for releasing it under GPL.</p>
+<p>This plugin uses material icons from <a href="https://fonts.google.com/icons?selected=Material+Icons">Google</a> and free applications icons from <a href="http://www.aha-soft.com/">Aha-Soft</a>. Many thanks for making these icons freely available.</p>
+<p>Many thanks to the community at the <a href="https://www.cmsimpleforum.com/">CMSimple_XH Forum</a> for tips, suggestions and testing. Particularly, I want to thank <em>frase</em> for many good suggestions and for pushing the development.</p>
+<p>And last but not least many thanks to <a href="http://www.harteg.dk/">Peter Harteg</a>, the “father” of CMSimple, and all developers of <a href="https://www.cmsimple-xh.org/">CMSimple_XH</a> without whom this amazing CMS would not exist.</p>
 </body>
-
 </html>
