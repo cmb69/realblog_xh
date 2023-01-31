@@ -43,19 +43,30 @@ class FeedController
     /** @var Finder */
     private $finder;
 
+    /** @var ScriptEvaluator */
+    private $scriptEvaluator;
+
     /**
      * @param string $pluginFolder
      * @param string $imageFolder
      * @param string $scriptName
      */
-    public function __construct($pluginFolder, $imageFolder, array $config, array $text, $scriptName, Finder $finder)
-    {
+    public function __construct(
+        $pluginFolder,
+        $imageFolder,
+        array $config,
+        array $text,
+        $scriptName,
+        Finder $finder,
+        ScriptEvaluator $scriptEvaluator
+    ) {
         $this->pluginFolder = $pluginFolder;
         $this->imageFolder = $imageFolder;
         $this->config = $config;
         $this->text = $text;
         $this->scriptName = $scriptName;
         $this->finder = $finder;
+        $this->scriptEvaluator = $scriptEvaluator;
     }
 
     /**
@@ -63,8 +74,6 @@ class FeedController
      */
     public function defaultAction()
     {
-        global $pth;
-
         header('Content-Type: application/rss+xml; charset=UTF-8');
         $count = (int) $this->config['rss_entries'];
         $data = [
@@ -88,7 +97,7 @@ class FeedController
                 );
             },
             'evaluatedTeaser' => /** @return string */ function (Article $article) {
-                return evaluate_scripting($article->teaser);
+                return $this->scriptEvaluator->evaluate($article->teaser);
             },
             'rssDate' => /** @return string */ function (Article $article) {
                 return (string) date('r', $article->date);

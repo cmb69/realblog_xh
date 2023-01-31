@@ -59,7 +59,8 @@ class Plugin
                     $plugin_cf['realblog'],
                     $plugin_tx['realblog'],
                     $sn,
-                    new Finder(self::getDb())
+                    new Finder(self::getDb()),
+                    new ScriptEvaluator()
                 );
                 echo $controller->defaultAction();
                 exit;
