@@ -270,15 +270,17 @@ class Plugin
      */
     public static function linkCommand($pageUrl, $showTeaser = false)
     {
-        global $pth, $plugin_cf, $plugin_tx;
+        global $pth, $plugin_cf, $plugin_tx, $u;
 
         $controller = new LinkController(
             $plugin_cf['realblog'],
             $plugin_tx['realblog'],
             $pageUrl,
+            $u,
             $showTeaser,
             new Finder(self::getDb()),
-            new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog'])
+            new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog']),
+            new ScriptEvaluator()
         );
         return $controller->defaultAction();
     }

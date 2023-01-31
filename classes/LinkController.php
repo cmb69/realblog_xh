@@ -34,6 +34,9 @@ class LinkController
     /** @var string */
     private $pageUrl;
 
+    /** @var list<string> */
+    private $urls;
+
     /** @var bool */
     private $showTeaser;
 
@@ -43,20 +46,34 @@ class LinkController
     /** @var View */
     private $view;
 
+    /** @var ScriptEvaluator */
+    private $scriptEvaluator;
+
     /**
      * @param array<string,string> $config
      * @param array<string,string> $text
      * @param string $pageUrl
+     * @param list<string> $urls
      * @param bool $showTeaser
      */
-    public function __construct(array $config, array $text, $pageUrl, $showTeaser, Finder $finder, View $view)
-    {
+    public function __construct(
+        array $config,
+        array $text,
+        $pageUrl,
+        $urls,
+        $showTeaser,
+        Finder $finder,
+        View $view,
+        ScriptEvaluator $scriptEvaluator
+    ) {
         $this->config = $config;
         $this->text = $text;
         $this->pageUrl = $pageUrl;
+        $this->urls = $urls;
         $this->showTeaser = $showTeaser;
         $this->finder = $finder;
         $this->view = $view;
+        $this->scriptEvaluator = $scriptEvaluator;
     }
 
     /**
@@ -64,9 +81,7 @@ class LinkController
      */
     public function defaultAction()
     {
-        global $u;
-
-        if (!in_array($this->pageUrl, $u) || $this->config['links_visible'] <= 0) {
+        if (!in_array($this->pageUrl, $this->urls) || $this->config['links_visible'] <= 0) {
             return "";
         }
         $pageUrl = $this->pageUrl;
@@ -81,7 +96,7 @@ class LinkController
             },
             'showTeaser' => $this->showTeaser,
             'teaser' => /** @return HtmlString */ function (Article $article) {
-                return new HtmlString(evaluate_scripting($article->teaser));
+                return new HtmlString($this->scriptEvaluator->evaluate($article->teaser));
             },
         ];
         return $this->view->render('latest', $data);
