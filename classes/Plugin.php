@@ -124,7 +124,7 @@ class Plugin
      */
     private static function handleAdministration()
     {
-        global $pth, $sn, $admin, $action, $o, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
+        global $pth, $sn, $sl, $admin, $action, $o, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
 
         assert($_XH_csrfProtection instanceof CsrfProtector);
         $o .= print_plugin_admin('on');
@@ -143,17 +143,20 @@ class Plugin
                 break;
             case 'plugin_main':
                 $controller = new MainAdminController(
+                    "{$pth['folder']['plugins']}realblog/",
                     $plugin_cf['realblog'],
                     $plugin_tx['realblog'],
+                    $sn,
+                    $sl,
                     self::getDb(),
                     new Finder(self::getDb()),
                     $_XH_csrfProtection,
                     new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog'])
                 );
                 if (method_exists($controller, $methodName)) {
-                    $o .= $controller->{$methodName}();
+                    $o .= $controller->{$methodName}()->trigger();
                 } else {
-                    $o .= $controller->defaultAction();
+                    $o .= $controller->defaultAction()->trigger();
                 }
                 break;
             case 'data_exchange':

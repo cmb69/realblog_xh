@@ -29,11 +29,20 @@ use XH\CSRFProtection as CsrfProtector;
 
 class MainAdminController
 {
+    /** @var string */
+    private $pluginFolder;
+
     /** @var array<string,string> */
     private $config;
 
     /** @var array<string,string> */
     private $text;
+
+    /** @var string */
+    private $scriptName;
+
+    /** @var string */
+    private $selectedLanguage;
 
     /** @var DB */
     private $db;
@@ -47,40 +56,40 @@ class MainAdminController
     /** @var View */
     private $view;
 
-    /** @var string */
-    private $urlPath;
-
     /** @var int */
     private $page;
 
     /**
+     * @param string $pluginFolder
      * @param array<string,string> $config
      * @param array<string,string> $text
+     * @param string $scriptName
+     * @param string $selectedLanguage
      */
     public function __construct(
+        $pluginFolder,
         array $config,
         array $text,
+        $scriptName,
+        $selectedLanguage,
         DB $db,
         Finder $finder,
         CsrfProtector $csrfProtector,
         View $view
     ) {
-        global $sn;
-
+        $this->pluginFolder = $pluginFolder;
         $this->config = $config;
         $this->text = $text;
+        $this->scriptName = $scriptName;
+        $this->selectedLanguage = $selectedLanguage;
         $this->db = $db;
         $this->finder = $finder;
         $this->csrfProtector = $csrfProtector;
         $this->view = $view;
-        $this->urlPath = $sn;
         $this->page = Plugin::getPage();
     }
 
-    /**
-     * @return string
-     */
-    public function defaultAction()
+    public function defaultAction(): Response
     {
         $statuses = $this->getFilterStatuses();
         $total = $this->finder->countArticlesWithStatus($statuses);
@@ -89,7 +98,7 @@ class MainAdminController
         $page = max(min($this->page, $pageCount), 1);
         $offset = ($page - 1) * $limit;
         $articles = $this->finder->findArticlesWithStatus($statuses, $limit, $offset);
-        return $this->renderArticles($articles, $pageCount);
+        return Response::create($this->renderArticles($articles, $pageCount));
     }
 
     /**
@@ -113,26 +122,20 @@ class MainAdminController
      */
     private function renderArticles(array $articles, $pageCount)
     {
-        global $pth;
-
         $data = [
-            'imageFolder' => "{$pth['folder']['plugins']}realblog/images/",
+            'imageFolder' => "{$this->pluginFolder}images/",
             'page' => $page = min(max($this->page, 0), $pageCount),
             'prevPage' => max($page - 1, 1),
             'nextPage' => min($page + 1, $pageCount),
             'lastPage' => $pageCount,
             'articles' => $articles,
-            'actionUrl' => $this->urlPath,
+            'actionUrl' => $this->scriptName,
             'deleteUrl' => /** @return string */ function (Article $article) use ($page) {
-                global $sn;
-
-                return "$sn?&realblog&admin=plugin_main&action=delete"
+                return "{$this->scriptName}?&realblog&admin=plugin_main&action=delete"
                     . "&realblog_id={$article->id}&realblog_page=$page";
             },
             'editUrl' => /** @return string */ function (Article $article) use ($page) {
-                global $sn;
-
-                return "$sn?&realblog&admin=plugin_main&action=edit"
+                return "{$this->scriptName}?&realblog&admin=plugin_main&action=edit"
                     . "&realblog_id={$article->id}&realblog_page=$page";
             },
             'states' => array('readyforpublishing', 'published', 'archived'),
@@ -151,37 +154,27 @@ class MainAdminController
         return $this->view->render('articles-form', $data);
     }
 
-    /**
-     * @return string
-     */
-    public function createAction()
+    public function createAction(): Response
     {
-        return $this->renderArticle('create');
+        return Response::create(...$this->renderArticle('create'));
     }
 
-    /**
-     * @return string
-     */
-    public function editAction()
+    public function editAction(): Response
     {
-        return $this->renderArticle('edit');
+        return Response::create(...$this->renderArticle('edit'));
     }
 
-    /**
-     * @return string
-     */
-    public function deleteAction()
+    public function deleteAction(): Response
     {
-        return $this->renderArticle('delete');
+        return Response::create(...$this->renderArticle('delete'));
     }
 
     /**
      * @param string $action
-     * @return string
+     * @return array<string>
      */
-    private function renderArticle($action)
+    private function renderArticle($action): array
     {
-
         init_editor(array('realblog_headline_field', 'realblog_story_field'));
         if ($action === 'create') {
             $article = new FullArticle(0, 0, time(), 2147483647, 2147483647, 0, '', '', '', '', false, false);
@@ -194,7 +187,7 @@ class MainAdminController
             );
             $article = $this->finder->findById($id);
             if (!$article) {
-                return XH_message('fail', $this->text['message_not_found']);
+                return [XH_message('fail', $this->text['message_not_found'])];
             }
         }
         return $this->renderForm($article, $action);
@@ -202,12 +195,10 @@ class MainAdminController
 
     /**
      * @param string $action
-     * @return string
+     * @return array{string,string}
      */
-    private function renderForm(FullArticle $article, $action)
+    private function renderForm(FullArticle $article, $action): array
     {
-        global $pth, $sn, $title, $bjs;
-
         switch ($action) {
             case 'create':
                 $title = $this->text['tooltip_create'];
@@ -221,18 +212,18 @@ class MainAdminController
             default:
                 throw new RuntimeException("Unsupported action");
         }
-        $this->useCalendar();
-        $bjs .= '<script>REALBLOG.categories = '
+        $hjs = $this->useCalendar();
+        $bjs = '<script>REALBLOG.categories = '
             . json_encode($this->finder->findAllCategories()) . ';</script>'
-            . '<script src="' . $pth['folder']['plugins']
-            . 'realblog/realblog.js"></script>';
+            . '<script src="' . $this->pluginFolder
+            . 'realblog.js"></script>';
         $data = [
             'article' => $article,
             'title' => $title,
-            'actionUrl' => "$sn?&realblog&admin=plugin_main",
+            'actionUrl' => "{$this->scriptName}?&realblog&admin=plugin_main",
             'action' => "do_{$action}",
             'csrfToken' => $this->getCsrfToken(),
-            'calendarIcon' => "{$pth['folder']['plugins']}realblog/images/calendar.png",
+            'calendarIcon' => "{$this->pluginFolder}images/calendar.png",
             'formatDate' =>
             /**
              * @param int $time
@@ -247,25 +238,23 @@ class MainAdminController
             'categories' => trim($article->categories, ','),
             'button' => "btn_{$action}",
         ];
-        return $this->view->render('article-form', $data);
+        return [$this->view->render('article-form', $data), $title, $hjs, $bjs];
     }
 
     /**
-     * @return void
+     * @return string
      */
     private function useCalendar()
     {
-        global $pth, $sl, $hjs;
-
-        $calendarFolder = $pth['folder']['plugins'] . 'realblog/jscalendar/';
+        $calendarFolder = $this->pluginFolder . 'jscalendar/';
         $stylesheet = $calendarFolder . 'calendar-system.css';
         $mainScript = $calendarFolder . 'calendar.js';
-        $languageScript = $calendarFolder . 'lang/calendar-' . $sl . '.js';
+        $languageScript = $calendarFolder . 'lang/calendar-' . $this->selectedLanguage . '.js';
         if (!file_exists($languageScript)) {
             $languageScript = $calendarFolder . 'lang/calendar-en.js';
         }
         $setupScript = $calendarFolder . 'calendar-setup.js';
-        $hjs .= <<<EOT
+        return <<<EOT
 <script>/* <![CDATA[ */
 var REALBLOG = REALBLOG || {};
 (function () {
@@ -285,61 +274,49 @@ var REALBLOG = REALBLOG || {};
 EOT;
     }
 
-    /**
-     * @return string
-     */
-    public function doCreateAction()
+    public function doCreateAction(): Response
     {
-        global $title;
-
         $this->csrfProtector->check();
         $article = $this->getArticleFromParameters();
         $res = $this->db->insertArticle($article);
         if ($res === 1) {
-            $this->redirectToOverview();
+            return $this->redirectToOverviewResponse();
         } else {
             $info = XH_message('fail', $this->text['story_added_error']);
         }
         $title = $this->text['tooltip_create'];
-        return $this->renderInfo($title, $info);
+        $output = $this->renderInfo($title, $info);
+        return Response::create($output, $title);
     }
 
-    /**
-     * @return string
-     */
-    public function doEditAction()
+    public function doEditAction(): Response
     {
-        global $title;
-
         $this->csrfProtector->check();
         $article = $this->getArticleFromParameters();
         $res = $this->db->updateArticle($article);
         if ($res === 1) {
-            $this->redirectToOverview();
+            return $this->redirectToOverviewResponse();
         } else {
             $info = XH_message('fail', $this->text['story_modified_error']);
         }
         $title = $this->text['tooltip_edit'];
-        return $this->renderInfo($title, $info);
+        $output = $this->renderInfo($title, $info);
+        return Response::create($output, $title);
     }
 
-    /**
-     * @return string
-     */
-    public function doDeleteAction()
+    public function doDeleteAction(): Response
     {
-        global $title;
-
         $this->csrfProtector->check();
         $article = $this->getArticleFromParameters();
         $res = $this->db->deleteArticle($article);
         if ($res === 1) {
-            $this->redirectToOverview();
+            return $this->redirectToOverviewResponse();
         } else {
             $info = XH_message('fail', $this->text['story_deleted_error']);
         }
         $title = $this->text['tooltip_delete'];
-        return $this->renderInfo($title, $info);
+        $output = $this->renderInfo($title, $info);
+        return Response::create($output, $title);
     }
 
     /**
@@ -388,20 +365,14 @@ EOT;
         );
     }
 
-    /**
-     * @return string
-     */
-    public function deleteSelectedAction()
+    public function deleteSelectedAction(): Response
     {
-        return $this->renderConfirmation('delete');
+        return Response::create($this->renderConfirmation('delete'));
     }
 
-    /**
-     * @return string
-     */
-    public function changeStatusAction()
+    public function changeStatusAction(): Response
     {
-        return $this->renderConfirmation('change-status');
+        return Response::create($this->renderConfirmation('change-status'));
     }
 
     /**
@@ -420,8 +391,8 @@ EOT;
                     'options' => array('min_range' => 1)
                 )
             ),
-            'action' => "{$this->urlPath}?&realblog&admin=plugin_main",
-            'url' => "{$this->urlPath}?&realblog&admin=plugin_main&action=plugin_text&realblog_page={$this->page}",
+            'action' => "{$this->scriptName}?&realblog&admin=plugin_main",
+            'url' => "{$this->scriptName}?&realblog&admin=plugin_main&action=plugin_text&realblog_page={$this->page}",
             'csrfToken' => $this->getCsrfToken(),
         ];
         if ($kind === 'change-status') {
@@ -432,13 +403,8 @@ EOT;
         return $this->view->render("confirm-$kind", $data);
     }
 
-    /**
-     * @return string
-     */
-    public function doDeleteSelectedAction()
+    public function doDeleteSelectedAction(): Response
     {
-        global $title;
-
         $this->csrfProtector->check();
         $ids = filter_input(
             INPUT_POST,
@@ -451,23 +417,19 @@ EOT;
         );
         $res = $this->db->deleteArticlesWithIds($ids);
         if ($res === count($ids)) {
-            $this->redirectToOverview();
+            return $this->redirectToOverviewResponse();
         } elseif ($res > 0) {
             $info = XH_message('warning', $this->text['deleteall_warning'], $res, count($ids));
         } else {
             $info = XH_message('fail', $this->text['deleteall_error']);
         }
         $title = $this->text['tooltip_delete_selected'];
-        return $this->renderInfo($title, $info);
+        $output = $this->renderInfo($title, $info);
+        return Response::create($output, $title);
     }
 
-    /**
-     * @return string
-     */
-    public function doChangeStatusAction()
+    public function doChangeStatusAction(): Response
     {
-        global $title;
-
         $this->csrfProtector->check();
         $input = filter_input_array(
             INPUT_POST,
@@ -485,14 +447,15 @@ EOT;
         );
         $res = $this->db->updateStatusOfArticlesWithIds($input['realblog_ids'], $input['realblog_status']);
         if ($res === count($input['realblog_ids'])) {
-            $this->redirectToOverview();
+            return $this->redirectToOverviewResponse();
         } elseif ($res > 0) {
             $info = XH_message('warning', $this->text['changestatus_warning'], $res, count($input['realblog_ids']));
         } else {
             $info = XH_message('fail', $this->text['changestatus_error']);
         }
         $title = $this->text['tooltip_change_status'];
-        return $this->renderInfo($title, $info);
+        $output = $this->renderInfo($title, $info);
+        return Response::create($output, $title);
     }
 
     /**
@@ -514,7 +477,7 @@ EOT;
      */
     private function renderInfo($title, $message)
     {
-        $url = XH_hsc("{$this->urlPath}?&realblog&admin=plugin_main&action=plugin_text&realblog_page={$this->page}");
+        $url = XH_hsc("{$this->scriptName}?&realblog&admin=plugin_main&action=plugin_text&realblog_page={$this->page}");
         return <<<HTML
 <h1>Realblog &ndash; $title</h1>
 $message
@@ -522,13 +485,9 @@ $message
 HTML;
     }
 
-    /**
-     * @return no-return
-     */
-    private function redirectToOverview()
+    private function redirectToOverviewResponse(): Response
     {
         $url = CMSIMPLE_URL . "?&realblog&admin=plugin_main&action=plugin_text&realblog_page={$this->page}";
-        header("Location: $url", true, 303);
-        exit;
+        return Response::createRedirect($url);
     }
 }

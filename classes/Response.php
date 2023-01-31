@@ -26,9 +26,14 @@ class Response
     const NORMAL = 1;
     const REDIRECT = 2;
 
-    public static function create(string $output): self
+    /**
+     * @param ?string $title
+     * @param ?string $hjs
+     * @param ?string $bjs
+     */
+    public static function create(string $output, $title = null, $hjs = null, $bjs = null): self
     {
-        return new Response(self::NORMAL, $output);
+        return new Response(self::NORMAL, $output, $title, $hjs, $bjs);
     }
 
     public static function createRedirect(string $location): self
@@ -42,16 +47,54 @@ class Response
     /** @var string */
     private $contents;
 
-    private function __construct(int $type, string $contents)
+    /** @var ?string */
+    private $title;
+
+    /** @var ?string */
+    private $hjs;
+
+    /** @var ?string */
+    private $bjs;
+
+    /**
+     * @param ?string $title
+     * @param ?string $hjs
+     * @param ?string $bjs
+     */
+    private function __construct(int $type, string $contents, $title = null, $hjs = null, $bjs = null)
     {
         $this->type = $type;
         $this->contents = $contents;
+        $this->title = $title;
+        $this->hjs = $hjs;
+        $this->bjs = $bjs;
     }
 
     public function output(): string
     {
         assert($this->type === self::NORMAL);
         return $this->contents;
+    }
+
+    /** @return ?string */
+    public function title()
+    {
+        assert($this->type === self::NORMAL);
+        return $this->title;
+    }
+
+    /** @return ?string */
+    public function hjs()
+    {
+        assert($this->type === self::NORMAL);
+        return $this->hjs;
+    }
+
+    /** @return ?string */
+    public function bjs()
+    {
+        assert($this->type === self::NORMAL);
+        return $this->bjs;
     }
 
     public function location(): string
@@ -63,8 +106,19 @@ class Response
     /** @return string|never */
     public function trigger()
     {
+        global $title, $hjs, $bjs;
+
         switch ($this->type) {
             case self::NORMAL:
+                if ($title !== null) {
+                    $title = $this->title;
+                }
+                if ($hjs !== null) {
+                    $hjs .= $this->hjs;
+                }
+                if ($bjs !== null) {
+                    $bjs .= $this->bjs;
+                }
                 return $this->contents;
             case self::REDIRECT:
                 header("Location: {$this->contents}");
