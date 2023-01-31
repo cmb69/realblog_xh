@@ -3,7 +3,7 @@
 /**
  * Copyright 2006-2010 Jan Kanters
  * Copyright 2010-2014 Gert Ebersbach
- * Copyright 2014-2017 Christoph M. Becker
+ * Copyright 2014-2023 Christoph M. Becker
  *
  * This file is part of Realblog_XH.
  *

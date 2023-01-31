@@ -226,7 +226,7 @@ Realblog_XH erhalten haben. Falls nicht, siehe <https://www.gnu.org/licenses/>.
 
 © 2006-2010 Jan Kanters  
 © 2010-2014 Gert Ebersbach  
-© 2014-2017 Christoph M. Becker
+© 2014-2023 Christoph M. Becker
 
 Russische Übersetzung © 2012 Lybomyr Kydray  
 Slovakische Übersetzung © 2014 Dr. Martin Sereday  
