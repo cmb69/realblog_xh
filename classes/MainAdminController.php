@@ -225,7 +225,7 @@ class MainAdminController
         }
         $hjs = $this->useCalendar();
         $bjs = '<script>REALBLOG.categories = '
-            . json_encode($this->finder->findAllCategories()) . ';</script>'
+            . json_encode($this->finder->findAllCategories()) . ';</script>' . "\n"
             . '<script src="' . $this->pluginFolder
             . 'realblog.js"></script>';
         $data = [

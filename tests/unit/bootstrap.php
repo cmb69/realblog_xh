@@ -11,6 +11,7 @@ require_once "./classes/Editor.php";
 require_once "./classes/Finder.php";
 require_once "./classes/FeedController.php";
 require_once "./classes/FeedLinkController.php";
+require_once "./classes/FullArticle.php";
 require_once "./classes/LinkController.php";
 require_once "./classes/MainAdminController.php";
 require_once "./classes/MainController.php";

@@ -22,38 +22,69 @@
 namespace Realblog;
 
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\MockObject;
 use ApprovalTests\Approvals;
 
 use XH\CSRFProtection as CsrfProtector;
 
 class MainAdminControllerTest extends TestCase
 {
-    public function testDefaultActionRendersOverview(): void
+    /** @var MainAdminController */
+    private $sut;
+
+    /** @var Finder&MockObject */
+    private $finder;
+
+    public function setUp(): void
     {
         $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
         $conf = $plugin_cf['realblog'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $lang = $plugin_tx['realblog'];
         $db = $this->createStub(DB::class);
-        $finder = $this->createStub(Finder::class);
-        $finder->method('findArticlesWithStatus')->willReturn([]);
+        $this->finder = $this->createStub(Finder::class);
         $csrfProtector = $this->createStub(CsrfProtector::class);
         $view = new View("./views/", $lang);
         $editor = $this->createStub(Editor::class);
-        $sut = new MainAdminController(
+        $this->sut = new MainAdminController(
             "./",
             $conf,
             $lang,
             "/",
             "en",
             $db,
-            $finder,
+            $this->finder,
             $csrfProtector,
             $view,
             $editor,
             1675205155
         );
-        $response = $sut->defaultAction();
+    }
+
+    public function testDefaultActionRendersOverview(): void
+    {
+        $this->finder->method('findArticlesWithStatus')->willReturn([]);
+        $response = $this->sut->defaultAction();
         Approvals::verifyHtml($response->output());
+    }
+
+    public function testCreateActionRendersArticle(): void
+    {
+        $response = $this->sut->createAction();
+        Approvals::verifyHtml($response->output());
+        $this->assertEquals("Create new article", $response->title());
+    }
+
+    public function testCreateActionOutputsHjs(): void
+    {
+        $response = $this->sut->createAction();
+        Approvals::verifyHtml($response->hjs());
+    }
+
+    public function testCreateActionOutputsBjs(): void
+    {
+        $this->finder->method('findAllCategories')->willReturn(["cat1", "cat2"]);
+        $response = $this->sut->createAction();
+        Approvals::verifyHtml($response->bjs());
     }
 }
