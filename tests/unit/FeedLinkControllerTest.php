@@ -28,12 +28,9 @@ class FeedLinkControllerTest extends TestCase
 {
     public function testDefaultActionRendersFeedLink(): void
     {
-        global $sn;
-
-        $sn = "/";
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $lang = $plugin_tx['realblog'];
-        $sut = new FeedLinkController("./", $lang);
+        $sut = new FeedLinkController("./", $lang, "/");
         $response = $sut->defaultAction("_self");
         Approvals::verifyHtml($response);
     }

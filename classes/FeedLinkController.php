@@ -31,14 +31,19 @@ class FeedLinkController
     /** @var array<string,string> */
     private $text;
 
+    /** @var string */
+    private $scriptName;
+
     /**
      * @param string $pluginFolder
      * @param array<string,string> $text
+     * @param string $scriptName
      */
-    public function __construct($pluginFolder, array $text)
+    public function __construct($pluginFolder, array $text, $scriptName)
     {
         $this->pluginFolder = $pluginFolder;
         $this->text = $text;
+        $this->scriptName = $scriptName;
     }
 
     /**
@@ -47,11 +52,9 @@ class FeedLinkController
      */
     public function defaultAction($target)
     {
-        global $sn;
-
         return <<<HTML
 <!-- realblog feed link -->
-<a href="$sn?realblog_feed=rss" target="$target">
+<a href="{$this->scriptName}?realblog_feed=rss" target="$target">
     <img src="{$this->pluginFolder}images/rss.png"
          alt="{$this->text['rss_tooltip']}" title="{$this->text['rss_tooltip']}"
          style="border: 0">
