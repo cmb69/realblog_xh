@@ -52,11 +52,10 @@ class FeedLinkController
      */
     public function defaultAction($target)
     {
-        global $sn, $pth;
-
+        $root = CMSIMPLE_ROOT;
         return <<<HTML
 <!-- realblog feed link -->
-<a href="$sn?realblog_feed=rss" target="$target">
+<a href="$root?realblog_feed=rss" target="$target">
     <img src="{$this->pluginFolder}images/rss.png"
          alt="{$this->text['rss_tooltip']}" title="{$this->text['rss_tooltip']}"
          style="border: 0">
