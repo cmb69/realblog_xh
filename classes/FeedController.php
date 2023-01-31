@@ -25,19 +25,36 @@ namespace Realblog;
 
 class FeedController
 {
+    /** @var string */
+    private $pluginFolder;
+
+    /** @var string */
+    private $imageFolder;
+
     /** @var array<string,string> */
     private $config;
 
     /** @var array<string,string> */
     private $text;
 
+    /** @var string */
+    private $scriptName;
+
     /** @var Finder */
     private $finder;
 
-    public function __construct(array $config, array $text, Finder $finder)
+    /**
+     * @param string $pluginFolder
+     * @param string $imageFolder
+     * @param string $scriptName
+     */
+    public function __construct($pluginFolder, $imageFolder, array $config, array $text, $scriptName, Finder $finder)
     {
+        $this->pluginFolder = $pluginFolder;
+        $this->imageFolder = $imageFolder;
         $this->config = $config;
         $this->text = $text;
+        $this->scriptName = $scriptName;
         $this->finder = $finder;
     }
 
@@ -46,7 +63,7 @@ class FeedController
      */
     public function defaultAction()
     {
-        global $sn, $pth, $plugin_tx;
+        global $pth;
 
         header('Content-Type: application/rss+xml; charset=UTF-8');
         $count = (int) $this->config['rss_entries'];
@@ -57,17 +74,17 @@ class FeedController
             'imageUrl' => preg_replace(
                 array('/\/[^\/]+\/\.\.\//', '/\/\.\//'),
                 '/',
-                CMSIMPLE_URL . $pth['folder']['images']
+                CMSIMPLE_URL . $this->imageFolder
                 . $this->config['rss_logo']
             ),
             'articles' => $this->finder->findFeedableArticles($count),
-            'articleUrl' => /** @return string */ function (Article $article) use ($sn) {
+            'articleUrl' => /** @return string */ function (Article $article) {
                 return CMSIMPLE_URL . substr(
                     Plugin::url(
                         $this->text["rss_page"],
                         array('realblog_id' => $article->id)
                     ),
-                    strlen($sn)
+                    strlen($this->scriptName)
                 );
             },
             'evaluatedTeaser' => /** @return string */ function (Article $article) {
@@ -77,7 +94,7 @@ class FeedController
                 return (string) date('r', $article->date);
             },
         ];
-        $view = new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog']);
+        $view = new View("$this->pluginFolder}views/", $this->text);
         return '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . $view->render('feed', $data);
     }
 }

@@ -35,7 +35,7 @@ class Plugin
      */
     public static function init()
     {
-        global $su, $plugin_cf, $plugin_tx;
+        global $pth, $sn, $su, $plugin_cf, $plugin_tx;
 
         self::registerCommands();
         if ($plugin_cf['realblog']['auto_publish']) {
@@ -54,8 +54,11 @@ class Plugin
             );
             if ($rssFeedRequested) {
                 $controller = new FeedController(
+                    "{$pth['folder']['plugins']}realblog/",
+                    $pth['folder']['images'],
                     $plugin_cf['realblog'],
                     $plugin_tx['realblog'],
+                    $sn,
                     new Finder(self::getDb())
                 );
                 echo $controller->defaultAction();
