@@ -7,6 +7,7 @@ require_once "../../cmsimple/functions.php";
 
 require_once "./classes/DataExchangeController.php";
 require_once "./classes/DB.php";
+require_once "./classes/Editor.php";
 require_once "./classes/Finder.php";
 require_once "./classes/FeedController.php";
 require_once "./classes/FeedLinkController.php";

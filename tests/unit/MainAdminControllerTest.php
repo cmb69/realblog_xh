@@ -39,7 +39,8 @@ class MainAdminControllerTest extends TestCase
         $finder->method('findArticlesWithStatus')->willReturn([]);
         $csrfProtector = $this->createStub(CsrfProtector::class);
         $view = new View("./views/", $lang);
-        $sut = new MainAdminController("./", $conf, $lang, "/", "en", $db, $finder, $csrfProtector, $view);
+        $editor = $this->createStub(Editor::class);
+        $sut = new MainAdminController("./", $conf, $lang, "/", "en", $db, $finder, $csrfProtector, $view, $editor);
         $response = $sut->defaultAction();
         Approvals::verifyHtml($response->output());
     }

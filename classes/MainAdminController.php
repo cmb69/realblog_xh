@@ -56,6 +56,9 @@ class MainAdminController
     /** @var View */
     private $view;
 
+    /** @var Editor */
+    private $editor;
+
     /** @var int */
     private $page;
 
@@ -75,7 +78,8 @@ class MainAdminController
         DB $db,
         Finder $finder,
         CsrfProtector $csrfProtector,
-        View $view
+        View $view,
+        Editor $editor
     ) {
         $this->pluginFolder = $pluginFolder;
         $this->config = $config;
@@ -86,6 +90,7 @@ class MainAdminController
         $this->finder = $finder;
         $this->csrfProtector = $csrfProtector;
         $this->view = $view;
+        $this->editor = $editor;
         $this->page = Plugin::getPage();
     }
 
@@ -175,7 +180,7 @@ class MainAdminController
      */
     private function renderArticle($action): array
     {
-        init_editor(array('realblog_headline_field', 'realblog_story_field'));
+        $this->editor->init(['realblog_headline_field', 'realblog_story_field']);
         if ($action === 'create') {
             $article = new FullArticle(0, 0, time(), 2147483647, 2147483647, 0, '', '', '', '', false, false);
         } else {
