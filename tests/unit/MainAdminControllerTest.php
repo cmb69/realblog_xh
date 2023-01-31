@@ -40,7 +40,19 @@ class MainAdminControllerTest extends TestCase
         $csrfProtector = $this->createStub(CsrfProtector::class);
         $view = new View("./views/", $lang);
         $editor = $this->createStub(Editor::class);
-        $sut = new MainAdminController("./", $conf, $lang, "/", "en", $db, $finder, $csrfProtector, $view, $editor);
+        $sut = new MainAdminController(
+            "./",
+            $conf,
+            $lang,
+            "/",
+            "en",
+            $db,
+            $finder,
+            $csrfProtector,
+            $view,
+            $editor,
+            1675205155
+        );
         $response = $sut->defaultAction();
         Approvals::verifyHtml($response->output());
     }

@@ -60,6 +60,9 @@ class MainAdminController
     private $editor;
 
     /** @var int */
+    private $now;
+
+    /** @var int */
     private $page;
 
     /**
@@ -68,6 +71,7 @@ class MainAdminController
      * @param array<string,string> $text
      * @param string $scriptName
      * @param string $selectedLanguage
+     * @param int $now
      */
     public function __construct(
         $pluginFolder,
@@ -79,7 +83,8 @@ class MainAdminController
         Finder $finder,
         CsrfProtector $csrfProtector,
         View $view,
-        Editor $editor
+        Editor $editor,
+        $now
     ) {
         $this->pluginFolder = $pluginFolder;
         $this->config = $config;
@@ -91,6 +96,7 @@ class MainAdminController
         $this->csrfProtector = $csrfProtector;
         $this->view = $view;
         $this->editor = $editor;
+        $this->now = $now;
         $this->page = Plugin::getPage();
     }
 
@@ -182,7 +188,7 @@ class MainAdminController
     {
         $this->editor->init(['realblog_headline_field', 'realblog_story_field']);
         if ($action === 'create') {
-            $article = new FullArticle(0, 0, time(), 2147483647, 2147483647, 0, '', '', '', '', false, false);
+            $article = new FullArticle(0, 0, $this->now, 2147483647, 2147483647, 0, '', '', '', '', false, false);
         } else {
             $id = filter_input(
                 INPUT_GET,

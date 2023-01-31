@@ -152,7 +152,8 @@ class Plugin
                     new Finder(self::getDb()),
                     $_XH_csrfProtection,
                     new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog']),
-                    new Editor()
+                    new Editor(),
+                    time()
                 );
                 if (method_exists($controller, $methodName)) {
                     $o .= $controller->{$methodName}()->trigger();
