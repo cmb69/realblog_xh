@@ -132,7 +132,7 @@ class Plugin
                 $controller = new InfoController(
                     "{$pth['folder']['plugins']}realblog/",
                     $plugin_cf['realblog'],
-                    new View()
+                    new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog'])
                 );
                 $o .= $controller->defaultAction();
                 break;
@@ -143,7 +143,7 @@ class Plugin
                     self::getDb(),
                     new Finder(self::getDb()),
                     $_XH_csrfProtection,
-                    new View()
+                    new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog'])
                 );
                 if (method_exists($controller, $methodName)) {
                     $o .= $controller->{$methodName}();
@@ -157,7 +157,7 @@ class Plugin
                     self::getDb(),
                     new Finder(self::getDb()),
                     $_XH_csrfProtection,
-                    new View()
+                    new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog'])
                 );
                 if (method_exists($controller, $methodName)) {
                     $o .= $controller->{$methodName}();
@@ -205,7 +205,7 @@ class Plugin
      */
     public static function blogCommand($showSearch = false, $category = 'all')
     {
-        global $plugin_cf, $plugin_tx;
+        global $pth, $plugin_cf, $plugin_tx;
 
         $controller = new BlogController(
             $plugin_cf['realblog'],
@@ -213,7 +213,7 @@ class Plugin
             $showSearch,
             self::getDb(),
             new Finder(self::getDb()),
-            new View(),
+            new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog']),
             $category
         );
         if (filter_has_var(INPUT_GET, 'realblog_id')) {
@@ -234,7 +234,7 @@ class Plugin
      */
     public static function archiveCommand($showSearch = false)
     {
-        global $plugin_cf, $plugin_tx;
+        global $pth, $plugin_cf, $plugin_tx;
 
         $controller = new ArchiveController(
             $plugin_cf['realblog'],
@@ -242,7 +242,7 @@ class Plugin
             $showSearch,
             self::getDb(),
             new Finder(self::getDb()),
-            new View()
+            new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog'])
         );
         if (filter_has_var(INPUT_GET, 'realblog_id')) {
             return (string) $controller->showArticleAction(filter_input(
@@ -263,7 +263,7 @@ class Plugin
      */
     public static function linkCommand($pageUrl, $showTeaser = false)
     {
-        global $plugin_cf, $plugin_tx;
+        global $pth, $plugin_cf, $plugin_tx;
 
         $controller = new LinkController(
             $plugin_cf['realblog'],
@@ -271,7 +271,7 @@ class Plugin
             $pageUrl,
             $showTeaser,
             new Finder(self::getDb()),
-            new View()
+            new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog'])
         );
         return $controller->defaultAction();
     }
@@ -282,13 +282,13 @@ class Plugin
      */
     public static function mostPopularCommand($pageUrl)
     {
-        global $plugin_cf;
+        global $pth, $plugin_cf, $plugin_tx;
 
         $controller = new MostPopularController(
             $plugin_cf['realblog'],
             $pageUrl,
             new Finder(self::getDb()),
-            new View()
+            new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog'])
         );
         return $controller->defaultAction();
     }

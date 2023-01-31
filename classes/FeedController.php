@@ -46,7 +46,7 @@ class FeedController
      */
     public function defaultAction()
     {
-        global $sn, $pth;
+        global $sn, $pth, $plugin_tx;
 
         header('Content-Type: application/rss+xml; charset=UTF-8');
         $count = (int) $this->config['rss_entries'];
@@ -77,6 +77,7 @@ class FeedController
                 return (string) date('r', $article->date);
             },
         ];
-        return '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . (new View)->render('feed', $data);
+        $view = new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog']);
+        return '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . $view->render('feed', $data);
     }
 }

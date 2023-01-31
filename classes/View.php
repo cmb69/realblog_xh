@@ -23,8 +23,24 @@ namespace Realblog;
 
 class View
 {
+    /** @var string */
+    private $viewFolder;
+
+    /** @var array<string,string> */
+    private $lang;
+
     /** @var array<string,mixed> */
     private $data = array();
+
+    /**
+     * @param string $viewFolder
+     * @param array<string,string> $lang
+     */
+    public function __construct($viewFolder, array $lang)
+    {
+        $this->viewFolder = $viewFolder;
+        $this->lang = $lang;
+    }
 
     /**
      * @param string $name
@@ -60,9 +76,7 @@ class View
      */
     protected function text($key, ...$args)
     {
-        global $plugin_tx;
-
-        return sprintf($plugin_tx['realblog'][$key], ...$args);
+        return sprintf($this->lang[$key], ...$args);
     }
 
     /**
@@ -73,14 +87,12 @@ class View
      */
     protected function plural($key, $count, ...$args)
     {
-        global $plugin_tx;
-
         if ($count == 0) {
             $key .= '_0';
         } else {
             $key .= XH_numberSuffix($count);
         }
-        return sprintf($plugin_tx['realblog'][$key], $count, ...$args);
+        return sprintf($this->lang[$key], $count, ...$args);
     }
 
     /**
@@ -90,13 +102,11 @@ class View
      */
     public function render($_template, array $_data = null)
     {
-        global $pth;
-
         if ($_data !== null) {
             $this->data = $_data;
         }
         ob_start();
-        include "{$pth['folder']['plugins']}realblog/views/{$_template}.php";
+        include "{$this->viewFolder}{$_template}.php";
         return (string) ob_get_clean();
     }
 
