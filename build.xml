@@ -31,6 +31,14 @@
         <exec command="phpcompatinfo analyser:run classes" logoutput="true"/>
     </target>
 
+    <target name="unit-tests" description="runs all unit tests">
+        <exec executable="phpunit" passthru="true" checkreturn="true">
+            <arg value="--bootstrap"/>
+            <arg file="tests/unit/bootstrap.php"/>
+            <arg file="tests/unit"/>
+        </exec>
+    </target>
+
     <target name="attack-tests" description="runs all attack tests">
         <fail unless="env.CMSIMPLEDIR" message="CMSIMPLEDIR undefined!"/>
         <exec executable="phpunit" passthru="true" checkreturn="true">

@@ -28,3 +28,5 @@ jobs:
         run: cd cmsimplexh/plugins/realblog && PATH=vendor/bin:$PATH phing mess
       - name: phing stan
         run: cd cmsimplexh/plugins/realblog && PATH=vendor/bin:$PATH phing stan
+      - name: phing unit-tests
+        run: cd cmsimplexh/plugins/realblog && PATH=vendor/bin:$PATH phing unit-tests
