@@ -18,6 +18,8 @@
  * @link      http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * A test case to actually check the CSRF protection.
  *
@@ -28,7 +30,7 @@
  * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  * @link     http://3-magi.net/?CMSimple_XH/Realblog_XH
  */
-class CSRFAttackTest extends PHPUnit_Framework_TestCase
+class CSRFAttackTest extends TestCase
 {
     /**
      * The URL of the CMSimple installation.
@@ -58,7 +60,7 @@ class CSRFAttackTest extends PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->_url = 'http://localhost' . getenv('CMSIMPLEDIR');
         $this->_cookieFile = tempnam(sys_get_temp_dir(), 'CC');

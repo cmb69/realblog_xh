@@ -4,5 +4,5 @@
   <phar name="phpcs" version="^3.5.8" installed="3.5.8" location="./tools/phpcs" copy="false"/>
   <phar name="phpmd" version="^2.9.1" installed="2.9.1" location="./tools/phpmd" copy="false"/>
   <phar name="psalm" version="^4.6.2" installed="4.6.2" location="./tools/psalm" copy="false"/>
-  <phar name="phpunit" version="^5.7.27" installed="5.7.27" location="./tools/phpunit" copy="false"/>
+  <phar name="phpunit" version="^8.5.0" installed="8.5.22" location="./tools/phpunit" copy="false"/>
 </phive>
