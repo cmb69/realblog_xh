@@ -69,10 +69,7 @@ class DataExchangeController
         $this->view = $view;
     }
 
-    /**
-     * @return string
-     */
-    public function defaultAction()
+    public function defaultAction(): Response
     {
         $data = [
             'csrfToken' => $this->getCsrfToken(),
@@ -85,34 +82,30 @@ class DataExchangeController
             $data['filename'] = $filename;
             $data['filemtime'] = date('c', filemtime($filename));
         }
-        return $this->view->render('data-exchange', $data);
+        return Response::create($this->view->render('data-exchange', $data));
     }
 
-    /**
-     * @return string
-     */
-    public function exportToCsvAction()
+    public function exportToCsvAction(): Response
     {
         $this->csrfProtector->check();
         if ($this->db->exportToCsv($this->getCsvFilename())) {
-            $this->redirectToDefault();
+            return $this->redirectToDefaultResponse();
         } else {
-            return "<h1>Realblog &ndash; {$this->text['exchange_heading']}</h1>"
+            $output = "<h1>Realblog &ndash; {$this->text['exchange_heading']}</h1>"
                 . XH_message('fail', $this->text['exchange_export_failure'], $this->getCsvFilename());
+            return Response::create($output);
         }
     }
 
-    /**
-     * @return string
-     */
-    public function importFromCsvAction()
+    public function importFromCsvAction(): Response
     {
         $this->csrfProtector->check();
         if ($this->db->importFromCsv($this->getCsvFilename())) {
-            $this->redirectToDefault();
+            return $this->redirectToDefaultResponse();
         } else {
-            return "<h1>Realblog &ndash; {$this->text['exchange_heading']}</h1>"
+            $output = "<h1>Realblog &ndash; {$this->text['exchange_heading']}</h1>"
                 . XH_message('fail', $this->text['exchange_import_failure'], $this->getCsvFilename());
+            return Response::create($output);
         }
     }
 
@@ -136,13 +129,9 @@ class DataExchangeController
         return null;
     }
 
-    /**
-     * @return no-return
-     */
-    private function redirectToDefault()
+    private function redirectToDefaultResponse(): Response
     {
         $url = CMSIMPLE_URL . "?&realblog&admin=data_exchange";
-        header("Location: $url", true, 303);
-        exit;
+        return Response::createRedirect($url);
     }
 }

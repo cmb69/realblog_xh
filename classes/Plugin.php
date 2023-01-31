@@ -167,9 +167,9 @@ class Plugin
                     new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog'])
                 );
                 if (method_exists($controller, $methodName)) {
-                    $o .= $controller->{$methodName}();
+                    $o .= $controller->{$methodName}()->trigger();
                 } else {
-                    $o .= $controller->defaultAction();
+                    $o .= $controller->defaultAction()->trigger();
                 }
                 break;
             default:
