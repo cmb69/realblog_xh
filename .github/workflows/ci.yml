@@ -1,0 +1,30 @@
+name: checks
+on: [push, pull_request]
+jobs:
+  checks:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        php: ['7.3', '7.4', '8.0', '8.1', '8.2']
+    steps:
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{matrix.php}}
+          tools: composer
+      - name: Install CMSimple_XH
+        run: |
+          curl -fsSL -o CMSimple_XH-1.7.4.zip https://github.com/cmsimple-xh/cmsimple-xh/releases/download/1.7.4/CMSimple_XH-1.7.4.zip
+          unzip -q CMSimple_XH-1.7.4.zip
+      - name: Checkout Realblog_XH
+        uses: actions/checkout@v3
+        with:
+          path: 'cmsimplexh/plugins/realblog'
+      - name: composer install
+        run: cd cmsimplexh/plugins/calendar && composer install
+      - name: phing sniff
+        run: cd cmsimplexh/plugins/calendar && PATH=vendor/bin:$PATH phing sniff
+      - name: phing mess
+        run: cd cmsimplexh/plugins/calendar && PATH=vendor/bin:$PATH phing mess
+      - name: phing stan
+        run: cd cmsimplexh/plugins/calendar && PATH=vendor/bin:$PATH phing stan
