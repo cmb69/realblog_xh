@@ -29,20 +29,15 @@ class FeedLinkController
     private $pluginFolder;
 
     /** @var array<string,string> */
-    private $config;
-
-    /** @var array<string,string> */
     private $text;
 
     /**
      * @param string $pluginFolder
-     * @param array<string,string> $config
      * @param array<string,string> $text
      */
-    public function __construct($pluginFolder, array $config, array $text)
+    public function __construct($pluginFolder, array $text)
     {
         $this->pluginFolder = $pluginFolder;
-        $this->config = $config;
         $this->text = $text;
     }
 

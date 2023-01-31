@@ -26,9 +26,6 @@ class MostPopularController
     /** @var array<string,string> */
     private $config;
 
-    /** @var array<string,string> */
-    private $text;
-
     /** @var string */
     private $pageUrl;
 
@@ -40,13 +37,11 @@ class MostPopularController
 
     /**
      * @param array<string,string> $config
-     * @param array<string,string> $text
      * @param string $pageUrl
      */
-    public function __construct(array $config, array $text, $pageUrl, Finder $finder, View $view)
+    public function __construct(array $config, $pageUrl, Finder $finder, View $view)
     {
         $this->config = $config;
-        $this->text = $text;
         $this->pageUrl = $pageUrl;
         $this->finder = $finder;
         $this->view = $view;

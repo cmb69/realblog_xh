@@ -282,11 +282,10 @@ class Plugin
      */
     public static function mostPopularCommand($pageUrl)
     {
-        global $plugin_cf, $plugin_tx;
+        global $plugin_cf;
 
         $controller = new MostPopularController(
             $plugin_cf['realblog'],
-            $plugin_tx['realblog'],
             $pageUrl,
             new Finder(self::getDb()),
             new View()
@@ -300,11 +299,10 @@ class Plugin
      */
     public static function feedLinkCommand($target = '_self')
     {
-        global $pth, $plugin_cf, $plugin_tx;
+        global $pth, $plugin_tx;
 
         $controller = new FeedLinkController(
             "{$pth['folder']['plugin']}realblog/",
-            $plugin_cf['realblog'],
             $plugin_tx['realblog']
         );
         return $controller->defaultAction($target);

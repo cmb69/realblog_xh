@@ -23,6 +23,8 @@
 
 namespace Realblog;
 
+use RuntimeException;
+
 use XH\CSRFProtection as CsrfProtector;
 
 class MainAdminController
@@ -217,7 +219,7 @@ class MainAdminController
                 $title = "{$this->text['tooltip_delete']} #{$article->id}";
                 break;
             default:
-                assert(false);
+                throw new RuntimeException("Unsupported action");
         }
         $this->useCalendar();
         $bjs .= '<script>REALBLOG.categories = '
