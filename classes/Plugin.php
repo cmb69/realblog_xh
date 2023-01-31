@@ -295,9 +295,13 @@ class Plugin
      */
     public static function feedLinkCommand($target = '_self')
     {
-        global $plugin_cf, $plugin_tx;
+        global $pth, $plugin_cf, $plugin_tx;
 
-        $controller = new FeedLinkController($plugin_cf['realblog'], $plugin_tx['realblog']);
+        $controller = new FeedLinkController(
+            "{$pth['folder']['plugin']}realblog/",
+            $plugin_cf['realblog'],
+            $plugin_tx['realblog']
+        );
         return $controller->defaultAction($target);
     }
 

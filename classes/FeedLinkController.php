@@ -25,6 +25,9 @@ namespace Realblog;
 
 class FeedLinkController
 {
+    /** @var string */
+    private $pluginFolder;
+
     /** @var array<string,string> */
     private $config;
 
@@ -32,11 +35,13 @@ class FeedLinkController
     private $text;
 
     /**
+     * @param string $pluginFolder
      * @param array<string,string> $config
      * @param array<string,string> $text
      */
-    public function __construct(array $config, array $text)
+    public function __construct($pluginFolder, array $config, array $text)
     {
+        $this->pluginFolder = $pluginFolder;
         $this->config = $config;
         $this->text = $text;
     }
@@ -52,7 +57,7 @@ class FeedLinkController
         return <<<HTML
 <!-- realblog feed link -->
 <a href="$sn?realblog_feed=rss" target="$target">
-    <img src="{$pth['folder']['plugins']}realblog/images/rss.png"
+    <img src="{$this->pluginFolder}images/rss.png"
          alt="{$this->text['rss_tooltip']}" title="{$this->text['rss_tooltip']}"
          style="border: 0">
 </a>
