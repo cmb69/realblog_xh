@@ -10,6 +10,7 @@ require_once "./classes/DB.php";
 require_once "./classes/Finder.php";
 require_once "./classes/FeedController.php";
 require_once "./classes/FeedLinkController.php";
+require_once "./classes/LinkController.php";
 require_once "./classes/MainController.php";
 require_once "./classes/MostPopularController.php";
 require_once "./classes/Response.php";
