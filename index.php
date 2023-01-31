@@ -52,7 +52,10 @@ this program; if not, see <http://www.gnu.org/licenses>.
 
 use Realblog\Plugin;
 
-/** @psalm-suppress UnresolvableInclude */
+/**
+ * @var array<string,array<string,string>> $pth
+ */
+
 require_once $pth['folder']['plugin'] . 'compat.php';
 
 Plugin::init();

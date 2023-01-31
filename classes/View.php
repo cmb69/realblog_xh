@@ -96,14 +96,13 @@ class View
             $this->data = $_data;
         }
         ob_start();
-        /** @psalm-suppress UnresolvableInclude */
         include "{$pth['folder']['plugins']}realblog/views/{$_template}.php";
         return (string) ob_get_clean();
     }
 
     /**
      * @param mixed $value
-     * @return string
+     * @return mixed
      */
     protected function escape($value)
     {

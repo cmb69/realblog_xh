@@ -110,17 +110,15 @@ abstract class MainController
 
     /**
      * @param int $id
-     * @return string|null
+     * @return string|void
      */
     protected function renderArticle($id)
     {
         $article = $this->finder->findById($id);
-        /** @psalm-suppress UndefinedConstant */
-        if (isset($article) && !XH_ADM && $article->status > 0) {
+        if (isset($article) && (defined("XH_ADM") && !XH_ADM) && $article->status > 0) {
             $this->db->recordPageView($id);
         }
-        /** @psalm-suppress UndefinedConstant */
-        if (isset($article) && (XH_ADM || $article->status > 0)) {
+        if (isset($article) && ((defined("XH_ADM") && XH_ADM) || $article->status > 0)) {
             return $this->doRenderArticle($article);
         }
     }
@@ -139,12 +137,11 @@ abstract class MainController
         } else {
             $params = array('realblog_page' => Plugin::getPage());
         }
-        /** @psalm-suppress UndefinedConstant */
         $data = [
             'article' => $article,
             'heading' => $this->config['heading_level'],
             'isHeadingAboveMeta' => $this->config['heading_above_meta'],
-            'isAdmin' => XH_ADM,
+            'isAdmin' => defined("XH_ADM") && XH_ADM,
             'wantsComments' => $this->wantsComments(),
             'backText' => $article->status === 2 ? $this->text['archiv_back'] : $this->text['blog_back'],
             'backUrl' => Plugin::url($su, $params),

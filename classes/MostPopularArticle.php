@@ -52,6 +52,5 @@ class MostPopularArticle
         $this->id = $id;
         $this->title = $title;
         $this->pageViews = $pageViews;
-        return $this;
     }
 }

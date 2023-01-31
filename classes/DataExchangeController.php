@@ -120,6 +120,7 @@ class DataExchangeController
         if (preg_match('/value="([0-9a-f]+)"/', $html, $matches)) {
             return $matches[1];
         }
+        return null;
     }
 
     /**

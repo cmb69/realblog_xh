@@ -23,10 +23,8 @@
         </exec>
     </target>
 
-    <target name="psalm" description="run static analysis">
-        <exec executable="psalm" passthru="true" checkreturn="true">
-            <arg value="--no-cache"/>
-        </exec>
+    <target name="stan" description="runs static analyzer">
+        <exec executable="phpstan" passthru="true" checkreturn="true"/>
     </target>
 
     <target name="compat" description="checks PHP requirements">
@@ -67,7 +65,7 @@
                 <exclude name="composer.*"/>
                 <exclude name="coverage.xml"/>
                 <exclude name="pax_global_header"/>
-                <exclude name="psalm.xml"/>
+                <exclude name="phpstan.*"/>
                 <exclude name="README.md"/>
                 <exclude name="stubs.php"/>
                 <exclude name="TODO"/>

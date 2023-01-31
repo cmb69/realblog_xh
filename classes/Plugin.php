@@ -62,8 +62,7 @@ class Plugin
                 exit;
             }
         }
-        /** @psalm-suppress UndefinedConstant */
-        if (XH_ADM) {
+        if (defined("XH_ADM") && XH_ADM) {
             self::registerPluginMenu();
             if (XH_wantsPluginAdministration('realblog') || $su === 'realblog') {
                 self::handleAdministration();
@@ -324,8 +323,7 @@ class Plugin
     {
         global $edit;
 
-        /** @psalm-suppress UndefinedConstant */
-        if (XH_ADM && $edit) {
+        if (defined("XH_ADM") && XH_ADM && $edit) {
             if (filter_has_var(INPUT_GET, 'realblog_page')) {
                 $page = filter_input(
                     INPUT_GET,

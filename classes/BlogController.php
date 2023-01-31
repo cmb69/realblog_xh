@@ -119,8 +119,7 @@ class BlogController extends MainController
                 return implode(', ', $categories);
             },
             'hasLinkedHeader' => /** @return bool */ function (Article $article) {
-                /** @psalm-suppress UndefinedConstant */
-                return $article->hasBody || XH_ADM;
+                return $article->hasBody || (defined("XH_ADM") && XH_ADM);
             },
             'date' => /** @return string */ function (Article $article) {
                 return (string) date($this->text['date_format'], $article->date);
