@@ -32,10 +32,13 @@
     </target>
 
     <target name="unit-tests" description="runs all unit tests">
+        <exec executable="phpunit" passthru="true" checkreturn="true"/>
+    </target>
+
+    <target name="coverage" description="generates code coverage report">
         <exec executable="phpunit" passthru="true" checkreturn="true">
-            <arg value="--bootstrap"/>
-            <arg file="tests/unit/bootstrap.php"/>
-            <arg file="tests/unit"/>
+            <arg value="--coverage-html"/>
+            <arg file="tests/coverage"/>
         </exec>
     </target>
 
