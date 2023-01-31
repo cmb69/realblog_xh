@@ -119,7 +119,7 @@ class Plugin
      */
     private static function handleAdministration()
     {
-        global $sn, $admin, $action, $o, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
+        global $pth, $sn, $admin, $action, $o, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
 
         assert($_XH_csrfProtection instanceof CsrfProtector);
         $o .= print_plugin_admin('on');
@@ -129,7 +129,12 @@ class Plugin
         $methodName = lcfirst(implode('', array_map('ucfirst', explode('_', $action)))) . 'Action';
         switch ($admin) {
             case '':
-                $o .= (new InfoController(new View()))->defaultAction();
+                $controller = new InfoController(
+                    "{$pth['folder']['plugins']}realblog/",
+                    $plugin_cf['realblog'],
+                    new View()
+                );
+                $o .= $controller->defaultAction();
                 break;
             case 'plugin_main':
                 $controller = new MainAdminController(

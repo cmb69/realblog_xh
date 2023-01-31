@@ -25,11 +25,23 @@ namespace Realblog;
 
 class InfoController
 {
+    /** @var string */
+    private $pluginFolder;
+
+    /** @var array<string,string> */
+    private $conf;
+
     /** @var View */
     private $view;
 
-    public function __construct(View $view)
+    /**
+     * @param string $pluginFolder
+     * @param array<string,string> $conf
+     */
+    public function __construct($pluginFolder, array $conf, View $view)
     {
+        $this->pluginFolder = $pluginFolder;
+        $this->conf = $conf;
         $this->view = $view;
     }
 
@@ -38,19 +50,17 @@ class InfoController
      */
     public function defaultAction()
     {
-        global $pth, $plugin_cf;
-
         $data = [
             'version' => Plugin::VERSION,
-            'heading' => $plugin_cf['realblog']['heading_level'],
+            'heading' => $this->conf['heading_level'],
             'checks' => (new SystemCheck)->getChecks(),
             'imageURL' =>
                 /**
                  * @param string $state
                  * @return string
                  */
-                function ($state) use ($pth) {
-                    return "{$pth['folder']['plugins']}realblog/images/$state.png";
+                function ($state) {
+                    return "{$this->pluginFolder}images/$state.png";
                 },
         ];
         return $this->view->render('info', $data);
