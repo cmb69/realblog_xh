@@ -87,4 +87,88 @@ class MainAdminControllerTest extends TestCase
         $response = $this->sut->createAction();
         Approvals::verifyHtml($response->bjs());
     }
+
+    public function testEditActionRendersArticle(): void
+    {
+        $this->finder->method('findById')->willReturn($this->firstArticle());
+        $_GET = ['realblog_id' => "1"];
+        $response = $this->sut->editAction();
+        Approvals::verifyHtml($response->output());
+        $this->assertEquals("Edit article #1", $response->title());
+    }
+
+    public function testEditActionOutputsHjs(): void
+    {
+        $this->finder->method('findById')->willReturn($this->firstArticle());
+        $_GET = ['realblog_id' => "1"];
+        $response = $this->sut->editAction();
+        Approvals::verifyHtml($response->hjs());
+    }
+
+    public function testEditActionOutputsBjs(): void
+    {
+        $this->finder->method('findById')->willReturn($this->firstArticle());
+        $this->finder->method('findAllCategories')->willReturn(["cat1", "cat2"]);
+        $_GET = ['realblog_id' => "1"];
+        $response = $this->sut->editAction();
+        Approvals::verifyHtml($response->bjs());
+    }
+
+    public function testEditActionFailsOnMissingArticle(): void
+    {
+        $_GET = ['realblog_id' => "1"];
+        $response = $this->sut->editAction();
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testDeleteActionRendersArticle(): void
+    {
+        $this->finder->method('findById')->willReturn($this->firstArticle());
+        $_GET = ['realblog_id' => "1"];
+        $response = $this->sut->deleteAction();
+        Approvals::verifyHtml($response->output());
+        $this->assertEquals("Delete article #1", $response->title());
+    }
+
+    public function testDeleteActionOutputsHjs(): void
+    {
+        $this->finder->method('findById')->willReturn($this->firstArticle());
+        $_GET = ['realblog_id' => "1"];
+        $response = $this->sut->deleteAction();
+        Approvals::verifyHtml($response->hjs());
+    }
+
+    public function testDeletectionOutputsBjs(): void
+    {
+        $this->finder->method('findById')->willReturn($this->firstArticle());
+        $this->finder->method('findAllCategories')->willReturn(["cat1", "cat2"]);
+        $_GET = ['realblog_id' => "1"];
+        $response = $this->sut->deleteAction();
+        Approvals::verifyHtml($response->bjs());
+    }
+
+    public function testDeleteActionFailsOnMissingArticle(): void
+    {
+        $_GET = ['realblog_id' => "1"];
+        $response = $this->sut->deleteAction();
+        Approvals::verifyHtml($response->output());
+    }
+
+    private function firstArticle(): FullArticle
+    {
+        return new FullArticle(
+            1,
+            1,
+            1675205155,
+            1675205155,
+            0,
+            "published",
+            "cat1",
+            "Welcome!",
+            "Welcome to my wonderful new blog",
+            "Some lengthy blog post.",
+            true,
+            false
+        );
+    }
 }
