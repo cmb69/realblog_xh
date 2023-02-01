@@ -154,6 +154,43 @@ class MainAdminControllerTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
+    public function testDoCreateActionFailureIsReported(): void
+    {
+        $_POST = $this->dummyPost();
+        $response = $this->sut->doCreateAction();
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testDoEditActionFailureIsReported(): void
+    {
+        $_POST = $this->dummyPost();
+        $response = $this->sut->doEditAction();
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testDoDeleteActionFailureIsReported(): void
+    {
+        $_POST = $this->dummyPost();
+        $response = $this->sut->doDeleteAction();
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function dummyPost(): array
+    {
+        return [
+            'realblog_id' => "",
+            'realblog_version' => "",
+            'realblog_date' => "2023-02-01",
+            'realblog_startdate' => "2023-02-01",
+            'realblog_enddate' => "2024-02-01",
+            'realblog_status' => "",
+            'realblog_categories' => "",
+            'realblog_title' => "",
+            'realblog_headline' => "",
+            'realblog_story' => "",
+        ];
+    }
+
     private function firstArticle(): FullArticle
     {
         return new FullArticle(
