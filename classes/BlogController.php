@@ -79,6 +79,7 @@ class BlogController extends MainController
     }
 
     /**
+     * @param list<Article> $articles
      * @param int $articleCount
      * @param int $page
      * @param int $pageCount

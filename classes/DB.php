@@ -144,7 +144,7 @@ SQL;
 
     /**
      * @param string &$field
-     * @return array
+     * @return list<string>
      */
     private function getAndRemoveCategories(&$field)
     {

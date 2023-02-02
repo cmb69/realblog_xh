@@ -92,7 +92,7 @@ class LinkController
                 return date($this->text['date_format'], $article->date);
             },
             'url' => /** @return string */ function (Article $article) use ($pageUrl) {
-                return Plugin::url($pageUrl, array('realblog_id' => $article->id));
+                return Plugin::url($pageUrl, array('realblog_id' => (string) $article->id));
             },
             'showTeaser' => $this->showTeaser,
             'teaser' => /** @return HtmlString */ function (Article $article) {

@@ -245,7 +245,7 @@ SQL;
     }
 
     /**
-     * @return array
+     * @return list<string>
      */
     public function findAllCategories()
     {

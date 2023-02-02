@@ -58,6 +58,7 @@ class ArchiveController extends MainController
     }
 
     /**
+     * @param list<Article> $articles
      * @return string
      */
     private function renderArchive(array $articles)
@@ -130,10 +131,10 @@ class ArchiveController extends MainController
             },
         ];
         if ($back) {
-            $data['backUrl'] = Plugin::url($su, array('realblog_year' => $back));
+            $data['backUrl'] = Plugin::url($su, array('realblog_year' => (string) $back));
         }
         if ($next) {
-            $data['nextUrl'] = Plugin::url($su, array('realblog_year' => $next));
+            $data['nextUrl'] = Plugin::url($su, array('realblog_year' => (string) $next));
         }
         return $this->view->render('archive', $data);
     }

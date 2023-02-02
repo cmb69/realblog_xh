@@ -133,9 +133,9 @@ abstract class MainController
         $title .= $h[$s] . " \xE2\x80\x93 " . $article->title;
         $description = $this->getDescription($article);
         if ($article->status === 2) {
-            $params = array('realblog_year' => $this->year);
+            $params = array('realblog_year' => (string) $this->year);
         } else {
-            $params = array('realblog_page' => Plugin::getPage());
+            $params = array('realblog_page' => (string) Plugin::getPage());
         }
         $data = [
             'article' => $article,

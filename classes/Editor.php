@@ -23,6 +23,10 @@ namespace Realblog;
 
 class Editor
 {
+    /**
+     * @param list<string> $classes
+     * @return void
+      */
     public function init(array $classes)
     {
         init_editor($classes);

@@ -394,7 +394,7 @@ class Plugin
 
     /**
      * @param string $pageUrl
-     * @param array  $params
+     * @param array<string,string> $params
      * @return string
      */
     public static function url($pageUrl, $params = array())

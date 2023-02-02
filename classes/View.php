@@ -62,6 +62,7 @@ class View
 
     /**
      * @param string $name
+     * @param list<mixed> $args
      * @return string
      */
     public function __call($name, array $args)

@@ -24,7 +24,7 @@ namespace Realblog;
 class SystemCheck
 {
     /**
-     * @return array
+     * @return array<string,string>
      */
     public function getChecks()
     {

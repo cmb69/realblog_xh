@@ -49,6 +49,8 @@ class FeedController
     /**
      * @param string $pluginFolder
      * @param string $imageFolder
+     * @param array<string,string> $config
+     * @param array<string,string> $text
      * @param string $scriptName
      */
     public function __construct(
@@ -90,7 +92,7 @@ class FeedController
                 return CMSIMPLE_URL . substr(
                     Plugin::url(
                         $this->text["rss_page"],
-                        array('realblog_id' => $article->id)
+                        array('realblog_id' => (string) $article->id)
                     ),
                     strlen($this->scriptName)
                 );

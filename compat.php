@@ -96,7 +96,7 @@ function realbloglink($options)
 
 /**
  * @param string $arguments
- * @return array
+ * @return array<string,string>
  */
 function Realblog_getArguments($arguments)
 {
