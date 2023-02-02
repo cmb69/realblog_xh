@@ -35,7 +35,7 @@ Es benötigt CMSimple_XH ≥ 1.7.0 und PHP ≥ 5.6.0 mit der sqlite3 Erweiterung
 
 ## Download
 
-Das [aktuelle Release](https://github.com/cmb69/video_xh/releases/latest)
+Das [aktuelle Release](https://github.com/cmb69/realblog_xh/releases/latest)
 kann von Github herunter geladen werden.
 
 ## Installation
