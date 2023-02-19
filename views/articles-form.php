@@ -18,7 +18,7 @@
                             <img src="<?=$this->imageFolder?>change-status.png" alt="<?=$this->text('tooltip_change_status')?>">
                         </button>
                         <button name="action" value="create" title="<?=$this->text('tooltip_create')?>">
-                            <img src="<?=$this->imageFolder?>create.png" alt="<?$this->text('tooltip_create')?>">
+                            <img src="<?=$this->imageFolder?>create.png" alt="<?=$this->text('tooltip_create')?>">
                         </button>
                     </th>
                     <th><?=$this->text('id_label')?></th>
