@@ -76,7 +76,6 @@
                 <exclude name="README*.md"/>
                 <exclude name="build.xml"/>
                 <exclude name="composer.*"/>
-                <exclude name="coverage.xml"/>
                 <exclude name="phpunit.xml"/>
                 <exclude name="phpstan.*"/>
                 <exclude name="teplad.xml"/>
