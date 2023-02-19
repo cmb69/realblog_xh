@@ -2,115 +2,106 @@
 
 <project name="Realblog" default="help">
 
-    <target name="help" description="lists available targets">
-        <exec command="phing -l" outputProperty="help"/>
-        <echo>${help}</echo>
-    </target>
+  <target name="help" description="lists available targets">
+    <exec executable="phing" outputProperty="help">
+      <arg value="-l"/>
+    </exec>
+    <echo>${help}</echo>
+  </target>
 
-    <target name="sniff" description="checks adherence to the coding standard">
-        <exec executable="phpcs" passthru="true" checkreturn="true">
-            <arg value="--standard=PSR2"/>
-            <arg line="--runtime-set ignore_warnings_on_exit true"/>
-            <arg file="classes"/>
-            <arg file="compat.php"/>
-            <arg file="index.php"/>
-        </exec>
-    </target>
+  <target name="sniff" description="checks adherence to the coding standard">
+    <exec executable="phpcs" passthru="true" checkreturn="true">
+      <arg value="--standard=PSR2"/>
+      <arg line="--runtime-set ignore_warnings_on_exit true"/>
+      <arg file="classes"/>
+      <arg file="compat.php"/>
+      <arg file="index.php"/>
+    </exec>
+  </target>
 
-    <target name="mess" description="detects code flaws">
-        <exec executable="phpmd" passthru="true" checkreturn="true">
-            <arg line="classes,compat.php,index.php,tests/attack ansi codesize,unusedcode --ignore-violations-on-exit"/>
-        </exec>
-    </target>
+  <target name="stan" description="runs static analyzer">
+    <exec executable="phpstan" passthru="true" checkreturn="true"/>
+  </target>
 
-    <target name="stan" description="runs static analyzer">
-        <exec executable="phpstan" passthru="true" checkreturn="true"/>
-    </target>
+  <target name="test" description="runs all unit tests">
+    <exec executable="phpunit" passthru="true" checkreturn="true"/>
+  </target>
 
-    <target name="compat" description="checks PHP requirements">
-        <exec command="phpcompatinfo analyser:run classes" logoutput="true"/>
-    </target>
+  <target name="coverage" description="generates code coverage report">
+    <exec executable="phpunit" passthru="true" checkreturn="true">
+      <arg value="--coverage-html"/>
+      <arg file="coverage"/>
+    </exec>
+  </target>
 
-    <target name="unit-tests" description="runs all unit tests">
-        <exec executable="phpunit" passthru="true" checkreturn="true"/>
-    </target>
+  <target name="sat" description="runs all checks" depends="sniff,stan,test"/>
 
-    <target name="coverage" description="generates code coverage report">
-        <exec executable="phpunit" passthru="true" checkreturn="true">
-            <arg value="--coverage-html"/>
-            <arg file="tests/coverage"/>
-        </exec>
-    </target>
+  <target name="gen-help" description="builds help.htm from README.md">
+    <exec executable="pandoc" passthru="true" checkreturn="true">
+      <arg line="-s --eol=lf --template=help/template.htm -Vlang=en -Vpagetitle=&quot;User Manual&quot; -o help/help.htm README.md -t html"/>
+    </exec>
+    <exec executable="pandoc" passthru="true" checkreturn="true">
+      <arg line="-s --eol=lf --template=help/template.htm -Vlang=de -Vpagetitle=&quot;Benutzerhandbuch&quot; -o help/help_de.htm README_de.md -t html"/>
+    </exec>
+  </target>
 
-    <target name="attack-tests" description="runs all attack tests">
-        <fail unless="env.CMSIMPLEDIR" message="CMSIMPLEDIR undefined!"/>
-        <exec executable="phpunit" passthru="true" checkreturn="true">
-            <arg file="tests/attack/"/>
-        </exec>
-    </target>
+  <target name="build" description="builds a distributable ZIP archive">
+    <exec executable="git" checkreturn="true">
+      <arg line="archive -o export.zip HEAD"/>
+    </exec>
+    <unzip file="export.zip" todir="export"/>
+    <delete file="export.zip"/>
+    <exec executable="uglifyjs" checkreturn="true">
+      <arg file="export/realblog.js"/>
+      <arg value="--compress"/>
+      <arg value="--mangle"/>
+      <arg value="--output"/>
+      <arg file="export/realblog.js"/>
+    </exec>
+    <move todir="dist">
+      <fileset dir="export">
+        <exclude name=".github/**"/>
+        <exclude name=".phive/**"/>
+        <exclude name="tests/**"/>
+        <exclude name="help/template.htm"/>
+        <exclude name="README*.md"/>
+        <exclude name="build.xml"/>
+        <exclude name="composer.*"/>
+        <exclude name="phpunit.xml"/>
+        <exclude name="phpstan.*"/>
+        <exclude name="teplad.xml"/>
+      </fileset>
+    </move>
+    <delete dir="export"/>
+    <copy file="dist/config/config.php"
+        tofile="dist/config/defaultconfig.php"/>
+    <copy file="dist/languages/en.php" tofile="dist/languages/default.php"/>
+    <zip destfile="Realblog_XH-3.0.zip" basedir="dist"
+       prefix="realblog/"/>
+    <delete dir="dist"/>
+  </target>
 
-    <target name="gen-help" description="builds help.htm from README.md">
-        <exec command="pandoc -s --eol=lf --template=help/template.htm -Vlang=en -Vpagetitle=&quot;User Manual&quot; -o help/help.htm README.md -t html" logoutput="true"/>
-        <exec command="pandoc -s --eol=lf --template=help/template.htm -Vlang=cs -Vpagetitle=&quot;Benutzerhandbuch&quot; -o help/help_de.htm README_DE.md -t html" logoutput="true"/>
-    </target>
-
-    <target name="build" description="builds a distributable ZIP archive">
-        <exec command="git archive -o export.zip HEAD" checkreturn="true"/>
-        <unzip file="export.zip" todir="export"/>
-        <delete file="export.zip"/>
-        <jsMin targetDir="dist" suffix="" failOnError="false">
-            <fileset dir="export">
-                <include name="*.js"/>
-            </fileset>
-        </jsMin>
-        <move todir="dist">
-            <fileset dir="export">
-                <include name="views/*.php"/>
-            </fileset>
-        </move>
-        <move todir="dist">
-            <fileset dir="export">
-                <exclude name=".github/**"/>
-                <exclude name="tests/**"/>
-                <exclude name="help/template.htm"/>
-                <exclude name="README*.md"/>
-                <exclude name="build.xml"/>
-                <exclude name="composer.*"/>
-                <exclude name="phpunit.xml"/>
-                <exclude name="phpstan.*"/>
-                <exclude name="teplad.xml"/>
-            </fileset>
-        </move>
-        <delete dir="export"/>
-        <copy file="dist/config/config.php"
-              tofile="dist/config/defaultconfig.php"/>
-        <copy file="dist/languages/en.php" tofile="dist/languages/default.php"/>
-        <zip destfile="Realblog_XH-3.0.zip" basedir="dist"
-             prefix="realblog/"/>
-        <delete dir="dist"/>
-    </target>
-
-    <target name="build-patch" description="builds a distributable update package">
-        <fail unless="patchee" message="patchee is not defined!"/>
-        <unzip file="Realblog_XH-3.0.zip" todir="current"/>
-        <unzip file="${patchee}" todir="patchee"/>
-        <copy todir="dist">
-            <fileset dir="current">
-                <different targetdir="patchee" ignoreFileTimes="true"/>
-            </fileset>
-        </copy>
-        <delete>
-            <fileset dir="dist/realblog">
-                <include name="config/config.php"/>
-                <include name="languages/??.php"/>
-                <include name="css/stylesheet.css"/>
-            </fileset>
-        </delete>
-        <zip destfile="Realblog_XH-3.0-PATCH.zip" basedir="dist"
-             includeemptydirs="false"/>
-        <delete dir="patchee" quiet="true"/>
-        <delete dir="current" quiet="true"/>
-        <delete dir="dist" quiet="true"/>
-    </target>
+  <target name="build-patch" description="builds a distributable update package">
+    <fail unless="patchee" message="patchee is not defined!"/>
+    <unzip file="Realblog_XH-3.0.zip" todir="current"/>
+    <unzip file="${patchee}" todir="patchee"/>
+    <copy todir="dist">
+      <fileset dir="current">
+        <different targetdir="patchee" ignoreFileTimes="true"/>
+      </fileset>
+    </copy>
+    <delete>
+      <fileset dir="dist/realblog">
+        <include name="config/config.php"/>
+        <include name="languages/??.php"/>
+        <include name="css/stylesheet.css"/>
+      </fileset>
+    </delete>
+    <zip destfile="Realblog_XH-3.0-PATCH.zip" basedir="dist"
+       includeemptydirs="false"/>
+    <delete dir="patchee" quiet="true"/>
+    <delete dir="current" quiet="true"/>
+    <delete dir="dist" quiet="true"/>
+  </target>
 
 </project>

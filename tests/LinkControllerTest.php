@@ -35,7 +35,7 @@ class LinkControllerTest extends TestCase
         $finder = $this->createStub(Finder::class);
         $view = new View("./views/", $lang);
         $scriptEvaluator = $this->createStub(ScriptEvaluator::class);
-        $sut = new Linkcontroller($conf, $lang, "foo", ["foo"], true, $finder, $view, $scriptEvaluator);
+        $sut = new LinkController($conf, $lang, "foo", ["foo"], true, $finder, $view, $scriptEvaluator);
         $response = $sut->defaultAction();
         Approvals::verifyHtml($response);
     }

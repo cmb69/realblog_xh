@@ -1,4 +1,4 @@
-tests/coverage
+/coverage
 tools
 vendor
 /composer.lock
