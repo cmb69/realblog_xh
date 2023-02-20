@@ -30,7 +30,7 @@ that, Realblog_XH doesn't have any multilingual capabilities.
 ## Requirements
 
 Realblog_XH is a plugin for CMSimple_XH.
-It requires CMSimple_XH ≥ 1.7.0 and PHP ≥ 5.6.0 with the sqlite3 extension.
+It requires CMSimple_XH ≥ 1.7.0 and PHP ≥ 7.1.0 with the sqlite3 extension.
 
 ## Download
 
