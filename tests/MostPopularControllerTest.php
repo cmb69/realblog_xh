@@ -22,6 +22,8 @@
 namespace Realblog;
 
 use PHPUnit\Framework\TestCase;
+use Realblog\Infra\Finder;
+use Realblog\Infra\View;
 use ApprovalTests\Approvals;
 
 class MostPopularControllerTest extends TestCase

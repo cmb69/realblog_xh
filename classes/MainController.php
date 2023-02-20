@@ -23,6 +23,13 @@
 
 namespace Realblog;
 
+use Realblog\Infra\DB;
+use Realblog\Infra\Finder;
+use Realblog\Infra\View;
+use Realblog\Value\Article;
+use Realblog\Value\FullArticle;
+use Realblog\Value\HtmlString;
+
 abstract class MainController
 {
     /** @var array<string,string> */

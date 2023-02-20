@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2016-2023 Christoph M. Becker
+ * Copyright 2023 Christoph M. Becker
  *
  * This file is part of Realblog_XH.
  *
@@ -19,23 +19,16 @@
  * along with Realblog_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Realblog;
+namespace Realblog\Infra;
 
-class HtmlString
+class ScriptEvaluator
 {
-    /** @var string */
-    private $value;
-
     /**
-     * @param string $string
+     * @param string $contents
+     * @return string
      */
-    public function __construct($string)
+    public function evaluate($contents)
     {
-        $this->value = $string;
-    }
-
-    public function __toString()
-    {
-        return $this->value;
+        return evaluate_scripting($contents);
     }
 }

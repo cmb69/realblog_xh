@@ -21,7 +21,12 @@
  * along with Realblog_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Realblog;
+namespace Realblog\Infra;
+
+use Realblog\Infra\DB;
+use Realblog\Value\Article;
+use Realblog\Value\FullArticle;
+use Realblog\Value\MostPopularArticle;
 
 class Finder
 {

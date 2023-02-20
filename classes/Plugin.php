@@ -23,6 +23,11 @@
 
 namespace Realblog;
 
+use Realblog\Infra\DB;
+use Realblog\Infra\Editor;
+use Realblog\Infra\Finder;
+use Realblog\Infra\ScriptEvaluator;
+use Realblog\Infra\View;
 use ReflectionClass;
 use XH\CSRFProtection as CsrfProtector;
 

@@ -23,6 +23,11 @@
 
 namespace Realblog;
 
+use Realblog\Infra\DB;
+use Realblog\Infra\Finder;
+use Realblog\Infra\View;
+use Realblog\Value\Article;
+
 class ArchiveController extends MainController
 {
     /**

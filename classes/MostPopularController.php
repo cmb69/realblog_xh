@@ -21,6 +21,10 @@
 
 namespace Realblog;
 
+use Realblog\Infra\Finder;
+use Realblog\Infra\View;
+use Realblog\Value\MostPopularArticle;
+
 class MostPopularController
 {
     /** @var array<string,string> */

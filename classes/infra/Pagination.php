@@ -21,7 +21,7 @@
  * along with Realblog_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Realblog;
+namespace Realblog\Infra;
 
 class Pagination
 {

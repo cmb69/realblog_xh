@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2021 Christoph M. Becker
+ * Copyright 2016-2023 Christoph M. Becker
  *
  * This file is part of Realblog_XH.
  *
@@ -19,38 +19,23 @@
  * along with Realblog_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Realblog;
+namespace Realblog\Value;
 
-class MostPopularArticle
+class HtmlString
 {
-    /**
-     * @var int
-     * @readonly
-     */
-    public $id;
+    /** @var string */
+    private $value;
 
     /**
-     * @var string
-     * @readonly
+     * @param string $string
      */
-    public $title;
-
-    /**
-     * @var int
-     * @readonly
-     */
-    public $pageViews;
-
-    /**
-     * @param int $id
-     * @param string $title
-     * @param int $pageViews
-     * @return self
-     */
-    public function __construct($id, $title, $pageViews)
+    public function __construct($string)
     {
-        $this->id = $id;
-        $this->title = $title;
-        $this->pageViews = $pageViews;
+        $this->value = $string;
+    }
+
+    public function __toString()
+    {
+        return $this->value;
     }
 }

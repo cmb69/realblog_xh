@@ -23,6 +23,11 @@ namespace Realblog;
 
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject;
+use Realblog\Infra\DB;
+use Realblog\Infra\Editor;
+use Realblog\Infra\Finder;
+use Realblog\Infra\View;
+use Realblog\Value\FullArticle;
 use ApprovalTests\Approvals;
 
 use XH\CSRFProtection as CsrfProtector;

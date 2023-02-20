@@ -23,6 +23,9 @@
 
 namespace Realblog;
 
+use Realblog\Infra\SystemCheck;
+use Realblog\Infra\View;
+
 class InfoController
 {
     /** @var string */

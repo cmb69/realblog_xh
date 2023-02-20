@@ -21,6 +21,10 @@
 
 namespace Realblog;
 
+use Realblog\Infra\DB;
+use Realblog\Infra\Finder;
+use Realblog\Infra\Response;
+use Realblog\Infra\View;
 use XH\CSRFProtection as CsrfProtector;
 
 class DataExchangeController

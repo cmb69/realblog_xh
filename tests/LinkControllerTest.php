@@ -22,6 +22,9 @@
 namespace Realblog;
 
 use PHPUnit\Framework\TestCase;
+use Realblog\Infra\Finder;
+use Realblog\Infra\ScriptEvaluator;
+use Realblog\Infra\View;
 use ApprovalTests\Approvals;
 
 class LinkControllerTest extends TestCase
