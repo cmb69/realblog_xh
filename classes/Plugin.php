@@ -56,54 +56,6 @@ class Plugin
                 exit;
             }
         }
-        if (defined("XH_ADM") && XH_ADM) {
-            self::registerPluginMenu();
-            if (XH_wantsPluginAdministration('realblog')) {
-                self::handleAdministration();
-            }
-        }
-    }
-
-    /**
-     * @return void
-     */
-    private static function registerPluginMenu()
-    {
-        global $sn, $plugin_tx;
-
-        XH_registerStandardPluginMenuItems(true);
-        XH_registerPluginMenuItem(
-            'realblog',
-            $plugin_tx['realblog']['exchange_heading'],
-            "$sn?realblog&admin=data_exchange"
-        );
-    }
-
-    /**
-     * @return void
-     */
-    private static function handleAdministration()
-    {
-        global $sn, $admin, $action, $o, $plugin_tx, $_XH_csrfProtection;
-
-        assert($_XH_csrfProtection instanceof CsrfProtector);
-        $o .= print_plugin_admin('on');
-        pluginMenu('ROW');
-        pluginMenu('TAB', "$sn?realblog&admin=data_exchange", '', $plugin_tx['realblog']['exchange_heading']);
-        $o .= pluginMenu('SHOW');
-        switch ($admin) {
-            case '':
-                $o .= Dic::makeInfoController()();
-                break;
-            case 'plugin_main':
-                $o .= Dic::makeMainAdminController()($action)->trigger();
-                break;
-            case 'data_exchange':
-                $o .= Dic::makeDataExchangeController()($action)->trigger();
-                break;
-            default:
-                $o .= plugin_admin_common();
-        }
     }
 
     /**
