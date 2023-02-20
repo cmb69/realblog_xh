@@ -36,8 +36,8 @@ class MostPopularControllerTest extends TestCase
         $lang = $plugin_tx['realblog'];
         $finder = $this->createStub(Finder::class);
         $view = new View("./views/", $lang);
-        $sut = new MostPopularController($conf, "foo", ["foo"], $finder, $view);
-        $response = $sut->defaultAction();
+        $sut = new MostPopularController($conf, ["foo"], $finder, $view);
+        $response = $sut("foo");
         Approvals::verifyHtml($response);
     }
 }

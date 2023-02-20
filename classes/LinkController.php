@@ -37,14 +37,8 @@ class LinkController
     /** @var array<string,string> */
     private $text;
 
-    /** @var string */
-    private $pageUrl;
-
     /** @var list<string> */
     private $urls;
-
-    /** @var bool */
-    private $showTeaser;
 
     /** @var Finder */
     private $finder;
@@ -58,39 +52,30 @@ class LinkController
     /**
      * @param array<string,string> $config
      * @param array<string,string> $text
-     * @param string $pageUrl
      * @param list<string> $urls
-     * @param bool $showTeaser
      */
     public function __construct(
         array $config,
         array $text,
-        $pageUrl,
         $urls,
-        $showTeaser,
         Finder $finder,
         View $view,
         ScriptEvaluator $scriptEvaluator
     ) {
         $this->config = $config;
         $this->text = $text;
-        $this->pageUrl = $pageUrl;
         $this->urls = $urls;
-        $this->showTeaser = $showTeaser;
         $this->finder = $finder;
         $this->view = $view;
         $this->scriptEvaluator = $scriptEvaluator;
     }
 
-    /**
-     * @return string
-     */
-    public function defaultAction()
+    public function __invoke(string $pageUrl, bool $showTeaser = false): string
     {
-        if (!in_array($this->pageUrl, $this->urls) || $this->config['links_visible'] <= 0) {
+        if (!in_array($pageUrl, $this->urls) || $this->config['links_visible'] <= 0) {
             return "";
         }
-        $pageUrl = $this->pageUrl;
+        $pageUrl = $pageUrl;
         $data = [
             'articles' => $this->finder->findArticles(1, (int) $this->config['links_visible']),
             'heading' => $this->config['heading_level'],
@@ -100,7 +85,7 @@ class LinkController
             'url' => /** @return string */ function (Article $article) use ($pageUrl) {
                 return Plugin::url($pageUrl, array('realblog_id' => (string) $article->id));
             },
-            'showTeaser' => $this->showTeaser,
+            'showTeaser' => $showTeaser,
             'teaser' => /** @return HtmlString */ function (Article $article) {
                 return new HtmlString($this->scriptEvaluator->evaluate($article->teaser));
             },

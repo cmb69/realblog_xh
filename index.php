@@ -50,6 +50,7 @@ this program; if not, see <http://www.gnu.org/licenses>.
 */
 ////////////////////////////////////////////////// HISTORIC LICENSE SECTION END
 
+use Realblog\Dic;
 use Realblog\Plugin;
 
 /**
@@ -59,3 +60,28 @@ use Realblog\Plugin;
 require_once $pth['folder']['plugin'] . 'compat.php';
 
 Plugin::init();
+
+function realblog_blog(bool $showSearch = false, string $category = "all"): string
+{
+    return Dic::makeBlogController()($showSearch, $category);
+}
+
+function realblog_archive(bool $showSearch = false): string
+{
+    return Dic::makeArchiveController()($showSearch);
+}
+
+function realblog_link(string $pageUrl, bool $showTeaser = false): string
+{
+    return Dic::makeLinkController()($pageUrl, $showTeaser);
+}
+
+function realblog_mostpopular(string $pageUrl): string
+{
+    return Dic::makeMostPopularController()($pageUrl);
+}
+
+function realblog_feedlink(string $target = "_self"): string
+{
+    return Dic::makeFeedLinkController()($target);
+}

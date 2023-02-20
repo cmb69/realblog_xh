@@ -69,27 +69,27 @@ class MainAdminControllerTest extends TestCase
     public function testDefaultActionRendersOverview(): void
     {
         $this->finder->method('findArticlesWithStatus')->willReturn([]);
-        $response = $this->sut->defaultAction();
+        $response = ($this->sut)("");
         Approvals::verifyHtml($response->output());
     }
 
     public function testCreateActionRendersArticle(): void
     {
-        $response = $this->sut->createAction();
+        $response = ($this->sut)("create");
         Approvals::verifyHtml($response->output());
         $this->assertEquals("Create new article", $response->title());
     }
 
     public function testCreateActionOutputsHjs(): void
     {
-        $response = $this->sut->createAction();
+        $response = ($this->sut)("create");
         Approvals::verifyHtml($response->hjs());
     }
 
     public function testCreateActionOutputsBjs(): void
     {
         $this->finder->method('findAllCategories')->willReturn(["cat1", "cat2"]);
-        $response = $this->sut->createAction();
+        $response = ($this->sut)("create");
         Approvals::verifyHtml($response->bjs());
     }
 
@@ -97,7 +97,7 @@ class MainAdminControllerTest extends TestCase
     {
         $this->finder->method('findById')->willReturn($this->firstArticle());
         $_GET = ['realblog_id' => "1"];
-        $response = $this->sut->editAction();
+        $response = ($this->sut)("edit");
         Approvals::verifyHtml($response->output());
         $this->assertEquals("Edit article #1", $response->title());
     }
@@ -106,7 +106,7 @@ class MainAdminControllerTest extends TestCase
     {
         $this->finder->method('findById')->willReturn($this->firstArticle());
         $_GET = ['realblog_id' => "1"];
-        $response = $this->sut->editAction();
+        $response = ($this->sut)("edit");
         Approvals::verifyHtml($response->hjs());
     }
 
@@ -115,14 +115,14 @@ class MainAdminControllerTest extends TestCase
         $this->finder->method('findById')->willReturn($this->firstArticle());
         $this->finder->method('findAllCategories')->willReturn(["cat1", "cat2"]);
         $_GET = ['realblog_id' => "1"];
-        $response = $this->sut->editAction();
+        $response = ($this->sut)("edit");
         Approvals::verifyHtml($response->bjs());
     }
 
     public function testEditActionFailsOnMissingArticle(): void
     {
         $_GET = ['realblog_id' => "1"];
-        $response = $this->sut->editAction();
+        $response = ($this->sut)("edit");
         Approvals::verifyHtml($response->output());
     }
 
@@ -130,7 +130,7 @@ class MainAdminControllerTest extends TestCase
     {
         $this->finder->method('findById')->willReturn($this->firstArticle());
         $_GET = ['realblog_id' => "1"];
-        $response = $this->sut->deleteAction();
+        $response = ($this->sut)("delete");
         Approvals::verifyHtml($response->output());
         $this->assertEquals("Delete article #1", $response->title());
     }
@@ -139,7 +139,7 @@ class MainAdminControllerTest extends TestCase
     {
         $this->finder->method('findById')->willReturn($this->firstArticle());
         $_GET = ['realblog_id' => "1"];
-        $response = $this->sut->deleteAction();
+        $response = ($this->sut)("delete");
         Approvals::verifyHtml($response->hjs());
     }
 
@@ -148,35 +148,35 @@ class MainAdminControllerTest extends TestCase
         $this->finder->method('findById')->willReturn($this->firstArticle());
         $this->finder->method('findAllCategories')->willReturn(["cat1", "cat2"]);
         $_GET = ['realblog_id' => "1"];
-        $response = $this->sut->deleteAction();
+        $response = ($this->sut)("delete");
         Approvals::verifyHtml($response->bjs());
     }
 
     public function testDeleteActionFailsOnMissingArticle(): void
     {
         $_GET = ['realblog_id' => "1"];
-        $response = $this->sut->deleteAction();
+        $response = ($this->sut)("delete");
         Approvals::verifyHtml($response->output());
     }
 
     public function testDoCreateActionFailureIsReported(): void
     {
         $_POST = $this->dummyPost();
-        $response = $this->sut->doCreateAction();
+        $response = ($this->sut)("do_create");
         Approvals::verifyHtml($response->output());
     }
 
     public function testDoEditActionFailureIsReported(): void
     {
         $_POST = $this->dummyPost();
-        $response = $this->sut->doEditAction();
+        $response = ($this->sut)("do_edit");
         Approvals::verifyHtml($response->output());
     }
 
     public function testDoDeleteActionFailureIsReported(): void
     {
         $_POST = $this->dummyPost();
-        $response = $this->sut->doDeleteAction();
+        $response = ($this->sut)("do_delete");
         Approvals::verifyHtml($response->output());
     }
 

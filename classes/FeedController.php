@@ -76,10 +76,7 @@ class FeedController
         $this->scriptEvaluator = $scriptEvaluator;
     }
 
-    /**
-     * @return string
-     */
-    public function defaultAction()
+    public function __invoke(): string
     {
         $count = (int) $this->config['rss_entries'];
         $data = [

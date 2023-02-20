@@ -30,9 +30,6 @@ class MostPopularController
     /** @var array<string,string> */
     private $config;
 
-    /** @var string */
-    private $pageUrl;
-
     /** @var list<string> */
     private $urls;
 
@@ -44,27 +41,22 @@ class MostPopularController
 
     /**
      * @param array<string,string> $config
-     * @param string $pageUrl
      * @param list<string> $urls
      */
-    public function __construct(array $config, $pageUrl, $urls, Finder $finder, View $view)
+    public function __construct(array $config, $urls, Finder $finder, View $view)
     {
         $this->config = $config;
-        $this->pageUrl = $pageUrl;
         $this->urls = $urls;
         $this->finder = $finder;
         $this->view = $view;
     }
 
-    /**
-     * @return string
-     */
-    public function defaultAction()
+    public function __invoke(string $pageUrl): string
     {
-        if (!in_array($this->pageUrl, $this->urls) || $this->config['links_visible'] <= 0) {
+        if (!in_array($pageUrl, $this->urls) || $this->config['links_visible'] <= 0) {
             return "";
         }
-        $pageUrl = $this->pageUrl;
+        $pageUrl = $pageUrl;
         $data = [
             'articles' => $this->finder->findMostPopularArticles((int) $this->config['links_visible']),
             'heading' => $this->config['heading_level'],

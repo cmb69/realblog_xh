@@ -31,7 +31,7 @@ class FeedLinkControllerTest extends TestCase
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $lang = $plugin_tx['realblog'];
         $sut = new FeedLinkController("./", $lang, "/");
-        $response = $sut->defaultAction("_self");
+        $response = $sut("_self");
         Approvals::verifyHtml($response);
     }
 }

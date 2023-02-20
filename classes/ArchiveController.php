@@ -31,30 +31,26 @@ use Realblog\Value\Article;
 
 class ArchiveController extends MainController
 {
-    /**
-     * @param array<string,string> $config
-     * @param array<string,string> $text
-     * @param bool $showSearch
-     */
-    public function __construct(
-        array $config,
-        array $text,
-        $showSearch,
-        DB $db,
-        Finder $finder,
-        View $view,
-        ScriptEvaluator $scriptEvaluator
-    ) {
-        parent::__construct($config, $text, $showSearch, $db, $finder, $view, $scriptEvaluator);
+    public function __invoke(bool $showSearch): string
+    {
+        if (isset($_GET["realblog_id"])) {
+            return (string) $this->showArticleAction(filter_var(
+                $_GET["realblog_id"],
+                FILTER_VALIDATE_INT,
+                array('options' => array('min_range' => 1))
+            ));
+        } else {
+            return $this->defaultAction($showSearch);
+        }
     }
 
     /**
      * @return string
      */
-    public function defaultAction()
+    private function defaultAction(bool $showSearch)
     {
         $html = '';
-        if ($this->showSearch) {
+        if ($showSearch) {
             $html .= $this->renderSearchForm();
         }
 

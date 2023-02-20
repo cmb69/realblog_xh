@@ -106,7 +106,35 @@ class MainAdminController
         $this->page = Plugin::getPage();
     }
 
-    public function defaultAction(): Response
+    public function __invoke(string $action): Response
+    {
+        switch ($action) {
+            default:
+                return $this->defaultAction();
+            case "create":
+                return $this->createAction();
+            case "edit":
+                return $this->editAction();
+            case "delete":
+                return $this->deleteAction();
+            case "do_create":
+                return $this->doCreateAction();
+            case "do_edit":
+                return $this->doEditAction();
+            case "do_delete":
+                return $this->doDeleteAction();
+            case "delete_selected":
+                return $this->deleteSelectedAction();
+            case "change_status":
+                return $this->changeStatusAction();
+            case "do_delete_selected":
+                return $this->doDeleteSelectedAction();
+            case "do_change_status":
+                return $this->doChangeStatusAction();
+        }
+    }
+
+    private function defaultAction(): Response
     {
         $statuses = $this->getFilterStatuses();
         $total = $this->finder->countArticlesWithStatus($statuses);
@@ -171,17 +199,17 @@ class MainAdminController
         return $this->view->render('articles-form', $data);
     }
 
-    public function createAction(): Response
+    private function createAction(): Response
     {
         return Response::create(...$this->renderArticle('create'));
     }
 
-    public function editAction(): Response
+    private function editAction(): Response
     {
         return Response::create(...$this->renderArticle('edit'));
     }
 
-    public function deleteAction(): Response
+    private function deleteAction(): Response
     {
         return Response::create(...$this->renderArticle('delete'));
     }
@@ -291,7 +319,7 @@ var REALBLOG = REALBLOG || {};
 EOT;
     }
 
-    public function doCreateAction(): Response
+    private function doCreateAction(): Response
     {
         $this->csrfProtector->check();
         $article = $this->getArticleFromParameters();
@@ -306,7 +334,7 @@ EOT;
         return Response::create($output, $title);
     }
 
-    public function doEditAction(): Response
+    private function doEditAction(): Response
     {
         $this->csrfProtector->check();
         $article = $this->getArticleFromParameters();
@@ -321,7 +349,7 @@ EOT;
         return Response::create($output, $title);
     }
 
-    public function doDeleteAction(): Response
+    private function doDeleteAction(): Response
     {
         $this->csrfProtector->check();
         $article = $this->getArticleFromParameters();
@@ -382,12 +410,12 @@ EOT;
         );
     }
 
-    public function deleteSelectedAction(): Response
+    private function deleteSelectedAction(): Response
     {
         return Response::create($this->renderConfirmation('delete'));
     }
 
-    public function changeStatusAction(): Response
+    private function changeStatusAction(): Response
     {
         return Response::create($this->renderConfirmation('change-status'));
     }
@@ -420,7 +448,7 @@ EOT;
         return $this->view->render("confirm-$kind", $data);
     }
 
-    public function doDeleteSelectedAction(): Response
+    private function doDeleteSelectedAction(): Response
     {
         $this->csrfProtector->check();
         $ids = filter_input(
@@ -445,7 +473,7 @@ EOT;
         return Response::create($output, $title);
     }
 
-    public function doChangeStatusAction(): Response
+    private function doChangeStatusAction(): Response
     {
         $this->csrfProtector->check();
         $input = filter_input_array(

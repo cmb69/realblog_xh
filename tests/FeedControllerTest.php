@@ -38,7 +38,7 @@ class FeedControllerTest extends TestCase
         $finder->method('findFeedableArticles')->willReturn([]);
         $scriptEvaluator = $this->createStub(ScriptEvaluator::class);
         $sut = new FeedController("./", "../../userfiles/images/", $conf, $lang, "/", $finder, $scriptEvaluator);
-        $response = $sut->defaultAction();
+        $response = $sut();
         Approvals::verifyHtml($response);
     }
 }

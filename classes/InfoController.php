@@ -48,10 +48,7 @@ class InfoController
         $this->view = $view;
     }
 
-    /**
-     * @return string
-     */
-    public function defaultAction()
+    public function __invoke(): string
     {
         $data = [
             'version' => Plugin::VERSION,

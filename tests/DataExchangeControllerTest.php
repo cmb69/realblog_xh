@@ -41,7 +41,7 @@ class DataExchangeControllerTest extends TestCase
         $csrfProtector = $this->createStub(CsrfProtector::class);
         $view = new View("./views/", $lang);
         $sut = new DataExchangeController("../../content/realblog/", $lang, "/", $db, $finder, $csrfProtector, $view);
-        $response = $sut->exportToCsvAction();
+        $response = $sut("export_to_csv");
         $this->assertEquals("http://example.com/?&realblog&admin=data_exchange", $response->location());
     }
 
@@ -55,7 +55,7 @@ class DataExchangeControllerTest extends TestCase
         $csrfProtector = $this->createStub(CsrfProtector::class);
         $view = new View("./views/", $lang);
         $sut = new DataExchangeController("../../content/realblog/", $lang, "/", $db, $finder, $csrfProtector, $view);
-        $response = $sut->exportToCsvAction();
+        $response = $sut("export_to_csv");
         Approvals::verifyHtml($response->output());
     }
 
@@ -69,7 +69,7 @@ class DataExchangeControllerTest extends TestCase
         $csrfProtector = $this->createStub(CsrfProtector::class);
         $view = new View("./views/", $lang);
         $sut = new DataExchangeController("../../content/realblog/", $lang, "/", $db, $finder, $csrfProtector, $view);
-        $response = $sut->importFromCsvAction();
+        $response = $sut("import_from_csv");
         $this->assertEquals("http://example.com/?&realblog&admin=data_exchange", $response->location());
     }
 
@@ -83,7 +83,7 @@ class DataExchangeControllerTest extends TestCase
         $csrfProtector = $this->createStub(CsrfProtector::class);
         $view = new View("./views/", $lang);
         $sut = new DataExchangeController("../../content/realblog/", $lang, "/", $db, $finder, $csrfProtector, $view);
-        $response = $sut->importFromCsvAction();
+        $response = $sut("import_from_csv");
         Approvals::verifyHtml($response->output());
     }
 }

@@ -23,12 +23,6 @@
 
 namespace Realblog;
 
-use Realblog\Infra\DB;
-use Realblog\Infra\Editor;
-use Realblog\Infra\Finder;
-use Realblog\Infra\ScriptEvaluator;
-use Realblog\Infra\View;
-use ReflectionClass;
 use XH\CSRFProtection as CsrfProtector;
 
 class Plugin
@@ -40,9 +34,8 @@ class Plugin
      */
     public static function init()
     {
-        global $pth, $sn, $su, $plugin_cf, $plugin_tx;
+        global $plugin_cf;
 
-        self::registerCommands();
         if ($plugin_cf['realblog']['auto_publish']) {
             self::autoPublish();
         }
@@ -58,54 +51,16 @@ class Plugin
                 array('options' => array('regexp' => '/^rss$/'))
             );
             if ($rssFeedRequested) {
-                $controller = new FeedController(
-                    "{$pth['folder']['plugins']}realblog/",
-                    $pth['folder']['images'],
-                    $plugin_cf['realblog'],
-                    $plugin_tx['realblog'],
-                    $sn,
-                    new Finder(self::getDb()),
-                    new ScriptEvaluator()
-                );
                 header('Content-Type: application/rss+xml; charset=UTF-8');
-                echo $controller->defaultAction();
+                echo Dic::makeFeedController()();
                 exit;
             }
         }
         if (defined("XH_ADM") && XH_ADM) {
             self::registerPluginMenu();
-            if (XH_wantsPluginAdministration('realblog') || $su === 'realblog') {
+            if (XH_wantsPluginAdministration('realblog')) {
                 self::handleAdministration();
             }
-        }
-    }
-
-    /**
-     * @return void
-     */
-    private static function registerCommands()
-    {
-        $class = new ReflectionClass(self::class);
-        $commands = array();
-        foreach ($class->getMethods() as $method) {
-            $methodName = $method->getName();
-            if (preg_match('/.*(?=Command$)/', $methodName, $m)) {
-                $commands[$m[0]] = $method->getParameters();
-            }
-        }
-        foreach ($commands as $name => $params) {
-            $paramList = $argList = array();
-            foreach ($params as $param) {
-                $string = '$' . $param->getName();
-                $argList[] = $string;
-                if ($param->isOptional()) {
-                    $string .= '=' . var_export($param->getDefaultValue(), true);
-                }
-                $paramList[] = $string;
-            }
-            $paramString = implode(',', $paramList);
-            $argString = implode(',', $argList);
-            eval("function Realblog_$name($paramString) {return \\Realblog\\Plugin::{$name}Command($argString);}");
         }
     }
 
@@ -129,58 +84,22 @@ class Plugin
      */
     private static function handleAdministration()
     {
-        global $pth, $sn, $sl, $admin, $action, $o, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
+        global $sn, $admin, $action, $o, $plugin_tx, $_XH_csrfProtection;
 
         assert($_XH_csrfProtection instanceof CsrfProtector);
         $o .= print_plugin_admin('on');
         pluginMenu('ROW');
         pluginMenu('TAB', "$sn?realblog&admin=data_exchange", '', $plugin_tx['realblog']['exchange_heading']);
         $o .= pluginMenu('SHOW');
-        $methodName = lcfirst(implode('', array_map('ucfirst', explode('_', $action)))) . 'Action';
         switch ($admin) {
             case '':
-                $controller = new InfoController(
-                    "{$pth['folder']['plugins']}realblog/",
-                    $plugin_cf['realblog'],
-                    new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog'])
-                );
-                $o .= $controller->defaultAction();
+                $o .= Dic::makeInfoController()();
                 break;
             case 'plugin_main':
-                $controller = new MainAdminController(
-                    "{$pth['folder']['plugins']}realblog/",
-                    $plugin_cf['realblog'],
-                    $plugin_tx['realblog'],
-                    $sn,
-                    $sl,
-                    self::getDb(),
-                    new Finder(self::getDb()),
-                    $_XH_csrfProtection,
-                    new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog']),
-                    new Editor(),
-                    time()
-                );
-                if (method_exists($controller, $methodName)) {
-                    $o .= $controller->{$methodName}()->trigger();
-                } else {
-                    $o .= $controller->defaultAction()->trigger();
-                }
+                $o .= Dic::makeMainAdminController()($action)->trigger();
                 break;
             case 'data_exchange':
-                $controller = new DataExchangeController(
-                    "{$pth['folder']['content']}realblog/",
-                    $plugin_tx['realblog'],
-                    $sn,
-                    self::getDb(),
-                    new Finder(self::getDb()),
-                    $_XH_csrfProtection,
-                    new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog'])
-                );
-                if (method_exists($controller, $methodName)) {
-                    $o .= $controller->{$methodName}()->trigger();
-                } else {
-                    $o .= $controller->defaultAction()->trigger();
-                }
+                $o .= Dic::makeDataExchangeController()($action)->trigger();
                 break;
             default:
                 $o .= plugin_admin_common();
@@ -204,7 +123,7 @@ class Plugin
      */
     private static function autoPublish()
     {
-        self::getDb()->autoChangeStatus('publishing_date', 1);
+        Dic::makeDb()->autoChangeStatus('publishing_date', 1);
     }
 
     /**
@@ -212,138 +131,7 @@ class Plugin
      */
     private static function autoArchive()
     {
-        self::getDb()->autoChangeStatus('archiving_date', 2);
-    }
-
-    /**
-     * @param bool $showSearch
-     * @param string $category
-     * @return string
-     */
-    public static function blogCommand($showSearch = false, $category = 'all')
-    {
-        global $pth, $plugin_cf, $plugin_tx;
-
-        $controller = new BlogController(
-            $plugin_cf['realblog'],
-            $plugin_tx['realblog'],
-            $showSearch,
-            self::getDb(),
-            new Finder(self::getDb()),
-            new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog']),
-            new ScriptEvaluator,
-            $category
-        );
-        if (filter_has_var(INPUT_GET, 'realblog_id')) {
-            return (string) $controller->showArticleAction(filter_input(
-                INPUT_GET,
-                'realblog_id',
-                FILTER_VALIDATE_INT,
-                array('options' => array('min_range' => 1))
-            ));
-        } else {
-            return $controller->defaultAction();
-        }
-    }
-
-    /**
-     * @param bool $showSearch
-     * @return string
-     */
-    public static function archiveCommand($showSearch = false)
-    {
-        global $pth, $plugin_cf, $plugin_tx;
-
-        $controller = new ArchiveController(
-            $plugin_cf['realblog'],
-            $plugin_tx['realblog'],
-            $showSearch,
-            self::getDb(),
-            new Finder(self::getDb()),
-            new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog']),
-            new ScriptEvaluator
-        );
-        if (filter_has_var(INPUT_GET, 'realblog_id')) {
-            return (string) $controller->showArticleAction(filter_input(
-                INPUT_GET,
-                'realblog_id',
-                FILTER_VALIDATE_INT,
-                array('options' => array('min_range' => 1))
-            ));
-        } else {
-            return $controller->defaultAction();
-        }
-    }
-
-    /**
-     * @param string $pageUrl
-     * @param bool $showTeaser
-     * @return string
-     */
-    public static function linkCommand($pageUrl, $showTeaser = false)
-    {
-        global $pth, $plugin_cf, $plugin_tx, $u;
-
-        $controller = new LinkController(
-            $plugin_cf['realblog'],
-            $plugin_tx['realblog'],
-            $pageUrl,
-            $u,
-            $showTeaser,
-            new Finder(self::getDb()),
-            new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog']),
-            new ScriptEvaluator()
-        );
-        return $controller->defaultAction();
-    }
-
-    /**
-     * @param string $pageUrl
-     * @return string
-     */
-    public static function mostPopularCommand($pageUrl)
-    {
-        global $pth, $plugin_cf, $plugin_tx, $u;
-
-        $controller = new MostPopularController(
-            $plugin_cf['realblog'],
-            $pageUrl,
-            $u,
-            new Finder(self::getDb()),
-            new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog'])
-        );
-        return $controller->defaultAction();
-    }
-
-    /**
-     * @param string $target
-     * @return string
-     */
-    public static function feedLinkCommand($target = '_self')
-    {
-        global $pth, $plugin_tx, $sn;
-
-        $controller = new FeedLinkController(
-            "{$pth['folder']['plugin']}realblog/",
-            $plugin_tx['realblog'],
-            $sn
-        );
-        return $controller->defaultAction($target);
-    }
-
-    /**
-     * @return DB
-     */
-    private static function getDb()
-    {
-        static $db = null;
-        global $pth;
-
-        $filename = "{$pth['folder']['content']}realblog/realblog.db";
-        if ($db === null) {
-            $db = new DB($filename);
-        }
-        return $db;
+        Dic::makeDb()->autoChangeStatus('archiving_date', 2);
     }
 
     /**

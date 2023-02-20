@@ -55,7 +55,6 @@ class ArchiveControllerTest extends TestCase
         $this->sut = new ArchiveController(
             XH_includeVar("./config/config.php", "plugin_cf")["realblog"],
             $text,
-            true,
             $this->db,
             $this->finder,
             new View("./views/", $text),
@@ -71,7 +70,7 @@ class ArchiveControllerTest extends TestCase
         $su = "Archive";
         $this->finder->method("findArchiveYears")->willReturn([2023]);
         $this->finder->method("findArchivedArticlesInPeriod")->willReturn([]);
-        $response = $this->sut->defaultAction();
+        $response = ($this->sut)(true);
         Approvals::verifyHtml($response);
     }
 
@@ -83,7 +82,7 @@ class ArchiveControllerTest extends TestCase
         $su = "Archive";
         $this->finder->method("findArchiveYears")->willReturn([2023]);
         $this->finder->method("findArchivedArticlesInPeriod")->willReturn($this->articles());
-        $response = $this->sut->defaultAction();
+        $response = ($this->sut)(true);
         Approvals::verifyHtml($response);
     }
 
@@ -91,12 +90,13 @@ class ArchiveControllerTest extends TestCase
     {
         global $sn, $su, $s, $h;
 
+        $_GET = ["realblog_id" => "3"];
         $sn = "/";
         $su = "Archive";
         $s = 2;
         $h = [2 => "Blog"];
         $this->finder->method("findById")->willReturn($this->article());
-        $response = $this->sut->showArticleAction(3);
+        $response = ($this->sut)(true);
         Approvals::verifyHtml($response);
     }
 

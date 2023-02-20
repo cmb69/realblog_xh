@@ -21,6 +21,7 @@
  * along with Realblog_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Realblog\Dic;
 use Realblog\Plugin;
 
 /**
@@ -47,7 +48,7 @@ function showrealblog($options = "", $category = 'all')
                 break;
         }
     }
-    return Plugin::blogCommand($includesearch, $category);
+    return Dic::makeBlogController()($includesearch, $category);
 }
 
 /**
@@ -74,7 +75,7 @@ function showrealblogarchive($options = "")
                 break;
         }
     }
-    return Plugin::archiveCommand($includesearch);
+    return Dic::makeArchiveController()($includesearch);
 }
 
 /**
@@ -91,7 +92,7 @@ function realbloglink($options)
     if (isset($arguments['realblogpage'])) {
         $realblog_page = $arguments['realblogpage'];
     }
-    return Plugin::linkCommand($realblog_page);
+    return Dic::makeLinkController()($realblog_page);
 }
 
 /**
@@ -119,7 +120,7 @@ function realblog_rss_adv()
 {
     $function = __FUNCTION__;
     trigger_error("$function() is deprecated; use Realblog_feedLink() instead", E_USER_DEPRECATED);
-    return Plugin::feedLinkCommand();
+    return Dic::makeFeedLinkController()("_self");
 }
 
 /**

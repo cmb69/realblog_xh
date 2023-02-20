@@ -23,54 +23,39 @@
 
 namespace Realblog;
 
-use Realblog\Infra\DB;
-use Realblog\Infra\Finder;
 use Realblog\Infra\Pagination;
-use Realblog\Infra\ScriptEvaluator;
-use Realblog\Infra\View;
 use Realblog\Value\Article;
 use Realblog\Value\HtmlString;
 
 class BlogController extends MainController
 {
-    /** @var string */
-    private $category;
-
-    /**
-     * @param array<string,string> $config
-     * @param array<string,string> $text
-     * @param bool $showSearch
-     * @param string $category
-     * @param ScriptEvaluator $scriptEvaluator
-     */
-    public function __construct(
-        array $config,
-        array $text,
-        $showSearch,
-        DB $db,
-        Finder $finder,
-        View $view,
-        $scriptEvaluator,
-        $category = 'all'
-    ) {
-        parent::__construct($config, $text, $showSearch, $db, $finder, $view, $scriptEvaluator);
-        $this->category = $category;
+    public function __invoke(bool $showSeach, string $category): string
+    {
+        if (isset($_GET["realblog_id"])) {
+            return (string) $this->showArticleAction(filter_var(
+                $_GET["realblog_id"],
+                FILTER_VALIDATE_INT,
+                array('options' => array('min_range' => 1))
+            ));
+        } else {
+            return $this->defaultAction($showSeach, $category);
+        }
     }
 
     /**
      * @return string
      */
-    public function defaultAction()
+    private function defaultAction(bool $showSearch, string $category)
     {
         $html = '';
-        if ($this->showSearch) {
+        if ($showSearch) {
             $html .= $this->renderSearchForm();
         }
         $order = ($this->config['entries_order'] == 'desc')
             ? -1 : 1;
         $limit = max(1, (int) $this->config['entries_per_page']);
         $page = Plugin::getPage();
-        $articleCount = $this->finder->countArticlesWithStatus(array(1), $this->category, $this->searchTerm);
+        $articleCount = $this->finder->countArticlesWithStatus(array(1), $category, $this->searchTerm);
         $pageCount = (int) ceil($articleCount / $limit);
         $page = min(max($page, 1), $pageCount);
         $articles = $this->finder->findArticles(
@@ -78,7 +63,7 @@ class BlogController extends MainController
             $limit,
             ($page-1) * $limit,
             $order,
-            $this->category,
+            $category,
             $this->searchTerm
         );
         if ($this->searchTerm) {
@@ -159,9 +144,9 @@ class BlogController extends MainController
 
     /**
      * @param int $id
-     * @return string|null
+     * @return string
      */
-    public function showArticleAction($id)
+    private function showArticleAction($id)
     {
         return $this->renderArticle($id);
     }

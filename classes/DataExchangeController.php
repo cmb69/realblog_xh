@@ -73,7 +73,19 @@ class DataExchangeController
         $this->view = $view;
     }
 
-    public function defaultAction(): Response
+    public function __invoke(string $action): Response
+    {
+        switch ($action) {
+            default:
+                return $this->defaultAction();
+            case "export_to_csv":
+                return $this->exportToCsvAction();
+            case "import_from_csv":
+                return $this->importFromCsvAction();
+        }
+    }
+
+    private function defaultAction(): Response
     {
         $data = [
             'csrfToken' => $this->getCsrfToken(),
@@ -89,7 +101,7 @@ class DataExchangeController
         return Response::create($this->view->render('data-exchange', $data));
     }
 
-    public function exportToCsvAction(): Response
+    private function exportToCsvAction(): Response
     {
         $this->csrfProtector->check();
         if ($this->db->exportToCsv($this->getCsvFilename())) {
@@ -101,7 +113,7 @@ class DataExchangeController
         }
     }
 
-    public function importFromCsvAction(): Response
+    private function importFromCsvAction(): Response
     {
         $this->csrfProtector->check();
         if ($this->db->importFromCsv($this->getCsvFilename())) {

@@ -55,7 +55,6 @@ class BlogControllerTest extends TestCase
         $this->sut = new BlogController(
             XH_includeVar("./config/config.php", "plugin_cf")["realblog"],
             $text,
-            true,
             $this->db,
             $this->finder,
             new View("./views/", $text),
@@ -70,7 +69,7 @@ class BlogControllerTest extends TestCase
         $sn = "/";
         $su = "Blog";
         $this->finder->method("findArticles")->willReturn($this->articles());
-        $response = $this->sut->defaultAction();
+        $response = ($this->sut)(true, "all");
         Approvals::verifyHtml($response);
     }
 
@@ -78,12 +77,13 @@ class BlogControllerTest extends TestCase
     {
         global $sn, $su, $s, $h;
 
+        $_GET = ["realblog_id" => "3"];
         $sn = "/";
         $su = "Blog";
         $s = 1;
         $h = [1 => "Blog"];
         $this->finder->method("findById")->willReturn($this->article());
-        $response = $this->sut->showArticleAction(3);
+        $response = ($this->sut)(true, "all");
         Approvals::verifyHtml($response);
     }
 

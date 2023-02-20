@@ -50,7 +50,7 @@ class FeedLinkController
      * @param string $target
      * @return string
      */
-    public function defaultAction($target)
+    public function __invoke($target)
     {
         return <<<HTML
 <!-- realblog feed link -->
