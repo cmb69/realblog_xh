@@ -23,6 +23,14 @@
 
 namespace Realblog;
 
+/**
+ * @var array<string,array<string,string>> $plugin_tx
+ * @var string $sn
+ * @var string $admin
+ * @var string $action
+ * @var string $o
+ */
+
 $temp = [
     "heading" => $plugin_tx["realblog"]["exchange_heading"],
     "url" => XH_hsc("$sn?realblog&admin=data_exchange"),
