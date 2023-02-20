@@ -231,6 +231,7 @@ class Plugin
             self::getDb(),
             new Finder(self::getDb()),
             new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog']),
+            new ScriptEvaluator,
             $category
         );
         if (filter_has_var(INPUT_GET, 'realblog_id')) {
@@ -259,7 +260,8 @@ class Plugin
             $showSearch,
             self::getDb(),
             new Finder(self::getDb()),
-            new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog'])
+            new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog']),
+            new ScriptEvaluator
         );
         if (filter_has_var(INPUT_GET, 'realblog_id')) {
             return (string) $controller->showArticleAction(filter_input(

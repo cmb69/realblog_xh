@@ -26,6 +26,7 @@ namespace Realblog;
 use Realblog\Infra\DB;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Pagination;
+use Realblog\Infra\ScriptEvaluator;
 use Realblog\Infra\View;
 use Realblog\Value\Article;
 use Realblog\Value\HtmlString;
@@ -40,6 +41,7 @@ class BlogController extends MainController
      * @param array<string,string> $text
      * @param bool $showSearch
      * @param string $category
+     * @param ScriptEvaluator $scriptEvaluator
      */
     public function __construct(
         array $config,
@@ -48,9 +50,10 @@ class BlogController extends MainController
         DB $db,
         Finder $finder,
         View $view,
+        $scriptEvaluator,
         $category = 'all'
     ) {
-        parent::__construct($config, $text, $showSearch, $db, $finder, $view);
+        parent::__construct($config, $text, $showSearch, $db, $finder, $view, $scriptEvaluator);
         $this->category = $category;
     }
 
@@ -133,7 +136,7 @@ class BlogController extends MainController
                 return (string) date($this->text['date_format'], $article->date);
             },
             'teaser' => /** @return HtmlString */ function (Article $article) {
-                return new HtmlString(evaluate_scripting($article->teaser));
+                return new HtmlString($this->scriptEvaluator->evaluate($article->teaser));
             },
             'hasReadMore' => /** @return bool */ function (Article $article) {
                 return $this->config['show_read_more_link']

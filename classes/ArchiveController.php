@@ -25,6 +25,7 @@ namespace Realblog;
 
 use Realblog\Infra\DB;
 use Realblog\Infra\Finder;
+use Realblog\Infra\ScriptEvaluator;
 use Realblog\Infra\View;
 use Realblog\Value\Article;
 
@@ -35,9 +36,16 @@ class ArchiveController extends MainController
      * @param array<string,string> $text
      * @param bool $showSearch
      */
-    public function __construct(array $config, array $text, $showSearch, DB $db, Finder $finder, View $view)
-    {
-        parent::__construct($config, $text, $showSearch, $db, $finder, $view);
+    public function __construct(
+        array $config,
+        array $text,
+        $showSearch,
+        DB $db,
+        Finder $finder,
+        View $view,
+        ScriptEvaluator $scriptEvaluator
+    ) {
+        parent::__construct($config, $text, $showSearch, $db, $finder, $view, $scriptEvaluator);
     }
 
     /**

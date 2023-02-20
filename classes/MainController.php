@@ -25,6 +25,7 @@ namespace Realblog;
 
 use Realblog\Infra\DB;
 use Realblog\Infra\Finder;
+use Realblog\Infra\ScriptEvaluator;
 use Realblog\Infra\View;
 use Realblog\Value\Article;
 use Realblog\Value\FullArticle;
@@ -50,6 +51,9 @@ abstract class MainController
     /** @var View */
     protected $view;
 
+    /** @var ScriptEvaluator|null */
+    protected $scriptEvaluator;
+
     /** @var string */
     protected $searchTerm;
 
@@ -61,16 +65,24 @@ abstract class MainController
      * @param array<string,string> $text
      * @param bool $showSearch
      */
-    public function __construct(array $config, array $text, $showSearch, DB $db, Finder $finder, View $view)
-    {
+    public function __construct(
+        array $config,
+        array $text,
+        $showSearch,
+        DB $db,
+        Finder $finder,
+        View $view,
+        ScriptEvaluator $scriptEvaluator
+    ) {
         $this->config = $config;
         $this->text = $text;
         $this->showSearch = $showSearch;
         $this->db = $db;
         $this->finder = $finder;
         $this->view = $view;
-        $input = filter_input_array(
-            INPUT_GET,
+        $this->scriptEvaluator = $scriptEvaluator;
+        $input = filter_var_array(
+            $_GET,
             array(
                 'realblog_search' => FILTER_DEFAULT,
                 'realblog_year' => array(
@@ -176,7 +188,7 @@ abstract class MainController
         } else {
             $story = ($article->body != '') ? $article->body : $article->teaser;
         }
-        $data['story'] = new HtmlString(evaluate_scripting($story));
+        $data['story'] = new HtmlString($this->scriptEvaluator->evaluate($story));
         $data['renderComments'] = /** @return HtmlString|null */ function (Article $article) {
             if ($article->commentable) {
                 $commentId = "realblog{$article->id}";
