@@ -228,12 +228,7 @@ class MainAdminController
         if ($action === 'create') {
             $article = new FullArticle(0, 0, $this->now, 2147483647, 2147483647, 0, '', '', '', '', false, false);
         } else {
-            $id = filter_input(
-                INPUT_GET,
-                'realblog_id',
-                FILTER_VALIDATE_INT,
-                array('options' => array('min_range' => 1))
-            );
+            $id = max($_GET['realblog_id'] ?? 1, 1);
             $article = $this->finder->findById($id);
             if (!$article) {
                 return [XH_message('fail', $this->text['message_not_found'])];
@@ -369,14 +364,14 @@ EOT;
     private function getArticleFromParameters()
     {
         return new FullArticle(
-            $_POST['realblog_id'],
-            $_POST['realblog_version'],
+            (int) $_POST['realblog_id'],
+            (int) $_POST['realblog_version'],
             !isset($_POST['realblog_date_exact']) || $_POST['realblog_date'] !== $_POST['realblog_date_old']
-            ? $this->stringToTime($_POST['realblog_date'], true)
-            : $_POST['realblog_date_exact'],
+                ? $this->stringToTime($_POST['realblog_date'], true)
+                : $_POST['realblog_date_exact'],
             $this->stringToTime($_POST['realblog_startdate']),
             $this->stringToTime($_POST['realblog_enddate']),
-            $_POST['realblog_status'],
+            (int) $_POST['realblog_status'],
             ',' . trim($_POST['realblog_categories']) . ',',
             $_POST['realblog_title'],
             $_POST['realblog_headline'],
@@ -399,7 +394,7 @@ EOT;
         } else {
             $timestamp = array('hours' => 0, 'minutes' => 0, 'seconds' => 0);
         }
-        return mktime(
+        return (int) mktime(
             $timestamp['hours'],
             $timestamp['minutes'],
             $timestamp['seconds'],
@@ -426,15 +421,9 @@ EOT;
     private function renderConfirmation($kind)
     {
         $data = [
-            'ids' => filter_input(
-                INPUT_GET,
-                'realblog_ids',
-                FILTER_VALIDATE_INT,
-                array(
-                    'flags' => FILTER_REQUIRE_ARRAY,
-                    'options' => array('min_range' => 1)
-                )
-            ),
+            'ids' => array_filter($_GET["realblog_ids"] ?? [], function ($id) {
+                return (int) $id >= 1;
+            }),
             'action' => "{$this->scriptName}?&realblog&admin=plugin_main",
             'url' => "{$this->scriptName}?&realblog&admin=plugin_main&action=plugin_text&realblog_page={$this->page}",
             'csrfToken' => $this->getCsrfToken(),
@@ -450,15 +439,9 @@ EOT;
     private function doDeleteSelectedAction(): Response
     {
         $this->csrfProtector->check();
-        $ids = filter_input(
-            INPUT_POST,
-            'realblog_ids',
-            FILTER_VALIDATE_INT,
-            array(
-                'flags' => FILTER_REQUIRE_ARRAY,
-                'options' => array('min_range' => 1)
-            )
-        );
+        $ids = array_filter($_POST["realblog_ids"] ?? [], function ($id) {
+            return (int) $id >= 1;
+        });
         $res = $this->db->deleteArticlesWithIds($ids);
         if ($res === count($ids)) {
             return $this->redirectToOverviewResponse();
@@ -475,25 +458,15 @@ EOT;
     private function doChangeStatusAction(): Response
     {
         $this->csrfProtector->check();
-        $input = filter_input_array(
-            INPUT_POST,
-            array(
-                'realblog_ids' => array(
-                    'filter' => FILTER_VALIDATE_INT,
-                    'flags' => FILTER_REQUIRE_ARRAY,
-                    'options' => array('min_range' => 1)
-                ),
-                'realblog_status' => array(
-                    'filter' => FILTER_VALIDATE_INT,
-                    'options' => array('min_range' => 0, 'max_range' => 2)
-                )
-            )
-        );
-        $res = $this->db->updateStatusOfArticlesWithIds($input['realblog_ids'], $input['realblog_status']);
-        if ($res === count($input['realblog_ids'])) {
+        $ids = array_filter($_POST["realblog_ids"] ?? [], function ($id) {
+            return (int) $id >= 1;
+        });
+        $status = min(max((int) ($_POST["realblog_status"] ?? 0), 0), 2);
+        $res = $this->db->updateStatusOfArticlesWithIds($ids, $status);
+        if ($res === count($ids)) {
             return $this->redirectToOverviewResponse();
         } elseif ($res > 0) {
-            $info = XH_message('warning', $this->text['changestatus_warning'], $res, count($input['realblog_ids']));
+            $info = XH_message('warning', $this->text['changestatus_warning'], $res, count($ids));
         } else {
             $info = XH_message('fail', $this->text['changestatus_error']);
         }

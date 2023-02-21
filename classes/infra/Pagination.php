@@ -91,7 +91,7 @@ class Pagination
     {
         global $plugin_cf;
 
-        $radius = $plugin_cf['realblog']['pagination_radius'];
+        $radius = (int) $plugin_cf['realblog']['pagination_radius'];
         $pages = array(1);
         if ($this->page - $radius > 1 + 1) {
             $pages[] = null;

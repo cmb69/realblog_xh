@@ -23,10 +23,6 @@
 
 namespace Realblog;
 
-use Realblog\Infra\DB;
-use Realblog\Infra\Finder;
-use Realblog\Infra\ScriptEvaluator;
-use Realblog\Infra\View;
 use Realblog\Value\Article;
 
 class ArchiveController extends MainController
@@ -34,11 +30,7 @@ class ArchiveController extends MainController
     public function __invoke(bool $showSearch): string
     {
         if (isset($_GET["realblog_id"])) {
-            return (string) $this->showArticleAction(filter_var(
-                $_GET["realblog_id"],
-                FILTER_VALIDATE_INT,
-                array('options' => array('min_range' => 1))
-            ));
+            return (string) $this->showArticleAction(max((int) ($_GET["realblog_id"] ?? 1), 1));
         } else {
             return $this->defaultAction($showSearch);
         }
@@ -83,8 +75,8 @@ class ArchiveController extends MainController
             $back = ($key > 0) ? $years[(int) $key - 1] : null;
             $next = ($key < count($years) - 1) ? $years[(int) $key + 1] : null;
             $articles = $this->finder->findArchivedArticlesInPeriod(
-                mktime(0, 0, 0, 1, 1, $year),
-                mktime(0, 0, 0, 1, 1, $year + 1)
+                (int) mktime(0, 0, 0, 1, 1, $year),
+                (int) mktime(0, 0, 0, 1, 1, $year + 1)
             );
             return $this->renderArchivedArticles($articles, false, $back, $next);
         } else {
@@ -113,7 +105,7 @@ class ArchiveController extends MainController
                     [
                         'realblog_id' => $article->id,
                         'realblog_year' => date('Y', $article->date),
-                        'realblog_search' => filter_input(INPUT_GET, 'realblog_search'),
+                        'realblog_search' => $_GET['realblog_search'] ?? "",
                     ]
                 );
                 $groupRecords[] = [

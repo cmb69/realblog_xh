@@ -107,8 +107,9 @@ EOS;
     private function importFlatfile()
     {
         $filename = dirname($this->filename) . "/realblog.txt";
-        if (file_exists($filename)) {
+        if (is_readable($filename)) {
             $lines = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            assert($lines !== false);
             assert($this->connection !== null);
             $this->connection->exec('BEGIN TRANSACTION');
             $sql = <<<'SQL'
@@ -118,6 +119,7 @@ INSERT INTO articles VALUES (
 )
 SQL;
             $statement = $this->connection->prepare($sql);
+            assert($statement !== false);
             foreach ($lines as $line) {
                 $record = explode("\t", $line);
                 $status = ($record[4] == 1 || $record[4] == 2) ? $record[4] : 0;
@@ -190,6 +192,7 @@ INSERT INTO articles
     )
 EOS;
         $statement = $conn->prepare($sql);
+        assert($statement !== false);
         $statement->bindValue(':id', null, SQLITE3_NULL);
         $statement->bindValue(':date', $article->date, SQLITE3_INTEGER);
         $statement->bindValue(':publishing_date', $article->publishingDate, SQLITE3_INTEGER);
@@ -205,7 +208,7 @@ EOS;
         if ($res) {
             $res = $conn->changes();
         }
-        return $res;
+        return (int) $res;
     }
 
     /**
@@ -223,6 +226,7 @@ UPDATE articles
     WHERE id = :id AND version = :version
 EOS;
         $statement = $conn->prepare($sql);
+        assert($statement !== false);
         $statement->bindValue(':id', $article->id, SQLITE3_INTEGER);
         $statement->bindValue(':version', $article->version, SQLITE3_INTEGER);
         $statement->bindValue(':date', $article->date, SQLITE3_INTEGER);
@@ -239,7 +243,7 @@ EOS;
         if ($res) {
             $res = $conn->changes();
         }
-        return $res;
+        return (int) $res;
     }
 
     /**
@@ -255,6 +259,7 @@ UPDATE articles SET version = version + 1, status = :status
     WHERE status < :status AND $field <= :date
 SQL;
         $statement = $conn->prepare($sql);
+        assert($statement !== false);
         $statement->bindValue(':status', $status, SQLITE3_INTEGER);
         $statement->bindValue(':date', strtotime('midnight'), SQLITE3_INTEGER);
         $statement->execute();
@@ -273,12 +278,13 @@ SQL;
         );
         $conn = $this->getConnection();
         $stmt = $conn->prepare($sql);
+        assert($stmt !== false);
         $stmt->bindValue(':status', $status, SQLITE3_INTEGER);
         $res = $stmt->execute();
         if ($res) {
             $res = $conn->changes();
         }
-        return $res;
+        return (int) $res;
     }
 
     /**
@@ -289,13 +295,14 @@ SQL;
         $sql = 'DELETE FROM articles WHERE id = :id AND version = :version';
         $conn = $this->getConnection();
         $stmt = $conn->prepare($sql);
+        assert($stmt !== false);
         $stmt->bindValue(':id', $article->id, SQLITE3_INTEGER);
         $stmt->bindValue(':version', $article->version, SQLITE3_INTEGER);
         $res = $stmt->execute();
         if ($res) {
             $res = $conn->changes();
         }
-        return $res;
+        return (int) $res;
     }
 
     /**
@@ -325,6 +332,7 @@ SQL;
         $sql = 'INSERT INTO page_views VALUES (:article_id, :timestamp)';
         $conn = $this->getConnection();
         $statement = $conn->prepare($sql);
+        assert($statement !== false);
         $statement->bindValue(':article_id', $articleId, SQLITE3_INTEGER);
         $statement->bindValue(':timestamp', time());
         $statement->execute();
@@ -342,7 +350,9 @@ SQL;
         $sql = 'SELECT * FROM articles';
         $conn = $this->getConnection();
         $statement = $conn->prepare($sql);
+        assert($statement !== false);
         $result = $statement->execute();
+        assert($result !== false);
         while (($record = $result->fetchArray(SQLITE3_NUM)) !== false) {
             $record = array_map('XH_rmws', $record);
             fputs($stream, implode("\t", $record) . "\n");
@@ -368,10 +378,12 @@ INSERT INTO articles
     )
 EOS;
         $statement = $conn->prepare($sql);
+        assert($statement !== false);
         if (!($stream = fopen($filename, 'r'))) {
             return false;
         }
         while (($record = fgetcsv($stream, 0, "\t")) !== false) {
+            assert($record !== null);
             $statement->bindValue(':id', $record[0], SQLITE3_INTEGER);
             $statement->bindValue(':version', $record[1], SQLITE3_INTEGER);
             $statement->bindValue(':date', $record[2], SQLITE3_INTEGER);

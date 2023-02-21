@@ -59,33 +59,19 @@ class FullArticle
     /** @var bool */
     public $commentable;
 
-    /**
-     * @param int $id
-     * @param int $version
-     * @param int $date
-     * @param int $publishingDate
-     * @param int $archivingDate
-     * @param int $status
-     * @param string $categories
-     * @param string $title
-     * @param string $teaser
-     * @param string $body
-     * @param bool $feedable
-     * @param bool $commentable
-     */
     public function __construct(
-        $id,
-        $version,
-        $date,
-        $publishingDate,
-        $archivingDate,
-        $status,
-        $categories,
-        $title,
-        $teaser,
-        $body,
-        $feedable,
-        $commentable
+        int $id,
+        int $version,
+        int $date,
+        int $publishingDate,
+        int $archivingDate,
+        int $status,
+        string $categories,
+        string $title,
+        string $teaser,
+        string $body,
+        bool $feedable,
+        bool $commentable
     ) {
         $this->id = $id;
         $this->version = $version;

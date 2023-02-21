@@ -96,7 +96,7 @@ class DataExchangeController
         $filename = $this->getCsvFilename();
         if (file_exists($filename)) {
             $data['filename'] = $filename;
-            $data['filemtime'] = date('c', filemtime($filename));
+            $data['filemtime'] = date('c', (int) filemtime($filename));
         }
         return Response::create($this->view->render('data-exchange', $data));
     }

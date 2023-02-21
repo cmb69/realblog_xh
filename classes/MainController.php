@@ -46,7 +46,7 @@ abstract class MainController
     /** @var View */
     protected $view;
 
-    /** @var ScriptEvaluator|null */
+    /** @var ScriptEvaluator */
     protected $scriptEvaluator;
 
     /** @var string */
@@ -73,18 +73,8 @@ abstract class MainController
         $this->finder = $finder;
         $this->view = $view;
         $this->scriptEvaluator = $scriptEvaluator;
-        $input = filter_var_array(
-            $_GET,
-            array(
-                'realblog_search' => FILTER_DEFAULT,
-                'realblog_year' => array(
-                    'filter' => FILTER_VALIDATE_INT,
-                    'options' => array('default' => (int) date('Y'))
-                )
-            )
-        );
-        $this->searchTerm = $input['realblog_search'];
-        $this->year = $input['realblog_year'];
+        $this->searchTerm = $_GET['realblog_search'] ?? "";
+        $this->year = (int) ($_GET['realblog_year'] ?? idate("Y"));
     }
 
     /**
@@ -121,7 +111,7 @@ abstract class MainController
 
     /**
      * @param int $id
-     * @return string|void
+     * @return string
      */
     protected function renderArticle($id)
     {
@@ -132,6 +122,7 @@ abstract class MainController
         if (isset($article) && ((defined("XH_ADM") && XH_ADM) || $article->status > 0)) {
             return $this->doRenderArticle($article);
         }
+        return "";
     }
 
     /**

@@ -8,7 +8,7 @@ use Realblog\Infra\View;
  * @var string $csrfToken
  * @var string $url
  * @var string|null $filename
- * @var int|null $filemtime
+ * @var string|null $filemtime
  * @var string $confirmImport
  */
 ?>
@@ -19,7 +19,7 @@ use Realblog\Infra\View;
     <span><?=$this->plural('exchange_count', $articleCount)?></span>
   </p>
   <p>
-<?if (isset($filename)):?>
+<?if (isset($filename, $filemtime)):?>
     <span><?=$this->text('exchange_file_found', $filename, $filemtime)?></span>
 <?else:?>
     <span><?=$this->text('exchange_file_notfound')?></span>

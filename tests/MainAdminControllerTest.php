@@ -204,7 +204,7 @@ class MainAdminControllerTest extends TestCase
             1675205155,
             1675205155,
             0,
-            "published",
+            1,
             "cat1",
             "Welcome!",
             "Welcome to my wonderful new blog",

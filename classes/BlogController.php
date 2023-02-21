@@ -31,11 +31,7 @@ class BlogController extends MainController
     public function __invoke(bool $showSeach, string $category): string
     {
         if (isset($_GET["realblog_id"])) {
-            return (string) $this->showArticleAction(filter_var(
-                $_GET["realblog_id"],
-                FILTER_VALIDATE_INT,
-                array('options' => array('min_range' => 1))
-            ));
+            return (string) $this->showArticleAction(max((int) ($_GET["realblog_id"] ?? 1), 1));
         } else {
             return $this->defaultAction($showSeach, $category);
         }
@@ -85,13 +81,13 @@ class BlogController extends MainController
 
         $search = $this->searchTerm;
         $bridge = ucfirst($this->config["comments_plugin"]) . "\\RealblogBridge";
-        $params = ["realblog_page" => Plugin::getPage(), "realblog_search" => $search];
+        $params = ["realblog_page" => (string) Plugin::getPage(), "realblog_search" => $search];
         $records = [];
         foreach ($articles as $article) {
             $isCommentable = $this->config["comments_plugin"] && class_exists($bridge) && $article->commentable;
             $records[] = [
                 "title" => $article->title,
-                "url" => Plugin::url($su, ["realblog_id" => $article->id] + $params),
+                "url" => Plugin::url($su, ["realblog_id" => (string) $article->id] + $params),
                 "categories" => implode(", ", explode(",", trim($article->categories, ","))),
                 "link_header" => $article->hasBody || (defined("XH_ADM") && XH_ADM),
                 "date" => (string) date($this->text["date_format"], $article->date),

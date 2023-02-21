@@ -41,13 +41,7 @@ class MostPopularArticle
      */
     public $pageViews;
 
-    /**
-     * @param int $id
-     * @param string $title
-     * @param int $pageViews
-     * @return self
-     */
-    public function __construct($id, $title, $pageViews)
+    public function __construct(int $id, string $title, int $pageViews)
     {
         $this->id = $id;
         $this->title = $title;

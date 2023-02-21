@@ -77,19 +77,17 @@ class Article
      */
     public $commentable;
 
-    /**
-     * @param int $id
-     * @param int $date
-     * @param int $status
-     * @param string $categories
-     * @param string $title
-     * @param string $teaser
-     * @param bool $hasBody
-     * @param bool $feedable
-     * @param bool $commentable
-     */
-    public function __construct($id, $date, $status, $categories, $title, $teaser, $hasBody, $feedable, $commentable)
-    {
+    public function __construct(
+        int $id,
+        int $date,
+        int $status,
+        string $categories,
+        string $title,
+        string $teaser,
+        bool $hasBody,
+        bool $feedable,
+        bool $commentable
+    ) {
         $this->id = $id;
         $this->date = $date;
         $this->status = $status;

@@ -69,10 +69,12 @@ SELECT id, date, status, categories, title, teaser, length(body) AS hasBody, fee
 SQL;
         $connection = $this->db->getConnection();
         $statement = $connection->prepare($sql);
+        assert($statement !== false);
         $statement->bindValue(':status', $status, SQLITE3_INTEGER);
         $statement->bindValue(':category', "%,$category,%", SQLITE3_TEXT);
         $statement->bindValue(':search', "%$search%", SQLITE3_TEXT);
         $result = $statement->execute();
+        assert($result !== false);
         $objects = array();
         while (($record = $result->fetchArray(SQLITE3_NUM)) !== false) {
             $objects[] = new Article(...$record);
@@ -95,10 +97,12 @@ SELECT id, date, status, categories, title, teaser, length(body) AS hasBody, fee
 SQL;
         $connection = $this->db->getConnection();
         $statement = $connection->prepare($sql);
+        assert($statement !== false);
         $statement->bindValue(':status', 2, SQLITE3_INTEGER);
         $statement->bindValue(':start', $start, SQLITE3_INTEGER);
         $statement->bindValue(':end', $end, SQLITE3_INTEGER);
         $result = $statement->execute();
+        assert($result !== false);
         $objects = array();
         while (($record = $result->fetchArray(SQLITE3_NUM)) !== false) {
             $objects[] = new Article(...$record);
@@ -117,6 +121,7 @@ SELECT DISTINCT strftime('%Y', date, 'unixepoch') AS year
     FROM articles ORDER BY year
 SQL;
         $res = $db->query($sql);
+        assert($res !== false);
         $years = array();
         while (($record = $res->fetchArray(SQLITE3_ASSOC)) !== false) {
             $years[] = (int) $record['year'];
@@ -138,8 +143,10 @@ SELECT id, date, status, categories, title, teaser, length(body) AS hasBody, fee
 SQL;
         $connection = $this->db->getConnection();
         $statement = $connection->prepare($sql);
+        assert($statement !== false);
         $statement->bindValue(':text', '%' . $search . '%', SQLITE3_TEXT);
         $result = $statement->execute();
+        assert($result !== false);
         $objects = array();
         while (($record = $result->fetchArray(SQLITE3_NUM)) !== false) {
             $objects[] = new Article(...$record);
@@ -171,10 +178,13 @@ SQL;
 SELECT COUNT(*) AS count FROM articles $whereClause $categoryClause $searchClause
 SQL;
         $statement = $db->prepare($sql);
+        assert($statement !== false);
         $statement->bindValue(':category', "%,$category,%", SQLITE3_TEXT);
         $statement->bindValue(':search', "%$search%", SQLITE3_TEXT);
         $result = $statement->execute();
+        assert($result !== false);
         $record = $result->fetchArray(SQLITE3_ASSOC);
+        assert($record !== false);
         return $record['count'];
     }
 
@@ -198,6 +208,7 @@ SELECT id, date, status, trim(categories, ',') as categories, title, teaser,
 SQL;
         $connection = $this->db->getConnection();
         $result = $connection->query($sql);
+        assert($result !== false);
         $objects = array();
         while (($record = $result->fetchArray(SQLITE3_NUM)) !== false) {
             $objects[] = new Article(...$record);
@@ -218,8 +229,10 @@ SELECT id, date, status, categories, title, teaser, length(body) AS hasBody, fee
 SQL;
         $connection = $this->db->getConnection();
         $statement = $connection->prepare($sql);
+        assert($statement !== false);
         $statement->bindValue(':feedable', 1, SQLITE3_INTEGER);
         $result = $statement->execute();
+        assert($result !== false);
         $objects = array();
         while (($record = $result->fetchArray(SQLITE3_NUM)) !== false) {
             $objects[] = new Article(...$record);
@@ -242,6 +255,7 @@ SELECT articles.id, articles.title, COUNT(*) AS page_views
 SQL;
         $connection = $this->db->getConnection();
         $result = $connection->query($sql);
+        assert($result !== false);
         $objects = array();
         while (($record = $result->fetchArray(SQLITE3_NUM)) !== false) {
             $objects[] = new MostPopularArticle(...$record);
@@ -256,7 +270,9 @@ SQL;
     {
         $db = $this->db->getConnection();
         $statement = $db->prepare('SELECT DISTINCT categories FROM articles');
+        assert($statement !== false);
         $result = $statement->execute();
+        assert($result !== false);
         $categories = array();
         while (($record = $result->fetchArray(SQLITE3_ASSOC)) !== false) {
             if ($record['categories'] !== ',,') {
@@ -276,8 +292,10 @@ SQL;
     {
         $db = $this->db->getConnection();
         $statement = $db->prepare('SELECT * FROM articles WHERE id = :id');
+        assert($statement !== false);
         $statement->bindValue(':id', $id, SQLITE3_INTEGER);
         $result = $statement->execute();
+        assert($result !== false);
         $record = $result->fetchArray(SQLITE3_NUM);
         if ($record !== false) {
             return new FullArticle(...$record);
