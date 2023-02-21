@@ -78,7 +78,7 @@ class Dic
         global $pth, $plugin_tx, $sn;
 
         return new FeedLinkController(
-            "{$pth['folder']['plugin']}realblog/",
+            "{$pth['folder']['plugins']}realblog/",
             $plugin_tx['realblog'],
             $sn
         );
