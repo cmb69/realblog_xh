@@ -49,8 +49,10 @@ class DB
      */
     public function getConnection()
     {
-        $this->init();
-        assert($this->connection !== null);
+        if ($this->connection === null) {
+            $this->init();
+            assert($this->connection !== null);
+        }
         return $this->connection;
     }
 
@@ -61,6 +63,9 @@ class DB
     {
         try {
             $this->connection = new Sqlite3($this->filename, SQLITE3_OPEN_READWRITE);
+            if ($this->filename === ":memory:") {
+                $this->createDatabase();
+            }
         } catch (\Exception $ex) {
             $dirname = dirname($this->filename);
             if (!file_exists($dirname)) {
