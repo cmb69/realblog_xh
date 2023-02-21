@@ -28,16 +28,27 @@ use ApprovalTests\Approvals;
 
 class FeedControllerTest extends TestCase
 {
-    public function testDefaultActionRendersFeedWithNoArticles(): void
+    public function testRendersFeedWithNoArticles(): void
     {
-        $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
-        $conf = $plugin_cf['realblog'];
-        $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
-        $lang = $plugin_tx['realblog'];
+        $conf = XH_includeVar("./config/config.php", "plugin_cf")["realblog"];
+        $text = XH_includeVar("./languages/en.php", "plugin_tx")["realblog"];
         $finder = $this->createStub(Finder::class);
-        $finder->method('findFeedableArticles')->willReturn([]);
+        $finder->method("findFeedableArticles")->willReturn([]);
         $scriptEvaluator = $this->createStub(ScriptEvaluator::class);
-        $sut = new FeedController("./", "../../userfiles/images/", $conf, $lang, "/", $finder, $scriptEvaluator);
+        $sut = new FeedController("./", "./userfiles/images/", $conf, $text, "/", $finder, $scriptEvaluator);
+        $response = $sut();
+        Approvals::verifyHtml($response);
+    }
+
+    public function testRendersFeedWithFeedLogo(): void
+    {
+        $conf = XH_includeVar("./config/config.php", "plugin_cf")["realblog"];
+        $conf["rss_logo"] = "rss.png";
+        $text = XH_includeVar("./languages/en.php", "plugin_tx")["realblog"];
+        $finder = $this->createStub(Finder::class);
+        $finder->method("findFeedableArticles")->willReturn([]);
+        $scriptEvaluator = $this->createStub(ScriptEvaluator::class);
+        $sut = new FeedController("./", "./userfiles/images/", $conf, $text, "/", $finder, $scriptEvaluator);
         $response = $sut();
         Approvals::verifyHtml($response);
     }

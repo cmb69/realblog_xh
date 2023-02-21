@@ -25,6 +25,7 @@ namespace Realblog;
 
 use Realblog\Infra\Finder;
 use Realblog\Infra\ScriptEvaluator;
+use Realblog\Infra\Url;
 use Realblog\Infra\View;
 
 class FeedController
@@ -98,12 +99,7 @@ class FeedController
             'url' => CMSIMPLE_URL . '?' . $this->text['rss_page'],
             'managingEditor' => $this->config['rss_editor'],
             'hasLogo' => (bool) $this->config['rss_logo'],
-            'imageUrl' => preg_replace(
-                array('/\/[^\/]+\/\.\.\//', '/\/\.\//'),
-                '/',
-                CMSIMPLE_URL . $this->imageFolder
-                . $this->config['rss_logo']
-            ),
+            'imageUrl' => (new Url($this->imageFolder . $this->config['rss_logo']))->absolute(),
             'articles' => $records,
         ];
         $view = new View("{$this->pluginFolder}views/", $this->text);
