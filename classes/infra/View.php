@@ -29,64 +29,21 @@ class View
     /** @var array<string,string> */
     private $lang;
 
-    /** @var array<string,mixed> */
-    private $data = array();
-
-    /**
-     * @param string $viewFolder
-     * @param array<string,string> $lang
-     */
-    public function __construct($viewFolder, array $lang)
+    /** @param array<string,string> $lang */
+    public function __construct(string $viewFolder, array $lang)
     {
         $this->viewFolder = $viewFolder;
         $this->lang = $lang;
     }
 
-    /**
-     * @param string $name
-     * @return string
-     */
-    public function __get($name)
-    {
-        return $this->escape($this->data[$name]);
-    }
-
-    /**
-     * @param string $name
-     * @return bool
-     */
-    public function __isset($name)
-    {
-        return isset($this->data[$name]);
-    }
-
-    /**
-     * @param string $name
-     * @param list<mixed> $args
-     * @return string
-     */
-    public function __call($name, array $args)
-    {
-        return $this->escape($this->data[$name](...$args));
-    }
-
-    /**
-     * @param string $key
-     * @param float|int|string $args
-     * @return string
-     */
-    protected function text($key, ...$args)
+    /** @param scalar $args */
+    public function text(string $key, ...$args): string
     {
         return sprintf($this->lang[$key], ...$args);
     }
 
-    /**
-     * @param string $key
-     * @param int $count
-     * @param float|int|string $args
-     * @return string
-     */
-    protected function plural($key, $count, ...$args)
+    /** @param scalar $args */
+    public function plural(string $key, int $count, ...$args): string
     {
         if ($count == 0) {
             $key .= '_0';
@@ -96,31 +53,23 @@ class View
         return sprintf($this->lang[$key], $count, ...$args);
     }
 
-    /**
-     * @param string $_template
-     * @param array<string,mixed>|null $_data
-     * @return string
-     */
-    public function render($_template, array $_data = null)
+    /** @param array<string,mixed> $_data */
+    public function render(string $_template, array $_data): string
     {
-        if ($_data !== null) {
-            $this->data = $_data;
-        }
+        extract($_data);
         ob_start();
         include "{$this->viewFolder}{$_template}.php";
         return (string) ob_get_clean();
     }
 
-    /**
-     * @param mixed $value
-     * @return mixed
-     */
-    protected function escape($value)
+    /** @param scalar $value */
+    public function esc($value): string
     {
-        if (is_scalar($value)) {
-            return XH_hsc((string) $value);
-        } else {
-            return $value;
-        }
+        return XH_hsc((string) $value);
+    }
+
+    public function raw(string $value): string
+    {
+        return $value;
     }
 }

@@ -26,7 +26,6 @@ namespace Realblog;
 use Realblog\Infra\Finder;
 use Realblog\Infra\ScriptEvaluator;
 use Realblog\Infra\View;
-use Realblog\Value\Article;
 
 class FeedController
 {
@@ -79,6 +78,22 @@ class FeedController
     public function __invoke(): string
     {
         $count = (int) $this->config['rss_entries'];
+        $articles = $this->finder->findFeedableArticles($count);
+        $records = [];
+        foreach ($articles as $article) {
+            $records[] = [
+                "title" => $article->title,
+                "url" => CMSIMPLE_URL . substr(
+                    Plugin::url(
+                        $this->text["rss_page"],
+                        array('realblog_id' => (string) $article->id)
+                    ),
+                    strlen($this->scriptName)
+                ),
+                "teaser" => $this->scriptEvaluator->evaluate($article->teaser),
+                "date" => (string) date('r', $article->date),
+            ];
+        }
         $data = [
             'url' => CMSIMPLE_URL . '?' . $this->text['rss_page'],
             'managingEditor' => $this->config['rss_editor'],
@@ -89,22 +104,7 @@ class FeedController
                 CMSIMPLE_URL . $this->imageFolder
                 . $this->config['rss_logo']
             ),
-            'articles' => $this->finder->findFeedableArticles($count),
-            'articleUrl' => /** @return string */ function (Article $article) {
-                return CMSIMPLE_URL . substr(
-                    Plugin::url(
-                        $this->text["rss_page"],
-                        array('realblog_id' => (string) $article->id)
-                    ),
-                    strlen($this->scriptName)
-                );
-            },
-            'evaluatedTeaser' => /** @return string */ function (Article $article) {
-                return $this->scriptEvaluator->evaluate($article->teaser);
-            },
-            'rssDate' => /** @return string */ function (Article $article) {
-                return (string) date('r', $article->date);
-            },
+            'articles' => $records,
         ];
         $view = new View("{$this->pluginFolder}views/", $this->text);
         return '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . $view->render('feed', $data);

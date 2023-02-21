@@ -72,24 +72,20 @@ class Pagination
             return '';
         }
         $url = $this->url;
+        $pages = [];
+        foreach ($this->gatherPages() as $page) {
+            $pages[] = $page !== null ? ["num" => $page, "url" => sprintf($url, $page)] : null;
+        }
         $data = [
             'itemCount' => $this->itemCount,
             'currentPage' => $this->page,
-            'pages' => $this->gatherPages(),
-            'url' =>
-            /**
-             * @param int $page
-             * @return string
-             */
-            function ($page) use ($url) {
-                return sprintf($url, $page);
-            },
+            'pages' => $pages,
         ];
         return $this->view->render('pagination', $data);
     }
 
     /**
-     * @return int[]
+     * @return list<int|null>
      */
     private function gatherPages()
     {

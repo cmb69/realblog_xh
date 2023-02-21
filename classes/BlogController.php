@@ -25,7 +25,6 @@ namespace Realblog;
 
 use Realblog\Infra\Pagination;
 use Realblog\Value\Article;
-use Realblog\Value\HtmlString;
 
 class BlogController extends MainController
 {
@@ -85,61 +84,38 @@ class BlogController extends MainController
         global $su;
 
         $search = $this->searchTerm;
-        $data = [
-            'articles' => $articles,
-            'heading' => $this->config['heading_level'],
-            'isHeadingAboveMeta' => $this->config['heading_above_meta'],
-            'pagination' => new Pagination(
-                $articleCount,
-                $page,
-                $pageCount,
-                Plugin::url($su, array('realblog_page' => '%s', 'realblog_search' => $search)),
-                $this->view
-            ),
-            'hasTopPagination' => (bool) $this->config['pagination_top'],
-            'hasBottomPagination' => (bool) $this->config['pagination_bottom'],
-            'url' => /** @return string */ function (Article $article) use ($search) {
-                global $su;
-
-                return Plugin::url(
-                    $su,
-                    array(
-                        'realblog_id' => $article->id,
-                        'realblog_page' => Plugin::getPage(),
-                        'realblog_search' => $search
-                    )
-                );
-            },
-            'categories' => /** @return string */ function (Article $article) {
-                $categories = explode(',', trim($article->categories, ','));
-                return implode(', ', $categories);
-            },
-            'hasLinkedHeader' => /** @return bool */ function (Article $article) {
-                return $article->hasBody || (defined("XH_ADM") && XH_ADM);
-            },
-            'date' => /** @return string */ function (Article $article) {
-                return (string) date($this->text['date_format'], $article->date);
-            },
-            'teaser' => /** @return HtmlString */ function (Article $article) {
-                return new HtmlString($this->scriptEvaluator->evaluate($article->teaser));
-            },
-            'hasReadMore' => /** @return bool */ function (Article $article) {
-                return $this->config['show_read_more_link']
-                    && $article->hasBody;
-            },
-            'isCommentable' => /** @return bool */ function (Article $article) {
-                return $this->config['comments_plugin']
-                    && class_exists(ucfirst($this->config['comments_plugin']) . '\\RealblogBridge')
-                    && $article->commentable;
-            },
-            'commentCount' => /** @return int */ function (Article $article) {
-                /** @var class-string $bridge */
-                $bridge = ucfirst($this->config['comments_plugin']) . '\\RealblogBridge';
-                $commentsId = "realblog{$article->id}";
-                return $bridge::count($commentsId);
-            },
-        ];
-        return $this->view->render('articles', $data);
+        $bridge = ucfirst($this->config["comments_plugin"]) . "\\RealblogBridge";
+        $params = ["realblog_page" => Plugin::getPage(), "realblog_search" => $search];
+        $records = [];
+        foreach ($articles as $article) {
+            $isCommentable = $this->config["comments_plugin"] && class_exists($bridge) && $article->commentable;
+            $records[] = [
+                "title" => $article->title,
+                "url" => Plugin::url($su, ["realblog_id" => $article->id] + $params),
+                "categories" => implode(", ", explode(",", trim($article->categories, ","))),
+                "link_header" => $article->hasBody || (defined("XH_ADM") && XH_ADM),
+                "date" => (string) date($this->text["date_format"], $article->date),
+                "teaser" => $this->scriptEvaluator->evaluate($article->teaser),
+                "read_more" => $this->config["show_read_more_link"]  && $article->hasBody,
+                "commentable" => $isCommentable,
+                "comment_count" => $isCommentable ? $bridge::count("realblog{$article->id}") : null,
+            ];
+        }
+        $pagination = new Pagination(
+            $articleCount,
+            $page,
+            $pageCount,
+            Plugin::url($su, array("realblog_page" => "%s", "realblog_search" => $search)),
+            $this->view
+        );
+        return $this->view->render("articles", [
+            "articles" => $records,
+            "heading" => $this->config["heading_level"],
+            "heading_above_meta" => $this->config["heading_above_meta"],
+            "pagination" => $pagination->render(),
+            "top_pagination" => (bool) $this->config["pagination_top"],
+            "bottom_pagination" => (bool) $this->config["pagination_bottom"],
+        ]);
     }
 
     /**

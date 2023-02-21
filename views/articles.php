@@ -1,54 +1,68 @@
+<?php
+
+use Realblog\Infra\View;
+
+/**
+ * @var View $this
+ * @var list<array{title:string,url:string,categories:string,link_header:bool,date:string,teaser:html,read_more:bool,commentable:bool,comment_count:int}> $articles
+ * @var html $pagination
+ * @var bool $top_pagination
+ * @var bool $bottom_pagination
+ * @var string $heading
+ * @var bool $heading_above_meta
+ */
+?>
 <!-- realblog articles -->
 <div class="realblog_show_box">
-<?php if ($this->hasTopPagination):?>
-    <?=$this->pagination->render()?>
-<?php endif?>
-    <div id="realblog_entries_preview" class="realblog_entries_preview">
-<?php foreach ($this->articles as $article):?>
-        <div class="realblog_entry_preview">
-<?php if ($this->isHeadingAboveMeta):?>
-            <div class="realblog_article_meta">
-                <span class="realblog_meta_date"><?=$this->text('message_published_on', $this->date($article))?></span>
-<?php   if ($this->categories($article)):?>
-                <span class="realblog_meta_categories"><?=$this->text('message_filed_under', $this->categories($article))?></span>
-<?php   endif?>
-<?php   if ($this->isCommentable($article)):?>
-                <span class="realblog_meta_comments"><?=$this->plural('message_comments', $this->commentCount($article))?></span>
-<?php   endif?>
-            </div>
-<?php endif?>
-            <<?=$this->heading?>>
-<?php   if ($this->hasLinkedHeader($article)):?>
-                <a href="<?=$this->url($article)?>" title="<?=$this->text('tooltip_view')?>">
-<?php   endif?>
-                <?=$this->escape($article->title)?>
-<?php   if ($this->hasLinkedHeader($article)):?>
-                </a>
-<?php   endif?>
-            </<?=$this->heading?>>
-<?php if (!$this->isHeadingAboveMeta):?>
-            <div class="realblog_article_meta">
-                <span class="realblog_meta_date"><?=$this->text('message_published_on', $this->date($article))?></span>
-<?php   if ($this->categories($article)):?>
-                <span class="realblog_meta_categories"><?=$this->text('message_filed_under', $this->categories($article))?></span>
-<?php   endif?>
-<?php   if ($this->isCommentable($article)):?>
-                <span class="realblog_meta_comments"><?=$this->plural('message_comments', $this->commentCount($article))?></span>
-<?php   endif?>
-            </div>
-<?php endif?>
-            <div class="realblog_show_story"><?=$this->teaser($article)?></div>
-<?php   if ($this->hasReadMore($article)):?>
-            <div class="realblog_entry_footer">
-                <p class="realblog_read_more">
-                    <a class="realblog_button" href="<?=$this->url($article)?>" title="<?=$this->text('tooltip_view')?>"><?=$this->text('read_more')?></a>
-                </p>
-            </div>
-<?php   endif?>
-        </div>
-<?php endforeach?>
+<?if ($top_pagination):?>
+  <?=$this->raw($pagination)?>
+<?endif?>
+  <div id="realblog_entries_preview" class="realblog_entries_preview">
+<?foreach ($articles as $article):?>
+    <div class="realblog_entry_preview">
+<?if ($heading_above_meta):?>
+      <div class="realblog_article_meta">
+        <span class="realblog_meta_date"><?=$this->text('message_published_on', $article['date'])?></span>
+<?  if ($article['categories']):?>
+        <span class="realblog_meta_categories"><?=$this->text('message_filed_under', $article['categories'])?></span>
+<?  endif?>
+<?  if ($article['commentable']):?>
+        <span class="realblog_meta_comments"><?=$this->plural('message_comments', $article['comment_count'])?></span>
+<?  endif?>
+      </div>
+<?endif?>
+      <<?=$heading?>>
+<?  if ($article['link_header']):?>
+        <a href="<?=$this->esc($article['url'])?>" title="<?=$this->text('tooltip_view')?>">
+<?  endif?>
+        <?=$this->esc($article['title'])?>
+<?  if ($article['link_header']):?>
+        </a>
+<?  endif?>
+      </<?=$heading?>>
+<?if (!$heading_above_meta):?>
+      <div class="realblog_article_meta">
+        <span class="realblog_meta_date"><?=$this->text('message_published_on', $article['date'])?></span>
+<?  if ($article['categories']):?>
+        <span class="realblog_meta_categories"><?=$this->text('message_filed_under', $article['categories'])?></span>
+<?  endif?>
+<?  if ($article['commentable']):?>
+        <span class="realblog_meta_comments"><?=$this->plural('message_comments', $article['comment_count'])?></span>
+<?  endif?>
+      </div>
+<?endif?>
+      <div class="realblog_show_story"><?=$this->raw($article['teaser'])?></div>
+<?  if ($article['link_header']):?>
+      <div class="realblog_entry_footer">
+        <p class="realblog_read_more">
+          <a class="realblog_button" href="<?=$this->esc($article['url'])?>" title="<?=$this->text('tooltip_view')?>"><?=$this->text('read_more')?></a>
+        </p>
+      </div>
+<?  endif?>
     </div>
-<?php if ($this->hasBottomPagination):?>
-    <?=$this->pagination->render()?>
-<?php endif?>
+<?endforeach?>
+  </div>
+<?if ($bottom_pagination):?>
+  <?=$this->raw($pagination)?>
+<?endif?>
 </div>

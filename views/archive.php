@@ -1,34 +1,48 @@
+<?php
+
+use Realblog\Infra\View;
+
+/**
+ * @var View $this
+ * @var bool $isSearch
+ * @var list<list<array{title:string,date:string,url:string,year:string,month:string}>> $articles
+ * @var string $heading
+ * @var int $year
+ * @var string|null $backUrl
+ * @var string|null $nextUrl
+ */
+?>
 <!-- realblog archive -->
 <div class="realblog_archive_container">
 
-<?php if (!$this->isSearch):?>
+<?if (!$isSearch):?>
 
-    <div class="realblog_table_paging">
-<?php   if (isset($this->backUrl)):?>
-        <a href="<?=$this->backUrl?>" title="<?=$this->text('tooltip_previousyear')?>">◀</a>
-<?php   endif?>
-        <span class="realblog_archive_title"><?=$this->text('archive_year')?> <?=$this->year?></span>
-<?php   if (isset($this->nextUrl)):?>
-        <a href="<?=$this->nextUrl?>" title="<?=$this->text('tooltip_nextyear')?>">▶</a>
-<?php   endif?>
-    </div>
+  <div class="realblog_table_paging">
+<?  if (isset($backUrl)):?>
+    <a href="<?=$this->esc($backUrl)?>" title="<?=$this->text('tooltip_previousyear')?>">◀</a>
+<?  endif?>
+    <span class="realblog_archive_title"><?=$this->text('archive_year')?> <?=$this->esc($year)?></span>
+<?  if (isset($nextUrl)):?>
+    <a href="<?=$this->esc($nextUrl)?>" title="<?=$this->text('tooltip_nextyear')?>">▶</a>
+<?  endif?>
+  </div>
 
-<?php endif?>
+<?endif?>
 
-<?php if (!empty($this->articles)):?>
-<?php   foreach ($this->articles as $group):?>
-    <<?=$this->heading?>><?=$this->monthName($this->monthOf($group[0]))?> <?=$this->escape($this->yearOf($group[0]))?></<?=$this->heading?>>
-    <ul class="realblog_archive">
-<?php       foreach ($group as $article):?>
-        <li>
-            <?=$this->formatDate($article)?>
-            <a href="<?=$this->url($article)?>" title="<?=$this->text('tooltip_view')?>"><?=$this->escape($article->title)?></a>
-        </li>
-<?php       endforeach?>
-    </ul>
-<?php   endforeach?>
-<?php else:?>
-    <p><?=$this->text('no_topics')?></p>
-<?php endif?>
+<?if (!empty($articles)):?>
+<?  foreach ($articles as $group):?>
+  <<?=$this->esc($heading)?>><?=$this->esc($group[0]['month'])?> <?=$this->esc($group[0]['year'])?></<?=$this->esc($heading)?>>
+  <ul class="realblog_archive">
+<?    foreach ($group as $article):?>
+    <li>
+      <?=$this->esc($article['date'])?>
+      <a href="<?=$this->esc($article['url'])?>" title="<?=$this->text('tooltip_view')?>"><?=$this->esc($article['title'])?></a>
+    </li>
+<?    endforeach?>
+  </ul>
+<?  endforeach?>
+<?else:?>
+  <p><?=$this->text('no_topics')?></p>
+<?endif?>
 
 </div>

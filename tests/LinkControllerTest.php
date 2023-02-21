@@ -36,6 +36,7 @@ class LinkControllerTest extends TestCase
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $lang = $plugin_tx['realblog'];
         $finder = $this->createStub(Finder::class);
+        $finder->method("findArticles")->willReturn([]);
         $view = new View("./views/", $lang);
         $scriptEvaluator = $this->createStub(ScriptEvaluator::class);
         $sut = new LinkController($conf, $lang, ["foo"], $finder, $view, $scriptEvaluator);

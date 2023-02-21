@@ -27,9 +27,7 @@ use Realblog\Infra\DB;
 use Realblog\Infra\Finder;
 use Realblog\Infra\ScriptEvaluator;
 use Realblog\Infra\View;
-use Realblog\Value\Article;
 use Realblog\Value\FullArticle;
-use Realblog\Value\HtmlString;
 
 abstract class MainController
 {
@@ -150,29 +148,32 @@ abstract class MainController
         } else {
             $params = array('realblog_page' => (string) Plugin::getPage());
         }
+
+        $bridge = ucfirst($this->config['comments_plugin']) . '\\RealblogBridge';
+
         $data = [
-            'article' => $article,
+            'title' => $article->title,
             'heading' => $this->config['heading_level'],
-            'isHeadingAboveMeta' => $this->config['heading_above_meta'],
-            'isAdmin' => defined("XH_ADM") && XH_ADM,
-            'wantsComments' => $this->wantsComments(),
-            'backText' => $article->status === 2 ? $this->text['archiv_back'] : $this->text['blog_back'],
-            'backUrl' => Plugin::url($su, $params),
+            'heading_above_meta' => $this->config['heading_above_meta'],
+            'is_admin' => defined("XH_ADM") && XH_ADM,
+            'wants_comments' => $this->wantsComments(),
+            'back_text' => $article->status === 2 ? $this->text['archiv_back'] : $this->text['blog_back'],
+            'back_url' => Plugin::url($su, $params),
         ];
         if ($this->searchTerm) {
             $params['realblog_search'] = $this->searchTerm;
-            $data['backToSearchUrl'] = Plugin::url($su, $params);
+            $data['back_to_search_url'] = Plugin::url($su, $params);
         }
-        $data['editUrl'] = "$sn?&realblog&admin=plugin_main"
+        $data['edit_url'] = "$sn?&realblog&admin=plugin_main"
             . "&action=edit&realblog_id={$article->id}";
         if ($this->wantsComments()) {
             /** @var class-string $bridge */
-            $bridge = ucfirst($this->config['comments_plugin']) . '\\RealblogBridge';
             $commentsUrl = $bridge::getEditUrl("realblog{$article->id}");
             if ($commentsUrl !== false) {
-                $data['editCommentsUrl'] = $commentsUrl;
+                $data['edit_comments_url'] = $commentsUrl;
             }
-            $data['commentCount'] = $bridge::count("realblog{$article->id}");
+            $data['comment_count'] = $bridge::count("realblog{$article->id}");
+            $data["comments"] = $bridge::handle("realblog{$article->id}");
         }
         $data['date'] = date($this->text['date_format'], $article->date);
         $categories = explode(',', trim($article->categories, ','));
@@ -182,15 +183,7 @@ abstract class MainController
         } else {
             $story = ($article->body != '') ? $article->body : $article->teaser;
         }
-        $data['story'] = new HtmlString($this->scriptEvaluator->evaluate($story));
-        $data['renderComments'] = /** @return HtmlString|null */ function (Article $article) {
-            if ($article->commentable) {
-                $commentId = "realblog{$article->id}";
-                /** @var class-string $bridge */
-                $bridge = ucfirst($this->config['comments_plugin']) . '\\RealblogBridge';
-                return new HtmlString($bridge::handle($commentId));
-            }
-        };
+        $data['story'] = $this->scriptEvaluator->evaluate($story);
         return $this->view->render('article', $data);
     }
 

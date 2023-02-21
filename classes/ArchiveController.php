@@ -103,41 +103,35 @@ class ArchiveController extends MainController
     {
         global $su;
 
-        $data = [
-            'isSearch' => $isSearch,
-            'articles' => $this->groupArticlesByMonth($articles),
-            'heading' => $this->config['heading_level'],
-            'year' => $this->year,
-            'url' => /** @return string */ function (Article $article) {
-                global $su;
-
-                return Plugin::url(
+        $monthNames = explode(',', $this->text['date_months']);
+        $records = [];
+        foreach ($this->groupArticlesByMonth($articles) as $group) {
+            $groupRecords = [];
+            foreach ($group as $article) {
+                $url = Plugin::url(
                     $su,
-                    array(
+                    [
                         'realblog_id' => $article->id,
                         'realblog_year' => date('Y', $article->date),
-                        'realblog_search' => filter_input(INPUT_GET, 'realblog_search')
-                    )
+                        'realblog_search' => filter_input(INPUT_GET, 'realblog_search'),
+                    ]
                 );
-            },
-            'formatDate' => /** @return string */ function (Article $article) {
-                return (string) date($this->text['date_format'], $article->date);
-            },
-            'yearOf' => /** @return string */ function (Article $article) {
-                return (string) date('Y', $article->date);
-            },
-            'monthOf' => /** @return string */ function (Article $article) {
-                return (string) date('n', $article->date);
-            },
-            'monthName' =>
-            /**
-             * @param int $month
-             * @return string
-             */
-            function ($month) {
-                $monthNames = explode(',', $this->text['date_months']);
-                return $monthNames[$month - 1];
-            },
+                $groupRecords[] = [
+                    "title" => $article->title,
+                    "date" => (string) date($this->text['date_format'], $article->date),
+                    "url" => $url,
+                    "year" => idate('Y', $article->date),
+                    "month" => $monthNames[idate('n', $article->date) - 1],
+                ];
+            }
+            $records[] = $groupRecords;
+        }
+
+        $data = [
+            'isSearch' => $isSearch,
+            'articles' => $records,
+            'heading' => $this->config['heading_level'],
+            'year' => $this->year,
         ];
         if ($back) {
             $data['backUrl'] = Plugin::url($su, array('realblog_year' => (string) $back));

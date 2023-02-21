@@ -1,78 +1,78 @@
 <!-- realblog article form -->
 <div class="realblog_fields_block">
-    <h1>Realblog – Create new article</h1>
-    <form name="realblog" method="post" action="/?&amp;realblog&amp;admin=plugin_main">
-        <input type="hidden" name="action" value="do_create">
-        <input type="hidden" name="realblog_id" value="0">
-        <input type="hidden" name="realblog_version" value="0">
-        <input type="hidden" name="xh_csrf_token" value="">
-        <table>
-            <tr>
-                <td><label for="date1" class="realblog_label">date</label></td>
-                <td><label for="date2" class="realblog_label">publishing</label></td>
-                <td><label for="date3" class="realblog_label">archiving</span></label>
-            </tr>
-            <tr>
-                <td>
-                    <input type="hidden" name="realblog_date_exact" value="1675205155">
-                    <input type="hidden" name="realblog_date_old" value="2023-01-31">
-                    <input type="date" name="realblog_date" id="realblog_date1" required="required" value="2023-01-31">
-                    <img src="./images/calendar.png" id="realblog_trig_date1" class="realblog_date_selector" title="select date" alt="">
-                </td>
-                <td>
-                    <span>auto publishing disabled</span>
-                    <input type="hidden" name="realblog_startdate" value="2038-01-19">
-                </td>
-                <td>
-                    <span>auto archiving disabled</span>
-                    <input type="hidden" name="realblog_enddate" value="2038-01-19">
-                </td>
-            </tr>
-            <tr>
-                <td><label for="realblog_status" class="realblog_label">Status</label></td>
-                <td colspan="2"></td>
-            </tr>
-            <tr>
-                <td>
-                    <select id="realblog_status" name="realblog_status">
-                        <option value="0" selected>not published</option>
-                        <option value="1" >published</option>
-                        <option value="2" >archived</option>
-                    </select>
-                </td>
-                <td>
-                    <label>
-                        <input type="checkbox" name="realblog_comments" >
-                        <span>enable comments function</span>
-                    </label>
-                </td>
-                <td>
-                    <label>
-                        <input type="checkbox" name="realblog_rssfeed" >
-                        <span>RSS feed</span>
-                    </label>
-                </td>
-            </tr>
-        </table>
-        <p>
-            <label for="realblog_categories" class="realblog_label">Categories</label>
-            <input type="text" id="realblog_categories" name="realblog_categories" value="" size="50">
-            <select id="realblog_category_select">
-                <option>Add Category:</option>
-            </select>
-        </p>
-        <p>
-            <label for="realblog_title" class="realblog_label">title</label>
-            <input type="text" id="realblog_title" name="realblog_title" value="" size="50">
-        </p>
-        <p>
-            <label for="realblog_headline" class="realblog_label">teaser</label>
-            <textarea class="realblog_headline_field" id="realblog_headline" name="realblog_headline" rows="6" cols="60"></textarea>
-        </p>
-        <p>
-            <label for="realblog_story" class="realblog_label">entry</label>
-            <textarea class="realblog_story_field" id="realblog_story" name="realblog_story" rows="30" cols="80"></textarea>
-        </p>
-        <p style="text-align: center"><input type="submit" name="save" value="Create"></p>
-    </form>
+  <h1>Realblog – Create new article</h1>
+  <form name="realblog" method="post" action="/?&amp;realblog&amp;admin=plugin_main">
+    <input type="hidden" name="action" value="do_create">
+    <input type="hidden" name="realblog_id" value="0">
+    <input type="hidden" name="realblog_version" value="0">
+    <input type="hidden" name="xh_csrf_token" value="">
+    <table>
+      <tr>
+        <td><label for="date1" class="realblog_label">date</label></td>
+        <td><label for="date2" class="realblog_label">publishing</label></td>
+        <td><label for="date3" class="realblog_label">archiving</span></label>
+      </tr>
+      <tr>
+        <td>
+          <input type="hidden" name="realblog_date_exact" value="1675205155">
+          <input type="hidden" name="realblog_date_old" value="2023-01-31">
+          <input type="date" name="realblog_date" id="realblog_date1" required="required" value="2023-01-31">
+          <img src="./images/calendar.png" id="realblog_trig_date1" class="realblog_date_selector" title="select date" alt="">
+        </td>
+        <td>
+          <span>auto publishing disabled</span>
+          <input type="hidden" name="realblog_startdate" value="2038-01-19">
+        </td>
+        <td>
+          <span>auto archiving disabled</span>
+          <input type="hidden" name="realblog_enddate" value="2038-01-19">
+        </td>
+      </tr>
+      <tr>
+        <td><label for="realblog_status" class="realblog_label">Status</label></td>
+        <td colspan="2"></td>
+      </tr>
+      <tr>
+        <td>
+          <select id="realblog_status" name="realblog_status">
+            <option value="0" selected>not published</option>
+            <option value="1" >published</option>
+            <option value="2" >archived</option>
+          </select>
+        </td>
+        <td>
+          <label>
+            <input type="checkbox" name="realblog_comments" >
+            <span>enable comments function</span>
+          </label>
+        </td>
+        <td>
+          <label>
+            <input type="checkbox" name="realblog_rssfeed" >
+            <span>RSS feed</span>
+          </label>
+        </td>
+      </tr>
+    </table>
+    <p>
+      <label for="realblog_categories" class="realblog_label">Categories</label>
+      <input type="text" id="realblog_categories" name="realblog_categories" value="" size="50">
+      <select id="realblog_category_select">
+        <option>Add Category:</option>
+      </select>
+    </p>
+    <p>
+      <label for="realblog_title" class="realblog_label">title</label>
+      <input type="text" id="realblog_title" name="realblog_title" value="" size="50">
+    </p>
+    <p>
+      <label for="realblog_headline" class="realblog_label">teaser</label>
+      <textarea class="realblog_headline_field" id="realblog_headline" name="realblog_headline" rows="6" cols="60"></textarea>
+    </p>
+    <p>
+      <label for="realblog_story" class="realblog_label">entry</label>
+      <textarea class="realblog_story_field" id="realblog_story" name="realblog_story" rows="30" cols="80"></textarea>
+    </p>
+    <p style="text-align: center"><input type="submit" name="save" value="Create"></p>
+  </form>
 </div>

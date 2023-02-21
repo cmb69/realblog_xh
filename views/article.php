@@ -1,55 +1,78 @@
+<?php
+
+use Realblog\Infra\View;
+
+/**
+ * @var View $this
+ * @var string $title
+ * @var string $heading
+ * @var bool $heading_above_meta
+ * @var bool $is_admin
+ * @var bool $wants_comments
+ * @var string $back_text
+ * @var string $back_url
+ * @var string|null $back_to_search_url
+ * @var string $edit_url
+ * @var string|null $edit_comments_url
+ * @var int|null $comment_count
+ * @var string $date
+ * @var string $categories
+ * @var html $story
+ * @var html $comments
+ */
+?>
 <!-- realblog article -->
 <div class="realblog_article">
 
-    <div class="realblog_show_box">
-    
-        <div class="realblog_buttons">
-<?php if (isset($this->backToSearchUrl)):?>
-            <a class="realblog_button" href="<?=$this->backToSearchUrl?>"><?=$this->text('search_back')?></a>
-<?php endif?>
-            <a class="realblog_button" href="<?=$this->backUrl?>"><?=$this->backText?></a>
-<?php if ($this->isAdmin):?>
-<?php   if ($this->wantsComments && isset($this->editCommentsUrl)):?>
-            <a class="realblog_button" href="<?=$this->editCommentsUrl?>"><?=$this->text('comment_edit')?></a>
-<?php   endif?>
-            <a class="realblog_button" href="<?=$this->editUrl?>"><?=$this->text('entry_edit')?></a>
-<?php endif?>
-        </div>
+  <div class="realblog_show_box">
 
-<?php if (!$this->isHeadingAboveMeta):?>
-        <<?=$this->heading?>><?=$this->escape($this->article->title)?></<?=$this->heading?>>
-<?php endif?>
-        <div class="realblog_article_meta">
-            <span class="realblog_meta_date"><?=$this->text('message_published_on', $this->date)?></span>
-<?php if ($this->categories):?>
-            <span class="realblog_meta_categories"><?=$this->text('message_filed_under', $this->categories)?></span>
-<?php endif?>
-<?php if (isset($this->commentCount)):?>
-            <span class="realblog_meta_comments"><?=$this->plural('message_comments', $this->commentCount)?></span>
-<?php endif?>
-        </div>
-<?php if ($this->isHeadingAboveMeta):?>
-        <<?=$this->heading?>><?=$this->escape($this->article->title)?></<?=$this->heading?>>
-<?php endif?>
-        <div class="realblog_show_story_entry"><?=$this->story?></div>
-    
-        <div class="realblog_buttons">
-<?php if (isset($this->backToSearchUrl)):?>
-            <a class="realblog_button" href="<?=$this->backToSearchUrl?>"><?=$this->text('search_back')?></a>
-<?php endif?>
-            <a class="realblog_button" href="<?=$this->backUrl?>"><?=$this->backText?></a>
-<?php if ($this->isAdmin):?>
-<?php   if ($this->wantsComments && isset($this->editCommentsUrl)):?>
-            <a class="realblog_button" href="<?=$this->editCommentsUrl?>"><?=$this->text('comment_edit')?></a>
-<?php   endif?>
-            <a class="realblog_button" href="<?=$this->editUrl?>"><?=$this->text('entry_edit')?></a>
-<?php endif?>
-        </div>
-    
+    <div class="realblog_buttons">
+<?if (isset($back_to_search_url)):?>
+      <a class="realblog_button" href="<?=$this->esc($back_to_search_url)?>"><?=$this->text('search_back')?></a>
+<?endif?>
+      <a class="realblog_button" href="<?=$this->esc($back_url)?>"><?=$this->esc($back_text)?></a>
+<?if ($is_admin):?>
+<?  if ($wants_comments && isset($edit_comments_url)):?>
+      <a class="realblog_button" href="<?=$this->esc($edit_comments_url)?>"><?=$this->text('comment_edit')?></a>
+<?  endif?>
+      <a class="realblog_button" href="<?=$this->esc($edit_url)?>"><?=$this->text('entry_edit')?></a>
+<?endif?>
     </div>
 
-<?php if ($this->wantsComments):?>
-    <?=$this->renderComments($this->article)?>
-<?php endif?>
+<?if (!$heading_above_meta):?>
+    <<?=$this->esc($heading)?>><?=$this->esc($title)?></<?=$this->esc($heading)?>>
+<?endif?>
+    <div class="realblog_article_meta">
+      <span class="realblog_meta_date"><?=$this->text('message_published_on', $date)?></span>
+<?if ($categories):?>
+      <span class="realblog_meta_categories"><?=$this->text('message_filed_under', $categories)?></span>
+<?endif?>
+<?if (isset($comment_count)):?>
+      <span class="realblog_meta_comments"><?=$this->plural('message_comments', $comment_count)?></span>
+<?endif?>
+    </div>
+<?if ($heading_above_meta):?>
+    <<?=$this->esc($heading)?>><?=$this->esc($title)?></<?=$this->esc($heading)?>>
+<?endif?>
+    <div class="realblog_show_story_entry"><?=$this->raw($story)?></div>
+
+    <div class="realblog_buttons">
+<?if (isset($back_to_search_url)):?>
+      <a class="realblog_button" href="<?=$this->esc($back_to_search_url)?>"><?=$this->text('search_back')?></a>
+<?endif?>
+      <a class="realblog_button" href="<?=$this->esc($back_url)?>"><?=$this->esc($back_text)?></a>
+<?if ($is_admin):?>
+<?  if ($wants_comments && isset($edit_comments_url)):?>
+      <a class="realblog_button" href="<?=$this->esc($edit_comments_url)?>"><?=$this->text('comment_edit')?></a>
+<?  endif?>
+      <a class="realblog_button" href="<?=$this->esc($edit_url)?>"><?=$this->text('entry_edit')?></a>
+<?endif?>
+    </div>
+
+  </div>
+
+<?if ($wants_comments):?>
+  <?=$this->raw($comments)?>
+<?endif?>
 
 </div>

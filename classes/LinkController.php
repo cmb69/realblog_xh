@@ -26,8 +26,6 @@ namespace Realblog;
 use Realblog\Infra\Finder;
 use Realblog\Infra\ScriptEvaluator;
 use Realblog\Infra\View;
-use Realblog\Value\Article;
-use Realblog\Value\HtmlString;
 
 class LinkController
 {
@@ -75,20 +73,20 @@ class LinkController
         if (!in_array($pageUrl, $this->urls) || $this->config['links_visible'] <= 0) {
             return "";
         }
-        $pageUrl = $pageUrl;
+        $articles = $this->finder->findArticles(1, (int) $this->config['links_visible']);
+        $records = [];
+        foreach ($articles as $article) {
+            $records[] = [
+                "title" => $article->title,
+                "date" => date($this->text['date_format'], $article->date),
+                "url" => Plugin::url($pageUrl, array('realblog_id' => (string) $article->id)),
+                "teaser" => $this->scriptEvaluator->evaluate($article->teaser),
+            ];
+        }
         $data = [
-            'articles' => $this->finder->findArticles(1, (int) $this->config['links_visible']),
+            'articles' => $records,
             'heading' => $this->config['heading_level'],
-            'formatDate' => /** @return string */ function (Article $article) {
-                return date($this->text['date_format'], $article->date);
-            },
-            'url' => /** @return string */ function (Article $article) use ($pageUrl) {
-                return Plugin::url($pageUrl, array('realblog_id' => (string) $article->id));
-            },
             'showTeaser' => $showTeaser,
-            'teaser' => /** @return HtmlString */ function (Article $article) {
-                return new HtmlString($this->scriptEvaluator->evaluate($article->teaser));
-            },
         ];
         return $this->view->render('latest', $data);
     }

@@ -50,18 +50,18 @@ class InfoController
 
     public function __invoke(): string
     {
+        $checks = [];
+        foreach ((new SystemCheck)->getChecks() as $label => $state) {
+            $checks[] = [
+                "label" => $label,
+                "state" => $state,
+                "image" => "{$this->pluginFolder}images/$state.png",
+            ];
+        }
         $data = [
             'version' => Plugin::VERSION,
             'heading' => $this->conf['heading_level'],
-            'checks' => (new SystemCheck)->getChecks(),
-            'imageURL' =>
-                /**
-                 * @param string $state
-                 * @return string
-                 */
-                function ($state) {
-                    return "{$this->pluginFolder}images/$state.png";
-                },
+            'checks' => $checks,
         ];
         return $this->view->render('info', $data);
     }

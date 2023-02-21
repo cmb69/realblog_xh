@@ -56,13 +56,16 @@ class MostPopularController
         if (!in_array($pageUrl, $this->urls) || $this->config['links_visible'] <= 0) {
             return "";
         }
-        $pageUrl = $pageUrl;
+        $articles = $this->finder->findMostPopularArticles((int) $this->config['links_visible']);
+        $records = [];
+        foreach ($articles as $article) {
+            $record = get_object_vars($article);
+            $record["url"] = Plugin::url($pageUrl, ["realblog_id" => (string) $article->id]);
+            $records[] = $record;
+        }
         $data = [
-            'articles' => $this->finder->findMostPopularArticles((int) $this->config['links_visible']),
+            'articles' => $records,
             'heading' => $this->config['heading_level'],
-            'url' => /** @return string */ function (MostPopularArticle $article) use ($pageUrl) {
-                return Plugin::url($pageUrl, array('realblog_id' => (string) $article->id));
-            },
         ];
         return $this->view->render('most-popular', $data);
     }

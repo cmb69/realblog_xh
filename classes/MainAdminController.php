@@ -167,34 +167,38 @@ class MainAdminController
      */
     private function renderArticles(array $articles, $pageCount)
     {
+        $states = ['readyforpublishing', 'published', 'archived'];
+        $filters = [];
+        foreach (array_keys($states) as $i) {
+            $filters[] = Plugin::getFilter($i);
+        }
+        $page = min(max($this->page, 0), $pageCount);
+        $records = [];
+        foreach ($articles as $article) {
+            $records[] = [
+                "id" => $article->id,
+                "date" => (string) date($this->text['date_format'], $article->date),
+                "status" => $article->status,
+                "categories" => $article->categories,
+                "title" => $article->title,
+                "feedable" => $article->feedable,
+                "commentable" => $article->commentable,
+                "delete_url" => "{$this->scriptName}?&realblog&admin=plugin_main&action=delete"
+                    . "&realblog_id={$article->id}&realblog_page=$page",
+                "edit_url" => "{$this->scriptName}?&realblog&admin=plugin_main&action=edit"
+                    . "&realblog_id={$article->id}&realblog_page=$page",
+            ];
+        }
         $data = [
             'imageFolder' => "{$this->pluginFolder}images/",
-            'page' => $page = min(max($this->page, 0), $pageCount),
+            'page' => $page,
             'prevPage' => max($page - 1, 1),
             'nextPage' => min($page + 1, $pageCount),
             'lastPage' => $pageCount,
-            'articles' => $articles,
+            'articles' => $records,
             'actionUrl' => $this->scriptName,
-            'deleteUrl' => /** @return string */ function (Article $article) use ($page) {
-                return "{$this->scriptName}?&realblog&admin=plugin_main&action=delete"
-                    . "&realblog_id={$article->id}&realblog_page=$page";
-            },
-            'editUrl' => /** @return string */ function (Article $article) use ($page) {
-                return "{$this->scriptName}?&realblog&admin=plugin_main&action=edit"
-                    . "&realblog_id={$article->id}&realblog_page=$page";
-            },
-            'states' => array('readyforpublishing', 'published', 'archived'),
-            'hasFilter' =>
-            /**
-             * @param int $num
-             * @return bool
-             */
-            function ($num) {
-                return Plugin::getFilter($num);
-            },
-            'formatDate' => /** @return string */ function (Article $article) {
-                return (string) date($this->text['date_format'], $article->date);
-            },
+            'states' => $states,
+            'filters' => $filters,
         ];
         return $this->view->render('articles-form', $data);
     }
@@ -265,18 +269,13 @@ class MainAdminController
         $data = [
             'article' => $article,
             'title' => $title,
+            'date' => (string) date('Y-m-d', $article->date),
+            'publishing_date' => (string) date('Y-m-d', $article->publishingDate),
+            'archiving_date' => (string) date('Y-m-d', $article->archivingDate),
             'actionUrl' => "{$this->scriptName}?&realblog&admin=plugin_main",
             'action' => "do_{$action}",
             'csrfToken' => $this->getCsrfToken(),
             'calendarIcon' => "{$this->pluginFolder}images/calendar.png",
-            'formatDate' =>
-            /**
-             * @param int $time
-             * @return string
-             */
-            function ($time) {
-                return (string) date('Y-m-d', $time);
-            },
             'isAutoPublish' => $this->config['auto_publish'],
             'isAutoArchive' => $this->config['auto_archive'],
             'states' => array('readyforpublishing', 'published', 'archived'),
