@@ -88,17 +88,4 @@ class Plugin
         }
         return $page;
     }
-
-    public static function getFilter(int $num): bool
-    {
-        $varname = "realblog_filter$num";
-        if (isset($_GET[$varname])) {
-            $filter = (bool) ($_GET[$varname] ?? false);
-            $_COOKIE[$varname] = $filter ? 'on' : '';
-            setcookie($varname, $filter ? 'on' : '', 0, CMSIMPLE_ROOT);
-        } else {
-            $filter = (bool) ($_COOKIE[$varname] ?? false);
-        }
-        return $filter;
-    }
 }

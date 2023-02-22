@@ -106,6 +106,13 @@ class MainAdminController
 
     private function defaultAction(Request $request): Response
     {
+        $response = new Response;
+        for ($i = 0; $i <= 2; $i++) {
+            $varname = "realblog_filter$i";
+            if (isset($_GET[$varname]) && !isset($_COOKIE[$varname])) {
+                $response = $response->withCookie($varname, $_GET[$varname] ? "on" : "");
+            }
+        }
         $statuses = $this->getFilterStatuses();
         $total = $this->finder->countArticlesWithStatus($statuses);
         $limit = (int) $this->conf['admin_records_page'];
@@ -113,7 +120,7 @@ class MainAdminController
         $page = max(min($this->page, $pageCount), 1);
         $offset = ($page - 1) * $limit;
         $articles = $this->finder->findArticlesWithStatus($statuses, $limit, $offset);
-        return (new Response)->withOutput($this->renderArticles($request, $articles, $pageCount));
+        return $response->withOutput($this->renderArticles($request, $articles, $pageCount));
     }
 
     /** @return list<int> */
@@ -121,7 +128,7 @@ class MainAdminController
     {
         $statuses = array();
         for ($i = 0; $i <= 2; $i++) {
-            if (Plugin::getFilter($i)) {
+            if ($this->getFilter($i)) {
                 $statuses[] = $i;
             }
         }
@@ -134,7 +141,7 @@ class MainAdminController
         $states = ['readyforpublishing', 'published', 'archived'];
         $filters = [];
         foreach (array_keys($states) as $i) {
-            $filters[] = Plugin::getFilter($i);
+            $filters[] = $this->getFilter($i);
         }
         $page = min(max($this->page, 0), $pageCount);
         $records = [];
@@ -166,6 +173,15 @@ class MainAdminController
             'filters' => $filters,
         ];
         return $this->view->render('articles-form', $data);
+    }
+
+    private function getFilter(int $num): bool
+    {
+        $varname = "realblog_filter$num";
+        if (isset($_GET[$varname])) {
+            return (bool) ($_GET[$varname] ?? false);
+        }
+        return (bool) ($_COOKIE[$varname] ?? false);
     }
 
     private function createAction(Request $request): Response

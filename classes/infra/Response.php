@@ -38,6 +38,9 @@ class Response
     /** @var string|null */
     private $bjs = null;
 
+    /** @var array<string,string> */
+    private $cookies = [];
+
     /** @var Url|null */
     private $location = null;
 
@@ -68,6 +71,12 @@ class Response
     {
         assert($this->bjs !== null);
         return $this->bjs;
+    }
+
+    /** @return array<string,string> */
+    public function cookies(): array
+    {
+        return $this->cookies;
     }
 
     public function location(): string
@@ -111,6 +120,13 @@ class Response
         return $that;
     }
 
+    public function withCookie(string $name, string $value): self
+    {
+        $that = clone $this;
+        $that->cookies[$name] = $value;
+        return $that;
+    }
+
     public function redirect(Url $location): self
     {
         $that = clone $this;
@@ -138,6 +154,9 @@ class Response
         }
         if ($this->bjs !== null) {
             $bjs .= $this->bjs;
+        }
+        foreach ($this->cookies as $name => $value) {
+            setcookie($name, $value, 0, CMSIMPLE_ROOT);
         }
         return $this->output;
     }
