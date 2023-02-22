@@ -24,18 +24,18 @@ namespace Realblog;
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 use Realblog\Infra\Request;
+use Realblog\Infra\Url;
 
 class FeedLinkControllerTest extends TestCase
 {
     public function testDefaultActionRendersFeedLink(): void
     {
-        global $su;
-
-        $su = "";
-        $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
-        $lang = $plugin_tx['realblog'];
-        $sut = new FeedLinkController("./", $lang);
-        $response = $sut(new Request, "_self");
+        $text = XH_includeVar("./languages/en.php", 'plugin_tx')['realblog'];
+        $sut = new FeedLinkController($text);
+        $request = $this->createStub(Request::class);
+        $request->method("url")->willReturn((new Url)->withPage(""));
+        $request->method("pluginsFolder")->willReturn("./plugins/");
+        $response = $sut($request, "_self");
         Approvals::verifyHtml($response);
     }
 }

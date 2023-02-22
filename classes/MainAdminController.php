@@ -37,17 +37,11 @@ use XH\CSRFProtection as CsrfProtector;
 
 class MainAdminController
 {
-    /** @var string */
-    private $pluginFolder;
-
     /** @var array<string,string> */
     private $config;
 
     /** @var array<string,string> */
     private $text;
-
-    /** @var string */
-    private $selectedLanguage;
 
     /** @var DB */
     private $db;
@@ -65,40 +59,28 @@ class MainAdminController
     private $editor;
 
     /** @var int */
-    private $now;
-
-    /** @var int */
     private $page;
 
     /**
-     * @param string $pluginFolder
      * @param array<string,string> $config
      * @param array<string,string> $text
-     * @param string $selectedLanguage
-     * @param int $now
      */
     public function __construct(
-        $pluginFolder,
         array $config,
         array $text,
-        $selectedLanguage,
         DB $db,
         Finder $finder,
         CsrfProtector $csrfProtector,
         View $view,
-        Editor $editor,
-        $now
+        Editor $editor
     ) {
-        $this->pluginFolder = $pluginFolder;
         $this->config = $config;
         $this->text = $text;
-        $this->selectedLanguage = $selectedLanguage;
         $this->db = $db;
         $this->finder = $finder;
         $this->csrfProtector = $csrfProtector;
         $this->view = $view;
         $this->editor = $editor;
-        $this->now = $now;
         $this->page = Plugin::getPage();
     }
 
@@ -187,7 +169,7 @@ class MainAdminController
             ];
         }
         $data = [
-            'imageFolder' => "{$this->pluginFolder}images/",
+            'imageFolder' => $request->pluginsFolder() . "realblog/images/",
             'page' => $page,
             'prevPage' => max($page - 1, 1),
             'nextPage' => min($page + 1, $pageCount),
@@ -223,7 +205,7 @@ class MainAdminController
     {
         $this->editor->init(['realblog_headline_field', 'realblog_story_field']);
         if ($action === 'create') {
-            $article = new FullArticle(0, 0, $this->now, 2147483647, 2147483647, 0, '', '', '', '', false, false);
+            $article = new FullArticle(0, 0, $request->time(), 2147483647, 2147483647, 0, '', '', '', '', false, false);
         } else {
             $id = max($_GET['realblog_id'] ?? 1, 1);
             $article = $this->finder->findById($id);
@@ -231,14 +213,14 @@ class MainAdminController
                 return [XH_message('fail', $this->text['message_not_found'])];
             }
         }
-        return $this->renderForm($article, $request->url(), $action);
+        return $this->renderForm($article, $request, $action);
     }
 
     /**
      * @param string $action
      * @return array{string,string}
      */
-    private function renderForm(FullArticle $article, Url $url, $action): array
+    private function renderForm(FullArticle $article, Request $request, $action): array
     {
         switch ($action) {
             case 'create':
@@ -253,21 +235,21 @@ class MainAdminController
             default:
                 throw new RuntimeException("Unsupported action");
         }
-        $hjs = $this->useCalendar();
+        $hjs = $this->useCalendar($request);
         $bjs = '<script>REALBLOG.categories = '
             . json_encode($this->finder->findAllCategories()) . ';</script>' . "\n"
-            . '<script src="' . $this->pluginFolder
-            . 'realblog.js"></script>';
+            . '<script src="' . $request->pluginsFolder()
+            . 'realblog/realblog.js"></script>';
         $data = [
             'article' => $article,
             'title' => $title,
             'date' => (string) date('Y-m-d', $article->date),
             'publishing_date' => (string) date('Y-m-d', $article->publishingDate),
             'archiving_date' => (string) date('Y-m-d', $article->archivingDate),
-            'actionUrl' => $url->withPage("realblog")->withParams(["admin" => "plugin_main"])->relative(),
+            'actionUrl' => $request->url()->withPage("realblog")->withParams(["admin" => "plugin_main"])->relative(),
             'action' => "do_{$action}",
             'csrfToken' => $this->getCsrfToken(),
-            'calendarIcon' => "{$this->pluginFolder}images/calendar.png",
+            'calendarIcon' => $request->pluginsFolder() . "realblog/images/calendar.png",
             'isAutoPublish' => $this->config['auto_publish'],
             'isAutoArchive' => $this->config['auto_archive'],
             'states' => array('readyforpublishing', 'published', 'archived'),
@@ -280,12 +262,12 @@ class MainAdminController
     /**
      * @return string
      */
-    private function useCalendar()
+    private function useCalendar(Request $request)
     {
-        $calendarFolder = $this->pluginFolder . 'jscalendar/';
+        $calendarFolder = $request->pluginsFolder() . 'realblog/jscalendar/';
         $stylesheet = $calendarFolder . 'calendar-system.css';
         $mainScript = $calendarFolder . 'calendar.js';
-        $languageScript = $calendarFolder . 'lang/calendar-' . $this->selectedLanguage . '.js';
+        $languageScript = $calendarFolder . 'lang/calendar-' . $request->language() . '.js';
         if (!file_exists($languageScript)) {
             $languageScript = $calendarFolder . 'lang/calendar-en.js';
         }

@@ -27,19 +27,14 @@ use Realblog\Infra\Request;
 
 class FeedLinkController
 {
-    /** @var string */
-    private $pluginFolder;
-
     /** @var array<string,string> */
     private $text;
 
     /**
-     * @param string $pluginFolder
      * @param array<string,string> $text
      */
-    public function __construct($pluginFolder, array $text)
+    public function __construct(array $text)
     {
-        $this->pluginFolder = $pluginFolder;
         $this->text = $text;
     }
 
@@ -50,10 +45,11 @@ class FeedLinkController
     public function __invoke(Request $request, $target)
     {
         $url = $request->url()->withPage("")->withParams(["realblog_feed" => "rss"])->relative();
+        $image = $request->pluginsFolder() . "realblog/images/rss.png";
         return <<<HTML
 <!-- realblog feed link -->
 <a href="$url" target="$target">
-    <img src="{$this->pluginFolder}images/rss.png"
+    <img src="$image"
          alt="{$this->text['rss_tooltip']}" title="{$this->text['rss_tooltip']}"
          style="border: 0">
 </a>

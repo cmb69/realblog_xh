@@ -30,9 +30,6 @@ use XH\CSRFProtection as CsrfProtector;
 
 class DataExchangeController
 {
-    /** @var string */
-    private $contentFolder;
-
     /** @var array<string,string> */
     private $text;
 
@@ -48,19 +45,14 @@ class DataExchangeController
     /** @var View */
     private $view;
 
-    /**
-     * @param string $contentFolder
-     * @param array<string,string> $text
-     */
+    /** @param array<string,string> $text */
     public function __construct(
-        $contentFolder,
         array $text,
         DB $db,
         Finder $finder,
         CsrfProtector $csrfProtector,
         View $view
     ) {
-        $this->contentFolder = $contentFolder;
         $this->text = $text;
         $this->db = $db;
         $this->finder = $finder;
@@ -74,9 +66,9 @@ class DataExchangeController
             default:
                 return $this->defaultAction($request);
             case "export_to_csv":
-                return $this->exportToCsvAction();
+                return $this->exportToCsvAction($request);
             case "import_from_csv":
-                return $this->importFromCsvAction();
+                return $this->importFromCsvAction($request);
         }
     }
 
@@ -88,7 +80,7 @@ class DataExchangeController
             'articleCount' => $this->finder->countArticlesWithStatus(array(0, 1, 2)),
             'confirmImport' => json_encode($this->text['exchange_confirm_import']),
         ];
-        $filename = $this->getCsvFilename();
+        $filename = $request->contentFolder() . "realblog/realblog.csv";
         if (file_exists($filename)) {
             $data['filename'] = $filename;
             $data['filemtime'] = date('c', (int) filemtime($filename));
@@ -96,36 +88,30 @@ class DataExchangeController
         return Response::create($this->view->render('data-exchange', $data));
     }
 
-    private function exportToCsvAction(): Response
+    private function exportToCsvAction(Request $request): Response
     {
         $this->csrfProtector->check();
-        if ($this->db->exportToCsv($this->getCsvFilename())) {
+        $filename = $request->contentFolder() . "realblog/realblog.csv";
+        if ($this->db->exportToCsv($filename)) {
             return $this->redirectToDefaultResponse();
         } else {
             $output = "<h1>Realblog &ndash; {$this->text['exchange_heading']}</h1>\n"
-                . XH_message('fail', $this->text['exchange_export_failure'], $this->getCsvFilename());
+                . XH_message('fail', $this->text['exchange_export_failure'], $filename);
             return Response::create($output);
         }
     }
 
-    private function importFromCsvAction(): Response
+    private function importFromCsvAction(Request $request): Response
     {
         $this->csrfProtector->check();
-        if ($this->db->importFromCsv($this->getCsvFilename())) {
+        $filename = $request->contentFolder() . "realblog/realblog.csv";
+        if ($this->db->importFromCsv($filename)) {
             return $this->redirectToDefaultResponse();
         } else {
             $output = "<h1>Realblog &ndash; {$this->text['exchange_heading']}</h1>\n"
-                . XH_message('fail', $this->text['exchange_import_failure'], $this->getCsvFilename());
+                . XH_message('fail', $this->text['exchange_import_failure'], $filename);
             return Response::create($output);
         }
-    }
-
-    /**
-     * @return string
-     */
-    private function getCsvFilename()
-    {
-        return "{$this->contentFolder}realblog.csv";
     }
 
     /**

@@ -23,6 +23,11 @@ namespace Realblog\Infra;
 
 class Request
 {
+    public function time(): int
+    {
+        return time();
+    }
+
     public function url(): Url
     {
         global $su;
@@ -35,5 +40,26 @@ class Request
         global $pth;
 
         return $pth["folder"]["plugins"];
+    }
+
+    public function contentFolder(): string
+    {
+        global $pth;
+
+        return $pth["folder"]["content"];
+    }
+
+    public function imageFolder(): string
+    {
+        global $pth;
+
+        return $pth["folder"]["images"];
+    }
+
+    public function language(): string
+    {
+        global $sl;
+
+        return $sl;
     }
 }

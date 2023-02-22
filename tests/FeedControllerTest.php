@@ -26,6 +26,7 @@ use Realblog\Infra\Finder;
 use Realblog\Infra\ScriptEvaluator;
 use ApprovalTests\Approvals;
 use Realblog\Infra\Request;
+use Realblog\Infra\Url;
 use Realblog\Infra\View;
 
 class FeedControllerTest extends TestCase
@@ -41,8 +42,10 @@ class FeedControllerTest extends TestCase
         $finder->method("findFeedableArticles")->willReturn([]);
         $scriptEvaluator = $this->createStub(ScriptEvaluator::class);
         $view = new View("./views/", $text);
-        $sut = new FeedController("./userfiles/images/", $conf, $text, $finder, $scriptEvaluator, $view);
-        $response = $sut(new Request);
+        $sut = new FeedController($conf, $text, $finder, $scriptEvaluator, $view);
+        $request = $this->createStub(Request::class);
+        $request->method("imageFolder")->willReturn("./userfiles/images/");
+        $response = $sut($request);
         Approvals::verifyHtml($response);
     }
 
@@ -58,8 +61,11 @@ class FeedControllerTest extends TestCase
         $finder->method("findFeedableArticles")->willReturn([]);
         $scriptEvaluator = $this->createStub(ScriptEvaluator::class);
         $view = new View("./views/", $text);
-        $sut = new FeedController("./userfiles/images/", $conf, $text, $finder, $scriptEvaluator, $view);
-        $response = $sut(new Request);
+        $sut = new FeedController($conf, $text, $finder, $scriptEvaluator, $view);
+        $request = $this->createStub(Request::class);
+        $request->method("url")->willReturn(new Url);
+        $request->method("imageFolder")->willReturn("./userfiles/images/");
+        $response = $sut($request);
         Approvals::verifyHtml($response);
     }
 }

@@ -30,6 +30,7 @@ use Realblog\Infra\View;
 use Realblog\Value\FullArticle;
 use ApprovalTests\Approvals;
 use Realblog\Infra\Request;
+use Realblog\Infra\Url;
 use XH\CSRFProtection as CsrfProtector;
 
 class MainAdminControllerTest extends TestCase
@@ -52,10 +53,8 @@ class MainAdminControllerTest extends TestCase
         $view = new View("./views/", $lang);
         $editor = $this->createStub(Editor::class);
         $this->sut = new MainAdminController(
-            "./",
             $conf,
             $lang,
-            "en",
             $db,
             $this->finder,
             $csrfProtector,
@@ -71,47 +70,50 @@ class MainAdminControllerTest extends TestCase
 
         $su = "realblog";
         $this->finder->method('findArticlesWithStatus')->willReturn([]);
-        $response = ($this->sut)(new Request, "");
+        $request = $this->createStub(Request::class);
+        $request->method("pluginsFolder")->willReturn("./plugins/");
+        $response = ($this->sut)($request, "");
         Approvals::verifyHtml($response->output());
     }
 
     public function testCreateActionRendersArticle(): void
     {
-        global $su;
-
-        $su = "realblog";
-        $response = ($this->sut)(new Request, "create");
+        $request = $this->createStub(Request::class);
+        $request->method("time")->willReturn(1675205155);
+        $request->method("url")->willReturn((new Url)->withPage("realblog"));
+        $request->method("pluginsFolder")->willReturn("./plugins/");
+        $response = ($this->sut)($request, "create");
         Approvals::verifyHtml($response->output());
         $this->assertEquals("Create new article", $response->title());
     }
 
     public function testCreateActionOutputsHjs(): void
     {
-        global $su;
-
-        $su = "realblog";
-        $response = ($this->sut)(new Request, "create");
+        $request = $this->createStub(Request::class);
+        $request->method("url")->willReturn((new Url)->withPage("realblog"));
+        $request->method("pluginsFolder")->willReturn("./plugins/");
+        $response = ($this->sut)($request, "create");
         Approvals::verifyHtml($response->hjs());
     }
 
     public function testCreateActionOutputsBjs(): void
     {
-        global $su;
-
-        $su = "realblog";
         $this->finder->method('findAllCategories')->willReturn(["cat1", "cat2"]);
-        $response = ($this->sut)(new Request, "create");
+        $request = $this->createStub(Request::class);
+        $request->method("url")->willReturn((new Url)->withPage("realblog"));
+        $request->method("pluginsFolder")->willReturn("./plugins/");
+        $response = ($this->sut)($request, "create");
         Approvals::verifyHtml($response->bjs());
     }
 
     public function testEditActionRendersArticle(): void
     {
-        global $su;
-
-        $su = "realblog";
         $this->finder->method('findById')->willReturn($this->firstArticle());
         $_GET = ['realblog_id' => "1"];
-        $response = ($this->sut)(new Request, "edit");
+        $request = $this->createStub(Request::class);
+        $request->method("url")->willReturn((new Url)->withPage("realblog"));
+        $request->method("pluginsFolder")->willReturn("./plugins/");
+        $response = ($this->sut)($request, "edit");
         Approvals::verifyHtml($response->output());
         $this->assertEquals("Edit article #1", $response->title());
     }
@@ -123,7 +125,9 @@ class MainAdminControllerTest extends TestCase
         $su = "realblog";
         $this->finder->method('findById')->willReturn($this->firstArticle());
         $_GET = ['realblog_id' => "1"];
-        $response = ($this->sut)(new Request, "edit");
+        $request = $this->createStub(Request::class);
+        $request->method("pluginsFolder")->willReturn("./plugins/");
+        $response = ($this->sut)($request, "edit");
         Approvals::verifyHtml($response->hjs());
     }
 
@@ -135,7 +139,9 @@ class MainAdminControllerTest extends TestCase
         $this->finder->method('findById')->willReturn($this->firstArticle());
         $this->finder->method('findAllCategories')->willReturn(["cat1", "cat2"]);
         $_GET = ['realblog_id' => "1"];
-        $response = ($this->sut)(new Request, "edit");
+        $request = $this->createStub(Request::class);
+        $request->method("pluginsFolder")->willReturn("./plugins/");
+        $response = ($this->sut)($request, "edit");
         Approvals::verifyHtml($response->bjs());
     }
 
@@ -148,24 +154,24 @@ class MainAdminControllerTest extends TestCase
 
     public function testDeleteActionRendersArticle(): void
     {
-        global $su;
-
-        $su = "realblog";
         $this->finder->method('findById')->willReturn($this->firstArticle());
         $_GET = ['realblog_id' => "1"];
-        $response = ($this->sut)(new Request, "delete");
+        $request = $this->createStub(Request::class);
+        $request->method("url")->willReturn((new Url)->withPage("realblog"));
+        $request->method("pluginsFolder")->willReturn("./plugins/");
+        $response = ($this->sut)($request, "delete");
         Approvals::verifyHtml($response->output());
         $this->assertEquals("Delete article #1", $response->title());
     }
 
     public function testDeleteActionOutputsHjs(): void
     {
-        global $su;
-
-        $su = "realblog";
         $this->finder->method('findById')->willReturn($this->firstArticle());
         $_GET = ['realblog_id' => "1"];
-        $response = ($this->sut)(new Request, "delete");
+        $request = $this->createStub(Request::class);
+        $request->method("url")->willReturn((new Url)->withPage("realblog"));
+        $request->method("pluginsFolder")->willReturn("./plugins/");
+        $response = ($this->sut)($request, "delete");
         Approvals::verifyHtml($response->hjs());
     }
 
@@ -177,7 +183,9 @@ class MainAdminControllerTest extends TestCase
         $this->finder->method('findById')->willReturn($this->firstArticle());
         $this->finder->method('findAllCategories')->willReturn(["cat1", "cat2"]);
         $_GET = ['realblog_id' => "1"];
-        $response = ($this->sut)(new Request, "delete");
+        $request = $this->createStub(Request::class);
+        $request->method("pluginsFolder")->willReturn("./plugins/");
+        $response = ($this->sut)($request, "delete");
         Approvals::verifyHtml($response->bjs());
     }
 

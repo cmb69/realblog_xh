@@ -76,10 +76,9 @@ class Dic
 
     public static function makeFeedLinkController(): FeedLinkController
     {
-        global $pth, $plugin_tx;
+        global $plugin_tx;
 
         return new FeedLinkController(
-            "{$pth['folder']['plugins']}realblog/",
             $plugin_tx['realblog']
         );
     }
@@ -101,7 +100,6 @@ class Dic
         global $pth, $plugin_cf, $plugin_tx;
 
         return new FeedController(
-            $pth['folder']['images'],
             $plugin_cf['realblog'],
             $plugin_tx['realblog'],
             new Finder(Dic::makeDb()),
@@ -124,19 +122,16 @@ class Dic
 
     public static function makeMainAdminController(): MainAdminController
     {
-        global $pth, $plugin_cf, $plugin_tx, $sl, $_XH_csrfProtection;
+        global $pth, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
 
         return new MainAdminController(
-            "{$pth['folder']['plugins']}realblog/",
             $plugin_cf['realblog'],
             $plugin_tx['realblog'],
-            $sl,
             Dic::makeDb(),
             new Finder(Dic::makeDb()),
             $_XH_csrfProtection,
             new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog']),
-            new Editor(),
-            time()
+            new Editor()
         );
     }
 
@@ -145,7 +140,6 @@ class Dic
         global $pth, $plugin_tx, $_XH_csrfProtection;
 
         return new DataExchangeController(
-            "{$pth['folder']['content']}realblog/",
             $plugin_tx['realblog'],
             Dic::makeDb(),
             new Finder(Dic::makeDb()),

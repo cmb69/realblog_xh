@@ -26,14 +26,10 @@ namespace Realblog;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Request;
 use Realblog\Infra\ScriptEvaluator;
-use Realblog\Infra\Url;
 use Realblog\Infra\View;
 
 class FeedController
 {
-    /** @var string */
-    private $imageFolder;
-
     /** @var array<string,string> */
     private $config;
 
@@ -50,19 +46,16 @@ class FeedController
     private $view;
 
     /**
-     * @param string $imageFolder
      * @param array<string,string> $config
      * @param array<string,string> $text
      */
     public function __construct(
-        $imageFolder,
         array $config,
         array $text,
         Finder $finder,
         ScriptEvaluator $scriptEvaluator,
         View $view
     ) {
-        $this->imageFolder = $imageFolder;
         $this->config = $config;
         $this->text = $text;
         $this->finder = $finder;
@@ -88,7 +81,7 @@ class FeedController
             'url' => CMSIMPLE_URL . '?' . $this->text['rss_page'],
             'managingEditor' => $this->config['rss_editor'],
             'hasLogo' => (bool) $this->config['rss_logo'],
-            'imageUrl' => $request->url()->withPath($this->imageFolder . $this->config['rss_logo'])->absolute(),
+            'imageUrl' => $request->url()->withPath($request->imageFolder() . $this->config['rss_logo'])->absolute(),
             'articles' => $records,
         ];
         return '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . $this->view->render('feed', $data);
