@@ -6,7 +6,7 @@ use Realblog\Infra\View;
  * @var View $this
  * @var string $version
  * @var string $heading
- * @var list<array{label:string,state:string,state_label:string}> $checks
+ * @var list<array{key:string,arg:string,class:string,state:string}> $checks
  */
 ?>
 <!-- realblog info -->
@@ -15,7 +15,7 @@ use Realblog\Infra\View;
   <<?=$this->esc($heading)?>><?=$this->text('syscheck_title')?></<?=$this->esc($heading)?>>
   <div class="realblog_systemcheck">
 <?foreach ($checks as $check):?>
-    <p class="xh_<?=$this->esc($check['state'])?>"><?=$this->text('syscheck_message', $check['label'], $check['state_label'])?></p>
+    <p class="<?=$this->esc($check['class'])?>"><?=$this->text($check['key'], $check['arg'])?>: <?=$this->text($check['state'])?></p>
 <?endforeach?>
   </div>
 </div>

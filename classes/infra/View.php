@@ -39,7 +39,7 @@ class View
     /** @param scalar $args */
     public function text(string $key, ...$args): string
     {
-        return sprintf($this->text[$key], ...$args);
+        return $this->esc(sprintf($this->text[$key], ...$args));
     }
 
     /** @param scalar $args */
@@ -50,18 +50,18 @@ class View
         } else {
             $key .= XH_numberSuffix($count);
         }
-        return sprintf($this->text[$key], $count, ...$args);
+        return $this->esc(sprintf($this->text[$key], $count, ...$args));
     }
 
     public function date(int $timestamp): string
     {
-        return date($this->text['date_format'], $timestamp);
+        return $this->esc(date($this->text['date_format'], $timestamp));
     }
 
     public function month(int $month): string
     {
         $names = explode(',', $this->text['date_months']);
-        return $names[$month];
+        return $this->esc($names[$month]);
     }
 
     /** @param scalar $args */

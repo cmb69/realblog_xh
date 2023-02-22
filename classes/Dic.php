@@ -91,11 +91,8 @@ class Dic
 
     public static function makeInfoController(): InfoController
     {
-        global $plugin_tx;
-
         return new InfoController(
             self::makeConf(),
-            $plugin_tx["realblog"],
             new SystemChecker,
             self::makeView()
         );

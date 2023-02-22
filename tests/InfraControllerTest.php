@@ -35,15 +35,14 @@ class InfroControllerTest extends TestCase
 
         $pth = ["folder" => ["plugins" => "./plugins/"]];
         $conf = XH_includeVar("./config/config.php", "plugin_cf")["realblog"];
-        $plugin_tx = XH_includeVar("./languages/en.php", "plugin_tx");
-        $text = $plugin_tx["realblog"];
+        $text = XH_includeVar("./languages/en.php", "plugin_tx")["realblog"];
         $systemChecker = $this->createStub(SystemChecker::class);
         $systemChecker->method("checkPHPVersion")->willReturn(false);
         $systemChecker->method("checkExtension")->willReturn(false);
         $systemChecker->method("checkXHVersion")->willReturn(false);
         $systemChecker->method("checkWritability")->willReturn(false);
         $view = new View("./views/", $text);
-        $sut = new InfoController($conf, $text, $systemChecker, $view);
+        $sut = new InfoController($conf, $systemChecker, $view);
         $response = $sut(new Request);
         Approvals::verifyHtml($response->output());
     }

@@ -33,23 +33,16 @@ class InfoController
     /** @var array<string,string> */
     private $conf;
 
-    /** @var array<string,string> */
-    private $text;
-
     /** @var SystemChecker */
     private $systemChecker;
 
     /** @var View */
     private $view;
 
-    /**
-     * @param array<string,string> $conf
-     * @param array<string,string> $text
-     */
-    public function __construct(array $conf, array $text, SystemChecker $systemChecker, View $view)
+    /** @param array<string,string> $conf */
+    public function __construct(array $conf, SystemChecker $systemChecker, View $view)
     {
         $this->conf = $conf;
-        $this->text = $text;
         $this->systemChecker = $systemChecker;
         $this->view = $view;
     }
@@ -57,11 +50,12 @@ class InfoController
     public function __invoke(Request $request): Response
     {
         $checks = [];
-        foreach ($this->getChecks($request->pluginsFolder()) as $label => $state) {
+        foreach ($this->getChecks($request->pluginsFolder()) as [$key, $arg, $state]) {
             $checks[] = [
-                "label" => $label,
-                "state" => $state,
-                "state_label" => $this->text["syscheck_$state"],
+                "key" => $key,
+                "arg" => $arg,
+                "class" => "xh_$state",
+                "state" => "syscheck_$state",
             ];
         }
         return (new Response)->withOutput($this->view->render("info", [
@@ -71,28 +65,40 @@ class InfoController
         ]));
     }
 
-    /** @return array<string,string> */
+    /** @return list<array{string,string,string}> */
     public function getChecks(string $pluginsFolder): array
     {
-        $checks = array();
+        $checks = [];
         $phpVersion = "7.1.0";
-        $checks[sprintf($this->text["syscheck_phpversion"], $phpVersion)] =
-             $this->systemChecker->checkPHPVersion($phpVersion) ? "success" : "fail";
+        $checks[] = [
+            "syscheck_phpversion",
+            $phpVersion,
+            $this->systemChecker->checkPHPVersion($phpVersion) ? "success" : "fail"
+        ];
         foreach (array("sqlite3") as $extension) {
-            $checks[sprintf($this->text["syscheck_extension"], $extension)] =
-                $this->systemChecker->checkExtension($extension) ? "success" : "fail";
+            $checks[] = [
+                "syscheck_extension",
+                $extension,
+                $this->systemChecker->checkExtension($extension) ? "success" : "fail",
+            ];
         }
         $xhVersion = "1.7.0";
-        $checks[sprintf($this->text["syscheck_xhversion"], $xhVersion)] =
-            $this->systemChecker->checkXHVersion($xhVersion) ? "success" : "fail";
+        $checks[] = [
+            "syscheck_xhversion",
+            $xhVersion,
+            $this->systemChecker->checkXHVersion($xhVersion) ? "success" : "fail",
+        ];
         $folders = array(
             $pluginsFolder . "realblog/config",
             $pluginsFolder ."realblog/css",
             $pluginsFolder . "realblog/languages",
         );
         foreach ($folders as $folder) {
-            $checks[sprintf($this->text["syscheck_writable"], $folder)] =
-                $this->systemChecker->checkWritability($folder) ? "success" : "warning";
+            $checks[] = [
+                "syscheck_writable",
+                $folder,
+                $this->systemChecker->checkWritability($folder) ? "success" : "warning",
+            ];
         }
         return $checks;
     }
