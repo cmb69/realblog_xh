@@ -25,6 +25,7 @@ use Realblog\Infra\DB;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Request;
 use Realblog\Infra\Response;
+use Realblog\Infra\Url;
 use Realblog\Infra\View;
 use XH\CSRFProtection as CsrfProtector;
 
@@ -87,7 +88,7 @@ class DataExchangeController
         $this->csrfProtector->check();
         $filename = $request->contentFolder() . "realblog/realblog.csv";
         if ($this->db->exportToCsv($filename)) {
-            return $this->redirectToDefaultResponse();
+            return $this->redirectToDefaultResponse($request->url());
         } else {
             $output = "<h1>Realblog &ndash; {$this->view->text("exchange_heading")}</h1>\n"
                 . $this->view->message("fail", "exchange_export_failure", $filename);
@@ -100,7 +101,7 @@ class DataExchangeController
         $this->csrfProtector->check();
         $filename = $request->contentFolder() . "realblog/realblog.csv";
         if ($this->db->importFromCsv($filename)) {
-            return $this->redirectToDefaultResponse();
+            return $this->redirectToDefaultResponse($request->url());
         } else {
             $output = "<h1>Realblog &ndash; {$this->view->text("exchange_heading")}</h1>\n"
                 . $this->view->message("fail", "exchange_import_failure", $filename);
@@ -120,9 +121,8 @@ class DataExchangeController
         return null;
     }
 
-    private function redirectToDefaultResponse(): Response
+    private function redirectToDefaultResponse(Url $url): Response
     {
-        $url = CMSIMPLE_URL . "?&realblog&admin=data_exchange";
-        return (new Response)->redirect($url);
+        return (new Response)->redirect($url->withPage("realblog")->withParams(["admin" => "data_exchange"]));
     }
 }

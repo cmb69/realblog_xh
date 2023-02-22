@@ -71,7 +71,7 @@ class FeedController
             ];
         }
         $data = [
-            'url' => CMSIMPLE_URL . '?' . $this->config['rss_page'],
+            'url' => $request->url()->withPage($this->config['rss_page'])->absolute(),
             'managingEditor' => $this->config['rss_editor'],
             'hasLogo' => (bool) $this->config['rss_logo'],
             'imageUrl' => $request->url()->withPath($request->imageFolder() . $this->config['rss_logo'])->absolute(),

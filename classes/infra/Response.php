@@ -38,7 +38,7 @@ class Response
     /** @var string|null */
     private $bjs = null;
 
-    /** @var string|null */
+    /** @var Url|null */
     private $location = null;
 
     public function output(): string
@@ -46,29 +46,34 @@ class Response
         return $this->output;
     }
 
-    public function title(): ?string
+    public function title(): string
     {
+        assert($this->title !== null);
         return $this->title;
     }
 
-    public function description(): ?string
+    public function description(): string
     {
+        assert($this->description !== null);
         return $this->description;
     }
 
-    public function hjs(): ?string
+    public function hjs(): string
     {
+        assert($this->hjs !== null);
         return $this->hjs;
     }
 
-    public function bjs(): ?string
+    public function bjs(): string
     {
+        assert($this->bjs !== null);
         return $this->bjs;
     }
 
-    public function location(): ?string
+    public function location(): string
     {
-        return $this->location;
+        assert($this->location !== null);
+        return $this->location->absolute();
     }
 
     public function withOutput(string $output): self
@@ -106,7 +111,7 @@ class Response
         return $that;
     }
 
-    public function redirect(string $location): self
+    public function redirect(Url $location): self
     {
         $that = clone $this;
         $that->location = $location;
@@ -119,7 +124,7 @@ class Response
         global $title, $description, $hjs, $bjs;
 
         if ($this->location !== null) {
-            header("Location: $this->location");
+            header("Location: " . $this->location->absolute());
             exit;
         }
         if ($this->title !== null) {

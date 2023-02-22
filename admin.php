@@ -34,7 +34,7 @@ use Realblog\Infra\Request;
 
 $temp = [
     "heading" => $plugin_tx["realblog"]["exchange_heading"],
-    "url" => XH_hsc((new Request)->url()->withPage("realblog")->withParams(["admin" => "data_exchange"])->relative()),
+    "url" => (new Request)->url()->withPage("realblog")->withParams(["admin" => "data_exchange"])->relative(),
 ];
 
 XH_registerStandardPluginMenuItems(true);
@@ -43,7 +43,7 @@ XH_registerPluginMenuItem("realblog", $temp["heading"], $temp["url"]);
 if (XH_wantsPluginAdministration("realblog")) {
     $o .= print_plugin_admin("on");
     pluginMenu("ROW");
-    pluginMenu("TAB", $temp["url"], "", $temp["heading"]);
+    pluginMenu("TAB", XH_hsc($temp["url"]), "", $temp["heading"]);
     $o .= pluginMenu("SHOW");
     switch ($admin) {
         case "":

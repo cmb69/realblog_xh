@@ -27,6 +27,7 @@ use Realblog\Infra\Finder;
 use Realblog\Infra\View;
 use ApprovalTests\Approvals;
 use Realblog\Infra\Request;
+use Realblog\Infra\Url;
 use XH\CSRFProtection as CsrfProtector;
 
 class DataExchangeControllerTest extends TestCase
@@ -42,9 +43,10 @@ class DataExchangeControllerTest extends TestCase
         $view = new View("./views/", $lang);
         $sut = new DataExchangeController($db, $finder, $csrfProtector, $view);
         $request = $this->createStub(Request::class);
+        $request->method("url")->willReturn(new Url);
         $request->method("contentFolder")->willReturn("./content/");
         $response = $sut($request, "export_to_csv");
-        $this->assertEquals("http://example.com/?&realblog&admin=data_exchange", $response->location());
+        $this->assertEquals("http://example.com/?realblog&admin=data_exchange", $response->location());
     }
 
     public function testExportReportsFailure(): void
@@ -74,9 +76,10 @@ class DataExchangeControllerTest extends TestCase
         $view = new View("./views/", $lang);
         $sut = new DataExchangeController($db, $finder, $csrfProtector, $view);
         $request = $this->createStub(Request::class);
+        $request->method("url")->willReturn(new Url);
         $request->method("contentFolder")->willReturn("./content/");
         $response = $sut($request, "import_from_csv");
-        $this->assertEquals("http://example.com/?&realblog&admin=data_exchange", $response->location());
+        $this->assertEquals("http://example.com/?realblog&admin=data_exchange", $response->location());
     }
 
     public function testImportReportsFailure(): void

@@ -45,6 +45,7 @@ class FeedControllerTest extends TestCase
         $view = new View("./views/", $text);
         $sut = new FeedController($conf, $finder, $pages, $view);
         $request = $this->createStub(Request::class);
+        $request->method("url")->willReturn(new Url);
         $request->method("imageFolder")->willReturn("./userfiles/images/");
         $response = $sut($request);
         Approvals::verifyHtml($response->output());

@@ -285,7 +285,7 @@ EOT;
         $article = $this->getArticleFromParameters();
         $res = $this->db->insertArticle($article);
         if ($res === 1) {
-            return $this->redirectToOverviewResponse();
+            return $this->redirectToOverviewResponse($request->url());
         } else {
             $info = $this->view->message("fail", "story_added_error");
         }
@@ -299,7 +299,7 @@ EOT;
         $article = $this->getArticleFromParameters();
         $res = $this->db->updateArticle($article);
         if ($res === 1) {
-            return $this->redirectToOverviewResponse();
+            return $this->redirectToOverviewResponse($request->url());
         } else {
             $info = $this->view->message("fail", "story_modified_error");
         }
@@ -313,7 +313,7 @@ EOT;
         $article = $this->getArticleFromParameters();
         $res = $this->db->deleteArticle($article);
         if ($res === 1) {
-            return $this->redirectToOverviewResponse();
+            return $this->redirectToOverviewResponse($request->url());
         } else {
             $info = $this->view->message("fail", "story_deleted_error");
         }
@@ -409,7 +409,7 @@ EOT;
         });
         $res = $this->db->deleteArticlesWithIds($ids);
         if ($res === count($ids)) {
-            return $this->redirectToOverviewResponse();
+            return $this->redirectToOverviewResponse($request->url());
         } elseif ($res > 0) {
             $info = $this->view->message("warning", "deleteall_warning", $res, count($ids));
         } else {
@@ -428,7 +428,7 @@ EOT;
         $status = min(max((int) ($_POST["realblog_status"] ?? 0), 0), 2);
         $res = $this->db->updateStatusOfArticlesWithIds($ids, $status);
         if ($res === count($ids)) {
-            return $this->redirectToOverviewResponse();
+            return $this->redirectToOverviewResponse($request->url());
         } elseif ($res > 0) {
             $info = $this->view->message("warning", "changestatus_warning", $res, count($ids));
         } else {
@@ -466,9 +466,9 @@ EOT;
         ]);
     }
 
-    private function redirectToOverviewResponse(): Response
+    private function redirectToOverviewResponse(Url $url): Response
     {
-        $url = CMSIMPLE_URL . "?&realblog&admin=plugin_main&action=plugin_text&realblog_page={$this->page}";
-        return (new Response)->redirect($url);
+        $params = ["admin" => "plugin_main", "action" => "plugin_text", "realblog_page" => (string) $this->page];
+        return (new Response)->redirect($url->withPage("realblog")->withParams($params));
     }
 }
