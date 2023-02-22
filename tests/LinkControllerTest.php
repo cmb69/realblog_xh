@@ -21,11 +21,12 @@
 
 namespace Realblog;
 
+use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 use Realblog\Infra\Finder;
 use Realblog\Infra\ScriptEvaluator;
 use Realblog\Infra\View;
-use ApprovalTests\Approvals;
+use Realblog\Infra\Request;
 
 class LinkControllerTest extends TestCase
 {
@@ -40,7 +41,7 @@ class LinkControllerTest extends TestCase
         $view = new View("./views/", $lang);
         $scriptEvaluator = $this->createStub(ScriptEvaluator::class);
         $sut = new LinkController($conf, $lang, ["foo"], $finder, $view, $scriptEvaluator);
-        $response = $sut("foo", true);
+        $response = $sut(new Request, "foo", true);
         Approvals::verifyHtml($response);
     }
 }

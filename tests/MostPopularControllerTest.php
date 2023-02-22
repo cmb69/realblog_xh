@@ -26,6 +26,7 @@ use PHPUnit\Framework\TestCase;
 use Realblog\Infra\Finder;
 use Realblog\Infra\View;
 use ApprovalTests\Approvals;
+use Realblog\Infra\Request;
 use Realblog\Value\MostPopularArticle;
 
 class MostPopularControllerTest extends TestCase
@@ -48,21 +49,24 @@ class MostPopularControllerTest extends TestCase
     public function testRendersEmptyList(): void
     {
         $this->finder->method("findMostPopularArticles")->willReturn([]);
-        $response = ($this->sut)("foo");
+        $response = ($this->sut)(new Request, "foo");
         Approvals::verifyHtml($response);
     }
 
     public function testRendersMostPopularArticles(): void
     {
+        global $su;
+
+        $su = "Blog";
         $this->finder->method("findMostPopularArticles")->willReturn($this->articles());
-        $response = ($this->sut)("foo");
+        $response = ($this->sut)(new Request, "foo");
         Approvals::verifyHtml($response);
     }
 
     public function testRendersNothingIfPageDoesNotExist(): void
     {
         $this->finder->method("findMostPopularArticles")->willReturn($this->articles());
-        $response = ($this->sut)("bar");
+        $response = ($this->sut)(new Request, "bar");
         Approvals::verifyHtml($response);
     }
 

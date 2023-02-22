@@ -24,27 +24,29 @@
 namespace Realblog;
 
 use Realblog\Infra\Pagination;
+use Realblog\Infra\Request;
+use Realblog\Infra\Url;
 use Realblog\Value\Article;
 
 class BlogController extends MainController
 {
-    public function __invoke(bool $showSeach, string $category): string
+    public function __invoke(Request $request, bool $showSeach, string $category): string
     {
         if (isset($_GET["realblog_id"])) {
-            return (string) $this->showArticleAction(max((int) ($_GET["realblog_id"] ?? 1), 1));
+            return (string) $this->showArticleAction($request->url(), max((int) ($_GET["realblog_id"] ?? 1), 1));
         } else {
-            return $this->defaultAction($showSeach, $category);
+            return $this->defaultAction($request, $showSeach, $category);
         }
     }
 
     /**
      * @return string
      */
-    private function defaultAction(bool $showSearch, string $category)
+    private function defaultAction(Request $request, bool $showSearch, string $category)
     {
         $html = '';
         if ($showSearch) {
-            $html .= $this->renderSearchForm();
+            $html .= $this->renderSearchForm($request->url());
         }
         $order = ($this->config['entries_order'] == 'desc')
             ? -1 : 1;
@@ -62,9 +64,9 @@ class BlogController extends MainController
             $this->searchTerm
         );
         if ($this->searchTerm) {
-            $html .= $this->renderSearchResults('blog', $articleCount);
+            $html .= $this->renderSearchResults($request->url(), 'blog', $articleCount);
         }
-        $html .= $this->renderArticles($articles, $articleCount, $page, $pageCount);
+        $html .= $this->renderArticles($request->url(), $articles, $articleCount, $page, $pageCount);
         return $html;
     }
 
@@ -75,10 +77,8 @@ class BlogController extends MainController
      * @param int $pageCount
      * @return string
      */
-    private function renderArticles(array $articles, $articleCount, $page, $pageCount)
+    private function renderArticles(Url $url, array $articles, $articleCount, $page, $pageCount)
     {
-        global $su;
-
         $search = $this->searchTerm;
         $bridge = ucfirst($this->config["comments_plugin"]) . "\\RealblogBridge";
         $params = ["realblog_page" => (string) Plugin::getPage(), "realblog_search" => $search];
@@ -87,7 +87,7 @@ class BlogController extends MainController
             $isCommentable = $this->config["comments_plugin"] && class_exists($bridge) && $article->commentable;
             $records[] = [
                 "title" => $article->title,
-                "url" => Plugin::url($su, ["realblog_id" => (string) $article->id] + $params),
+                "url" => $url->withParams(["realblog_id" => (string) $article->id] + $params)->relative(),
                 "categories" => implode(", ", explode(",", trim($article->categories, ","))),
                 "link_header" => $article->hasBody || (defined("XH_ADM") && XH_ADM),
                 "date" => (string) date($this->text["date_format"], $article->date),
@@ -101,7 +101,7 @@ class BlogController extends MainController
             $articleCount,
             $page,
             $pageCount,
-            Plugin::url($su, array("realblog_page" => "%s", "realblog_search" => $search)),
+            $url->withParams(["realblog_page" => "%s", "realblog_search" => $search])->relative(),
             $this->view
         );
         return $this->view->render("articles", [
@@ -118,8 +118,8 @@ class BlogController extends MainController
      * @param int $id
      * @return string
      */
-    private function showArticleAction($id)
+    private function showArticleAction(Url $url, $id)
     {
-        return $this->renderArticle($id);
+        return $this->renderArticle($url, $id);
     }
 }

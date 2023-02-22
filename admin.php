@@ -23,9 +23,10 @@
 
 namespace Realblog;
 
+use Realblog\Infra\Request;
+
 /**
  * @var array<string,array<string,string>> $plugin_tx
- * @var string $sn
  * @var string $admin
  * @var string $action
  * @var string $o
@@ -33,7 +34,7 @@ namespace Realblog;
 
 $temp = [
     "heading" => $plugin_tx["realblog"]["exchange_heading"],
-    "url" => XH_hsc("$sn?realblog&admin=data_exchange"),
+    "url" => XH_hsc((new Request)->url()->withPage("realblog")->withParams(["admin" => "data_exchange"])->relative()),
 ];
 
 XH_registerStandardPluginMenuItems(true);
@@ -49,10 +50,10 @@ if (XH_wantsPluginAdministration("realblog")) {
             $o .= Dic::makeInfoController()();
             break;
         case "plugin_main":
-            $o .= Dic::makeMainAdminController()($action)->trigger();
+            $o .= Dic::makeMainAdminController()(new Request, $action)->trigger();
             break;
         case "data_exchange":
-            $o .= Dic::makeDataExchangeController()($action)->trigger();
+            $o .= Dic::makeDataExchangeController()(new Request, $action)->trigger();
             break;
         default:
             $o .= plugin_admin_common();

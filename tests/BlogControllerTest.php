@@ -26,6 +26,7 @@ use PHPUnit\Framework\MockObject;
 use PHPUnit\Framework\TestCase;
 use Realblog\Infra\DB;
 use Realblog\Infra\Finder;
+use Realblog\Infra\Request;
 use Realblog\Infra\ScriptEvaluator;
 use Realblog\Infra\View;
 use Realblog\Value\Article;
@@ -64,26 +65,24 @@ class BlogControllerTest extends TestCase
 
     public function testRendersArticleOverview(): void
     {
-        global $sn, $su;
+        global $su;
 
-        $sn = "/";
         $su = "Blog";
         $this->finder->method("findArticles")->willReturn($this->articles());
-        $response = ($this->sut)(true, "all");
+        $response = ($this->sut)(new Request, true, "all");
         Approvals::verifyHtml($response);
     }
 
     public function testRendersArticle(): void
     {
-        global $sn, $su, $s, $h;
+        global $su, $s, $h;
 
         $_GET = ["realblog_id" => "3"];
-        $sn = "/";
         $su = "Blog";
         $s = 1;
         $h = [1 => "Blog"];
         $this->finder->method("findById")->willReturn($this->article());
-        $response = ($this->sut)(true, "all");
+        $response = ($this->sut)(new Request, true, "all");
         Approvals::verifyHtml($response);
     }
 

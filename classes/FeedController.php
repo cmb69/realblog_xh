@@ -24,6 +24,7 @@
 namespace Realblog;
 
 use Realblog\Infra\Finder;
+use Realblog\Infra\Request;
 use Realblog\Infra\ScriptEvaluator;
 use Realblog\Infra\Url;
 use Realblog\Infra\View;
@@ -42,9 +43,6 @@ class FeedController
     /** @var array<string,string> */
     private $text;
 
-    /** @var string */
-    private $scriptName;
-
     /** @var Finder */
     private $finder;
 
@@ -56,14 +54,12 @@ class FeedController
      * @param string $imageFolder
      * @param array<string,string> $config
      * @param array<string,string> $text
-     * @param string $scriptName
      */
     public function __construct(
         $pluginFolder,
         $imageFolder,
         array $config,
         array $text,
-        $scriptName,
         Finder $finder,
         ScriptEvaluator $scriptEvaluator
     ) {
@@ -71,12 +67,11 @@ class FeedController
         $this->imageFolder = $imageFolder;
         $this->config = $config;
         $this->text = $text;
-        $this->scriptName = $scriptName;
         $this->finder = $finder;
         $this->scriptEvaluator = $scriptEvaluator;
     }
 
-    public function __invoke(): string
+    public function __invoke(Request $request): string
     {
         $count = (int) $this->config['rss_entries'];
         $articles = $this->finder->findFeedableArticles($count);
@@ -84,13 +79,8 @@ class FeedController
         foreach ($articles as $article) {
             $records[] = [
                 "title" => $article->title,
-                "url" => CMSIMPLE_URL . substr(
-                    Plugin::url(
-                        $this->text["rss_page"],
-                        array('realblog_id' => (string) $article->id)
-                    ),
-                    strlen($this->scriptName)
-                ),
+                "url" => $request->url()->withPage($this->text["rss_page"])
+                    ->withParams(['realblog_id' => (string) $article->id])->absolute(),
                 "teaser" => $this->scriptEvaluator->evaluate($article->teaser),
                 "date" => (string) date('r', $article->date),
             ];
@@ -99,7 +89,7 @@ class FeedController
             'url' => CMSIMPLE_URL . '?' . $this->text['rss_page'],
             'managingEditor' => $this->config['rss_editor'],
             'hasLogo' => (bool) $this->config['rss_logo'],
-            'imageUrl' => (new Url($this->imageFolder . $this->config['rss_logo']))->absolute(),
+            'imageUrl' => $request->url()->withPath($this->imageFolder . $this->config['rss_logo'])->absolute(),
             'articles' => $records,
         ];
         $view = new View("{$this->pluginFolder}views/", $this->text);

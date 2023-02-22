@@ -26,7 +26,9 @@ namespace Realblog;
 use Realblog\Infra\DB;
 use Realblog\Infra\Editor;
 use Realblog\Infra\Finder;
+use Realblog\Infra\Request;
 use Realblog\Infra\Response;
+use Realblog\Infra\Url;
 use Realblog\Infra\View;
 use Realblog\Value\Article;
 use Realblog\Value\FullArticle;
@@ -43,9 +45,6 @@ class MainAdminController
 
     /** @var array<string,string> */
     private $text;
-
-    /** @var string */
-    private $scriptName;
 
     /** @var string */
     private $selectedLanguage;
@@ -75,7 +74,6 @@ class MainAdminController
      * @param string $pluginFolder
      * @param array<string,string> $config
      * @param array<string,string> $text
-     * @param string $scriptName
      * @param string $selectedLanguage
      * @param int $now
      */
@@ -83,7 +81,6 @@ class MainAdminController
         $pluginFolder,
         array $config,
         array $text,
-        $scriptName,
         $selectedLanguage,
         DB $db,
         Finder $finder,
@@ -95,7 +92,6 @@ class MainAdminController
         $this->pluginFolder = $pluginFolder;
         $this->config = $config;
         $this->text = $text;
-        $this->scriptName = $scriptName;
         $this->selectedLanguage = $selectedLanguage;
         $this->db = $db;
         $this->finder = $finder;
@@ -106,35 +102,35 @@ class MainAdminController
         $this->page = Plugin::getPage();
     }
 
-    public function __invoke(string $action): Response
+    public function __invoke(Request $request, string $action): Response
     {
         switch ($action) {
             default:
-                return $this->defaultAction();
+                return $this->defaultAction($request);
             case "create":
-                return $this->createAction();
+                return $this->createAction($request);
             case "edit":
-                return $this->editAction();
+                return $this->editAction($request);
             case "delete":
-                return $this->deleteAction();
+                return $this->deleteAction($request);
             case "do_create":
-                return $this->doCreateAction();
+                return $this->doCreateAction($request);
             case "do_edit":
-                return $this->doEditAction();
+                return $this->doEditAction($request);
             case "do_delete":
-                return $this->doDeleteAction();
+                return $this->doDeleteAction($request);
             case "delete_selected":
-                return $this->deleteSelectedAction();
+                return $this->deleteSelectedAction($request);
             case "change_status":
-                return $this->changeStatusAction();
+                return $this->changeStatusAction($request);
             case "do_delete_selected":
-                return $this->doDeleteSelectedAction();
+                return $this->doDeleteSelectedAction($request);
             case "do_change_status":
-                return $this->doChangeStatusAction();
+                return $this->doChangeStatusAction($request);
         }
     }
 
-    private function defaultAction(): Response
+    private function defaultAction(Request $request): Response
     {
         $statuses = $this->getFilterStatuses();
         $total = $this->finder->countArticlesWithStatus($statuses);
@@ -143,7 +139,7 @@ class MainAdminController
         $page = max(min($this->page, $pageCount), 1);
         $offset = ($page - 1) * $limit;
         $articles = $this->finder->findArticlesWithStatus($statuses, $limit, $offset);
-        return Response::create($this->renderArticles($articles, $pageCount));
+        return Response::create($this->renderArticles($request, $articles, $pageCount));
     }
 
     /**
@@ -165,7 +161,7 @@ class MainAdminController
      * @param int $pageCount
      * @return string
      */
-    private function renderArticles(array $articles, $pageCount)
+    private function renderArticles(Request $request, array $articles, $pageCount)
     {
         $states = ['readyforpublishing', 'published', 'archived'];
         $filters = [];
@@ -175,6 +171,7 @@ class MainAdminController
         $page = min(max($this->page, 0), $pageCount);
         $records = [];
         foreach ($articles as $article) {
+            $params = ["admin" => "plugin_main", "realblog_id" => (string) $article->id, "realblog_page" => (string) $page];
             $records[] = [
                 "id" => $article->id,
                 "date" => (string) date($this->text['date_format'], $article->date),
@@ -183,10 +180,10 @@ class MainAdminController
                 "title" => $article->title,
                 "feedable" => $article->feedable,
                 "commentable" => $article->commentable,
-                "delete_url" => "{$this->scriptName}?&realblog&admin=plugin_main&action=delete"
-                    . "&realblog_id={$article->id}&realblog_page=$page",
-                "edit_url" => "{$this->scriptName}?&realblog&admin=plugin_main&action=edit"
-                    . "&realblog_id={$article->id}&realblog_page=$page",
+                "delete_url" => $request->url()->withPage("realblog")
+                    ->withParams(["action" => "delete"] + $params)->relative(),
+                "edit_url" => $request->url()->withPage("realblog")
+                    ->withParams(["action" => "edit"] + $params)->relative(),
             ];
         }
         $data = [
@@ -196,33 +193,33 @@ class MainAdminController
             'nextPage' => min($page + 1, $pageCount),
             'lastPage' => $pageCount,
             'articles' => $records,
-            'actionUrl' => $this->scriptName,
+            'actionUrl' => $request->url()->withPage("")->relative(),
             'states' => $states,
             'filters' => $filters,
         ];
         return $this->view->render('articles-form', $data);
     }
 
-    private function createAction(): Response
+    private function createAction(Request $request): Response
     {
-        return Response::create(...$this->renderArticle('create'));
+        return Response::create(...$this->renderArticle($request, 'create'));
     }
 
-    private function editAction(): Response
+    private function editAction(Request $request): Response
     {
-        return Response::create(...$this->renderArticle('edit'));
+        return Response::create(...$this->renderArticle($request, 'edit'));
     }
 
-    private function deleteAction(): Response
+    private function deleteAction(Request $request): Response
     {
-        return Response::create(...$this->renderArticle('delete'));
+        return Response::create(...$this->renderArticle($request, 'delete'));
     }
 
     /**
      * @param string $action
      * @return array<string>
      */
-    private function renderArticle($action): array
+    private function renderArticle(Request $request, $action): array
     {
         $this->editor->init(['realblog_headline_field', 'realblog_story_field']);
         if ($action === 'create') {
@@ -234,14 +231,14 @@ class MainAdminController
                 return [XH_message('fail', $this->text['message_not_found'])];
             }
         }
-        return $this->renderForm($article, $action);
+        return $this->renderForm($article, $request->url(), $action);
     }
 
     /**
      * @param string $action
      * @return array{string,string}
      */
-    private function renderForm(FullArticle $article, $action): array
+    private function renderForm(FullArticle $article, Url $url, $action): array
     {
         switch ($action) {
             case 'create':
@@ -267,7 +264,7 @@ class MainAdminController
             'date' => (string) date('Y-m-d', $article->date),
             'publishing_date' => (string) date('Y-m-d', $article->publishingDate),
             'archiving_date' => (string) date('Y-m-d', $article->archivingDate),
-            'actionUrl' => "{$this->scriptName}?&realblog&admin=plugin_main",
+            'actionUrl' => $url->withPage("realblog")->withParams(["admin" => "plugin_main"])->relative(),
             'action' => "do_{$action}",
             'csrfToken' => $this->getCsrfToken(),
             'calendarIcon' => "{$this->pluginFolder}images/calendar.png",
@@ -313,7 +310,7 @@ var REALBLOG = REALBLOG || {};
 EOT;
     }
 
-    private function doCreateAction(): Response
+    private function doCreateAction(Request $request): Response
     {
         $this->csrfProtector->check();
         $article = $this->getArticleFromParameters();
@@ -324,11 +321,11 @@ EOT;
             $info = XH_message('fail', $this->text['story_added_error']);
         }
         $title = $this->text['tooltip_create'];
-        $output = $this->renderInfo($title, $info);
+        $output = $this->renderInfo($request->url(), $title, $info);
         return Response::create($output, $title);
     }
 
-    private function doEditAction(): Response
+    private function doEditAction(Request $request): Response
     {
         $this->csrfProtector->check();
         $article = $this->getArticleFromParameters();
@@ -339,11 +336,11 @@ EOT;
             $info = XH_message('fail', $this->text['story_modified_error']);
         }
         $title = $this->text['tooltip_edit'];
-        $output = $this->renderInfo($title, $info);
+        $output = $this->renderInfo($request->url(), $title, $info);
         return Response::create($output, $title);
     }
 
-    private function doDeleteAction(): Response
+    private function doDeleteAction(Request $request): Response
     {
         $this->csrfProtector->check();
         $article = $this->getArticleFromParameters();
@@ -354,7 +351,7 @@ EOT;
             $info = XH_message('fail', $this->text['story_deleted_error']);
         }
         $title = $this->text['tooltip_delete'];
-        $output = $this->renderInfo($title, $info);
+        $output = $this->renderInfo($request->url(), $title, $info);
         return Response::create($output, $title);
     }
 
@@ -404,28 +401,30 @@ EOT;
         );
     }
 
-    private function deleteSelectedAction(): Response
+    private function deleteSelectedAction(Request $request): Response
     {
-        return Response::create($this->renderConfirmation('delete'));
+        return Response::create($this->renderConfirmation($request, 'delete'));
     }
 
-    private function changeStatusAction(): Response
+    private function changeStatusAction(Request $request): Response
     {
-        return Response::create($this->renderConfirmation('change-status'));
+        return Response::create($this->renderConfirmation($request, 'change-status'));
     }
 
     /**
      * @param string $kind
      * @return string
      */
-    private function renderConfirmation($kind)
+    private function renderConfirmation(Request $request, $kind)
     {
         $data = [
             'ids' => array_filter($_GET["realblog_ids"] ?? [], function ($id) {
                 return (int) $id >= 1;
             }),
-            'action' => "{$this->scriptName}?&realblog&admin=plugin_main",
-            'url' => "{$this->scriptName}?&realblog&admin=plugin_main&action=plugin_text&realblog_page={$this->page}",
+            'action' => $request->url()->withPage("realblog")->withParams(["admin" => "plugin_main"])->relative(),
+            'url' => $request->url()->withPage("realblog")
+                ->withParams(["admin" => "plugin_main", "action" => "plugin_text", "realblog_page" => (string) $this->page])
+                ->relative(),
             'csrfToken' => $this->getCsrfToken(),
         ];
         if ($kind === 'change-status') {
@@ -436,7 +435,7 @@ EOT;
         return $this->view->render("confirm-$kind", $data);
     }
 
-    private function doDeleteSelectedAction(): Response
+    private function doDeleteSelectedAction(Request $request): Response
     {
         $this->csrfProtector->check();
         $ids = array_filter($_POST["realblog_ids"] ?? [], function ($id) {
@@ -451,11 +450,11 @@ EOT;
             $info = XH_message('fail', $this->text['deleteall_error']);
         }
         $title = $this->text['tooltip_delete_selected'];
-        $output = $this->renderInfo($title, $info);
+        $output = $this->renderInfo($request->url(), $title, $info);
         return Response::create($output, $title);
     }
 
-    private function doChangeStatusAction(): Response
+    private function doChangeStatusAction(Request $request): Response
     {
         $this->csrfProtector->check();
         $ids = array_filter($_POST["realblog_ids"] ?? [], function ($id) {
@@ -471,7 +470,7 @@ EOT;
             $info = XH_message('fail', $this->text['changestatus_error']);
         }
         $title = $this->text['tooltip_change_status'];
-        $output = $this->renderInfo($title, $info);
+        $output = $this->renderInfo($request->url(), $title, $info);
         return Response::create($output, $title);
     }
 
@@ -492,9 +491,10 @@ EOT;
      * @param string $message
      * @return string
      */
-    private function renderInfo($title, $message)
+    private function renderInfo(Url $url, $title, $message)
     {
-        $url = XH_hsc("{$this->scriptName}?&realblog&admin=plugin_main&action=plugin_text&realblog_page={$this->page}");
+        $params = ["admin" => "plugin_main", "action" => "plugin_text", "realblog_page" => (string) $this->page];
+        $url = XH_hsc($url->withPage("realblog")->withParams($params)->relative());
         return <<<HTML
 <h1>Realblog &ndash; $title</h1>
 $message

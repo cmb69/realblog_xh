@@ -22,6 +22,7 @@
 namespace Realblog;
 
 use Realblog\Infra\Finder;
+use Realblog\Infra\Request;
 use Realblog\Infra\View;
 use Realblog\Value\MostPopularArticle;
 
@@ -51,7 +52,7 @@ class MostPopularController
         $this->view = $view;
     }
 
-    public function __invoke(string $pageUrl): string
+    public function __invoke(Request $request, string $pageUrl): string
     {
         if (!in_array($pageUrl, $this->urls) || $this->config['links_visible'] <= 0) {
             return "";
@@ -60,7 +61,8 @@ class MostPopularController
         $records = [];
         foreach ($articles as $article) {
             $record = get_object_vars($article);
-            $record["url"] = Plugin::url($pageUrl, ["realblog_id" => (string) $article->id]);
+            $record["url"] = $request->url()->withPage($pageUrl)
+                ->withParams(["realblog_id" => (string) $article->id])->relative();
             $records[] = $record;
         }
         $data = [

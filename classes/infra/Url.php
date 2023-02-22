@@ -24,23 +24,63 @@ namespace Realblog\Infra;
 class Url
 {
     /** @var string */
-    private $path;
+    private $path = "";
 
-    public function __construct(string $path)
+    /** @var string */
+    private $page = "";
+
+    /** @var array<string,string> */
+    private $params = [];
+
+    public function page(): string
     {
-        $this->path = $path;
+        return $this->page;
+    }
+
+    public function withPath(string $path): self
+    {
+        $that = clone $this;
+        $that->path = $path;
+        return $that;
+    }
+
+    public function withPage(string $page): self
+    {
+        $that = clone $this;
+        $that->page = $page;
+        return $that;
+    }
+
+    /** @param array<string,string> $params */
+    public function withParams(array $params): self
+    {
+        $that = clone $this;
+        $that->params = array_filter($params, function (string $value, string $key) {
+            return ($key !== "realblog_page" || $value !== "1")
+                && ($key !== "realblog_year" || $value !== date("Y"))
+                && ($key !== "realblog_search" || $value !== "");
+        }, ARRAY_FILTER_USE_BOTH);
+        return $that;
     }
 
     public function relative(): string
     {
-        global $sn;
-
-        return $this->qualifiedPath($sn);
+        $path = $this->qualifiedPath(parse_url(CMSIMPLE_URL, PHP_URL_PATH));
+        $query = $this->queryString();
+        if ($query === "") {
+            return $path;
+        }
+        return $path . "?" . $query;
     }
 
     public function absolute(): string
     {
-        return $this->qualifiedPath(CMSIMPLE_URL);
+        $path = $this->qualifiedPath(CMSIMPLE_URL);
+        $query = $this->queryString();
+        if ($query === "") {
+            return $path;
+        }
+        return $path . "?" . $query;
     }
 
     private function qualifiedPath(string $base): string
@@ -49,7 +89,16 @@ class Url
         if (!strncmp($this->path, "../", 3)) {
             $base = dirname($base) . "/";
         }
-        $path = preg_replace('/^\.\.?\//', "", $this->path);
+        $path = preg_replace('/^\.{1,2}\//', "", $this->path);
         return $base . $path;
+    }
+
+    private function queryString(): string
+    {
+        $query = http_build_query($this->params, "", "&", PHP_QUERY_RFC3986);
+        if ($query === "") {
+            return $this->page;
+        }
+        return $this->page . "&" . $query;
     }
 }

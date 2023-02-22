@@ -24,6 +24,7 @@
 namespace Realblog;
 
 use Realblog\Infra\Finder;
+use Realblog\Infra\Request;
 use Realblog\Infra\ScriptEvaluator;
 use Realblog\Infra\View;
 
@@ -68,7 +69,7 @@ class LinkController
         $this->scriptEvaluator = $scriptEvaluator;
     }
 
-    public function __invoke(string $pageUrl, bool $showTeaser = false): string
+    public function __invoke(Request $request, string $pageUrl, bool $showTeaser = false): string
     {
         if (!in_array($pageUrl, $this->urls) || $this->config['links_visible'] <= 0) {
             return "";
@@ -79,7 +80,8 @@ class LinkController
             $records[] = [
                 "title" => $article->title,
                 "date" => date($this->text['date_format'], $article->date),
-                "url" => Plugin::url($pageUrl, array('realblog_id' => (string) $article->id)),
+                "url" => $request->url()->withPage($pageUrl)
+                    ->withParams(["realblog_id" => (string) $article->id])->relative(),
                 "teaser" => $this->scriptEvaluator->evaluate($article->teaser),
             ];
         }

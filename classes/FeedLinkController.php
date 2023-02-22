@@ -23,6 +23,8 @@
 
 namespace Realblog;
 
+use Realblog\Infra\Request;
+
 class FeedLinkController
 {
     /** @var string */
@@ -31,30 +33,26 @@ class FeedLinkController
     /** @var array<string,string> */
     private $text;
 
-    /** @var string */
-    private $scriptName;
-
     /**
      * @param string $pluginFolder
      * @param array<string,string> $text
-     * @param string $scriptName
      */
-    public function __construct($pluginFolder, array $text, $scriptName)
+    public function __construct($pluginFolder, array $text)
     {
         $this->pluginFolder = $pluginFolder;
         $this->text = $text;
-        $this->scriptName = $scriptName;
     }
 
     /**
      * @param string $target
      * @return string
      */
-    public function __invoke($target)
+    public function __invoke(Request $request, $target)
     {
+        $url = $request->url()->withPage("")->withParams(["realblog_feed" => "rss"])->relative();
         return <<<HTML
 <!-- realblog feed link -->
-<a href="{$this->scriptName}?realblog_feed=rss" target="$target">
+<a href="$url" target="$target">
     <img src="{$this->pluginFolder}images/rss.png"
          alt="{$this->text['rss_tooltip']}" title="{$this->text['rss_tooltip']}"
          style="border: 0">

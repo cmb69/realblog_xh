@@ -75,12 +75,11 @@ class Dic
 
     public static function makeFeedLinkController(): FeedLinkController
     {
-        global $pth, $plugin_tx, $sn;
+        global $pth, $plugin_tx;
 
         return new FeedLinkController(
             "{$pth['folder']['plugins']}realblog/",
-            $plugin_tx['realblog'],
-            $sn
+            $plugin_tx['realblog']
         );
     }
 
@@ -98,14 +97,13 @@ class Dic
 
     public static function makeFeedController(): FeedController
     {
-        global $pth, $plugin_cf, $plugin_tx, $sn;
+        global $pth, $plugin_cf, $plugin_tx;
 
         return new FeedController(
             "{$pth['folder']['plugins']}realblog/",
             $pth['folder']['images'],
             $plugin_cf['realblog'],
             $plugin_tx['realblog'],
-            $sn,
             new Finder(Dic::makeDb()),
             new ScriptEvaluator()
         );
@@ -124,13 +122,12 @@ class Dic
 
     public static function makeMainAdminController(): MainAdminController
     {
-        global $pth, $plugin_cf, $plugin_tx, $sn, $sl, $_XH_csrfProtection;
+        global $pth, $plugin_cf, $plugin_tx, $sl, $_XH_csrfProtection;
 
         return new MainAdminController(
             "{$pth['folder']['plugins']}realblog/",
             $plugin_cf['realblog'],
             $plugin_tx['realblog'],
-            $sn,
             $sl,
             Dic::makeDb(),
             new Finder(Dic::makeDb()),
@@ -143,12 +140,11 @@ class Dic
 
     public static function makeDataExchangeController(): DataExchangeController
     {
-        global $pth, $plugin_tx, $sn, $_XH_csrfProtection;
+        global $pth, $plugin_tx, $_XH_csrfProtection;
 
         return new DataExchangeController(
             "{$pth['folder']['content']}realblog/",
             $plugin_tx['realblog'],
-            $sn,
             Dic::makeDb(),
             new Finder(Dic::makeDb()),
             $_XH_csrfProtection,

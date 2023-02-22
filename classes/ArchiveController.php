@@ -23,38 +23,40 @@
 
 namespace Realblog;
 
+use Realblog\Infra\Request;
+use Realblog\Infra\Url;
 use Realblog\Value\Article;
 
 class ArchiveController extends MainController
 {
-    public function __invoke(bool $showSearch): string
+    public function __invoke(Request $request, bool $showSearch): string
     {
         if (isset($_GET["realblog_id"])) {
-            return (string) $this->showArticleAction(max((int) ($_GET["realblog_id"] ?? 1), 1));
+            return (string) $this->showArticleAction($request->url(), max((int) ($_GET["realblog_id"] ?? 1), 1));
         } else {
-            return $this->defaultAction($showSearch);
+            return $this->defaultAction($request, $showSearch);
         }
     }
 
     /**
      * @return string
      */
-    private function defaultAction(bool $showSearch)
+    private function defaultAction(Request $request, bool $showSearch)
     {
         $html = '';
         if ($showSearch) {
-            $html .= $this->renderSearchForm();
+            $html .= $this->renderSearchForm($request->url());
         }
 
         if ($this->searchTerm) {
             $articles = $this->finder->findArchivedArticlesContaining($this->searchTerm);
             $articleCount = count($articles);
-            $html .= $this->renderSearchResults('archive', $articleCount);
+            $html .= $this->renderSearchResults($request->url(), 'archive', $articleCount);
         } else {
             $articles = array();
         }
 
-        $html .= $this->renderArchive($articles);
+        $html .= $this->renderArchive($request, $articles);
         return $html;
     }
 
@@ -62,7 +64,7 @@ class ArchiveController extends MainController
      * @param list<Article> $articles
      * @return string
      */
-    private function renderArchive(array $articles)
+    private function renderArchive(Request $request, array $articles)
     {
         if (!$this->searchTerm) {
             $year = $this->year;
@@ -78,9 +80,9 @@ class ArchiveController extends MainController
                 (int) mktime(0, 0, 0, 1, 1, $year),
                 (int) mktime(0, 0, 0, 1, 1, $year + 1)
             );
-            return $this->renderArchivedArticles($articles, false, $back, $next);
+            return $this->renderArchivedArticles($request, $articles, false, $back, $next);
         } else {
-            return $this->renderArchivedArticles($articles, true, null, null);
+            return $this->renderArchivedArticles($request, $articles, true, null, null);
         }
     }
 
@@ -91,27 +93,22 @@ class ArchiveController extends MainController
      * @param int|null $next
      * @return string
      */
-    private function renderArchivedArticles(array $articles, $isSearch, $back, $next)
+    private function renderArchivedArticles(Request $request, array $articles, $isSearch, $back, $next)
     {
-        global $su;
-
         $monthNames = explode(',', $this->text['date_months']);
         $records = [];
         foreach ($this->groupArticlesByMonth($articles) as $group) {
             $groupRecords = [];
             foreach ($group as $article) {
-                $url = Plugin::url(
-                    $su,
-                    [
-                        'realblog_id' => $article->id,
-                        'realblog_year' => date('Y', $article->date),
-                        'realblog_search' => $_GET['realblog_search'] ?? "",
-                    ]
-                );
+                $params = [
+                    'realblog_id' => $article->id,
+                    'realblog_year' => date('Y', $article->date),
+                    'realblog_search' => $_GET['realblog_search'] ?? "",
+                ];
                 $groupRecords[] = [
                     "title" => $article->title,
                     "date" => (string) date($this->text['date_format'], $article->date),
-                    "url" => $url,
+                    "url" => $request->url()->withParams($params)->relative(),
                     "year" => idate('Y', $article->date),
                     "month" => $monthNames[idate('n', $article->date) - 1],
                 ];
@@ -126,10 +123,10 @@ class ArchiveController extends MainController
             'year' => $this->year,
         ];
         if ($back) {
-            $data['backUrl'] = Plugin::url($su, array('realblog_year' => (string) $back));
+            $data['backUrl'] = $request->url()->withParams(['realblog_year' => (string) $back])->relative();
         }
         if ($next) {
-            $data['nextUrl'] = Plugin::url($su, array('realblog_year' => (string) $next));
+            $data['nextUrl'] = $request->url()->withParams(['realblog_year' => (string) $next])->relative();
         }
         return $this->view->render('archive', $data);
     }
@@ -166,8 +163,8 @@ class ArchiveController extends MainController
      * @param int $id
      * @return string|null
      */
-    public function showArticleAction($id)
+    public function showArticleAction(Url $url, $id)
     {
-        return $this->renderArticle($id);
+        return $this->renderArticle($url, $id);
     }
 }

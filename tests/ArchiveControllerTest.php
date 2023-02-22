@@ -26,6 +26,7 @@ use PHPUnit\Framework\MockObject;
 use PHPUnit\Framework\TestCase;
 use Realblog\Infra\DB;
 use Realblog\Infra\Finder;
+use Realblog\Infra\Request;
 use Realblog\Infra\ScriptEvaluator;
 use Realblog\Infra\View;
 use Realblog\Value\Article;
@@ -64,39 +65,36 @@ class ArchiveControllerTest extends TestCase
 
     public function testRendersEmptyArchive(): void
     {
-        global $sn, $su;
+        global $su;
 
-        $sn = "/";
         $su = "Archive";
         $this->finder->method("findArchiveYears")->willReturn([2023]);
         $this->finder->method("findArchivedArticlesInPeriod")->willReturn([]);
-        $response = ($this->sut)(true);
+        $response = ($this->sut)(new Request, true);
         Approvals::verifyHtml($response);
     }
 
     public function testRendersArchive(): void
     {
-        global $sn, $su;
+        global $su;
 
-        $sn = "/";
         $su = "Archive";
         $this->finder->method("findArchiveYears")->willReturn([2023]);
         $this->finder->method("findArchivedArticlesInPeriod")->willReturn($this->articles());
-        $response = ($this->sut)(true);
+        $response = ($this->sut)(new Request, true);
         Approvals::verifyHtml($response);
     }
 
     public function testRendersArchivedArticle(): void
     {
-        global $sn, $su, $s, $h;
+        global $su, $s, $h;
 
         $_GET = ["realblog_id" => "3"];
-        $sn = "/";
         $su = "Archive";
         $s = 2;
         $h = [2 => "Blog"];
         $this->finder->method("findById")->willReturn($this->article());
-        $response = ($this->sut)(true);
+        $response = ($this->sut)(new Request, true);
         Approvals::verifyHtml($response);
     }
 

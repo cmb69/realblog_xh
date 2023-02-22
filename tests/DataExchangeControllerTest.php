@@ -26,7 +26,7 @@ use Realblog\Infra\DB;
 use Realblog\Infra\Finder;
 use Realblog\Infra\View;
 use ApprovalTests\Approvals;
-
+use Realblog\Infra\Request;
 use XH\CSRFProtection as CsrfProtector;
 
 class DataExchangeControllerTest extends TestCase
@@ -40,8 +40,8 @@ class DataExchangeControllerTest extends TestCase
         $finder = $this->createStub(Finder::class);
         $csrfProtector = $this->createStub(CsrfProtector::class);
         $view = new View("./views/", $lang);
-        $sut = new DataExchangeController("../../content/realblog/", $lang, "/", $db, $finder, $csrfProtector, $view);
-        $response = $sut("export_to_csv");
+        $sut = new DataExchangeController("../../content/realblog/", $lang, $db, $finder, $csrfProtector, $view);
+        $response = $sut(new Request, "export_to_csv");
         $this->assertEquals("http://example.com/?&realblog&admin=data_exchange", $response->location());
     }
 
@@ -54,8 +54,8 @@ class DataExchangeControllerTest extends TestCase
         $finder = $this->createStub(Finder::class);
         $csrfProtector = $this->createStub(CsrfProtector::class);
         $view = new View("./views/", $lang);
-        $sut = new DataExchangeController("../../content/realblog/", $lang, "/", $db, $finder, $csrfProtector, $view);
-        $response = $sut("export_to_csv");
+        $sut = new DataExchangeController("../../content/realblog/", $lang, $db, $finder, $csrfProtector, $view);
+        $response = $sut(new Request, "export_to_csv");
         Approvals::verifyHtml($response->output());
     }
 
@@ -68,8 +68,8 @@ class DataExchangeControllerTest extends TestCase
         $finder = $this->createStub(Finder::class);
         $csrfProtector = $this->createStub(CsrfProtector::class);
         $view = new View("./views/", $lang);
-        $sut = new DataExchangeController("../../content/realblog/", $lang, "/", $db, $finder, $csrfProtector, $view);
-        $response = $sut("import_from_csv");
+        $sut = new DataExchangeController("../../content/realblog/", $lang, $db, $finder, $csrfProtector, $view);
+        $response = $sut(new Request, "import_from_csv");
         $this->assertEquals("http://example.com/?&realblog&admin=data_exchange", $response->location());
     }
 
@@ -82,8 +82,8 @@ class DataExchangeControllerTest extends TestCase
         $finder = $this->createStub(Finder::class);
         $csrfProtector = $this->createStub(CsrfProtector::class);
         $view = new View("./views/", $lang);
-        $sut = new DataExchangeController("../../content/realblog/", $lang, "/", $db, $finder, $csrfProtector, $view);
-        $response = $sut("import_from_csv");
+        $sut = new DataExchangeController("../../content/realblog/", $lang, $db, $finder, $csrfProtector, $view);
+        $response = $sut(new Request, "import_from_csv");
         Approvals::verifyHtml($response->output());
     }
 }

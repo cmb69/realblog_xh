@@ -23,6 +23,7 @@ namespace Realblog;
 
 use Realblog\Infra\DB;
 use Realblog\Infra\Finder;
+use Realblog\Infra\Request;
 use Realblog\Infra\Response;
 use Realblog\Infra\View;
 use XH\CSRFProtection as CsrfProtector;
@@ -34,9 +35,6 @@ class DataExchangeController
 
     /** @var array<string,string> */
     private $text;
-
-    /** @var string */
-    private $scriptName;
 
     /** @var DB */
     private $db;
@@ -53,12 +51,10 @@ class DataExchangeController
     /**
      * @param string $contentFolder
      * @param array<string,string> $text
-     * @param string $scriptName
      */
     public function __construct(
         $contentFolder,
         array $text,
-        $scriptName,
         DB $db,
         Finder $finder,
         CsrfProtector $csrfProtector,
@@ -66,18 +62,17 @@ class DataExchangeController
     ) {
         $this->contentFolder = $contentFolder;
         $this->text = $text;
-        $this->scriptName = $scriptName;
         $this->db = $db;
         $this->finder = $finder;
         $this->csrfProtector = $csrfProtector;
         $this->view = $view;
     }
 
-    public function __invoke(string $action): Response
+    public function __invoke(Request $request, string $action): Response
     {
         switch ($action) {
             default:
-                return $this->defaultAction();
+                return $this->defaultAction($request);
             case "export_to_csv":
                 return $this->exportToCsvAction();
             case "import_from_csv":
@@ -85,11 +80,11 @@ class DataExchangeController
         }
     }
 
-    private function defaultAction(): Response
+    private function defaultAction(Request $request): Response
     {
         $data = [
             'csrfToken' => $this->getCsrfToken(),
-            'url' => "{$this->scriptName}?realblog",
+            'url' => $request->url()->withPage("realblog")->relative(),
             'articleCount' => $this->finder->countArticlesWithStatus(array(0, 1, 2)),
             'confirmImport' => json_encode($this->text['exchange_confirm_import']),
         ];

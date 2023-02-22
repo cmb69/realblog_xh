@@ -29,7 +29,7 @@ use Realblog\Infra\Finder;
 use Realblog\Infra\View;
 use Realblog\Value\FullArticle;
 use ApprovalTests\Approvals;
-
+use Realblog\Infra\Request;
 use XH\CSRFProtection as CsrfProtector;
 
 class MainAdminControllerTest extends TestCase
@@ -55,7 +55,6 @@ class MainAdminControllerTest extends TestCase
             "./",
             $conf,
             $lang,
-            "/",
             "en",
             $db,
             $this->finder,
@@ -68,115 +67,154 @@ class MainAdminControllerTest extends TestCase
 
     public function testDefaultActionRendersOverview(): void
     {
+        global $su;
+
+        $su = "realblog";
         $this->finder->method('findArticlesWithStatus')->willReturn([]);
-        $response = ($this->sut)("");
+        $response = ($this->sut)(new Request, "");
         Approvals::verifyHtml($response->output());
     }
 
     public function testCreateActionRendersArticle(): void
     {
-        $response = ($this->sut)("create");
+        global $su;
+
+        $su = "realblog";
+        $response = ($this->sut)(new Request, "create");
         Approvals::verifyHtml($response->output());
         $this->assertEquals("Create new article", $response->title());
     }
 
     public function testCreateActionOutputsHjs(): void
     {
-        $response = ($this->sut)("create");
+        global $su;
+
+        $su = "realblog";
+        $response = ($this->sut)(new Request, "create");
         Approvals::verifyHtml($response->hjs());
     }
 
     public function testCreateActionOutputsBjs(): void
     {
+        global $su;
+
+        $su = "realblog";
         $this->finder->method('findAllCategories')->willReturn(["cat1", "cat2"]);
-        $response = ($this->sut)("create");
+        $response = ($this->sut)(new Request, "create");
         Approvals::verifyHtml($response->bjs());
     }
 
     public function testEditActionRendersArticle(): void
     {
+        global $su;
+
+        $su = "realblog";
         $this->finder->method('findById')->willReturn($this->firstArticle());
         $_GET = ['realblog_id' => "1"];
-        $response = ($this->sut)("edit");
+        $response = ($this->sut)(new Request, "edit");
         Approvals::verifyHtml($response->output());
         $this->assertEquals("Edit article #1", $response->title());
     }
 
     public function testEditActionOutputsHjs(): void
     {
+        global $su;
+
+        $su = "realblog";
         $this->finder->method('findById')->willReturn($this->firstArticle());
         $_GET = ['realblog_id' => "1"];
-        $response = ($this->sut)("edit");
+        $response = ($this->sut)(new Request, "edit");
         Approvals::verifyHtml($response->hjs());
     }
 
     public function testEditActionOutputsBjs(): void
     {
+        global $su;
+
+        $su = "realblog";
         $this->finder->method('findById')->willReturn($this->firstArticle());
         $this->finder->method('findAllCategories')->willReturn(["cat1", "cat2"]);
         $_GET = ['realblog_id' => "1"];
-        $response = ($this->sut)("edit");
+        $response = ($this->sut)(new Request, "edit");
         Approvals::verifyHtml($response->bjs());
     }
 
     public function testEditActionFailsOnMissingArticle(): void
     {
         $_GET = ['realblog_id' => "1"];
-        $response = ($this->sut)("edit");
+        $response = ($this->sut)(new Request, "edit");
         Approvals::verifyHtml($response->output());
     }
 
     public function testDeleteActionRendersArticle(): void
     {
+        global $su;
+
+        $su = "realblog";
         $this->finder->method('findById')->willReturn($this->firstArticle());
         $_GET = ['realblog_id' => "1"];
-        $response = ($this->sut)("delete");
+        $response = ($this->sut)(new Request, "delete");
         Approvals::verifyHtml($response->output());
         $this->assertEquals("Delete article #1", $response->title());
     }
 
     public function testDeleteActionOutputsHjs(): void
     {
+        global $su;
+
+        $su = "realblog";
         $this->finder->method('findById')->willReturn($this->firstArticle());
         $_GET = ['realblog_id' => "1"];
-        $response = ($this->sut)("delete");
+        $response = ($this->sut)(new Request, "delete");
         Approvals::verifyHtml($response->hjs());
     }
 
     public function testDeletectionOutputsBjs(): void
     {
+        global $su;
+
+        $su = "realblog";
         $this->finder->method('findById')->willReturn($this->firstArticle());
         $this->finder->method('findAllCategories')->willReturn(["cat1", "cat2"]);
         $_GET = ['realblog_id' => "1"];
-        $response = ($this->sut)("delete");
+        $response = ($this->sut)(new Request, "delete");
         Approvals::verifyHtml($response->bjs());
     }
 
     public function testDeleteActionFailsOnMissingArticle(): void
     {
         $_GET = ['realblog_id' => "1"];
-        $response = ($this->sut)("delete");
+        $response = ($this->sut)(new Request, "delete");
         Approvals::verifyHtml($response->output());
     }
 
     public function testDoCreateActionFailureIsReported(): void
     {
+        global $su;
+
+        $su = "realblog";
         $_POST = $this->dummyPost();
-        $response = ($this->sut)("do_create");
+        $response = ($this->sut)(new Request, "do_create");
         Approvals::verifyHtml($response->output());
     }
 
     public function testDoEditActionFailureIsReported(): void
     {
+        global $su;
+
+        $su = "realblog";
         $_POST = $this->dummyPost();
-        $response = ($this->sut)("do_edit");
+        $response = ($this->sut)(new Request, "do_edit");
         Approvals::verifyHtml($response->output());
     }
 
     public function testDoDeleteActionFailureIsReported(): void
     {
+        global $su;
+
+        $su = "realblog";
         $_POST = $this->dummyPost();
-        $response = ($this->sut)("do_delete");
+        $response = ($this->sut)(new Request, "do_delete");
         Approvals::verifyHtml($response->output());
     }
 

@@ -23,7 +23,7 @@
 
 namespace Realblog;
 
-use XH\CSRFProtection as CsrfProtector;
+use Realblog\Infra\Request;
 
 class Plugin
 {
@@ -46,7 +46,7 @@ class Plugin
             self::emitAlternateRSSLink();
             if (preg_match('/^rss$/', $_GET['realblog_feed'] ?? "")) {
                 header('Content-Type: application/rss+xml; charset=UTF-8');
-                echo Dic::makeFeedController()();
+                echo Dic::makeFeedController()(new Request);
                 exit;
             }
         }
@@ -116,31 +116,5 @@ class Plugin
             $filter = (bool) ($_COOKIE[$varname] ?? false);
         }
         return $filter;
-    }
-
-    /**
-     * @param string $pageUrl
-     * @param array<string,string> $params
-     * @return string
-     */
-    public static function url($pageUrl, $params = array())
-    {
-        global $sn;
-
-        $replacePairs = array(
-            //'realblog_id' => 'id',
-            //'realblog_page' => 'page'
-        );
-        $url = $sn . '?' . $pageUrl;
-        ksort($params);
-        foreach ($params as $name => $value) {
-            if (!($name == 'realblog_page' && $value == 1
-                || $name == 'realblog_year' && $value == date('Y')
-                || $name == 'realblog_search' && !$value)
-            ) {
-                $url .= '&' . strtr($name, $replacePairs) . '=' . $value;
-            }
-        }
-        return $url;
     }
 }

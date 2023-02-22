@@ -51,6 +51,7 @@ this program; if not, see <http://www.gnu.org/licenses>.
 ////////////////////////////////////////////////// HISTORIC LICENSE SECTION END
 
 use Realblog\Dic;
+use Realblog\Infra\Request;
 use Realblog\Plugin;
 
 /**
@@ -63,25 +64,25 @@ Plugin::init();
 
 function realblog_blog(bool $showSearch = false, string $category = "all"): string
 {
-    return Dic::makeBlogController()($showSearch, $category);
+    return Dic::makeBlogController()(new Request, $showSearch, $category);
 }
 
 function realblog_archive(bool $showSearch = false): string
 {
-    return Dic::makeArchiveController()($showSearch);
+    return Dic::makeArchiveController()(new Request, $showSearch);
 }
 
 function realblog_link(string $pageUrl, bool $showTeaser = false): string
 {
-    return Dic::makeLinkController()($pageUrl, $showTeaser);
+    return Dic::makeLinkController()(new Request, $pageUrl, $showTeaser);
 }
 
 function realblog_mostpopular(string $pageUrl): string
 {
-    return Dic::makeMostPopularController()($pageUrl);
+    return Dic::makeMostPopularController()(new Request, $pageUrl);
 }
 
 function realblog_feedlink(string $target = "_self"): string
 {
-    return Dic::makeFeedLinkController()($target);
+    return Dic::makeFeedLinkController()(new Request, $target);
 }

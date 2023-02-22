@@ -23,9 +23,11 @@
 
 namespace Realblog;
 
+use PharIo\Manifest\Url as ManifestUrl;
 use Realblog\Infra\DB;
 use Realblog\Infra\Finder;
 use Realblog\Infra\ScriptEvaluator;
+use Realblog\Infra\Url;
 use Realblog\Infra\View;
 use Realblog\Value\FullArticle;
 
@@ -80,13 +82,11 @@ abstract class MainController
     /**
      * @return string
      */
-    protected function renderSearchForm()
+    protected function renderSearchForm(Url $url)
     {
-        global $su, $sn;
-
         $data = [
-            'actionUrl' => $sn,
-            'pageUrl' => $su,
+            'actionUrl' => $url->withPage("")->relative(),
+            'pageUrl' => $url->page(),
         ];
         return $this->view->render('search-form', $data);
     }
@@ -96,14 +96,12 @@ abstract class MainController
      * @param int $count
      * @return string
      */
-    protected function renderSearchResults($what, $count)
+    protected function renderSearchResults(Url $url, $what, $count)
     {
-        global $su;
-
         $data = [
             'words' => $this->searchTerm,
             'count' => $count,
-            'url' => Plugin::url($su),
+            'url' => $url->relative(),
             'key' => ($what == 'archive') ? 'back_to_archive' : 'search_show_all',
         ];
         return $this->view->render('search-results', $data);
@@ -113,14 +111,14 @@ abstract class MainController
      * @param int $id
      * @return string
      */
-    protected function renderArticle($id)
+    protected function renderArticle(Url $url, $id)
     {
         $article = $this->finder->findById($id);
         if (isset($article) && (defined("XH_ADM") && !XH_ADM) && $article->status > 0) {
             $this->db->recordPageView($id);
         }
         if (isset($article) && ((defined("XH_ADM") && XH_ADM) || $article->status > 0)) {
-            return $this->doRenderArticle($article);
+            return $this->doRenderArticle($url, $article);
         }
         return "";
     }
@@ -128,9 +126,9 @@ abstract class MainController
     /**
      * @return string
      */
-    private function doRenderArticle(FullArticle $article)
+    private function doRenderArticle(Url $url, FullArticle $article)
     {
-        global $sn, $su, $h, $s, $title, $description;
+        global $h, $s, $title, $description;
 
         $title .= $h[$s] . " \xE2\x80\x93 " . $article->title;
         $description = $this->getDescription($article);
@@ -149,14 +147,15 @@ abstract class MainController
             'is_admin' => defined("XH_ADM") && XH_ADM,
             'wants_comments' => $this->wantsComments(),
             'back_text' => $article->status === 2 ? $this->text['archiv_back'] : $this->text['blog_back'],
-            'back_url' => Plugin::url($su, $params),
+            'back_url' => $url->withParams($params)->relative(),
         ];
         if ($this->searchTerm) {
             $params['realblog_search'] = $this->searchTerm;
-            $data['back_to_search_url'] = Plugin::url($su, $params);
+            $data['back_to_search_url'] = $url->withParams($params)->relative();
         }
-        $data['edit_url'] = "$sn?&realblog&admin=plugin_main"
-            . "&action=edit&realblog_id={$article->id}";
+        $data['edit_url'] = $url->withPage("realblog")
+            ->withParams(["admin" => "plugin_main", "action" => "edit", "realblog_id" => (string) $article->id])
+            ->relative();
         if ($this->wantsComments()) {
             /** @var class-string $bridge */
             $commentsUrl = $bridge::getEditUrl("realblog{$article->id}");
