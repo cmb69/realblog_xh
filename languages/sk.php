@@ -3,7 +3,7 @@
 $plugin_tx['realblog']['archiv_back']="Prahľad archívu";
 $plugin_tx['realblog']['archive_year']="Ročný archív:";
 $plugin_tx['realblog']['archived']="archívované";
-$plugin_tx['realblog']['back_to_archive']="naspäť do archívu &raquo;";
+$plugin_tx['realblog']['back_to_archive']="naspäť do archívu »";
 $plugin_tx['realblog']['backuped']="uložené";
 $plugin_tx['realblog']['blog_back']="prehľad článkov";
 $plugin_tx['realblog']['btn_create']="pridať";
@@ -50,7 +50,7 @@ $plugin_tx['realblog']['rss_page']="Blog";
 $plugin_tx['realblog']['rss_title']="Weblog";
 $plugin_tx['realblog']['rss_tooltip']="RSS feed pre túto webstránku";
 $plugin_tx['realblog']['search_hint']="UPOZORNENIE: Táto vyhľadávacia funkcia hľadá iba konkrétny reťazec. Vyhľadávanie jednotlivých slov reťazca (bez ohľadu na umiestnenie v texte) nie je možné.";
-$plugin_tx['realblog']['search_show_all']="Ukázať všetky články &raquo;";
+$plugin_tx['realblog']['search_show_all']="Ukázať všetky články »";
 $plugin_tx['realblog']['startdate_hint']="autopublikácia vypnutá";
 $plugin_tx['realblog']['startdate_label']="zverejniť od";
 $plugin_tx['realblog']['story_label']="článok";

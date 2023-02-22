@@ -3,7 +3,7 @@
 $plugin_tx['realblog']['archiv_back']="archief overzicht";
 $plugin_tx['realblog']['archive_year']="archief per jaar:";
 $plugin_tx['realblog']['archived']="gearchiveerd";
-$plugin_tx['realblog']['back_to_archive']="terug naar archief &raquo;";
+$plugin_tx['realblog']['back_to_archive']="terug naar archief »";
 $plugin_tx['realblog']['backuped']="opgeslagen";
 $plugin_tx['realblog']['blog_back']="artikel overzicht";
 $plugin_tx['realblog']['btn_create']="voeg toe";
@@ -53,7 +53,7 @@ $plugin_tx['realblog']['search_contains']="bevat";
 $plugin_tx['realblog']['search_endswith']="eindigt met";
 $plugin_tx['realblog']['search_hint']="Hint: Deze zoekfunctie zoekt op alle woorden die worden ingegeven achter mekaar. Meerder woorden ingeven waarop dan individueel gezocht wordt gaat niet.";
 $plugin_tx['realblog']['search_or']="OF";
-$plugin_tx['realblog']['search_show_all']="Laat alle artikelen zien &raquo;";
+$plugin_tx['realblog']['search_show_all']="Laat alle artikelen zien »";
 $plugin_tx['realblog']['search_startswith']="begint met";
 $plugin_tx['realblog']['startdate_hint']="auto publiceren uitgeschakeld";
 $plugin_tx['realblog']['startdate_label']="publiceren";

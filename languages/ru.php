@@ -9,9 +9,9 @@
 
 $plugin_tx['realblog']['archiv_back']="Обзор архива";
 $plugin_tx['realblog']['archive_year']="Архив по годам: ";
-$plugin_tx['realblog']['archived']="&nbsp;&bull;&nbsp;архивирована";
+$plugin_tx['realblog']['archived']=" • архивирована";
 $plugin_tx['realblog']['back_to_archive']="Возврат к архиву »";
-$plugin_tx['realblog']['backuped']="&nbsp;&bull;&nbsp;сохранена";
+$plugin_tx['realblog']['backuped']=" • сохранена";
 $plugin_tx['realblog']['blog_back']="Обзор записей";
 $plugin_tx['realblog']['btn_create']="Добавить";
 $plugin_tx['realblog']['btn_delete']="Удалить";
@@ -47,9 +47,9 @@ $plugin_tx['realblog']['month_names']="январь,февраль,март,ап
 $plugin_tx['realblog']['new_realblogstatus']="Укажите новое состояние ";
 $plugin_tx['realblog']['no_topics']="Записи недоступны";
 $plugin_tx['realblog']['nothing_selected']="Записи не выбраны";
-$plugin_tx['realblog']['published']="&nbsp;&bull;&nbsp;опубликована";
+$plugin_tx['realblog']['published']=" • опубликована";
 $plugin_tx['realblog']['read_more']="читать дальше »";
-$plugin_tx['realblog']['readyforpublishing']="&nbsp;&bull;&nbsp;не опубликована";
+$plugin_tx['realblog']['readyforpublishing']=" • не опубликована";
 $plugin_tx['realblog']['return']="назад";
 $plugin_tx['realblog']['rss_description']="информация";
 $plugin_tx['realblog']['rss_enable']="true";
