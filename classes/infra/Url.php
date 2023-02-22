@@ -63,6 +63,15 @@ class Url
         return $that;
     }
 
+    public function withRealblogPage(int $page): self
+    {
+        $that = clone $this;
+        if ($page !== 1) {
+            $that->params["realblog_page"] = (string) $page;
+        }
+        return $that;
+    }
+
     public function relative(): string
     {
         $path = $this->qualifiedPath(parse_url(CMSIMPLE_URL, PHP_URL_PATH));

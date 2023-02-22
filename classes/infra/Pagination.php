@@ -25,47 +25,35 @@ namespace Realblog\Infra;
 
 class Pagination
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     private $itemCount;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $page;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $pageCount;
 
-    /**
-     * @var string
-     */
+    /** @var int */
+    private $radius;
+
+    /** @var Url */
     private $url;
 
     /** @var View */
     private $view;
 
-    /**
-     * @param int $itemCount
-     * @param int $page
-     * @param int $pageCount
-     * @param string $url
-     */
-    public function __construct($itemCount, $page, $pageCount, $url, View $view)
+    public function __construct(int $itemCount, int $page, int $pageCount, int $radius, Url $url, View $view)
     {
         $this->itemCount = $itemCount;
         $this->page = $page;
         $this->pageCount = $pageCount;
+        $this->radius = $radius;
         $this->url = $url;
         $this->view = $view;
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     public function render()
     {
         if ($this->pageCount <= 1) {
@@ -74,7 +62,9 @@ class Pagination
         $url = $this->url;
         $pages = [];
         foreach ($this->gatherPages() as $page) {
-            $pages[] = $page !== null ? ["num" => $page, "url" => sprintf($url, $page)] : null;
+            $pages[] = $page !== null
+                ? ["num" => $page, "url" => $url->withRealblogPage($page)->relative()]
+                : null;
         }
         $data = [
             'itemCount' => $this->itemCount,
@@ -84,24 +74,19 @@ class Pagination
         return $this->view->render('pagination', $data);
     }
 
-    /**
-     * @return list<int|null>
-     */
+    /** @return list<int|null> */
     private function gatherPages()
     {
-        global $plugin_cf;
-
-        $radius = (int) $plugin_cf['realblog']['pagination_radius'];
         $pages = array(1);
-        if ($this->page - $radius > 1 + 1) {
+        if ($this->page - $this->radius > 1 + 1) {
             $pages[] = null;
         }
-        for ($i = $this->page - $radius; $i <= $this->page + $radius; $i++) {
+        for ($i = $this->page - $this->radius; $i <= $this->page + $this->radius; $i++) {
             if ($i > 1 && $i < $this->pageCount) {
                 $pages[] = $i;
             }
         }
-        if ($this->page + $radius < $this->pageCount - 1) {
+        if ($this->page + $this->radius < $this->pageCount - 1) {
             $pages[] = null;
         }
         $pages[] = $this->pageCount;

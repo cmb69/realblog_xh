@@ -65,9 +65,11 @@ class BlogControllerTest extends TestCase
 
     public function testRendersArticleOverview(): void
     {
-        global $su;
+        global $su, $plugin_cf;
 
         $su = "Blog";
+        $plugin_cf = XH_includeVar("./config/config.php", "plugin_cf");
+        $this->finder->method("countArticlesWithStatus")->willReturn(7);
         $this->finder->method("findArticles")->willReturn($this->articles());
         $response = ($this->sut)(new Request, true, "all");
         Approvals::verifyHtml($response);

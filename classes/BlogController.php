@@ -101,7 +101,8 @@ class BlogController extends MainController
             $articleCount,
             $page,
             $pageCount,
-            $url->withParams(["realblog_page" => "%s", "realblog_search" => $search])->relative(),
+            (int) $this->config['pagination_radius'],
+            $url->withParams(["realblog_search" => $search]),
             $this->view
         );
         return $this->view->render("articles", [
