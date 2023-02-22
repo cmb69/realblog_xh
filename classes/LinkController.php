@@ -33,9 +33,6 @@ class LinkController
     /** @var array<string,string> */
     private $config;
 
-    /** @var array<string,string> */
-    private $text;
-
     /** @var list<string> */
     private $urls;
 
@@ -50,19 +47,16 @@ class LinkController
 
     /**
      * @param array<string,string> $config
-     * @param array<string,string> $text
      * @param list<string> $urls
      */
     public function __construct(
         array $config,
-        array $text,
         $urls,
         Finder $finder,
         View $view,
         ScriptEvaluator $scriptEvaluator
     ) {
         $this->config = $config;
-        $this->text = $text;
         $this->urls = $urls;
         $this->finder = $finder;
         $this->view = $view;
@@ -79,7 +73,7 @@ class LinkController
         foreach ($articles as $article) {
             $records[] = [
                 "title" => $article->title,
-                "date" => date($this->text['date_format'], $article->date),
+                "date" => $this->view->date($article->date),
                 "url" => $request->url()->withPage($pageUrl)
                     ->withParams(["realblog_id" => (string) $article->id])->relative(),
                 "teaser" => $this->scriptEvaluator->evaluate($article->teaser),

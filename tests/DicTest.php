@@ -33,7 +33,7 @@ class DicTest extends TestCase
 
         $pth = ["folder" => ["content" => "", "images" => "", "plugin" => "", "plugins" => ""]];
         $plugin_cf = ["realblog" => []];
-        $plugin_tx = ["realblog" => []];
+        $plugin_tx = ["realblog" => ["rss_page" => ""]];
         $_XH_csrfProtection = $this->createStub(CsrfProtector::class);
     }
 

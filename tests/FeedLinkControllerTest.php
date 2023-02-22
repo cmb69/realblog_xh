@@ -25,13 +25,14 @@ use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 use Realblog\Infra\Request;
 use Realblog\Infra\Url;
+use Realblog\Infra\View;
 
 class FeedLinkControllerTest extends TestCase
 {
     public function testDefaultActionRendersFeedLink(): void
     {
         $text = XH_includeVar("./languages/en.php", 'plugin_tx')['realblog'];
-        $sut = new FeedLinkController($text);
+        $sut = new FeedLinkController(new View("./views/", $text));
         $request = $this->createStub(Request::class);
         $request->method("url")->willReturn((new Url)->withPage(""));
         $request->method("pluginsFolder")->willReturn("./plugins/");

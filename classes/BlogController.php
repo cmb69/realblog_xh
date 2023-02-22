@@ -90,7 +90,7 @@ class BlogController extends MainController
                 "url" => $url->withParams(["realblog_id" => (string) $article->id] + $params)->relative(),
                 "categories" => implode(", ", explode(",", trim($article->categories, ","))),
                 "link_header" => $article->hasBody || (defined("XH_ADM") && XH_ADM),
-                "date" => (string) date($this->text["date_format"], $article->date),
+                "date" => $this->view->date($article->date),
                 "teaser" => $this->scriptEvaluator->evaluate($article->teaser),
                 "read_more" => $this->config["show_read_more_link"]  && $article->hasBody,
                 "commentable" => $isCommentable,

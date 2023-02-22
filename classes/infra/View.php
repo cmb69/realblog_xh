@@ -53,6 +53,28 @@ class View
         return sprintf($this->lang[$key], $count, ...$args);
     }
 
+    public function date(int $timestamp): string
+    {
+        return date($this->lang['date_format'], $timestamp);
+    }
+
+    public function month(int $month): string
+    {
+        $names = explode(',', $this->lang['date_months']);
+        return $names[$month];
+    }
+
+    /** @param scalar $args */
+    public function message(string $type, string $key, ...$args): string
+    {
+        return XH_message($type, $this->lang[$key], ...$args);
+    }
+
+    public function json(string $key): string
+    {
+        return (string) json_encode($this->lang[$key]);
+    }
+
     /** @param array<string,mixed> $_data */
     public function render(string $_template, array $_data): string
     {

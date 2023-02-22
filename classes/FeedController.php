@@ -33,9 +33,6 @@ class FeedController
     /** @var array<string,string> */
     private $config;
 
-    /** @var array<string,string> */
-    private $text;
-
     /** @var Finder */
     private $finder;
 
@@ -45,19 +42,14 @@ class FeedController
     /** @var View */
     private $view;
 
-    /**
-     * @param array<string,string> $config
-     * @param array<string,string> $text
-     */
+    /** @param array<string,string> $config */
     public function __construct(
         array $config,
-        array $text,
         Finder $finder,
         ScriptEvaluator $scriptEvaluator,
         View $view
     ) {
         $this->config = $config;
-        $this->text = $text;
         $this->finder = $finder;
         $this->scriptEvaluator = $scriptEvaluator;
         $this->view = $view;
@@ -71,14 +63,14 @@ class FeedController
         foreach ($articles as $article) {
             $records[] = [
                 "title" => $article->title,
-                "url" => $request->url()->withPage($this->text["rss_page"])
+                "url" => $request->url()->withPage($this->config["rss_page"])
                     ->withParams(['realblog_id' => (string) $article->id])->absolute(),
                 "teaser" => $this->scriptEvaluator->evaluate($article->teaser),
                 "date" => (string) date('r', $article->date),
             ];
         }
         $data = [
-            'url' => CMSIMPLE_URL . '?' . $this->text['rss_page'],
+            'url' => CMSIMPLE_URL . '?' . $this->config['rss_page'],
             'managingEditor' => $this->config['rss_editor'],
             'hasLogo' => (bool) $this->config['rss_logo'],
             'imageUrl' => $request->url()->withPath($request->imageFolder() . $this->config['rss_logo'])->absolute(),

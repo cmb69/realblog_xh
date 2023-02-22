@@ -40,9 +40,6 @@ class MainAdminController
     /** @var array<string,string> */
     private $config;
 
-    /** @var array<string,string> */
-    private $text;
-
     /** @var DB */
     private $db;
 
@@ -61,13 +58,9 @@ class MainAdminController
     /** @var int */
     private $page;
 
-    /**
-     * @param array<string,string> $config
-     * @param array<string,string> $text
-     */
+    /** @param array<string,string> $config */
     public function __construct(
         array $config,
-        array $text,
         DB $db,
         Finder $finder,
         CsrfProtector $csrfProtector,
@@ -75,7 +68,6 @@ class MainAdminController
         Editor $editor
     ) {
         $this->config = $config;
-        $this->text = $text;
         $this->db = $db;
         $this->finder = $finder;
         $this->csrfProtector = $csrfProtector;
@@ -156,7 +148,7 @@ class MainAdminController
             $params = ["admin" => "plugin_main", "realblog_id" => (string) $article->id, "realblog_page" => (string) $page];
             $records[] = [
                 "id" => $article->id,
-                "date" => (string) date($this->text['date_format'], $article->date),
+                "date" => $this->view->date($article->date),
                 "status" => $article->status,
                 "categories" => $article->categories,
                 "title" => $article->title,
@@ -210,7 +202,7 @@ class MainAdminController
             $id = max($_GET['realblog_id'] ?? 1, 1);
             $article = $this->finder->findById($id);
             if (!$article) {
-                return [XH_message('fail', $this->text['message_not_found'])];
+                return [$this->view->message("fail", "message_not_found")];
             }
         }
         return $this->renderForm($article, $request, $action);
@@ -224,13 +216,13 @@ class MainAdminController
     {
         switch ($action) {
             case 'create':
-                $title = $this->text['tooltip_create'];
+                $title = $this->view->text("tooltip_create");
                 break;
             case 'edit':
-                $title = "{$this->text['tooltip_edit']} #{$article->id}";
+                $title = $this->view->text("title_edit", $article->id);
                 break;
             case 'delete':
-                $title = "{$this->text['tooltip_delete']} #{$article->id}";
+                $title = $this->view->text("title_delete", $article->id);
                 break;
             default:
                 throw new RuntimeException("Unsupported action");
@@ -300,11 +292,10 @@ EOT;
         if ($res === 1) {
             return $this->redirectToOverviewResponse();
         } else {
-            $info = XH_message('fail', $this->text['story_added_error']);
+            $info = $this->view->message("fail", "story_added_error");
         }
-        $title = $this->text['tooltip_create'];
-        $output = $this->renderInfo($request->url(), $title, $info);
-        return Response::create($output, $title);
+        $output = $this->renderInfo($request->url(), "tooltip_create", $info);
+        return Response::create($output, $this->view->text("tooltip_create"));
     }
 
     private function doEditAction(Request $request): Response
@@ -315,11 +306,10 @@ EOT;
         if ($res === 1) {
             return $this->redirectToOverviewResponse();
         } else {
-            $info = XH_message('fail', $this->text['story_modified_error']);
+            $info = $this->view->message("fail", "story_modified_error");
         }
-        $title = $this->text['tooltip_edit'];
-        $output = $this->renderInfo($request->url(), $title, $info);
-        return Response::create($output, $title);
+        $output = $this->renderInfo($request->url(), "tooltip_edit", $info);
+        return Response::create($output, $this->view->text("tooltip_edit"));
     }
 
     private function doDeleteAction(Request $request): Response
@@ -330,11 +320,10 @@ EOT;
         if ($res === 1) {
             return $this->redirectToOverviewResponse();
         } else {
-            $info = XH_message('fail', $this->text['story_deleted_error']);
+            $info = $this->view->message("fail", "story_deleted_error");
         }
-        $title = $this->text['tooltip_delete'];
-        $output = $this->renderInfo($request->url(), $title, $info);
-        return Response::create($output, $title);
+        $output = $this->renderInfo($request->url(), "tooltip_delete", $info);
+        return Response::create($output, $this->view->text("tooltip_delete"));
     }
 
     /**
@@ -427,13 +416,12 @@ EOT;
         if ($res === count($ids)) {
             return $this->redirectToOverviewResponse();
         } elseif ($res > 0) {
-            $info = XH_message('warning', $this->text['deleteall_warning'], $res, count($ids));
+            $info = $this->view->message("warning", "deleteall_warning", $res, count($ids));
         } else {
-            $info = XH_message('fail', $this->text['deleteall_error']);
+            $info = $this->view->message("fail", "deleteall_error");
         }
-        $title = $this->text['tooltip_delete_selected'];
-        $output = $this->renderInfo($request->url(), $title, $info);
-        return Response::create($output, $title);
+        $output = $this->renderInfo($request->url(), "tooltip_delete_selected", $info);
+        return Response::create($output, $this->view->text("tooltip_delete_selected"));
     }
 
     private function doChangeStatusAction(Request $request): Response
@@ -447,13 +435,12 @@ EOT;
         if ($res === count($ids)) {
             return $this->redirectToOverviewResponse();
         } elseif ($res > 0) {
-            $info = XH_message('warning', $this->text['changestatus_warning'], $res, count($ids));
+            $info = $this->view->message("warning", "changestatus_warning", $res, count($ids));
         } else {
-            $info = XH_message('fail', $this->text['changestatus_error']);
+            $info = $this->view->message("fail", "changestatus_error");
         }
-        $title = $this->text['tooltip_change_status'];
-        $output = $this->renderInfo($request->url(), $title, $info);
-        return Response::create($output, $title);
+        $output = $this->renderInfo($request->url(), "tooltip_change_status", $info);
+        return Response::create($output, $this->view->text("tooltip_change_status"));
     }
 
     /**
@@ -476,12 +463,12 @@ EOT;
     private function renderInfo(Url $url, $title, $message)
     {
         $params = ["admin" => "plugin_main", "action" => "plugin_text", "realblog_page" => (string) $this->page];
-        $url = XH_hsc($url->withPage("realblog")->withParams($params)->relative());
-        return <<<HTML
-<h1>Realblog &ndash; $title</h1>
-$message
-<p><a href="$url">{$this->text['blog_back']}</a></p>
-HTML;
+
+        return $this->view->render("info_message", [
+            "title" => $title,
+            "message" => $message,
+            "url" => $url->withPage("realblog")->withParams($params)->relative(),
+        ]);
     }
 
     private function redirectToOverviewResponse(): Response

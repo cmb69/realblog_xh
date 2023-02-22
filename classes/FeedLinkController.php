@@ -24,18 +24,16 @@
 namespace Realblog;
 
 use Realblog\Infra\Request;
+use Realblog\Infra\View;
 
 class FeedLinkController
 {
-    /** @var array<string,string> */
-    private $text;
+    /** @var View */
+    private $view;
 
-    /**
-     * @param array<string,string> $text
-     */
-    public function __construct(array $text)
+    public function __construct(View $view)
     {
-        $this->text = $text;
+        $this->view = $view;
     }
 
     /**
@@ -44,15 +42,10 @@ class FeedLinkController
      */
     public function __invoke(Request $request, $target)
     {
-        $url = $request->url()->withPage("")->withParams(["realblog_feed" => "rss"])->relative();
-        $image = $request->pluginsFolder() . "realblog/images/rss.png";
-        return <<<HTML
-<!-- realblog feed link -->
-<a href="$url" target="$target">
-    <img src="$image"
-         alt="{$this->text['rss_tooltip']}" title="{$this->text['rss_tooltip']}"
-         style="border: 0">
-</a>
-HTML;
+        return $this->view->render("feed_link", [
+            "url" => $request->url()->withPage("")->withParams(["realblog_feed" => "rss"])->relative(),
+            "target" => $target,
+            "image" => $request->pluginsFolder() . "realblog/images/rss.png",
+        ]);
     }
 }

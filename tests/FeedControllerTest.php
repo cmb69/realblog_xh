@@ -38,11 +38,12 @@ class FeedControllerTest extends TestCase
         $su = "";
         $conf = XH_includeVar("./config/config.php", "plugin_cf")["realblog"];
         $text = XH_includeVar("./languages/en.php", "plugin_tx")["realblog"];
+        $conf["rss_page"] = $text["rss_page"];
         $finder = $this->createStub(Finder::class);
         $finder->method("findFeedableArticles")->willReturn([]);
         $scriptEvaluator = $this->createStub(ScriptEvaluator::class);
         $view = new View("./views/", $text);
-        $sut = new FeedController($conf, $text, $finder, $scriptEvaluator, $view);
+        $sut = new FeedController($conf, $finder, $scriptEvaluator, $view);
         $request = $this->createStub(Request::class);
         $request->method("imageFolder")->willReturn("./userfiles/images/");
         $response = $sut($request);
@@ -57,11 +58,12 @@ class FeedControllerTest extends TestCase
         $conf = XH_includeVar("./config/config.php", "plugin_cf")["realblog"];
         $conf["rss_logo"] = "rss.png";
         $text = XH_includeVar("./languages/en.php", "plugin_tx")["realblog"];
+        $conf["rss_page"] = $text["rss_page"];
         $finder = $this->createStub(Finder::class);
         $finder->method("findFeedableArticles")->willReturn([]);
         $scriptEvaluator = $this->createStub(ScriptEvaluator::class);
         $view = new View("./views/", $text);
-        $sut = new FeedController($conf, $text, $finder, $scriptEvaluator, $view);
+        $sut = new FeedController($conf, $finder, $scriptEvaluator, $view);
         $request = $this->createStub(Request::class);
         $request->method("url")->willReturn(new Url);
         $request->method("imageFolder")->willReturn("./userfiles/images/");

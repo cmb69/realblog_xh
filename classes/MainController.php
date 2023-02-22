@@ -23,7 +23,6 @@
 
 namespace Realblog;
 
-use PharIo\Manifest\Url as ManifestUrl;
 use Realblog\Infra\DB;
 use Realblog\Infra\Finder;
 use Realblog\Infra\ScriptEvaluator;
@@ -35,9 +34,6 @@ abstract class MainController
 {
     /** @var array<string,string> */
     protected $config;
-
-    /** @var array<string,string> */
-    protected $text;
 
     /** @var DB */
     protected $db;
@@ -57,20 +53,15 @@ abstract class MainController
     /** @var int */
     protected $year;
 
-    /**
-     * @param array<string,string> $config
-     * @param array<string,string> $text
-     */
+    /** @param array<string,string> $config */
     public function __construct(
         array $config,
-        array $text,
         DB $db,
         Finder $finder,
         View $view,
         ScriptEvaluator $scriptEvaluator
     ) {
         $this->config = $config;
-        $this->text = $text;
         $this->db = $db;
         $this->finder = $finder;
         $this->view = $view;
@@ -146,7 +137,7 @@ abstract class MainController
             'heading_above_meta' => $this->config['heading_above_meta'],
             'is_admin' => defined("XH_ADM") && XH_ADM,
             'wants_comments' => $this->wantsComments(),
-            'back_text' => $article->status === 2 ? $this->text['archiv_back'] : $this->text['blog_back'],
+            'back_text' => $article->status === 2 ? 'archiv_back' : 'blog_back',
             'back_url' => $url->withParams($params)->relative(),
         ];
         if ($this->searchTerm) {
@@ -165,7 +156,7 @@ abstract class MainController
             $data['comment_count'] = $bridge::count("realblog{$article->id}");
             $data["comments"] = $bridge::handle("realblog{$article->id}");
         }
-        $data['date'] = date($this->text['date_format'], $article->date);
+        $data['date'] = $this->view->date($article->date);
         $categories = explode(',', trim($article->categories, ','));
         $data['categories'] = implode(', ', $categories);
         if ($this->config['show_teaser']) {

@@ -40,7 +40,7 @@ class DataExchangeControllerTest extends TestCase
         $finder = $this->createStub(Finder::class);
         $csrfProtector = $this->createStub(CsrfProtector::class);
         $view = new View("./views/", $lang);
-        $sut = new DataExchangeController($lang, $db, $finder, $csrfProtector, $view);
+        $sut = new DataExchangeController($db, $finder, $csrfProtector, $view);
         $request = $this->createStub(Request::class);
         $request->method("contentFolder")->willReturn("./content/");
         $response = $sut($request, "export_to_csv");
@@ -56,7 +56,7 @@ class DataExchangeControllerTest extends TestCase
         $finder = $this->createStub(Finder::class);
         $csrfProtector = $this->createStub(CsrfProtector::class);
         $view = new View("./views/", $lang);
-        $sut = new DataExchangeController($lang, $db, $finder, $csrfProtector, $view);
+        $sut = new DataExchangeController($db, $finder, $csrfProtector, $view);
         $request = $this->createStub(Request::class);
         $request->method("contentFolder")->willReturn("./content/");
         $response = $sut($request, "export_to_csv");
@@ -72,7 +72,7 @@ class DataExchangeControllerTest extends TestCase
         $finder = $this->createStub(Finder::class);
         $csrfProtector = $this->createStub(CsrfProtector::class);
         $view = new View("./views/", $lang);
-        $sut = new DataExchangeController($lang, $db, $finder, $csrfProtector, $view);
+        $sut = new DataExchangeController($db, $finder, $csrfProtector, $view);
         $request = $this->createStub(Request::class);
         $request->method("contentFolder")->willReturn("./content/");
         $response = $sut($request, "import_from_csv");
@@ -88,7 +88,7 @@ class DataExchangeControllerTest extends TestCase
         $finder = $this->createStub(Finder::class);
         $csrfProtector = $this->createStub(CsrfProtector::class);
         $view = new View("./views/", $lang);
-        $sut = new DataExchangeController($lang, $db, $finder, $csrfProtector, $view);
+        $sut = new DataExchangeController($db, $finder, $csrfProtector, $view);
         $request = $this->createStub(Request::class);
         $request->method("contentFolder")->willReturn("./content/");
         $response = $sut($request, "import_from_csv");

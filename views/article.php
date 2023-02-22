@@ -30,7 +30,7 @@ use Realblog\Infra\View;
 <?if (isset($back_to_search_url)):?>
       <a class="realblog_button" href="<?=$this->esc($back_to_search_url)?>"><?=$this->text('search_back')?></a>
 <?endif?>
-      <a class="realblog_button" href="<?=$this->esc($back_url)?>"><?=$this->esc($back_text)?></a>
+      <a class="realblog_button" href="<?=$this->esc($back_url)?>"><?=$this->text($back_text)?></a>
 <?if ($is_admin):?>
 <?  if ($wants_comments && isset($edit_comments_url)):?>
       <a class="realblog_button" href="<?=$this->esc($edit_comments_url)?>"><?=$this->text('comment_edit')?></a>
@@ -60,7 +60,7 @@ use Realblog\Infra\View;
 <?if (isset($back_to_search_url)):?>
       <a class="realblog_button" href="<?=$this->esc($back_to_search_url)?>"><?=$this->text('search_back')?></a>
 <?endif?>
-      <a class="realblog_button" href="<?=$this->esc($back_url)?>"><?=$this->esc($back_text)?></a>
+      <a class="realblog_button" href="<?=$this->esc($back_url)?>"><?=$this->text($back_text)?></a>
 <?if ($is_admin):?>
 <?  if ($wants_comments && isset($edit_comments_url)):?>
       <a class="realblog_button" href="<?=$this->esc($edit_comments_url)?>"><?=$this->text('comment_edit')?></a>

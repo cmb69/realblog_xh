@@ -95,7 +95,6 @@ class ArchiveController extends MainController
      */
     private function renderArchivedArticles(Request $request, array $articles, $isSearch, $back, $next)
     {
-        $monthNames = explode(',', $this->text['date_months']);
         $records = [];
         foreach ($this->groupArticlesByMonth($articles) as $group) {
             $groupRecords = [];
@@ -107,10 +106,10 @@ class ArchiveController extends MainController
                 ];
                 $groupRecords[] = [
                     "title" => $article->title,
-                    "date" => (string) date($this->text['date_format'], $article->date),
+                    "date" => $this->view->date($article->date),
                     "url" => $request->url()->withParams($params)->relative(),
                     "year" => idate('Y', $article->date),
-                    "month" => $monthNames[idate('n', $article->date) - 1],
+                    "month" => idate('n', $article->date) - 1,
                 ];
             }
             $records[] = $groupRecords;

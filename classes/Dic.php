@@ -34,117 +34,101 @@ class Dic
 {
     public static function makeBlogController(): BlogController
     {
-        global $pth, $plugin_cf, $plugin_tx;
-
         return new BlogController(
-            $plugin_cf['realblog'],
-            $plugin_tx['realblog'],
+            self::makeConf(),
             self::makeDb(),
             new Finder(self::makeDb()),
-            new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog']),
+            self::makeView(),
             new ScriptEvaluator
         );
     }
 
     public static function makeArchiveController(): ArchiveController
     {
-        global $pth, $plugin_cf, $plugin_tx;
-
         return new ArchiveController(
-            $plugin_cf['realblog'],
-            $plugin_tx['realblog'],
+            self::makeConf(),
             self::makeDb(),
             new Finder(self::makeDb()),
-            new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog']),
+            self::makeView(),
             new ScriptEvaluator
         );
     }
 
     public static function makeLinkController(): LinkController
     {
-        global $pth, $plugin_cf, $plugin_tx, $u;
+        global $u;
 
         return new LinkController(
-            $plugin_cf['realblog'],
-            $plugin_tx['realblog'],
+            self::makeConf(),
             $u,
             new Finder(Dic::makeDb()),
-            new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog']),
+            self::makeView(),
             new ScriptEvaluator()
         );
     }
 
     public static function makeFeedLinkController(): FeedLinkController
     {
-        global $plugin_tx;
-
-        return new FeedLinkController(
-            $plugin_tx['realblog']
-        );
+        return new FeedLinkController(self::makeView());
     }
 
     public static function makeMostPopularController(): MostPopularController
     {
-        global $pth, $plugin_cf, $plugin_tx, $u;
+        global $u;
 
         return new MostPopularController(
-            $plugin_cf['realblog'],
+            self::makeConf(),
             $u,
             new Finder(Dic::makeDb()),
-            new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog'])
+            self::makeView()
         );
     }
 
     public static function makeFeedController(): FeedController
     {
-        global $pth, $plugin_cf, $plugin_tx;
-
         return new FeedController(
-            $plugin_cf['realblog'],
-            $plugin_tx['realblog'],
+            self::makeConf(),
             new Finder(Dic::makeDb()),
             new ScriptEvaluator(),
-            new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog'])
+            self::makeView()
         );
     }
 
     public static function makeInfoController(): InfoController
     {
-        global $pth, $plugin_cf, $plugin_tx;
+        global $plugin_tx;
 
         return new InfoController(
-            $plugin_cf["realblog"],
+            self::makeConf(),
             $plugin_tx["realblog"],
             new SystemChecker,
-            new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog'])
+            self::makeView()
         );
     }
 
     public static function makeMainAdminController(): MainAdminController
     {
-        global $pth, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
+        global $_XH_csrfProtection;
 
         return new MainAdminController(
-            $plugin_cf['realblog'],
-            $plugin_tx['realblog'],
+            self::makeConf(),
             Dic::makeDb(),
             new Finder(Dic::makeDb()),
             $_XH_csrfProtection,
-            new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog']),
+            self::makeView(),
             new Editor()
         );
     }
 
     public static function makeDataExchangeController(): DataExchangeController
     {
-        global $pth, $plugin_tx, $_XH_csrfProtection;
+        global $_XH_csrfProtection;
 
         return new DataExchangeController(
-            $plugin_tx['realblog'],
             Dic::makeDb(),
             new Finder(Dic::makeDb()),
             $_XH_csrfProtection,
-            new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog'])
+            self::makeView()
         );
     }
 
@@ -157,5 +141,20 @@ class Dic
             $instance = new DB($pth['folder']['content'] . "realblog/realblog.db");
         }
         return $instance;
+    }
+
+    private static function makeView(): View
+    {
+        global $pth, $plugin_tx;
+
+        return new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog']);
+    }
+
+    /** @return array<string,string> */
+    private static function makeConf(): array
+    {
+        global $plugin_cf, $plugin_tx;
+
+        return ["rss_page" => $plugin_tx["realblog"]["rss_page"]] + $plugin_cf["realblog"];
     }
 }

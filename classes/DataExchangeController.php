@@ -30,9 +30,6 @@ use XH\CSRFProtection as CsrfProtector;
 
 class DataExchangeController
 {
-    /** @var array<string,string> */
-    private $text;
-
     /** @var DB */
     private $db;
 
@@ -45,15 +42,12 @@ class DataExchangeController
     /** @var View */
     private $view;
 
-    /** @param array<string,string> $text */
     public function __construct(
-        array $text,
         DB $db,
         Finder $finder,
         CsrfProtector $csrfProtector,
         View $view
     ) {
-        $this->text = $text;
         $this->db = $db;
         $this->finder = $finder;
         $this->csrfProtector = $csrfProtector;
@@ -78,7 +72,7 @@ class DataExchangeController
             'csrfToken' => $this->getCsrfToken(),
             'url' => $request->url()->withPage("realblog")->relative(),
             'articleCount' => $this->finder->countArticlesWithStatus(array(0, 1, 2)),
-            'confirmImport' => json_encode($this->text['exchange_confirm_import']),
+            'confirmImport' => $this->view->json("exchange_confirm_import"),
         ];
         $filename = $request->contentFolder() . "realblog/realblog.csv";
         if (file_exists($filename)) {
@@ -95,8 +89,8 @@ class DataExchangeController
         if ($this->db->exportToCsv($filename)) {
             return $this->redirectToDefaultResponse();
         } else {
-            $output = "<h1>Realblog &ndash; {$this->text['exchange_heading']}</h1>\n"
-                . XH_message('fail', $this->text['exchange_export_failure'], $filename);
+            $output = "<h1>Realblog &ndash; {$this->view->text("exchange_heading")}</h1>\n"
+                . $this->view->message("fail", "exchange_export_failure", $filename);
             return Response::create($output);
         }
     }
@@ -108,8 +102,8 @@ class DataExchangeController
         if ($this->db->importFromCsv($filename)) {
             return $this->redirectToDefaultResponse();
         } else {
-            $output = "<h1>Realblog &ndash; {$this->text['exchange_heading']}</h1>\n"
-                . XH_message('fail', $this->text['exchange_import_failure'], $filename);
+            $output = "<h1>Realblog &ndash; {$this->view->text("exchange_heading")}</h1>\n"
+                . $this->view->message("fail", "exchange_import_failure", $filename);
             return Response::create($output);
         }
     }

@@ -5,7 +5,7 @@ use Realblog\Infra\View;
 /**
  * @var View $this
  * @var bool $isSearch
- * @var list<list<array{title:string,date:string,url:string,year:string,month:string}>> $articles
+ * @var list<list<array{title:string,date:string,url:string,year:string,month:int}>> $articles
  * @var string $heading
  * @var int $year
  * @var string|null $backUrl
@@ -31,7 +31,7 @@ use Realblog\Infra\View;
 
 <?if (!empty($articles)):?>
 <?  foreach ($articles as $group):?>
-  <<?=$this->esc($heading)?>><?=$this->esc($group[0]['month'])?> <?=$this->esc($group[0]['year'])?></<?=$this->esc($heading)?>>
+  <<?=$this->esc($heading)?>><?=$this->month($group[0]['month'])?> <?=$this->esc($group[0]['year'])?></<?=$this->esc($heading)?>>
   <ul class="realblog_archive">
 <?    foreach ($group as $article):?>
     <li>

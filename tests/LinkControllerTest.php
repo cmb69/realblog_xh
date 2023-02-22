@@ -35,12 +35,12 @@ class LinkControllerTest extends TestCase
         $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
         $conf = $plugin_cf['realblog'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
-        $lang = $plugin_tx['realblog'];
+        $text = $plugin_tx['realblog'];
         $finder = $this->createStub(Finder::class);
         $finder->method("findArticles")->willReturn([]);
-        $view = new View("./views/", $lang);
+        $view = new View("./views/", $text);
         $scriptEvaluator = $this->createStub(ScriptEvaluator::class);
-        $sut = new LinkController($conf, $lang, ["foo"], $finder, $view, $scriptEvaluator);
+        $sut = new LinkController($conf, ["foo"], $finder, $view, $scriptEvaluator);
         $response = $sut(new Request, "foo", true);
         Approvals::verifyHtml($response);
     }

@@ -54,7 +54,6 @@ class MainAdminControllerTest extends TestCase
         $editor = $this->createStub(Editor::class);
         $this->sut = new MainAdminController(
             $conf,
-            $lang,
             $db,
             $this->finder,
             $csrfProtector,

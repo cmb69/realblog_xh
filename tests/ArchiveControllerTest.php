@@ -55,7 +55,6 @@ class ArchiveControllerTest extends TestCase
         $this->scriptEvaluator->method("evaluate")->willReturnArgument(0);
         $this->sut = new ArchiveController(
             XH_includeVar("./config/config.php", "plugin_cf")["realblog"],
-            $text,
             $this->db,
             $this->finder,
             new View("./views/", $text),
