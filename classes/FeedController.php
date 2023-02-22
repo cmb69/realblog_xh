@@ -26,6 +26,7 @@ namespace Realblog;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Pages;
 use Realblog\Infra\Request;
+use Realblog\Infra\Response;
 use Realblog\Infra\View;
 
 class FeedController
@@ -55,7 +56,7 @@ class FeedController
         $this->view = $view;
     }
 
-    public function __invoke(Request $request): string
+    public function __invoke(Request $request): Response
     {
         $count = (int) $this->config['rss_entries'];
         $articles = $this->finder->findFeedableArticles($count);
@@ -76,6 +77,9 @@ class FeedController
             'imageUrl' => $request->url()->withPath($request->imageFolder() . $this->config['rss_logo'])->absolute(),
             'articles' => $records,
         ];
-        return '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . $this->view->render('feed', $data);
+        return (new Response)->withOutput(
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+            . $this->view->render('feed', $data)
+        );
     }
 }

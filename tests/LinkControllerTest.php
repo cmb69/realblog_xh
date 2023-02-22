@@ -43,6 +43,6 @@ class LinkControllerTest extends TestCase
         $view = new View("./views/", $text);
         $sut = new LinkController($conf, $pages, $finder, $view);
         $response = $sut(new Request, "foo", true);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 }

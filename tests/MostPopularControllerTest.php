@@ -56,7 +56,7 @@ class MostPopularControllerTest extends TestCase
     {
         $this->finder->method("findMostPopularArticles")->willReturn([]);
         $response = ($this->sut)(new Request, "foo");
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testRendersMostPopularArticles(): void
@@ -66,14 +66,14 @@ class MostPopularControllerTest extends TestCase
         $su = "Blog";
         $this->finder->method("findMostPopularArticles")->willReturn($this->articles());
         $response = ($this->sut)(new Request, "foo");
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testRendersNothingIfPageDoesNotExist(): void
     {
         $this->finder->method("findMostPopularArticles")->willReturn($this->articles());
         $response = ($this->sut)(new Request, "bar");
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     private function articles(): array

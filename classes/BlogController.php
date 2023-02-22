@@ -25,24 +25,22 @@ namespace Realblog;
 
 use Realblog\Infra\Pagination;
 use Realblog\Infra\Request;
+use Realblog\Infra\Response;
 use Realblog\Infra\Url;
 use Realblog\Value\Article;
 
 class BlogController extends MainController
 {
-    public function __invoke(Request $request, bool $showSeach, string $category): string
+    public function __invoke(Request $request, bool $showSeach, string $category): Response
     {
         if (isset($_GET["realblog_id"])) {
-            return (string) $this->showArticleAction($request->url(), max((int) ($_GET["realblog_id"] ?? 1), 1));
+            return $this->showArticleAction($request->url(), max((int) ($_GET["realblog_id"] ?? 1), 1));
         } else {
-            return $this->defaultAction($request, $showSeach, $category);
+            return (new Response)->withOutput($this->defaultAction($request, $showSeach, $category));
         }
     }
 
-    /**
-     * @return string
-     */
-    private function defaultAction(Request $request, bool $showSearch, string $category)
+    private function defaultAction(Request $request, bool $showSearch, string $category): string
     {
         $html = '';
         if ($showSearch) {
@@ -115,11 +113,7 @@ class BlogController extends MainController
         ]);
     }
 
-    /**
-     * @param int $id
-     * @return string
-     */
-    private function showArticleAction(Url $url, $id)
+    private function showArticleAction(Url $url, int $id): Response
     {
         return $this->renderArticle($url, $id);
     }

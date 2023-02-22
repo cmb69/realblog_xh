@@ -24,6 +24,7 @@
 namespace Realblog;
 
 use Realblog\Infra\Request;
+use Realblog\Infra\Response;
 use Realblog\Infra\SystemChecker;
 use Realblog\Infra\View;
 
@@ -53,7 +54,7 @@ class InfoController
         $this->view = $view;
     }
 
-    public function __invoke(Request $request): string
+    public function __invoke(Request $request): Response
     {
         $checks = [];
         foreach ($this->getChecks($request->pluginsFolder()) as $label => $state) {
@@ -63,11 +64,11 @@ class InfoController
                 "state_label" => $this->text["syscheck_$state"],
             ];
         }
-        return $this->view->render("info", [
+        return (new Response)->withOutput($this->view->render("info", [
             "version" => Plugin::VERSION,
             "heading" => $this->conf["heading_level"],
             "checks" => $checks,
-        ]);
+        ]));
     }
 
     /** @return array<string,string> */

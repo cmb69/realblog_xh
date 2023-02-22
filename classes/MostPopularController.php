@@ -24,6 +24,7 @@ namespace Realblog;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Pages;
 use Realblog\Infra\Request;
+use Realblog\Infra\Response;
 use Realblog\Infra\View;
 
 class MostPopularController
@@ -51,10 +52,10 @@ class MostPopularController
         $this->view = $view;
     }
 
-    public function __invoke(Request $request, string $pageUrl): string
+    public function __invoke(Request $request, string $pageUrl): Response
     {
         if (!$this->pages->hasPageWithUrl($pageUrl) || $this->config['links_visible'] <= 0) {
-            return "";
+            return new Response;
         }
         $articles = $this->finder->findMostPopularArticles((int) $this->config['links_visible']);
         $records = [];
@@ -68,6 +69,6 @@ class MostPopularController
             'articles' => $records,
             'heading' => $this->config['heading_level'],
         ];
-        return $this->view->render('most-popular', $data);
+        return (new Response)->withOutput($this->view->render('most-popular', $data));
     }
 }

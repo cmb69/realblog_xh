@@ -69,7 +69,7 @@ class BlogControllerTest extends TestCase
         $this->finder->method("countArticlesWithStatus")->willReturn(7);
         $this->finder->method("findArticles")->willReturn($this->articles());
         $response = ($this->sut)(new Request, true, "all");
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testRendersArticle(): void
@@ -82,7 +82,7 @@ class BlogControllerTest extends TestCase
         $h = [1 => "Blog"];
         $this->finder->method("findById")->willReturn($this->article());
         $response = ($this->sut)(new Request, true, "all");
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     private function articles(): array

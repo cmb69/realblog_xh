@@ -79,7 +79,7 @@ class DataExchangeController
             $data['filename'] = $filename;
             $data['filemtime'] = date('c', (int) filemtime($filename));
         }
-        return Response::create($this->view->render('data-exchange', $data));
+        return (new Response)->withOutput($this->view->render('data-exchange', $data));
     }
 
     private function exportToCsvAction(Request $request): Response
@@ -91,7 +91,7 @@ class DataExchangeController
         } else {
             $output = "<h1>Realblog &ndash; {$this->view->text("exchange_heading")}</h1>\n"
                 . $this->view->message("fail", "exchange_export_failure", $filename);
-            return Response::create($output);
+            return (new Response)->withOutput($output);
         }
     }
 
@@ -104,7 +104,7 @@ class DataExchangeController
         } else {
             $output = "<h1>Realblog &ndash; {$this->view->text("exchange_heading")}</h1>\n"
                 . $this->view->message("fail", "exchange_import_failure", $filename);
-            return Response::create($output);
+            return (new Response)->withOutput($output);
         }
     }
 
@@ -123,6 +123,6 @@ class DataExchangeController
     private function redirectToDefaultResponse(): Response
     {
         $url = CMSIMPLE_URL . "?&realblog&admin=data_exchange";
-        return Response::createRedirect($url);
+        return (new Response)->redirect($url);
     }
 }

@@ -26,6 +26,7 @@ namespace Realblog;
 use Realblog\Infra\DB;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Pages;
+use Realblog\Infra\Response;
 use Realblog\Infra\Url;
 use Realblog\Infra\View;
 use Realblog\Value\FullArticle;
@@ -98,11 +99,7 @@ abstract class MainController
         return $this->view->render('search-results', $data);
     }
 
-    /**
-     * @param int $id
-     * @return string
-     */
-    protected function renderArticle(Url $url, $id)
+    protected function renderArticle(Url $url, int $id): Response
     {
         $article = $this->finder->findById($id);
         if (isset($article) && (defined("XH_ADM") && !XH_ADM) && $article->status > 0) {
@@ -111,18 +108,16 @@ abstract class MainController
         if (isset($article) && ((defined("XH_ADM") && XH_ADM) || $article->status > 0)) {
             return $this->doRenderArticle($url, $article);
         }
-        return "";
+        return new Response;
     }
 
-    /**
-     * @return string
-     */
-    private function doRenderArticle(Url $url, FullArticle $article)
+    private function doRenderArticle(Url $url, FullArticle $article): Response
     {
-        global $s, $title, $description;
+        global $s;
 
-        $title .= $this->pages->headingOf($s) . " \xE2\x80\x93 " . $article->title;
-        $description = $this->getDescription($article);
+        $response = (new Response)
+            ->withTitle($this->pages->headingOf($s) . " – " . $article->title)
+            ->withDescription($this->getDescription($article));
         if ($article->status === 2) {
             $params = array('realblog_year' => (string) $this->year);
         } else {
@@ -165,7 +160,7 @@ abstract class MainController
             $story = ($article->body != '') ? $article->body : $article->teaser;
         }
         $data['story'] = $this->pages->evaluateScripting($story);
-        return $this->view->render('article', $data);
+        return $response->withOutput($this->view->render('article', $data));
     }
 
     /**

@@ -46,7 +46,7 @@ class Plugin
             self::emitAlternateRSSLink();
             if (preg_match('/^rss$/', $_GET['realblog_feed'] ?? "")) {
                 header('Content-Type: application/rss+xml; charset=UTF-8');
-                echo Dic::makeFeedController()(new Request);
+                echo Dic::makeFeedController()(new Request)->fire();
                 exit;
             }
         }

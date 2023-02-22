@@ -26,6 +26,7 @@ namespace Realblog;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Pages;
 use Realblog\Infra\Request;
+use Realblog\Infra\Response;
 use Realblog\Infra\View;
 
 class LinkController
@@ -58,10 +59,10 @@ class LinkController
         $this->pages = $pages;
     }
 
-    public function __invoke(Request $request, string $pageUrl, bool $showTeaser = false): string
+    public function __invoke(Request $request, string $pageUrl, bool $showTeaser = false): Response
     {
         if (!$this->pages->hasPageWithUrl($pageUrl) || $this->config['links_visible'] <= 0) {
-            return "";
+            return new Response;
         }
         $articles = $this->finder->findArticles(1, (int) $this->config['links_visible']);
         $records = [];
@@ -79,6 +80,6 @@ class LinkController
             'heading' => $this->config['heading_level'],
             'showTeaser' => $showTeaser,
         ];
-        return $this->view->render('latest', $data);
+        return (new Response)->withOutput($this->view->render('latest', $data));
     }
 }

@@ -24,17 +24,18 @@
 namespace Realblog;
 
 use Realblog\Infra\Request;
+use Realblog\Infra\Response;
 use Realblog\Infra\Url;
 use Realblog\Value\Article;
 
 class ArchiveController extends MainController
 {
-    public function __invoke(Request $request, bool $showSearch): string
+    public function __invoke(Request $request, bool $showSearch): Response
     {
         if (isset($_GET["realblog_id"])) {
-            return (string) $this->showArticleAction($request->url(), max((int) ($_GET["realblog_id"] ?? 1), 1));
+            return $this->showArticleAction($request->url(), max((int) ($_GET["realblog_id"] ?? 1), 1));
         } else {
-            return $this->defaultAction($request, $showSearch);
+            return (new Response)->withOutput($this->defaultAction($request, $showSearch));
         }
     }
 
@@ -158,11 +159,7 @@ class ArchiveController extends MainController
         return $groups;
     }
 
-    /**
-     * @param int $id
-     * @return string|null
-     */
-    public function showArticleAction(Url $url, $id)
+    public function showArticleAction(Url $url, int $id): Response
     {
         return $this->renderArticle($url, $id);
     }

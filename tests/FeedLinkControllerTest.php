@@ -37,6 +37,6 @@ class FeedLinkControllerTest extends TestCase
         $request->method("url")->willReturn((new Url)->withPage(""));
         $request->method("pluginsFolder")->willReturn("./plugins/");
         $response = $sut($request, "_self");
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 }

@@ -47,13 +47,13 @@ if (XH_wantsPluginAdministration("realblog")) {
     $o .= pluginMenu("SHOW");
     switch ($admin) {
         case "":
-            $o .= Dic::makeInfoController()(new Request);
+            $o .= Dic::makeInfoController()(new Request)->fire();
             break;
         case "plugin_main":
-            $o .= Dic::makeMainAdminController()(new Request, $action)->trigger();
+            $o .= Dic::makeMainAdminController()(new Request, $action)->fire();
             break;
         case "data_exchange":
-            $o .= Dic::makeDataExchangeController()(new Request, $action)->trigger();
+            $o .= Dic::makeDataExchangeController()(new Request, $action)->fire();
             break;
         default:
             $o .= plugin_admin_common();

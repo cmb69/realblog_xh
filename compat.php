@@ -48,7 +48,7 @@ function showrealblog($options = "", $category = 'all')
                 break;
         }
     }
-    return Dic::makeBlogController()(new Request, $includesearch, $category);
+    return Dic::makeBlogController()(new Request, $includesearch, $category)->fire();
 }
 
 /**
@@ -75,7 +75,7 @@ function showrealblogarchive($options = "")
                 break;
         }
     }
-    return Dic::makeArchiveController()(new Request, $includesearch);
+    return Dic::makeArchiveController()(new Request, $includesearch)->fire();
 }
 
 /**
@@ -92,7 +92,7 @@ function realbloglink($options)
     if (isset($arguments['realblogpage'])) {
         $realblog_page = $arguments['realblogpage'];
     }
-    return Dic::makeLinkController()(new Request, $realblog_page);
+    return Dic::makeLinkController()(new Request, $realblog_page)->fire();
 }
 
 /**
@@ -120,7 +120,7 @@ function realblog_rss_adv()
 {
     $function = __FUNCTION__;
     trigger_error("$function() is deprecated; use Realblog_feedLink() instead", E_USER_DEPRECATED);
-    return Dic::makeFeedLinkController()(new Request, "_self");
+    return Dic::makeFeedLinkController()(new Request, "_self")->fire();
 }
 
 /**

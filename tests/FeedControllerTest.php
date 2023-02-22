@@ -47,7 +47,7 @@ class FeedControllerTest extends TestCase
         $request = $this->createStub(Request::class);
         $request->method("imageFolder")->willReturn("./userfiles/images/");
         $response = $sut($request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testRendersFeedWithFeedLogo(): void
@@ -68,6 +68,6 @@ class FeedControllerTest extends TestCase
         $request->method("url")->willReturn(new Url);
         $request->method("imageFolder")->willReturn("./userfiles/images/");
         $response = $sut($request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 }

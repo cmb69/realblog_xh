@@ -113,7 +113,7 @@ class MainAdminController
         $page = max(min($this->page, $pageCount), 1);
         $offset = ($page - 1) * $limit;
         $articles = $this->finder->findArticlesWithStatus($statuses, $limit, $offset);
-        return Response::create($this->renderArticles($request, $articles, $pageCount));
+        return (new Response)->withOutput($this->renderArticles($request, $articles, $pageCount));
     }
 
     /**
@@ -176,24 +176,21 @@ class MainAdminController
 
     private function createAction(Request $request): Response
     {
-        return Response::create(...$this->renderArticle($request, 'create'));
+        return $this->renderArticle($request, 'create');
     }
 
     private function editAction(Request $request): Response
     {
-        return Response::create(...$this->renderArticle($request, 'edit'));
+        return $this->renderArticle($request, 'edit');
     }
 
     private function deleteAction(Request $request): Response
     {
-        return Response::create(...$this->renderArticle($request, 'delete'));
+        return $this->renderArticle($request, 'delete');
     }
 
-    /**
-     * @param string $action
-     * @return array<string>
-     */
-    private function renderArticle(Request $request, $action): array
+    /** @param string $action */
+    private function renderArticle(Request $request, $action): Response
     {
         $this->editor->init(['realblog_headline_field', 'realblog_story_field']);
         if ($action === 'create') {
@@ -202,17 +199,14 @@ class MainAdminController
             $id = max($_GET['realblog_id'] ?? 1, 1);
             $article = $this->finder->findById($id);
             if (!$article) {
-                return [$this->view->message("fail", "message_not_found")];
+                return (new Response)->withOutput($this->view->message("fail", "message_not_found"));
             }
         }
         return $this->renderForm($article, $request, $action);
     }
 
-    /**
-     * @param string $action
-     * @return array{string,string}
-     */
-    private function renderForm(FullArticle $article, Request $request, $action): array
+    /** @param string $action */
+    private function renderForm(FullArticle $article, Request $request, $action): Response
     {
         switch ($action) {
             case 'create':
@@ -248,7 +242,8 @@ class MainAdminController
             'categories' => trim($article->categories, ','),
             'button' => "btn_{$action}",
         ];
-        return [$this->view->render('article-form', $data), $title, $hjs, $bjs];
+        return (new Response)->withOutput($this->view->render('article-form', $data))
+            ->withTitle($title)->withHjs($hjs)->withBjs($bjs);
     }
 
     /**
@@ -295,7 +290,7 @@ EOT;
             $info = $this->view->message("fail", "story_added_error");
         }
         $output = $this->renderInfo($request->url(), "tooltip_create", $info);
-        return Response::create($output, $this->view->text("tooltip_create"));
+        return (new Response)->withOutput($output)->withTitle($this->view->text("tooltip_create"));
     }
 
     private function doEditAction(Request $request): Response
@@ -309,7 +304,7 @@ EOT;
             $info = $this->view->message("fail", "story_modified_error");
         }
         $output = $this->renderInfo($request->url(), "tooltip_edit", $info);
-        return Response::create($output, $this->view->text("tooltip_edit"));
+        return (new Response)->withOutput($output)->withTitle($this->view->text("tooltip_edit"));
     }
 
     private function doDeleteAction(Request $request): Response
@@ -323,7 +318,7 @@ EOT;
             $info = $this->view->message("fail", "story_deleted_error");
         }
         $output = $this->renderInfo($request->url(), "tooltip_delete", $info);
-        return Response::create($output, $this->view->text("tooltip_delete"));
+        return (new Response)->withOutput($output)->withTitle($this->view->text("tooltip_delete"));
     }
 
     /**
@@ -374,12 +369,12 @@ EOT;
 
     private function deleteSelectedAction(Request $request): Response
     {
-        return Response::create($this->renderConfirmation($request, 'delete'));
+        return (new Response)->withOutput($this->renderConfirmation($request, 'delete'));
     }
 
     private function changeStatusAction(Request $request): Response
     {
-        return Response::create($this->renderConfirmation($request, 'change-status'));
+        return (new Response)->withOutput($this->renderConfirmation($request, 'change-status'));
     }
 
     /**
@@ -421,7 +416,7 @@ EOT;
             $info = $this->view->message("fail", "deleteall_error");
         }
         $output = $this->renderInfo($request->url(), "tooltip_delete_selected", $info);
-        return Response::create($output, $this->view->text("tooltip_delete_selected"));
+        return (new Response)->withOutput($output)->withTitle($this->view->text("tooltip_delete_selected"));
     }
 
     private function doChangeStatusAction(Request $request): Response
@@ -440,7 +435,7 @@ EOT;
             $info = $this->view->message("fail", "changestatus_error");
         }
         $output = $this->renderInfo($request->url(), "tooltip_change_status", $info);
-        return Response::create($output, $this->view->text("tooltip_change_status"));
+        return (new Response)->withOutput($output)->withTitle($this->view->text("tooltip_change_status"));
     }
 
     /**
@@ -474,6 +469,6 @@ EOT;
     private function redirectToOverviewResponse(): Response
     {
         $url = CMSIMPLE_URL . "?&realblog&admin=plugin_main&action=plugin_text&realblog_page={$this->page}";
-        return Response::createRedirect($url);
+        return (new Response)->redirect($url);
     }
 }

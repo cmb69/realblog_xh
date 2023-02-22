@@ -24,6 +24,7 @@
 namespace Realblog;
 
 use Realblog\Infra\Request;
+use Realblog\Infra\Response;
 use Realblog\Infra\View;
 
 class FeedLinkController
@@ -36,16 +37,12 @@ class FeedLinkController
         $this->view = $view;
     }
 
-    /**
-     * @param string $target
-     * @return string
-     */
-    public function __invoke(Request $request, $target)
+    public function __invoke(Request $request, string $target): Response
     {
-        return $this->view->render("feed_link", [
+        return (new Response)->withOutput($this->view->render("feed_link", [
             "url" => $request->url()->withPage("")->withParams(["realblog_feed" => "rss"])->relative(),
             "target" => $target,
             "image" => $request->pluginsFolder() . "realblog/images/rss.png",
-        ]);
+        ]));
     }
 }

@@ -64,25 +64,25 @@ Plugin::init();
 
 function realblog_blog(bool $showSearch = false, string $category = "all"): string
 {
-    return Dic::makeBlogController()(new Request, $showSearch, $category);
+    return Dic::makeBlogController()(new Request, $showSearch, $category)->fire();
 }
 
 function realblog_archive(bool $showSearch = false): string
 {
-    return Dic::makeArchiveController()(new Request, $showSearch);
+    return Dic::makeArchiveController()(new Request, $showSearch)->fire();
 }
 
 function realblog_link(string $pageUrl, bool $showTeaser = false): string
 {
-    return Dic::makeLinkController()(new Request, $pageUrl, $showTeaser);
+    return Dic::makeLinkController()(new Request, $pageUrl, $showTeaser)->fire();
 }
 
 function realblog_mostpopular(string $pageUrl): string
 {
-    return Dic::makeMostPopularController()(new Request, $pageUrl);
+    return Dic::makeMostPopularController()(new Request, $pageUrl)->fire();
 }
 
 function realblog_feedlink(string $target = "_self"): string
 {
-    return Dic::makeFeedLinkController()(new Request, $target);
+    return Dic::makeFeedLinkController()(new Request, $target)->fire();
 }

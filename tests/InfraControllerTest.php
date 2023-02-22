@@ -45,6 +45,6 @@ class InfroControllerTest extends TestCase
         $view = new View("./views/", $text);
         $sut = new InfoController($conf, $text, $systemChecker, $view);
         $response = $sut(new Request);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 }

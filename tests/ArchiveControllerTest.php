@@ -69,7 +69,7 @@ class ArchiveControllerTest extends TestCase
         $this->finder->method("findArchiveYears")->willReturn([2023]);
         $this->finder->method("findArchivedArticlesInPeriod")->willReturn([]);
         $response = ($this->sut)(new Request, true);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testRendersArchive(): void
@@ -80,7 +80,7 @@ class ArchiveControllerTest extends TestCase
         $this->finder->method("findArchiveYears")->willReturn([2023]);
         $this->finder->method("findArchivedArticlesInPeriod")->willReturn($this->articles());
         $response = ($this->sut)(new Request, true);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testRendersArchivedArticle(): void
@@ -93,7 +93,7 @@ class ArchiveControllerTest extends TestCase
         $h = [2 => "Blog"];
         $this->finder->method("findById")->willReturn($this->article());
         $response = ($this->sut)(new Request, true);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     private function articles(): array

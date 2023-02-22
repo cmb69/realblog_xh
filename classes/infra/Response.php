@@ -23,107 +23,117 @@ namespace Realblog\Infra;
 
 class Response
 {
-    const NORMAL = 1;
-    const REDIRECT = 2;
-
-    /**
-     * @param ?string $title
-     * @param ?string $hjs
-     * @param ?string $bjs
-     */
-    public static function create(string $output, $title = null, $hjs = null, $bjs = null): self
-    {
-        return new Response(self::NORMAL, $output, $title, $hjs, $bjs);
-    }
-
-    public static function createRedirect(string $location): self
-    {
-        return new Response(self::REDIRECT, $location);
-    }
-
-    /** @var int */
-    private $type;
-
     /** @var string */
-    private $contents;
+    private $output = "";
 
-    /** @var ?string */
-    private $title;
+    /** @var string|null */
+    private $title = null;
 
-    /** @var ?string */
-    private $hjs;
+    /** @var string|null */
+    private $description = null;
 
-    /** @var ?string */
-    private $bjs;
+    /** @var string|null */
+    private $hjs = null;
 
-    /**
-     * @param ?string $title
-     * @param ?string $hjs
-     * @param ?string $bjs
-     */
-    private function __construct(int $type, string $contents, $title = null, $hjs = null, $bjs = null)
-    {
-        $this->type = $type;
-        $this->contents = $contents;
-        $this->title = $title;
-        $this->hjs = $hjs;
-        $this->bjs = $bjs;
-    }
+    /** @var string|null */
+    private $bjs = null;
+
+    /** @var string|null */
+    private $location = null;
 
     public function output(): string
     {
-        assert($this->type === self::NORMAL);
-        return $this->contents;
+        return $this->output;
     }
 
-    /** @return ?string */
-    public function title()
+    public function title(): ?string
     {
-        assert($this->type === self::NORMAL);
         return $this->title;
     }
 
-    /** @return ?string */
-    public function hjs()
+    public function description(): ?string
     {
-        assert($this->type === self::NORMAL);
+        return $this->description;
+    }
+
+    public function hjs(): ?string
+    {
         return $this->hjs;
     }
 
-    /** @return ?string */
-    public function bjs()
+    public function bjs(): ?string
     {
-        assert($this->type === self::NORMAL);
         return $this->bjs;
     }
 
-    public function location(): string
+    public function location(): ?string
     {
-        assert($this->type === self::REDIRECT);
-        return $this->contents;
+        return $this->location;
+    }
+
+    public function withOutput(string $output): self
+    {
+        $that = clone $this;
+        $that->output = $output;
+        return $that;
+    }
+
+    public function withTitle(string $title): self
+    {
+        $that = clone $this;
+        $that->title = $title;
+        return $that;
+    }
+
+    public function withDescription(string $description): self
+    {
+        $that = clone $this;
+        $that->description = $description;
+        return $that;
+    }
+
+    public function withHjs(string $hjs): self
+    {
+        $that = clone $this;
+        $that->hjs = $hjs;
+        return $that;
+    }
+
+    public function withBjs(string $bjs): self
+    {
+        $that = clone $this;
+        $that->bjs = $bjs;
+        return $that;
+    }
+
+    public function redirect(string $location): self
+    {
+        $that = clone $this;
+        $that->location = $location;
+        return $that;
     }
 
     /** @return string|never */
-    public function trigger()
+    public function fire()
     {
-        global $title, $hjs, $bjs;
+        global $title, $description, $hjs, $bjs;
 
-        switch ($this->type) {
-            case self::NORMAL:
-                if ($title !== null) {
-                    $title = $this->title;
-                }
-                if ($hjs !== null) {
-                    $hjs .= $this->hjs;
-                }
-                if ($bjs !== null) {
-                    $bjs .= $this->bjs;
-                }
-                return $this->contents;
-            case self::REDIRECT:
-                header("Location: {$this->contents}");
-                exit;
+        if ($this->location !== null) {
+            header("Location: $this->location");
+            exit;
         }
-        return ""; // make PHPStan happy
+        if ($this->title !== null) {
+            $title = $this->title;
+        }
+        if ($this->description !== null) {
+            $description = $this->description;
+        }
+        if ($this->hjs !== null) {
+            $hjs .= $this->hjs;
+        }
+        if ($this->bjs !== null) {
+            $bjs .= $this->bjs;
+        }
+        return $this->output;
     }
 }
