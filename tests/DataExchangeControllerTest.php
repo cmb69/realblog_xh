@@ -35,12 +35,12 @@ class DataExchangeControllerTest extends TestCase
     public function testSuccessfulExportRedirects(): void
     {
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
-        $lang = $plugin_tx['realblog'];
+        $text = $plugin_tx['realblog'];
         $db = $this->createStub(DB::class);
         $db->method('exportToCsv')->willReturn(true);
         $finder = $this->createStub(Finder::class);
         $csrfProtector = $this->createStub(CsrfProtector::class);
-        $view = new View("./views/", $lang);
+        $view = new View("./views/", $text);
         $sut = new DataExchangeController($db, $finder, $csrfProtector, $view);
         $request = $this->createStub(Request::class);
         $request->method("url")->willReturn(new Url);
@@ -52,12 +52,12 @@ class DataExchangeControllerTest extends TestCase
     public function testExportReportsFailure(): void
     {
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
-        $lang = $plugin_tx['realblog'];
+        $text = $plugin_tx['realblog'];
         $db = $this->createStub(DB::class);
         $db->method('exportToCsv')->willReturn(false);
         $finder = $this->createStub(Finder::class);
         $csrfProtector = $this->createStub(CsrfProtector::class);
-        $view = new View("./views/", $lang);
+        $view = new View("./views/", $text);
         $sut = new DataExchangeController($db, $finder, $csrfProtector, $view);
         $request = $this->createStub(Request::class);
         $request->method("contentFolder")->willReturn("./content/");
@@ -68,12 +68,12 @@ class DataExchangeControllerTest extends TestCase
     public function testSuccessfulImportRedirects(): void
     {
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
-        $lang = $plugin_tx['realblog'];
+        $text = $plugin_tx['realblog'];
         $db = $this->createStub(DB::class);
         $db->method('importFromCsv')->willReturn(true);
         $finder = $this->createStub(Finder::class);
         $csrfProtector = $this->createStub(CsrfProtector::class);
-        $view = new View("./views/", $lang);
+        $view = new View("./views/", $text);
         $sut = new DataExchangeController($db, $finder, $csrfProtector, $view);
         $request = $this->createStub(Request::class);
         $request->method("url")->willReturn(new Url);
@@ -85,12 +85,12 @@ class DataExchangeControllerTest extends TestCase
     public function testImportReportsFailure(): void
     {
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
-        $lang = $plugin_tx['realblog'];
+        $text = $plugin_tx['realblog'];
         $db = $this->createStub(DB::class);
         $db->method('importFromCsv')->willReturn(false);
         $finder = $this->createStub(Finder::class);
         $csrfProtector = $this->createStub(CsrfProtector::class);
-        $view = new View("./views/", $lang);
+        $view = new View("./views/", $text);
         $sut = new DataExchangeController($db, $finder, $csrfProtector, $view);
         $request = $this->createStub(Request::class);
         $request->method("contentFolder")->willReturn("./content/");

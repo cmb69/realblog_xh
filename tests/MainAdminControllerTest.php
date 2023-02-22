@@ -46,11 +46,11 @@ class MainAdminControllerTest extends TestCase
         $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
         $conf = $plugin_cf['realblog'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
-        $lang = $plugin_tx['realblog'];
+        $text = $plugin_tx['realblog'];
         $db = $this->createStub(DB::class);
         $this->finder = $this->createStub(Finder::class);
         $csrfProtector = $this->createStub(CsrfProtector::class);
-        $view = new View("./views/", $lang);
+        $view = new View("./views/", $text);
         $editor = $this->createStub(Editor::class);
         $this->sut = new MainAdminController(
             $conf,

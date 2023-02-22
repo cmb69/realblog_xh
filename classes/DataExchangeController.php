@@ -109,10 +109,7 @@ class DataExchangeController
         }
     }
 
-    /**
-     * @return string|null
-     */
-    private function getCsrfToken()
+    private function getCsrfToken(): ?string
     {
         $html = $this->csrfProtector->tokenInput();
         if (preg_match('/value="([0-9a-f]+)"/', $html, $matches)) {

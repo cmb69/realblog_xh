@@ -32,7 +32,7 @@ use Realblog\Infra\View;
 class FeedController
 {
     /** @var array<string,string> */
-    private $config;
+    private $conf;
 
     /** @var Finder */
     private $finder;
@@ -43,14 +43,14 @@ class FeedController
     /** @var View */
     private $view;
 
-    /** @param array<string,string> $config */
+    /** @param array<string,string> $conf */
     public function __construct(
-        array $config,
+        array $conf,
         Finder $finder,
         Pages $pages,
         View $view
     ) {
-        $this->config = $config;
+        $this->conf = $conf;
         $this->finder = $finder;
         $this->pages = $pages;
         $this->view = $view;
@@ -58,23 +58,23 @@ class FeedController
 
     public function __invoke(Request $request): Response
     {
-        $count = (int) $this->config['rss_entries'];
+        $count = (int) $this->conf['rss_entries'];
         $articles = $this->finder->findFeedableArticles($count);
         $records = [];
         foreach ($articles as $article) {
             $records[] = [
                 "title" => $article->title,
-                "url" => $request->url()->withPage($this->config["rss_page"])
+                "url" => $request->url()->withPage($this->conf["rss_page"])
                     ->withParams(['realblog_id' => (string) $article->id])->absolute(),
                 "teaser" => $this->pages->evaluateScripting($article->teaser),
                 "date" => (string) date('r', $article->date),
             ];
         }
         $data = [
-            'url' => $request->url()->withPage($this->config['rss_page'])->absolute(),
-            'managingEditor' => $this->config['rss_editor'],
-            'hasLogo' => (bool) $this->config['rss_logo'],
-            'imageUrl' => $request->url()->withPath($request->imageFolder() . $this->config['rss_logo'])->absolute(),
+            'url' => $request->url()->withPage($this->conf['rss_page'])->absolute(),
+            'managingEditor' => $this->conf['rss_editor'],
+            'hasLogo' => (bool) $this->conf['rss_logo'],
+            'imageUrl' => $request->url()->withPath($request->imageFolder() . $this->conf['rss_logo'])->absolute(),
             'articles' => $records,
         ];
         return (new Response)->withOutput(

@@ -32,7 +32,7 @@ use Realblog\Infra\View;
 class LinkController
 {
     /** @var array<string,string> */
-    private $config;
+    private $conf;
 
     /** @var Pages */
     private $pages;
@@ -44,15 +44,15 @@ class LinkController
     private $view;
 
     /**
-     * @param array<string,string> $config
+     * @param array<string,string> $conf
      */
     public function __construct(
-        array $config,
+        array $conf,
         Pages $pages,
         Finder $finder,
         View $view
     ) {
-        $this->config = $config;
+        $this->conf = $conf;
         $this->pages = $pages;
         $this->finder = $finder;
         $this->view = $view;
@@ -61,10 +61,10 @@ class LinkController
 
     public function __invoke(Request $request, string $pageUrl, bool $showTeaser = false): Response
     {
-        if (!$this->pages->hasPageWithUrl($pageUrl) || $this->config['links_visible'] <= 0) {
+        if (!$this->pages->hasPageWithUrl($pageUrl) || $this->conf['links_visible'] <= 0) {
             return new Response;
         }
-        $articles = $this->finder->findArticles(1, (int) $this->config['links_visible']);
+        $articles = $this->finder->findArticles(1, (int) $this->conf['links_visible']);
         $records = [];
         foreach ($articles as $article) {
             $records[] = [
@@ -77,7 +77,7 @@ class LinkController
         }
         $data = [
             'articles' => $records,
-            'heading' => $this->config['heading_level'],
+            'heading' => $this->conf['heading_level'],
             'showTeaser' => $showTeaser,
         ];
         return (new Response)->withOutput($this->view->render('latest', $data));

@@ -29,9 +29,7 @@ class Plugin
 {
     const VERSION = '3.0beta9';
 
-    /**
-     * @return void
-     */
+    /** @return void */
     public static function init()
     {
         global $plugin_cf;
@@ -52,10 +50,7 @@ class Plugin
         }
     }
 
-    /**
-     * @return void
-     * @global string $hjs
-     */
+    /** @return void */
     private static function emitAlternateRSSLink()
     {
         global $hjs;
@@ -64,26 +59,19 @@ class Plugin
             . ' href="./?realblog_feed=rss">';
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     private static function autoPublish()
     {
         Dic::makeDb()->autoChangeStatus('publishing_date', 1);
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     private static function autoArchive()
     {
         Dic::makeDb()->autoChangeStatus('archiving_date', 2);
     }
 
-    /**
-     * @return int
-     */
-    public static function getPage()
+    public static function getPage(): int
     {
         global $edit;
 
@@ -101,11 +89,7 @@ class Plugin
         return $page;
     }
 
-    /**
-     * @param int $num
-     * @return bool
-     */
-    public static function getFilter($num)
+    public static function getFilter(int $num): bool
     {
         $varname = "realblog_filter$num";
         if (isset($_GET[$varname])) {

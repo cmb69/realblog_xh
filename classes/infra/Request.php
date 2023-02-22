@@ -62,4 +62,11 @@ class Request
 
         return $sl;
     }
+
+    public function page(): int
+    {
+        global $s;
+
+        return $s;
+    }
 }

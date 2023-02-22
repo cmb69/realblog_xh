@@ -30,7 +30,7 @@ use Realblog\Infra\View;
 class MostPopularController
 {
     /** @var array<string,string> */
-    private $config;
+    private $conf;
 
     /** @var Pages */
     private $pages;
@@ -41,12 +41,10 @@ class MostPopularController
     /** @var View */
     private $view;
 
-    /**
-     * @param array<string,string> $config
-     */
-    public function __construct(array $config, Pages $pages, Finder $finder, View $view)
+    /** @param array<string,string> $conf */
+    public function __construct(array $conf, Pages $pages, Finder $finder, View $view)
     {
-        $this->config = $config;
+        $this->conf = $conf;
         $this->pages = $pages;
         $this->finder = $finder;
         $this->view = $view;
@@ -54,10 +52,10 @@ class MostPopularController
 
     public function __invoke(Request $request, string $pageUrl): Response
     {
-        if (!$this->pages->hasPageWithUrl($pageUrl) || $this->config['links_visible'] <= 0) {
+        if (!$this->pages->hasPageWithUrl($pageUrl) || $this->conf['links_visible'] <= 0) {
             return new Response;
         }
-        $articles = $this->finder->findMostPopularArticles((int) $this->config['links_visible']);
+        $articles = $this->finder->findMostPopularArticles((int) $this->conf['links_visible']);
         $records = [];
         foreach ($articles as $article) {
             $record = get_object_vars($article);
@@ -67,7 +65,7 @@ class MostPopularController
         }
         $data = [
             'articles' => $records,
-            'heading' => $this->config['heading_level'],
+            'heading' => $this->conf['heading_level'],
         ];
         return (new Response)->withOutput($this->view->render('most-popular', $data));
     }

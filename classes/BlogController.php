@@ -34,7 +34,7 @@ class BlogController extends MainController
     public function __invoke(Request $request, bool $showSeach, string $category): Response
     {
         if (isset($_GET["realblog_id"])) {
-            return $this->showArticleAction($request->url(), max((int) ($_GET["realblog_id"] ?? 1), 1));
+            return $this->showArticleAction($request, max((int) ($_GET["realblog_id"] ?? 1), 1));
         } else {
             return (new Response)->withOutput($this->defaultAction($request, $showSeach, $category));
         }
@@ -46,9 +46,9 @@ class BlogController extends MainController
         if ($showSearch) {
             $html .= $this->renderSearchForm($request->url());
         }
-        $order = ($this->config['entries_order'] == 'desc')
+        $order = ($this->conf['entries_order'] == 'desc')
             ? -1 : 1;
-        $limit = max(1, (int) $this->config['entries_per_page']);
+        $limit = max(1, (int) $this->conf['entries_per_page']);
         $page = Plugin::getPage();
         $articleCount = $this->finder->countArticlesWithStatus(array(1), $category, $this->searchTerm);
         $pageCount = (int) ceil($articleCount / $limit);
@@ -68,21 +68,15 @@ class BlogController extends MainController
         return $html;
     }
 
-    /**
-     * @param list<Article> $articles
-     * @param int $articleCount
-     * @param int $page
-     * @param int $pageCount
-     * @return string
-     */
-    private function renderArticles(Url $url, array $articles, $articleCount, $page, $pageCount)
+    /** @param list<Article> $articles */
+    private function renderArticles(Url $url, array $articles, int $articleCount, int $page, int $pageCount): string
     {
         $search = $this->searchTerm;
-        $bridge = ucfirst($this->config["comments_plugin"]) . "\\RealblogBridge";
+        $bridge = ucfirst($this->conf["comments_plugin"]) . "\\RealblogBridge";
         $params = ["realblog_page" => (string) Plugin::getPage(), "realblog_search" => $search];
         $records = [];
         foreach ($articles as $article) {
-            $isCommentable = $this->config["comments_plugin"] && class_exists($bridge) && $article->commentable;
+            $isCommentable = $this->conf["comments_plugin"] && class_exists($bridge) && $article->commentable;
             $records[] = [
                 "title" => $article->title,
                 "url" => $url->withParams(["realblog_id" => (string) $article->id] + $params)->relative(),
@@ -90,7 +84,7 @@ class BlogController extends MainController
                 "link_header" => $article->hasBody || (defined("XH_ADM") && XH_ADM),
                 "date" => $this->view->date($article->date),
                 "teaser" => $this->pages->evaluateScripting($article->teaser),
-                "read_more" => $this->config["show_read_more_link"]  && $article->hasBody,
+                "read_more" => $this->conf["show_read_more_link"]  && $article->hasBody,
                 "commentable" => $isCommentable,
                 "comment_count" => $isCommentable ? $bridge::count("realblog{$article->id}") : null,
             ];
@@ -99,22 +93,22 @@ class BlogController extends MainController
             $articleCount,
             $page,
             $pageCount,
-            (int) $this->config['pagination_radius'],
+            (int) $this->conf['pagination_radius'],
             $url->withParams(["realblog_search" => $search]),
             $this->view
         );
         return $this->view->render("articles", [
             "articles" => $records,
-            "heading" => $this->config["heading_level"],
-            "heading_above_meta" => $this->config["heading_above_meta"],
+            "heading" => $this->conf["heading_level"],
+            "heading_above_meta" => $this->conf["heading_above_meta"],
             "pagination" => $pagination->render(),
-            "top_pagination" => (bool) $this->config["pagination_top"],
-            "bottom_pagination" => (bool) $this->config["pagination_bottom"],
+            "top_pagination" => (bool) $this->conf["pagination_top"],
+            "bottom_pagination" => (bool) $this->conf["pagination_bottom"],
         ]);
     }
 
-    private function showArticleAction(Url $url, int $id): Response
+    private function showArticleAction(Request $request, int $id): Response
     {
-        return $this->renderArticle($url, $id);
+        return $this->renderArticle($request, $id);
     }
 }

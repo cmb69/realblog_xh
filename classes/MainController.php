@@ -26,6 +26,7 @@ namespace Realblog;
 use Realblog\Infra\DB;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Pages;
+use Realblog\Infra\Request;
 use Realblog\Infra\Response;
 use Realblog\Infra\Url;
 use Realblog\Infra\View;
@@ -34,7 +35,7 @@ use Realblog\Value\FullArticle;
 abstract class MainController
 {
     /** @var array<string,string> */
-    protected $config;
+    protected $conf;
 
     /** @var DB */
     protected $db;
@@ -54,15 +55,15 @@ abstract class MainController
     /** @var int */
     protected $year;
 
-    /** @param array<string,string> $config */
+    /** @param array<string,string> $conf */
     public function __construct(
-        array $config,
+        array $conf,
         DB $db,
         Finder $finder,
         View $view,
         Pages $pages
     ) {
-        $this->config = $config;
+        $this->conf = $conf;
         $this->db = $db;
         $this->finder = $finder;
         $this->view = $view;
@@ -71,10 +72,7 @@ abstract class MainController
         $this->year = (int) ($_GET['realblog_year'] ?? idate("Y"));
     }
 
-    /**
-     * @return string
-     */
-    protected function renderSearchForm(Url $url)
+    protected function renderSearchForm(Url $url): string
     {
         $data = [
             'actionUrl' => $url->withPage("")->relative(),
@@ -83,12 +81,7 @@ abstract class MainController
         return $this->view->render('search-form', $data);
     }
 
-    /**
-     * @param string $what
-     * @param int $count
-     * @return string
-     */
-    protected function renderSearchResults(Url $url, $what, $count)
+    protected function renderSearchResults(Url $url, string $what, int $count): string
     {
         $data = [
             'words' => $this->searchTerm,
@@ -99,24 +92,22 @@ abstract class MainController
         return $this->view->render('search-results', $data);
     }
 
-    protected function renderArticle(Url $url, int $id): Response
+    protected function renderArticle(Request $request, int $id): Response
     {
         $article = $this->finder->findById($id);
         if (isset($article) && (defined("XH_ADM") && !XH_ADM) && $article->status > 0) {
             $this->db->recordPageView($id);
         }
         if (isset($article) && ((defined("XH_ADM") && XH_ADM) || $article->status > 0)) {
-            return $this->doRenderArticle($url, $article);
+            return $this->doRenderArticle($request, $article);
         }
         return new Response;
     }
 
-    private function doRenderArticle(Url $url, FullArticle $article): Response
+    private function doRenderArticle(Request $request, FullArticle $article): Response
     {
-        global $s;
-
         $response = (new Response)
-            ->withTitle($this->pages->headingOf($s) . " – " . $article->title)
+            ->withTitle($this->pages->headingOf($request->page()) . " – " . $article->title)
             ->withDescription($this->getDescription($article));
         if ($article->status === 2) {
             $params = array('realblog_year' => (string) $this->year);
@@ -124,22 +115,22 @@ abstract class MainController
             $params = array('realblog_page' => (string) Plugin::getPage());
         }
 
-        $bridge = ucfirst($this->config['comments_plugin']) . '\\RealblogBridge';
+        $bridge = ucfirst($this->conf['comments_plugin']) . '\\RealblogBridge';
 
         $data = [
             'title' => $article->title,
-            'heading' => $this->config['heading_level'],
-            'heading_above_meta' => $this->config['heading_above_meta'],
+            'heading' => $this->conf['heading_level'],
+            'heading_above_meta' => $this->conf['heading_above_meta'],
             'is_admin' => defined("XH_ADM") && XH_ADM,
             'wants_comments' => $this->wantsComments(),
             'back_text' => $article->status === 2 ? 'archiv_back' : 'blog_back',
-            'back_url' => $url->withParams($params)->relative(),
+            'back_url' => $request->url()->withParams($params)->relative(),
         ];
         if ($this->searchTerm) {
             $params['realblog_search'] = $this->searchTerm;
-            $data['back_to_search_url'] = $url->withParams($params)->relative();
+            $data['back_to_search_url'] = $request->url()->withParams($params)->relative();
         }
-        $data['edit_url'] = $url->withPage("realblog")
+        $data['edit_url'] = $request->url()->withPage("realblog")
             ->withParams(["admin" => "plugin_main", "action" => "edit", "realblog_id" => (string) $article->id])
             ->relative();
         if ($this->wantsComments()) {
@@ -154,7 +145,7 @@ abstract class MainController
         $data['date'] = $this->view->date($article->date);
         $categories = explode(',', trim($article->categories, ','));
         $data['categories'] = implode(', ', $categories);
-        if ($this->config['show_teaser']) {
+        if ($this->conf['show_teaser']) {
             $story = '<div class="realblog_teaser">' . $article->teaser . '</div>' . $article->body;
         } else {
             $story = ($article->body != '') ? $article->body : $article->teaser;
@@ -163,10 +154,7 @@ abstract class MainController
         return $response->withOutput($this->view->render('article', $data));
     }
 
-    /**
-     * @return string
-     */
-    private function getDescription(FullArticle $article)
+    private function getDescription(FullArticle $article): string
     {
         $teaser = trim(html_entity_decode(strip_tags($article->teaser), ENT_COMPAT, 'UTF-8'));
         if (utf8_strlen($teaser) <= 150) {
@@ -178,12 +166,9 @@ abstract class MainController
         }
     }
 
-    /**
-     * @return bool
-     */
-    private function wantsComments()
+    private function wantsComments(): bool
     {
-        return $this->config['comments_plugin']
-            && class_exists(ucfirst($this->config['comments_plugin']) . '\\RealblogBridge');
+        return $this->conf['comments_plugin']
+            && class_exists(ucfirst($this->conf['comments_plugin']) . '\\RealblogBridge');
     }
 }

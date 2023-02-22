@@ -27,19 +27,19 @@ class View
     private $viewFolder;
 
     /** @var array<string,string> */
-    private $lang;
+    private $text;
 
-    /** @param array<string,string> $lang */
-    public function __construct(string $viewFolder, array $lang)
+    /** @param array<string,string> $text */
+    public function __construct(string $viewFolder, array $text)
     {
         $this->viewFolder = $viewFolder;
-        $this->lang = $lang;
+        $this->text = $text;
     }
 
     /** @param scalar $args */
     public function text(string $key, ...$args): string
     {
-        return sprintf($this->lang[$key], ...$args);
+        return sprintf($this->text[$key], ...$args);
     }
 
     /** @param scalar $args */
@@ -50,29 +50,29 @@ class View
         } else {
             $key .= XH_numberSuffix($count);
         }
-        return sprintf($this->lang[$key], $count, ...$args);
+        return sprintf($this->text[$key], $count, ...$args);
     }
 
     public function date(int $timestamp): string
     {
-        return date($this->lang['date_format'], $timestamp);
+        return date($this->text['date_format'], $timestamp);
     }
 
     public function month(int $month): string
     {
-        $names = explode(',', $this->lang['date_months']);
+        $names = explode(',', $this->text['date_months']);
         return $names[$month];
     }
 
     /** @param scalar $args */
     public function message(string $type, string $key, ...$args): string
     {
-        return XH_message($type, $this->lang[$key], ...$args);
+        return XH_message($type, $this->text[$key], ...$args);
     }
 
     public function json(string $key): string
     {
-        return (string) json_encode($this->lang[$key]);
+        return (string) json_encode($this->text[$key]);
     }
 
     /** @param array<string,mixed> $_data */

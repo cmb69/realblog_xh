@@ -25,7 +25,6 @@ namespace Realblog;
 
 use Realblog\Infra\Request;
 use Realblog\Infra\Response;
-use Realblog\Infra\Url;
 use Realblog\Value\Article;
 
 class ArchiveController extends MainController
@@ -33,16 +32,13 @@ class ArchiveController extends MainController
     public function __invoke(Request $request, bool $showSearch): Response
     {
         if (isset($_GET["realblog_id"])) {
-            return $this->showArticleAction($request->url(), max((int) ($_GET["realblog_id"] ?? 1), 1));
+            return $this->showArticleAction($request, max((int) ($_GET["realblog_id"] ?? 1), 1));
         } else {
             return (new Response)->withOutput($this->defaultAction($request, $showSearch));
         }
     }
 
-    /**
-     * @return string
-     */
-    private function defaultAction(Request $request, bool $showSearch)
+    private function defaultAction(Request $request, bool $showSearch): string
     {
         $html = '';
         if ($showSearch) {
@@ -61,11 +57,8 @@ class ArchiveController extends MainController
         return $html;
     }
 
-    /**
-     * @param list<Article> $articles
-     * @return string
-     */
-    private function renderArchive(Request $request, array $articles)
+    /** @param list<Article> $articles */
+    private function renderArchive(Request $request, array $articles): string
     {
         if (!$this->searchTerm) {
             $year = $this->year;
@@ -87,15 +80,14 @@ class ArchiveController extends MainController
         }
     }
 
-    /**
-     * @param Article[] $articles
-     * @param bool $isSearch
-     * @param int|null $back
-     * @param int|null $next
-     * @return string
-     */
-    private function renderArchivedArticles(Request $request, array $articles, $isSearch, $back, $next)
-    {
+    /** @param list<Article> $articles */
+    private function renderArchivedArticles(
+        Request $request,
+        array $articles,
+        bool $isSearch,
+        ?int $back,
+        ?int $next
+    ): string {
         $records = [];
         foreach ($this->groupArticlesByMonth($articles) as $group) {
             $groupRecords = [];
@@ -119,7 +111,7 @@ class ArchiveController extends MainController
         $data = [
             'isSearch' => $isSearch,
             'articles' => $records,
-            'heading' => $this->config['heading_level'],
+            'heading' => $this->conf['heading_level'],
             'year' => $this->year,
         ];
         if ($back) {
@@ -132,10 +124,10 @@ class ArchiveController extends MainController
     }
 
     /**
-     * @param Article[] $articles
-     * @return Article[][]
+     * @param list<Article> $articles
+     * @return list<list<Article>>
      */
-    private function groupArticlesByMonth(array $articles)
+    private function groupArticlesByMonth(array $articles): array
     {
         $currentYear = $currentMonth = null;
         $groups = $currentGroup = [];
@@ -159,8 +151,8 @@ class ArchiveController extends MainController
         return $groups;
     }
 
-    public function showArticleAction(Url $url, int $id): Response
+    public function showArticleAction(Request $request, int $id): Response
     {
-        return $this->renderArticle($url, $id);
+        return $this->renderArticle($request, $id);
     }
 }

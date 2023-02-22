@@ -38,7 +38,7 @@ use XH\CSRFProtection as CsrfProtector;
 class MainAdminController
 {
     /** @var array<string,string> */
-    private $config;
+    private $conf;
 
     /** @var DB */
     private $db;
@@ -58,16 +58,16 @@ class MainAdminController
     /** @var int */
     private $page;
 
-    /** @param array<string,string> $config */
+    /** @param array<string,string> $conf */
     public function __construct(
-        array $config,
+        array $conf,
         DB $db,
         Finder $finder,
         CsrfProtector $csrfProtector,
         View $view,
         Editor $editor
     ) {
-        $this->config = $config;
+        $this->conf = $conf;
         $this->db = $db;
         $this->finder = $finder;
         $this->csrfProtector = $csrfProtector;
@@ -108,7 +108,7 @@ class MainAdminController
     {
         $statuses = $this->getFilterStatuses();
         $total = $this->finder->countArticlesWithStatus($statuses);
-        $limit = (int) $this->config['admin_records_page'];
+        $limit = (int) $this->conf['admin_records_page'];
         $pageCount = (int) ceil($total / $limit);
         $page = max(min($this->page, $pageCount), 1);
         $offset = ($page - 1) * $limit;
@@ -116,10 +116,8 @@ class MainAdminController
         return (new Response)->withOutput($this->renderArticles($request, $articles, $pageCount));
     }
 
-    /**
-     * @return int[]
-     */
-    private function getFilterStatuses()
+    /** @return list<int> */
+    private function getFilterStatuses(): array
     {
         $statuses = array();
         for ($i = 0; $i <= 2; $i++) {
@@ -130,12 +128,8 @@ class MainAdminController
         return $statuses;
     }
 
-    /**
-     * @param Article[] $articles
-     * @param int $pageCount
-     * @return string
-     */
-    private function renderArticles(Request $request, array $articles, $pageCount)
+    /** @param list<Article> $articles */
+    private function renderArticles(Request $request, array $articles, int $pageCount): string
     {
         $states = ['readyforpublishing', 'published', 'archived'];
         $filters = [];
@@ -189,8 +183,7 @@ class MainAdminController
         return $this->renderArticle($request, 'delete');
     }
 
-    /** @param string $action */
-    private function renderArticle(Request $request, $action): Response
+    private function renderArticle(Request $request, string $action): Response
     {
         $this->editor->init(['realblog_headline_field', 'realblog_story_field']);
         if ($action === 'create') {
@@ -205,8 +198,7 @@ class MainAdminController
         return $this->renderForm($article, $request, $action);
     }
 
-    /** @param string $action */
-    private function renderForm(FullArticle $article, Request $request, $action): Response
+    private function renderForm(FullArticle $article, Request $request, string $action): Response
     {
         switch ($action) {
             case 'create':
@@ -236,8 +228,8 @@ class MainAdminController
             'action' => "do_{$action}",
             'csrfToken' => $this->getCsrfToken(),
             'calendarIcon' => $request->pluginsFolder() . "realblog/images/calendar.png",
-            'isAutoPublish' => $this->config['auto_publish'],
-            'isAutoArchive' => $this->config['auto_archive'],
+            'isAutoPublish' => $this->conf['auto_publish'],
+            'isAutoArchive' => $this->conf['auto_archive'],
             'states' => array('readyforpublishing', 'published', 'archived'),
             'categories' => trim($article->categories, ','),
             'button' => "btn_{$action}",
@@ -246,10 +238,7 @@ class MainAdminController
             ->withTitle($title)->withHjs($hjs)->withBjs($bjs);
     }
 
-    /**
-     * @return string
-     */
-    private function useCalendar(Request $request)
+    private function useCalendar(Request $request): string
     {
         $calendarFolder = $request->pluginsFolder() . 'realblog/jscalendar/';
         $stylesheet = $calendarFolder . 'calendar-system.css';
@@ -321,10 +310,7 @@ EOT;
         return (new Response)->withOutput($output)->withTitle($this->view->text("tooltip_delete"));
     }
 
-    /**
-     * @return FullArticle
-     */
-    private function getArticleFromParameters()
+    private function getArticleFromParameters(): FullArticle
     {
         return new FullArticle(
             (int) $_POST['realblog_id'],
@@ -344,12 +330,7 @@ EOT;
         );
     }
 
-    /**
-     * @param string $date
-     * @param bool $withTime
-     * @return int
-     */
-    private function stringToTime($date, $withTime = false)
+    private function stringToTime(string $date, bool $withTime = false): int
     {
         $parts = explode('-', $date);
         if ($withTime) {
@@ -377,11 +358,7 @@ EOT;
         return (new Response)->withOutput($this->renderConfirmation($request, 'change-status'));
     }
 
-    /**
-     * @param string $kind
-     * @return string
-     */
-    private function renderConfirmation(Request $request, $kind)
+    private function renderConfirmation(Request $request, string $kind): string
     {
         $data = [
             'ids' => array_filter($_GET["realblog_ids"] ?? [], function ($id) {
@@ -438,10 +415,7 @@ EOT;
         return (new Response)->withOutput($output)->withTitle($this->view->text("tooltip_change_status"));
     }
 
-    /**
-     * @return string|null
-     */
-    private function getCsrfToken()
+    private function getCsrfToken(): ?string
     {
         $html = $this->csrfProtector->tokenInput();
         if (preg_match('/value="([0-9a-f]+)"/', $html, $matches)) {
@@ -450,12 +424,7 @@ EOT;
         return null;
     }
 
-    /**
-     * @param string $title
-     * @param string $message
-     * @return string
-     */
-    private function renderInfo(Url $url, $title, $message)
+    private function renderInfo(Url $url, string $title, string $message): string
     {
         $params = ["admin" => "plugin_main", "action" => "plugin_text", "realblog_page" => (string) $this->page];
 
