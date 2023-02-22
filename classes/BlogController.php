@@ -91,7 +91,7 @@ class BlogController extends MainController
                 "categories" => implode(", ", explode(",", trim($article->categories, ","))),
                 "link_header" => $article->hasBody || (defined("XH_ADM") && XH_ADM),
                 "date" => $this->view->date($article->date),
-                "teaser" => $this->scriptEvaluator->evaluate($article->teaser),
+                "teaser" => $this->pages->evaluateScripting($article->teaser),
                 "read_more" => $this->config["show_read_more_link"]  && $article->hasBody,
                 "commentable" => $isCommentable,
                 "comment_count" => $isCommentable ? $bridge::count("realblog{$article->id}") : null,

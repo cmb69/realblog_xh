@@ -21,10 +21,10 @@
 
 namespace Realblog;
 
+use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 use Realblog\Infra\Finder;
-use Realblog\Infra\ScriptEvaluator;
-use ApprovalTests\Approvals;
+use Realblog\Infra\Pages;
 use Realblog\Infra\Request;
 use Realblog\Infra\Url;
 use Realblog\Infra\View;
@@ -41,9 +41,9 @@ class FeedControllerTest extends TestCase
         $conf["rss_page"] = $text["rss_page"];
         $finder = $this->createStub(Finder::class);
         $finder->method("findFeedableArticles")->willReturn([]);
-        $scriptEvaluator = $this->createStub(ScriptEvaluator::class);
+        $pages = $this->createStub(Pages::class);
         $view = new View("./views/", $text);
-        $sut = new FeedController($conf, $finder, $scriptEvaluator, $view);
+        $sut = new FeedController($conf, $finder, $pages, $view);
         $request = $this->createStub(Request::class);
         $request->method("imageFolder")->willReturn("./userfiles/images/");
         $response = $sut($request);
@@ -61,9 +61,9 @@ class FeedControllerTest extends TestCase
         $conf["rss_page"] = $text["rss_page"];
         $finder = $this->createStub(Finder::class);
         $finder->method("findFeedableArticles")->willReturn([]);
-        $scriptEvaluator = $this->createStub(ScriptEvaluator::class);
+        $pages = $this->createStub(Pages::class);
         $view = new View("./views/", $text);
-        $sut = new FeedController($conf, $finder, $scriptEvaluator, $view);
+        $sut = new FeedController($conf, $finder, $pages, $view);
         $request = $this->createStub(Request::class);
         $request->method("url")->willReturn(new Url);
         $request->method("imageFolder")->willReturn("./userfiles/images/");

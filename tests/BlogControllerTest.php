@@ -26,8 +26,8 @@ use PHPUnit\Framework\MockObject;
 use PHPUnit\Framework\TestCase;
 use Realblog\Infra\DB;
 use Realblog\Infra\Finder;
+use Realblog\Infra\Pages;
 use Realblog\Infra\Request;
-use Realblog\Infra\ScriptEvaluator;
 use Realblog\Infra\View;
 use Realblog\Value\Article;
 use Realblog\Value\FullArticle;
@@ -43,22 +43,20 @@ class BlogControllerTest extends TestCase
     /** @var Finder&MockObject */
     private $finder;
 
-    /** @var ScriptEvaluator&MockObject */
-    private $scriptEvaluator;
-
     public function setUp(): void
     {
         $text = XH_includeVar("./languages/en.php", "plugin_tx")["realblog"];
         $this->db = $this->createStub(DB::class);
         $this->finder = $this->createStub(Finder::class);
-        $this->scriptEvaluator = $this->createStub(ScriptEvaluator::class);
-        $this->scriptEvaluator->method("evaluate")->willReturnArgument(0);
+        $pages = $this->createStub(Pages::class);
+        $pages->method("evaluateScripting")->willReturnArgument(0);
         $this->sut = new BlogController(
             XH_includeVar("./config/config.php", "plugin_cf")["realblog"],
             $this->db,
             $this->finder,
             new View("./views/", $text),
-            $this->scriptEvaluator
+            $pages,
+            $pages
         );
     }
 

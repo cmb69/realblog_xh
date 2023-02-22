@@ -21,11 +21,12 @@
 
 namespace Realblog;
 
+use ApprovalTests\Approvals;
 use PHPUnit\Framework\MockObject;
 use PHPUnit\Framework\TestCase;
 use Realblog\Infra\Finder;
+use Realblog\Infra\Pages;
 use Realblog\Infra\View;
-use ApprovalTests\Approvals;
 use Realblog\Infra\Request;
 use Realblog\Value\MostPopularArticle;
 
@@ -41,9 +42,14 @@ class MostPopularControllerTest extends TestCase
     {
         $conf = XH_includeVar("./config/config.php", 'plugin_cf')['realblog'];
         $text = XH_includeVar("./languages/en.php", 'plugin_tx')['realblog'];
+        $pages = $this->createStub(Pages::class);
+        $pages->method("hasPageWithUrl")->willReturnMap([
+            ["foo", true],
+            ["bar", false],
+        ]);
         $this->finder = $this->createStub(Finder::class);
         $view = new View("./views/", $text);
-        $this->sut = new MostPopularController($conf, ["foo"], $this->finder, $view);
+        $this->sut = new MostPopularController($conf, $pages, $this->finder, $view);
     }
 
     public function testRendersEmptyList(): void

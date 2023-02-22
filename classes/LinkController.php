@@ -24,8 +24,8 @@
 namespace Realblog;
 
 use Realblog\Infra\Finder;
+use Realblog\Infra\Pages;
 use Realblog\Infra\Request;
-use Realblog\Infra\ScriptEvaluator;
 use Realblog\Infra\View;
 
 class LinkController
@@ -33,8 +33,8 @@ class LinkController
     /** @var array<string,string> */
     private $config;
 
-    /** @var list<string> */
-    private $urls;
+    /** @var Pages */
+    private $pages;
 
     /** @var Finder */
     private $finder;
@@ -42,30 +42,25 @@ class LinkController
     /** @var View */
     private $view;
 
-    /** @var ScriptEvaluator */
-    private $scriptEvaluator;
-
     /**
      * @param array<string,string> $config
-     * @param list<string> $urls
      */
     public function __construct(
         array $config,
-        $urls,
+        Pages $pages,
         Finder $finder,
-        View $view,
-        ScriptEvaluator $scriptEvaluator
+        View $view
     ) {
         $this->config = $config;
-        $this->urls = $urls;
+        $this->pages = $pages;
         $this->finder = $finder;
         $this->view = $view;
-        $this->scriptEvaluator = $scriptEvaluator;
+        $this->pages = $pages;
     }
 
     public function __invoke(Request $request, string $pageUrl, bool $showTeaser = false): string
     {
-        if (!in_array($pageUrl, $this->urls) || $this->config['links_visible'] <= 0) {
+        if (!$this->pages->hasPageWithUrl($pageUrl) || $this->config['links_visible'] <= 0) {
             return "";
         }
         $articles = $this->finder->findArticles(1, (int) $this->config['links_visible']);
@@ -76,7 +71,7 @@ class LinkController
                 "date" => $this->view->date($article->date),
                 "url" => $request->url()->withPage($pageUrl)
                     ->withParams(["realblog_id" => (string) $article->id])->relative(),
-                "teaser" => $this->scriptEvaluator->evaluate($article->teaser),
+                "teaser" => $this->pages->evaluateScripting($article->teaser),
             ];
         }
         $data = [

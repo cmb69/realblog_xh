@@ -24,7 +24,7 @@ namespace Realblog;
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 use Realblog\Infra\Finder;
-use Realblog\Infra\ScriptEvaluator;
+use Realblog\Infra\Pages;
 use Realblog\Infra\View;
 use Realblog\Infra\Request;
 
@@ -36,11 +36,12 @@ class LinkControllerTest extends TestCase
         $conf = $plugin_cf['realblog'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $text = $plugin_tx['realblog'];
+        $pages = $this->createStub(Pages::class);
+        $pages->method("hasPageWithUrl")->willReturn(true);
         $finder = $this->createStub(Finder::class);
         $finder->method("findArticles")->willReturn([]);
         $view = new View("./views/", $text);
-        $scriptEvaluator = $this->createStub(ScriptEvaluator::class);
-        $sut = new LinkController($conf, ["foo"], $finder, $view, $scriptEvaluator);
+        $sut = new LinkController($conf, $pages, $finder, $view);
         $response = $sut(new Request, "foo", true);
         Approvals::verifyHtml($response);
     }

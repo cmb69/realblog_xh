@@ -22,17 +22,17 @@
 namespace Realblog;
 
 use Realblog\Infra\Finder;
+use Realblog\Infra\Pages;
 use Realblog\Infra\Request;
 use Realblog\Infra\View;
-use Realblog\Value\MostPopularArticle;
 
 class MostPopularController
 {
     /** @var array<string,string> */
     private $config;
 
-    /** @var list<string> */
-    private $urls;
+    /** @var Pages */
+    private $pages;
 
     /** @var Finder */
     private $finder;
@@ -42,19 +42,18 @@ class MostPopularController
 
     /**
      * @param array<string,string> $config
-     * @param list<string> $urls
      */
-    public function __construct(array $config, $urls, Finder $finder, View $view)
+    public function __construct(array $config, Pages $pages, Finder $finder, View $view)
     {
         $this->config = $config;
-        $this->urls = $urls;
+        $this->pages = $pages;
         $this->finder = $finder;
         $this->view = $view;
     }
 
     public function __invoke(Request $request, string $pageUrl): string
     {
-        if (!in_array($pageUrl, $this->urls) || $this->config['links_visible'] <= 0) {
+        if (!$this->pages->hasPageWithUrl($pageUrl) || $this->config['links_visible'] <= 0) {
             return "";
         }
         $articles = $this->finder->findMostPopularArticles((int) $this->config['links_visible']);

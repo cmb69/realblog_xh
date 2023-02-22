@@ -26,7 +26,7 @@ namespace Realblog;
 use Realblog\Infra\DB;
 use Realblog\Infra\Editor;
 use Realblog\Infra\Finder;
-use Realblog\Infra\ScriptEvaluator;
+use Realblog\Infra\Pages;
 use Realblog\Infra\SystemChecker;
 use Realblog\Infra\View;
 
@@ -39,7 +39,7 @@ class Dic
             self::makeDb(),
             new Finder(self::makeDb()),
             self::makeView(),
-            new ScriptEvaluator
+            new Pages
         );
     }
 
@@ -50,20 +50,17 @@ class Dic
             self::makeDb(),
             new Finder(self::makeDb()),
             self::makeView(),
-            new ScriptEvaluator
+            new Pages
         );
     }
 
     public static function makeLinkController(): LinkController
     {
-        global $u;
-
         return new LinkController(
             self::makeConf(),
-            $u,
+            new Pages,
             new Finder(Dic::makeDb()),
-            self::makeView(),
-            new ScriptEvaluator()
+            self::makeView()
         );
     }
 
@@ -74,11 +71,9 @@ class Dic
 
     public static function makeMostPopularController(): MostPopularController
     {
-        global $u;
-
         return new MostPopularController(
             self::makeConf(),
-            $u,
+            new Pages,
             new Finder(Dic::makeDb()),
             self::makeView()
         );
@@ -89,7 +84,7 @@ class Dic
         return new FeedController(
             self::makeConf(),
             new Finder(Dic::makeDb()),
-            new ScriptEvaluator(),
+            new Pages,
             self::makeView()
         );
     }

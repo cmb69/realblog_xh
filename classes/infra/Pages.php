@@ -21,13 +21,23 @@
 
 namespace Realblog\Infra;
 
-class ScriptEvaluator
+class Pages
 {
-    /**
-     * @param string $contents
-     * @return string
-     */
-    public function evaluate($contents)
+    public function hasPageWithUrl(string $url): bool
+    {
+        global $u;
+
+        return in_array($url, $u, true);
+    }
+
+    public function headingOf(int $num): string
+    {
+        global $h;
+
+        return $h[$num];
+    }
+
+    public function evaluateScripting(string $contents): string
     {
         return evaluate_scripting($contents);
     }

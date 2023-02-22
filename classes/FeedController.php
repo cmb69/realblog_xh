@@ -24,8 +24,8 @@
 namespace Realblog;
 
 use Realblog\Infra\Finder;
+use Realblog\Infra\Pages;
 use Realblog\Infra\Request;
-use Realblog\Infra\ScriptEvaluator;
 use Realblog\Infra\View;
 
 class FeedController
@@ -36,8 +36,8 @@ class FeedController
     /** @var Finder */
     private $finder;
 
-    /** @var ScriptEvaluator */
-    private $scriptEvaluator;
+    /** @var Pages */
+    private $pages;
 
     /** @var View */
     private $view;
@@ -46,12 +46,12 @@ class FeedController
     public function __construct(
         array $config,
         Finder $finder,
-        ScriptEvaluator $scriptEvaluator,
+        Pages $pages,
         View $view
     ) {
         $this->config = $config;
         $this->finder = $finder;
-        $this->scriptEvaluator = $scriptEvaluator;
+        $this->pages = $pages;
         $this->view = $view;
     }
 
@@ -65,7 +65,7 @@ class FeedController
                 "title" => $article->title,
                 "url" => $request->url()->withPage($this->config["rss_page"])
                     ->withParams(['realblog_id' => (string) $article->id])->absolute(),
-                "teaser" => $this->scriptEvaluator->evaluate($article->teaser),
+                "teaser" => $this->pages->evaluateScripting($article->teaser),
                 "date" => (string) date('r', $article->date),
             ];
         }

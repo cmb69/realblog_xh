@@ -25,7 +25,7 @@ namespace Realblog;
 
 use Realblog\Infra\DB;
 use Realblog\Infra\Finder;
-use Realblog\Infra\ScriptEvaluator;
+use Realblog\Infra\Pages;
 use Realblog\Infra\Url;
 use Realblog\Infra\View;
 use Realblog\Value\FullArticle;
@@ -44,8 +44,8 @@ abstract class MainController
     /** @var View */
     protected $view;
 
-    /** @var ScriptEvaluator */
-    protected $scriptEvaluator;
+    /** @var Pages */
+    protected $pages;
 
     /** @var string */
     protected $searchTerm;
@@ -59,13 +59,13 @@ abstract class MainController
         DB $db,
         Finder $finder,
         View $view,
-        ScriptEvaluator $scriptEvaluator
+        Pages $pages
     ) {
         $this->config = $config;
         $this->db = $db;
         $this->finder = $finder;
         $this->view = $view;
-        $this->scriptEvaluator = $scriptEvaluator;
+        $this->pages = $pages;
         $this->searchTerm = $_GET['realblog_search'] ?? "";
         $this->year = (int) ($_GET['realblog_year'] ?? idate("Y"));
     }
@@ -119,9 +119,9 @@ abstract class MainController
      */
     private function doRenderArticle(Url $url, FullArticle $article)
     {
-        global $h, $s, $title, $description;
+        global $s, $title, $description;
 
-        $title .= $h[$s] . " \xE2\x80\x93 " . $article->title;
+        $title .= $this->pages->headingOf($s) . " \xE2\x80\x93 " . $article->title;
         $description = $this->getDescription($article);
         if ($article->status === 2) {
             $params = array('realblog_year' => (string) $this->year);
@@ -164,7 +164,7 @@ abstract class MainController
         } else {
             $story = ($article->body != '') ? $article->body : $article->teaser;
         }
-        $data['story'] = $this->scriptEvaluator->evaluate($story);
+        $data['story'] = $this->pages->evaluateScripting($story);
         return $this->view->render('article', $data);
     }
 
