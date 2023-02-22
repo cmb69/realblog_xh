@@ -27,6 +27,7 @@ use Realblog\Infra\DB;
 use Realblog\Infra\Editor;
 use Realblog\Infra\Finder;
 use Realblog\Infra\ScriptEvaluator;
+use Realblog\Infra\SystemChecker;
 use Realblog\Infra\View;
 
 class Dic
@@ -114,8 +115,9 @@ class Dic
         global $pth, $plugin_cf, $plugin_tx;
 
         return new InfoController(
-            "{$pth['folder']['plugins']}realblog/",
-            $plugin_cf['realblog'],
+            $plugin_cf["realblog"],
+            $plugin_tx["realblog"],
+            new SystemChecker,
             new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog'])
         );
     }

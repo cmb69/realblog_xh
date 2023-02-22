@@ -23,46 +23,76 @@
 
 namespace Realblog;
 
-use Realblog\Infra\SystemCheck;
+use Realblog\Infra\Request;
+use Realblog\Infra\SystemChecker;
 use Realblog\Infra\View;
 
 class InfoController
 {
-    /** @var string */
-    private $pluginFolder;
-
     /** @var array<string,string> */
     private $conf;
+
+    /** @var array<string,string> */
+    private $text;
+
+    /** @var SystemChecker */
+    private $systemChecker;
 
     /** @var View */
     private $view;
 
     /**
-     * @param string $pluginFolder
      * @param array<string,string> $conf
+     * @param array<string,string> $text
      */
-    public function __construct($pluginFolder, array $conf, View $view)
+    public function __construct(array $conf, array $text, SystemChecker $systemChecker, View $view)
     {
-        $this->pluginFolder = $pluginFolder;
         $this->conf = $conf;
+        $this->text = $text;
+        $this->systemChecker = $systemChecker;
         $this->view = $view;
     }
 
-    public function __invoke(): string
+    public function __invoke(Request $request): string
     {
         $checks = [];
-        foreach ((new SystemCheck)->getChecks() as $label => $state) {
+        foreach ($this->getChecks($request->pluginsFolder()) as $label => $state) {
             $checks[] = [
                 "label" => $label,
                 "state" => $state,
-                "image" => "{$this->pluginFolder}images/$state.png",
+                "state_label" => $this->text["syscheck_$state"],
             ];
         }
-        $data = [
-            'version' => Plugin::VERSION,
-            'heading' => $this->conf['heading_level'],
-            'checks' => $checks,
-        ];
-        return $this->view->render('info', $data);
+        return $this->view->render("info", [
+            "version" => Plugin::VERSION,
+            "heading" => $this->conf["heading_level"],
+            "checks" => $checks,
+        ]);
+    }
+
+    /** @return array<string,string> */
+    public function getChecks(string $pluginsFolder): array
+    {
+        $checks = array();
+        $phpVersion = "7.1.0";
+        $checks[sprintf($this->text["syscheck_phpversion"], $phpVersion)] =
+             $this->systemChecker->checkPHPVersion($phpVersion) ? "success" : "fail";
+        foreach (array("sqlite3") as $extension) {
+            $checks[sprintf($this->text["syscheck_extension"], $extension)] =
+                $this->systemChecker->checkExtension($extension) ? "success" : "fail";
+        }
+        $xhVersion = "1.7.0";
+        $checks[sprintf($this->text["syscheck_xhversion"], $xhVersion)] =
+            $this->systemChecker->checkXHVersion($xhVersion) ? "success" : "fail";
+        $folders = array(
+            $pluginsFolder . "realblog/config",
+            $pluginsFolder ."realblog/css",
+            $pluginsFolder . "realblog/languages",
+        );
+        foreach ($folders as $folder) {
+            $checks[sprintf($this->text["syscheck_writable"], $folder)] =
+                $this->systemChecker->checkWritability($folder) ? "success" : "warning";
+        }
+        return $checks;
     }
 }

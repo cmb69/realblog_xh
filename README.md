@@ -238,8 +238,7 @@ Many thanks for publishing the icon under GPL.
 The feed icon is designed by [Anomie](https://en.wikipedia.org/wiki/User:Anomie).
 Many thanks for releasing it under GPL.
 
-This plugin uses material icons from [Google](https://fonts.google.com/icons?selected=Material+Icons)
-and free applications icons from [Aha-Soft](http://www.aha-soft.com/).
+This plugin uses material icons from [Google](https://fonts.google.com/icons?selected=Material+Icons).
 Many thanks for making these icons freely available.
 
 Many thanks to the community at the 

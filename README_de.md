@@ -250,8 +250,7 @@ Vielen Dank für die Veröffentlichung des Icons unter GPL.
 Das Feed-Icon wurde von [Anomie](https://en.wikipedia.org/wiki/User:Anomie)
 gestaltet. Vielen Dank für die Veröffentlichung unter GPL.
 
-Dieses Plugin verwendet "material icons" von [Google](https://fonts.google.com/icons?selected=Material+Icons)
-und "free applications icons" von [Aha-Soft](http://www.aha-soft.com/).
+Dieses Plugin verwendet "material icons" von [Google](https://fonts.google.com/icons?selected=Material+Icons).
 Vielen Dank für die freie Verwendbarkeit dieser Icons.
 
 Vielen Dank an die Gemeinschaft im [CMSimple_XH-Forum](https://www.cmsimpleforum.com/)

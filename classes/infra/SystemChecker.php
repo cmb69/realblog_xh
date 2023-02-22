@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2023 Christoph M. Becker
+ * Copyright 2017-2023 Christoph M. Becker
  *
  * This file is part of Realblog_XH.
  *
@@ -21,19 +21,25 @@
 
 namespace Realblog\Infra;
 
-class Request
+class SystemChecker
 {
-    public function url(): Url
+    public function checkPHPVersion(string $version): bool
     {
-        global $su;
-
-        return (new Url())->withPage($su);
+        return version_compare(PHP_VERSION, $version, 'ge');
     }
 
-    public function pluginsFolder(): string
+    public function checkExtension(string $extension): bool
     {
-        global $pth;
+        return extension_loaded($extension);
+    }
 
-        return $pth["folder"]["plugins"];
+    public function checkXHVersion(string $version): bool
+    {
+        return version_compare(CMSIMPLE_XH_VERSION, "CMSimple_XH $version", 'ge');
+    }
+
+    public function checkWritability(string $folder): bool
+    {
+        return is_writable($folder);
     }
 }

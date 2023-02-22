@@ -47,7 +47,7 @@ if (XH_wantsPluginAdministration("realblog")) {
     $o .= pluginMenu("SHOW");
     switch ($admin) {
         case "":
-            $o .= Dic::makeInfoController()();
+            $o .= Dic::makeInfoController()(new Request);
             break;
         case "plugin_main":
             $o .= Dic::makeMainAdminController()(new Request, $action)->trigger();
