@@ -32,9 +32,6 @@ use Realblog\Infra\View;
 class FeedController
 {
     /** @var string */
-    private $pluginFolder;
-
-    /** @var string */
     private $imageFolder;
 
     /** @var array<string,string> */
@@ -49,26 +46,28 @@ class FeedController
     /** @var ScriptEvaluator */
     private $scriptEvaluator;
 
+    /** @var View */
+    private $view;
+
     /**
-     * @param string $pluginFolder
      * @param string $imageFolder
      * @param array<string,string> $config
      * @param array<string,string> $text
      */
     public function __construct(
-        $pluginFolder,
         $imageFolder,
         array $config,
         array $text,
         Finder $finder,
-        ScriptEvaluator $scriptEvaluator
+        ScriptEvaluator $scriptEvaluator,
+        View $view
     ) {
-        $this->pluginFolder = $pluginFolder;
         $this->imageFolder = $imageFolder;
         $this->config = $config;
         $this->text = $text;
         $this->finder = $finder;
         $this->scriptEvaluator = $scriptEvaluator;
+        $this->view = $view;
     }
 
     public function __invoke(Request $request): string
@@ -92,7 +91,6 @@ class FeedController
             'imageUrl' => $request->url()->withPath($this->imageFolder . $this->config['rss_logo'])->absolute(),
             'articles' => $records,
         ];
-        $view = new View("{$this->pluginFolder}views/", $this->text);
-        return '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . $view->render('feed', $data);
+        return '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . $this->view->render('feed', $data);
     }
 }

@@ -101,12 +101,12 @@ class Dic
         global $pth, $plugin_cf, $plugin_tx;
 
         return new FeedController(
-            "{$pth['folder']['plugins']}realblog/",
             $pth['folder']['images'],
             $plugin_cf['realblog'],
             $plugin_tx['realblog'],
             new Finder(Dic::makeDb()),
-            new ScriptEvaluator()
+            new ScriptEvaluator(),
+            new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog'])
         );
     }
 

@@ -26,6 +26,7 @@ use Realblog\Infra\Finder;
 use Realblog\Infra\ScriptEvaluator;
 use ApprovalTests\Approvals;
 use Realblog\Infra\Request;
+use Realblog\Infra\View;
 
 class FeedControllerTest extends TestCase
 {
@@ -39,7 +40,8 @@ class FeedControllerTest extends TestCase
         $finder = $this->createStub(Finder::class);
         $finder->method("findFeedableArticles")->willReturn([]);
         $scriptEvaluator = $this->createStub(ScriptEvaluator::class);
-        $sut = new FeedController("./", "./userfiles/images/", $conf, $text, $finder, $scriptEvaluator);
+        $view = new View("./views/", $text);
+        $sut = new FeedController("./userfiles/images/", $conf, $text, $finder, $scriptEvaluator, $view);
         $response = $sut(new Request);
         Approvals::verifyHtml($response);
     }
@@ -55,7 +57,8 @@ class FeedControllerTest extends TestCase
         $finder = $this->createStub(Finder::class);
         $finder->method("findFeedableArticles")->willReturn([]);
         $scriptEvaluator = $this->createStub(ScriptEvaluator::class);
-        $sut = new FeedController("./", "./userfiles/images/", $conf, $text, $finder, $scriptEvaluator);
+        $view = new View("./views/", $text);
+        $sut = new FeedController("./userfiles/images/", $conf, $text, $finder, $scriptEvaluator, $view);
         $response = $sut(new Request);
         Approvals::verifyHtml($response);
     }
