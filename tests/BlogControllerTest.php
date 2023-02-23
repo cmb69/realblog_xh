@@ -68,7 +68,7 @@ class BlogControllerTest extends TestCase
         $plugin_cf = XH_includeVar("./config/config.php", "plugin_cf");
         $this->finder->method("countArticlesWithStatus")->willReturn(7);
         $this->finder->method("findArticles")->willReturn($this->articles());
-        $response = ($this->sut)(new Request, true, "all");
+        $response = ($this->sut)(new Request, "blog", true, "all");
         Approvals::verifyHtml($response->output());
     }
 
@@ -81,7 +81,7 @@ class BlogControllerTest extends TestCase
         $s = 1;
         $h = [1 => "Blog"];
         $this->finder->method("findById")->willReturn($this->article());
-        $response = ($this->sut)(new Request, true, "all");
+        $response = ($this->sut)(new Request, "blog", true, "all");
         Approvals::verifyHtml($response->output());
     }
 

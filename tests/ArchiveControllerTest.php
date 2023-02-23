@@ -34,7 +34,7 @@ use Realblog\Value\FullArticle;
 
 class ArchiveControllerTest extends TestCase
 {
-    /** @var ArchiveController */
+    /** @var BlogController */
     private $sut;
     
     /** @var DB&MockObject */
@@ -51,7 +51,7 @@ class ArchiveControllerTest extends TestCase
         $pages = $this->createStub(Pages::class);
         $pages = $this->createStub(Pages::class);
         $pages->method("evaluateScripting")->willReturnArgument(0);
-        $this->sut = new ArchiveController(
+        $this->sut = new BlogController(
             XH_includeVar("./config/config.php", "plugin_cf")["realblog"],
             $this->db,
             $this->finder,
@@ -68,7 +68,7 @@ class ArchiveControllerTest extends TestCase
         $su = "Archive";
         $this->finder->method("findArchiveYears")->willReturn([2023]);
         $this->finder->method("findArchivedArticlesInPeriod")->willReturn([]);
-        $response = ($this->sut)(new Request, true);
+        $response = ($this->sut)(new Request, "archive", true);
         Approvals::verifyHtml($response->output());
     }
 
@@ -79,7 +79,7 @@ class ArchiveControllerTest extends TestCase
         $su = "Archive";
         $this->finder->method("findArchiveYears")->willReturn([2023]);
         $this->finder->method("findArchivedArticlesInPeriod")->willReturn($this->articles());
-        $response = ($this->sut)(new Request, true);
+        $response = ($this->sut)(new Request, "archive", true);
         Approvals::verifyHtml($response->output());
     }
 
@@ -92,7 +92,7 @@ class ArchiveControllerTest extends TestCase
         $s = 2;
         $h = [2 => "Blog"];
         $this->finder->method("findById")->willReturn($this->article());
-        $response = ($this->sut)(new Request, true);
+        $response = ($this->sut)(new Request, "archive", true);
         Approvals::verifyHtml($response->output());
     }
 

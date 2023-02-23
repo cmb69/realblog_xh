@@ -48,7 +48,7 @@ function showrealblog($options = "", $category = 'all')
                 break;
         }
     }
-    return Dic::makeBlogController()(new Request, $includesearch, $category)->fire();
+    return Dic::makeBlogController()(new Request, "blog", $includesearch, $category)->fire();
 }
 
 /**
@@ -75,7 +75,7 @@ function showrealblogarchive($options = "")
                 break;
         }
     }
-    return Dic::makeArchiveController()(new Request, $includesearch)->fire();
+    return Dic::makeBlogController()(new Request, "archive", $includesearch)->fire();
 }
 
 /**

@@ -66,12 +66,12 @@ Dic::makeFeedController()(new Request)->fire();
 
 function realblog_blog(bool $showSearch = false, string $category = "all"): string
 {
-    return Dic::makeBlogController()(new Request, $showSearch, $category)->fire();
+    return Dic::makeBlogController()(new Request, "blog", $showSearch, $category)->fire();
 }
 
 function realblog_archive(bool $showSearch = false): string
 {
-    return Dic::makeArchiveController()(new Request, $showSearch)->fire();
+    return Dic::makeBlogController()(new Request, "archive", $showSearch)->fire();
 }
 
 function realblog_link(string $pageUrl, bool $showTeaser = false): string

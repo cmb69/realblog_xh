@@ -48,17 +48,6 @@ class Dic
         );
     }
 
-    public static function makeArchiveController(): ArchiveController
-    {
-        return new ArchiveController(
-            self::makeConf(),
-            self::makeDb(),
-            new Finder(self::makeDb()),
-            self::makeView(),
-            new Pages
-        );
-    }
-
     public static function makeLinkController(): LinkController
     {
         return new LinkController(
