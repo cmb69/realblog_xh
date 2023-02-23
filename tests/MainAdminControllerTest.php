@@ -167,6 +167,7 @@ class MainAdminControllerTest extends TestCase
         $request = $this->createStub(Request::class);
         $request->method("edit")->willReturn(false);
         $request->method("url")->willReturn((new Url)->withPage("realblog"));
+        $request->method("realblogPage")->willReturn(1);
         $response = ($this->sut)($request, "do_create");
         Approvals::verifyHtml($response->output());
     }
@@ -177,6 +178,7 @@ class MainAdminControllerTest extends TestCase
         $request = $this->createStub(Request::class);
         $request->method("edit")->willReturn(false);
         $request->method("url")->willReturn((new Url)->withPage("realblog"));
+        $request->method("realblogPage")->willReturn(1);
         $response = ($this->sut)($request, "do_edit");
         Approvals::verifyHtml($response->output());
     }
@@ -187,6 +189,7 @@ class MainAdminControllerTest extends TestCase
         $request = $this->createStub(Request::class);
         $request->method("edit")->willReturn(false);
         $request->method("url")->willReturn((new Url)->withPage("realblog"));
+        $request->method("realblogPage")->willReturn(1);
         $response = ($this->sut)($request, "do_delete");
         Approvals::verifyHtml($response->output());
     }

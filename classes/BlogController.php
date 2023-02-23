@@ -26,7 +26,6 @@ namespace Realblog;
 use Realblog\Infra\DB;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Pages;
-use Realblog\Infra\Pagination;
 use Realblog\Infra\Request;
 use Realblog\Infra\Response;
 use Realblog\Infra\Url;
@@ -101,7 +100,7 @@ class BlogController
         $order = ($this->conf['entries_order'] == 'desc')
             ? -1 : 1;
         $limit = max(1, (int) $this->conf['entries_per_page']);
-        $page = $this->getPage();
+        $page = $this->request->realblogPage();
         $searchTerm = $this->request->stringFromGet("realblog_search");
         $articleCount = $this->finder->countArticlesWithStatus(array(1), $category, $searchTerm);
         $pageCount = (int) ceil($articleCount / $limit);
@@ -130,7 +129,7 @@ class BlogController
     ): string {
         $searchTerm = $this->request->stringFromGet("realblog_search");
         $bridge = ucfirst($this->conf["comments_plugin"]) . "\\RealblogBridge";
-        $params = ["realblog_page" => (string) $this->getPage(), "realblog_search" => $searchTerm];
+        $params = ["realblog_page" => (string) $this->request->realblogPage(), "realblog_search" => $searchTerm];
         $records = [];
         foreach ($articles as $article) {
             $isCommentable = $this->conf["comments_plugin"] && class_exists($bridge) && $article->commentable;
@@ -146,22 +145,41 @@ class BlogController
                 "comment_count" => $isCommentable ? $bridge::count("realblog{$article->id}") : null,
             ];
         }
-        $pagination = new Pagination(
+        $pagination = $this->renderPagination(
             $articleCount,
             $page,
             $pageCount,
             (int) $this->conf['pagination_radius'],
-            $this->request->url()->withParams(["realblog_search" => $searchTerm]),
-            $this->view
+            $this->request->url()->withParams(["realblog_search" => $searchTerm])
         );
         return $this->view->render("articles", [
             "articles" => $records,
             "heading" => $this->conf["heading_level"],
             "heading_above_meta" => $this->conf["heading_above_meta"],
-            "pagination" => $pagination->render(),
+            "pagination" => $pagination,
             "top_pagination" => (bool) $this->conf["pagination_top"],
             "bottom_pagination" => (bool) $this->conf["pagination_bottom"],
         ]);
+    }
+
+    /** @return string */
+    public function renderPagination(int $itemCount, int $page, int $pageCount, int $radius, Url $url)
+    {
+        if ($pageCount <= 1) {
+            return '';
+        }
+        $pages = [];
+        foreach (Util::gatherPages($page, $pageCount, $radius) as $page) {
+            $pages[] = $page !== null
+                ? ["num" => $page, "url" => $url->withRealblogPage($page)->relative()]
+                : null;
+        }
+        $data = [
+            'itemCount' => $itemCount,
+            'currentPage' => $page,
+            'pages' => $pages,
+        ];
+        return $this->view->render('pagination', $data);
     }
 
     private function renderSearchForm(Url $url): string
@@ -204,7 +222,7 @@ class BlogController
         if ($article->status === 2) {
             $params = array('realblog_year' => (string) $this->request->year());
         } else {
-            $params = array('realblog_page' => (string) $this->getPage());
+            $params = array('realblog_page' => (string) $this->request->realblogPage());
         }
 
         $bridge = ucfirst($this->conf['comments_plugin']) . '\\RealblogBridge';
@@ -251,14 +269,6 @@ class BlogController
     {
         return $this->conf['comments_plugin']
             && class_exists(ucfirst($this->conf['comments_plugin']) . '\\RealblogBridge');
-    }
-
-    private function getPage(): int
-    {
-        if ($this->request->admin() && $this->request->edit()) {
-            return max($this->request->intFromGetOrCookie("realblog_page"), 1);
-        }
-        return max($this->request->intFromGet("realblog_page"), 1);
     }
 
     private function allArchivedPosts(bool $showSearch): string

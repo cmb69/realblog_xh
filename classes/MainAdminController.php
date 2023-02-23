@@ -91,7 +91,7 @@ class MainAdminController
             $page = max($request->intFromGet("realblog_page"), 1);
             $this->response->addCookie('realblog_page', (string) $page);
         }
-        $this->page = $this->getPage();
+        $this->page = $this->request->realblogPage();
         switch ($action) {
             default:
                 $this->defaultAction();
@@ -128,14 +128,6 @@ class MainAdminController
                 break;
         }
         return $this->response;
-    }
-
-    private function getPage(): int
-    {
-        if ($this->request->edit()) {
-            return max($this->request->intFromGetOrCookie("realblog_page"), 1);
-        }
-        return max($this->request->intFromGet("realblog_page"), 1);
     }
 
     /** @return void */

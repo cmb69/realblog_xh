@@ -105,15 +105,18 @@ class Request
         return (int) $_GET[$name];
     }
 
-    public function intFromGetOrCookie(string $name): int
+    /** @return positive-int */
+    public function realblogPage(): int
     {
-        if (isset($_GET[$name]) && is_string($_GET[$name])) {
-            return (int) $_GET[$name];
+        if (isset($_GET["realblog_page"]) && is_string($_GET["realblog_page"])) {
+            return max((int) $_GET["realblog_page"], 1);
         }
-        if (isset($_COOKIE[$name]) && is_string($_COOKIE[$name])) {
-            return (int) $_COOKIE[$name];
+        if ($this->admin() && $this->edit()) {
+            if (isset($_COOKIE["realblog_page"]) && is_string($_COOKIE["realblog_page"])) {
+                return max((int) $_COOKIE["realblog_page"], 1);
+            }
         }
-        return 0;
+        return 1;
     }
 
     public function year(): int

@@ -60,9 +60,31 @@ class Util
         if (utf8_strlen($text) <= 150) {
             return $text;
         }
-        if (preg_match('/.{0,150}\b/su', $text, $matches)) {
+        if (preg_match('/^.{1,150}\b/su', $text, $matches)) {
             return $matches[0] . '…';
         }
         return utf8_substr($text, 0, 150) . '…';
+    }
+
+    /**
+     * @param int<2,max> $count
+     * @return list<int|null>
+     */
+    public static function gatherPages(int $page, int $count, int $radius): array
+    {
+        $pages = array(1);
+        if ($page - $radius > 1 + 1) {
+            $pages[] = null;
+        }
+        for ($i = $page - $radius; $i <= $page + $radius; $i++) {
+            if ($i > 1 && $i < $count) {
+                $pages[] = $i;
+            }
+        }
+        if ($page + $radius < $count - 1) {
+            $pages[] = null;
+        }
+        $pages[] = $count;
+        return $pages;
     }
 }
