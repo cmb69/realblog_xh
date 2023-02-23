@@ -59,7 +59,7 @@ class FeedController
     public function __invoke(Request $request): Response
     {
         $response = new Response;
-        if (!$this->conf["rss_enabled"] || ($_GET['realblog_feed'] ?? "") !== "rss") {
+        if (!$this->conf["rss_enabled"] || $request->stringFromGet("realblog_feed") !== "rss") {
             return $response;
         }
         $count = (int) $this->conf['rss_entries'];

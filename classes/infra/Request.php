@@ -21,6 +21,8 @@
 
 namespace Realblog\Infra;
 
+use Realblog\Value\Article;
+
 class Request
 {
     public function admin(): bool
@@ -80,5 +82,77 @@ class Request
         global $s;
 
         return $s;
+    }
+
+    public function hasGet(string $name): bool
+    {
+        return isset($_GET[$name]);
+    }
+
+    public function stringFromGet(string $name): string
+    {
+        if (!isset($_GET[$name]) || !is_string($_GET[$name])) {
+            return "";
+        }
+        return (string) $_GET[$name];
+    }
+
+    public function intFromGet(string $name): int
+    {
+        if (!isset($_GET[$name]) || !is_string($_GET[$name])) {
+            return 0;
+        }
+        return (int) $_GET[$name];
+    }
+
+    public function intFromGetOrCookie(string $name): int
+    {
+        if (isset($_GET[$name]) && is_string($_GET[$name])) {
+            return (int) $_GET[$name];
+        }
+        if (isset($_COOKIE[$name]) && is_string($_COOKIE[$name])) {
+            return (int) $_COOKIE[$name];
+        }
+        return 0;
+    }
+
+    public function year(): int
+    {
+        return (int) ($_GET["realblog_year"] ?? idate("Y"));
+    }
+
+    /** @return list<int> */
+    public function realblogIds(): array
+    {
+        if (!isset($_GET["realblog_ids"]) || !is_array($_GET["realblog_ids"])) {
+            return [];
+        }
+        return array_filter($_GET["realblog_ids"], function ($id) {
+            return (int) $id >= 1;
+        });
+    }
+
+    /** @return list<bool>|null */
+    public function filtersFromGet(): ?array
+    {
+        if (!isset($_GET["realblog_filter"])) {
+            return null;
+        }
+        $filters = [];
+        for ($i = Article::UNPUBLISHED; $i <= Article::ARCHIVED; $i++) {
+            $filters[] = (bool) ($_GET["realblog_filter"][$i] ?? false);
+        }
+        return $filters;
+    }
+
+    /** @return list<bool>|null */
+    public function filtersFromCookie(): ?array
+    {
+        if (!isset($_COOKIE["realblog_filter"])) {
+            return null;
+        }
+        $filters = json_decode($_COOKIE["realblog_filter"]);
+        assert(is_array($filters));
+        return $filters;
     }
 }

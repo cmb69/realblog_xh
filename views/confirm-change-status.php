@@ -24,8 +24,9 @@ use Realblog\Infra\View;
     <input type="hidden" name="xh_csrf_token" value="<?=$this->esc($csrfToken)?>">
     <p style="text-align: center">
       <select name="realblog_status">
+      <option value="<?=$this->esc(-1)?>"><?=$this->text('new_realblogstatus')?></option>
 <?foreach ($states as $i => $state):?>
-        <option value="<?=$this->esc($i - 1)?>"><?=$this->text($state)?></option>
+        <option value="<?=$this->esc($i)?>"><?=$this->text($state)?></option>
 <?endforeach?>
       </select>
       <input type="submit" name="submit" value="<?=$this->text('btn_ok')?>">

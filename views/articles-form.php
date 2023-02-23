@@ -77,9 +77,9 @@ use Realblog\Infra\View;
         <tr>
           <td colspan="8">
 <?foreach ($states as $i => $status):?>
-            <input type="hidden" name="realblog_filter<?=$i?>" value="">
+            <input type="hidden" name="realblog_filter[<?=$i?>]" value="">
             <label>
-              <input type="checkbox" name="realblog_filter<?=$i?>" <?php if ($filters[$i]) echo 'checked'?>>
+              <input type="checkbox" name="realblog_filter[<?=$i?>]" <?php if ($filters[$i]) echo 'checked'?>>
               <?=$this->text($status)?>
             </label>
 <?endforeach?>

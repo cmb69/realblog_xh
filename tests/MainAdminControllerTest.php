@@ -31,6 +31,7 @@ use Realblog\Value\FullArticle;
 use ApprovalTests\Approvals;
 use Realblog\Infra\Request;
 use Realblog\Infra\Url;
+use SebastianBergmann\CodeCoverage\Report\Xml\Report;
 use XH\CSRFProtection as CsrfProtector;
 
 class MainAdminControllerTest extends TestCase
@@ -65,9 +66,6 @@ class MainAdminControllerTest extends TestCase
 
     public function testDefaultActionRendersOverview(): void
     {
-        global $su;
-
-        $su = "realblog";
         $this->finder->method('findArticlesWithStatus')->willReturn([]);
         $request = $this->createStub(Request::class);
         $request->method("pluginsFolder")->willReturn("./plugins/");
@@ -119,9 +117,6 @@ class MainAdminControllerTest extends TestCase
 
     public function testEditActionOutputsHjs(): void
     {
-        global $su;
-
-        $su = "realblog";
         $this->finder->method('findById')->willReturn($this->firstArticle());
         $_GET = ['realblog_id' => "1"];
         $request = $this->createStub(Request::class);
@@ -132,9 +127,6 @@ class MainAdminControllerTest extends TestCase
 
     public function testEditActionOutputsBjs(): void
     {
-        global $su;
-
-        $su = "realblog";
         $this->finder->method('findById')->willReturn($this->firstArticle());
         $this->finder->method('findAllCategories')->willReturn(["cat1", "cat2"]);
         $_GET = ['realblog_id' => "1"];
@@ -147,7 +139,9 @@ class MainAdminControllerTest extends TestCase
     public function testEditActionFailsOnMissingArticle(): void
     {
         $_GET = ['realblog_id' => "1"];
-        $response = ($this->sut)(new Request, "edit");
+        $request = $this->createStub(Request::class);
+        $request->method("edit")->willReturn(false);
+        $response = ($this->sut)($request, "edit");
         Approvals::verifyHtml($response->output());
     }
 
@@ -191,37 +185,39 @@ class MainAdminControllerTest extends TestCase
     public function testDeleteActionFailsOnMissingArticle(): void
     {
         $_GET = ['realblog_id' => "1"];
-        $response = ($this->sut)(new Request, "delete");
+        $request = $this->createStub(Request::class);
+        $request->method("edit")->willReturn(false);
+        $response = ($this->sut)($request, "delete");
         Approvals::verifyHtml($response->output());
     }
 
     public function testDoCreateActionFailureIsReported(): void
     {
-        global $su;
-
-        $su = "realblog";
         $_POST = $this->dummyPost();
-        $response = ($this->sut)(new Request, "do_create");
+        $request = $this->createStub(Request::class);
+        $request->method("edit")->willReturn(false);
+        $request->method("url")->willReturn((new Url)->withPage("realblog"));
+        $response = ($this->sut)($request, "do_create");
         Approvals::verifyHtml($response->output());
     }
 
     public function testDoEditActionFailureIsReported(): void
     {
-        global $su;
-
-        $su = "realblog";
         $_POST = $this->dummyPost();
-        $response = ($this->sut)(new Request, "do_edit");
+        $request = $this->createStub(Request::class);
+        $request->method("edit")->willReturn(false);
+        $request->method("url")->willReturn((new Url)->withPage("realblog"));
+        $response = ($this->sut)($request, "do_edit");
         Approvals::verifyHtml($response->output());
     }
 
     public function testDoDeleteActionFailureIsReported(): void
     {
-        global $su;
-
-        $su = "realblog";
         $_POST = $this->dummyPost();
-        $response = ($this->sut)(new Request, "do_delete");
+        $request = $this->createStub(Request::class);
+        $request->method("edit")->willReturn(false);
+        $request->method("url")->willReturn((new Url)->withPage("realblog"));
+        $response = ($this->sut)($request, "do_delete");
         Approvals::verifyHtml($response->output());
     }
 

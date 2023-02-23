@@ -37,6 +37,8 @@ use XH\CSRFProtection as CsrfProtector;
 
 class MainAdminController
 {
+    private const STATES = ['readyforpublishing', 'published', 'archived'];
+
     /** @var array<string,string> */
     private $conf;
 
@@ -85,6 +87,10 @@ class MainAdminController
     {
         $this->request = $request;
         $this->response = new Response;
+        if ($request->admin() && $request->edit() && $request->hasGet("realblog_page")) {
+            $page = max($request->intFromGet("realblog_page"), 1);
+            $this->response->addCookie('realblog_page', (string) $page);
+        }
         $this->page = $this->getPage();
         switch ($action) {
             default:
@@ -126,30 +132,20 @@ class MainAdminController
 
     private function getPage(): int
     {
-        if ($this->request->admin() && $this->request->edit()) {
-            if (isset($_GET['realblog_page'])) {
-                $page = max((int) ($_GET['realblog_page'] ?? 1), 1);
-                $_COOKIE['realblog_page'] = $page;
-                setcookie('realblog_page', (string) $page, 0, CMSIMPLE_ROOT);
-            } else {
-                $page = max((int) ($_COOKIE['realblog_page'] ?? 1), 1);
-            }
-        } else {
-            $page = max((int) ($_GET['realblog_page'] ?? 1), 1);
+        if ($this->request->edit()) {
+            return max($this->request->intFromGetOrCookie("realblog_page"), 1);
         }
-        return $page;
+        return max($this->request->intFromGet("realblog_page"), 1);
     }
 
     /** @return void */
     private function defaultAction()
     {
-        for ($i = 0; $i <= 2; $i++) {
-            $varname = "realblog_filter$i";
-            if (isset($_GET[$varname]) && !isset($_COOKIE[$varname])) {
-                $this->response->addCookie($varname, $_GET[$varname] ? "on" : "");
-            }
+        $filters = $this->request->filtersFromGet();
+        if ($filters !== null && $filters !== $this->request->filtersFromCookie()) {
+            $this->response->addCookie("realblog_filter", (string) json_encode($filters));
         }
-        $statuses = $this->getFilterStatuses();
+        $statuses = array_keys(array_filter($this->getFilterStatuses()));
         $total = $this->finder->countArticlesWithStatus($statuses);
         $limit = (int) $this->conf['admin_records_page'];
         $pageCount = (int) ceil($total / $limit);
@@ -159,26 +155,16 @@ class MainAdminController
         $this->response->setOutput($this->renderArticles($articles, $pageCount));
     }
 
-    /** @return list<int> */
+    /** @return list<bool> */
     private function getFilterStatuses(): array
     {
-        $statuses = array();
-        for ($i = 0; $i <= 2; $i++) {
-            if ($this->getFilter($i)) {
-                $statuses[] = $i;
-            }
-        }
-        return $statuses;
+        return $this->request->filtersFromGet() ?? $this->request->filtersFromCookie() ?? [false, false, false];
     }
 
     /** @param list<Article> $articles */
     private function renderArticles(array $articles, int $pageCount): string
     {
-        $states = ['readyforpublishing', 'published', 'archived'];
-        $filters = [];
-        foreach (array_keys($states) as $i) {
-            $filters[] = $this->getFilter($i);
-        }
+        $filters = $this->getFilterStatuses();
         $page = min(max($this->page, 0), $pageCount);
         $records = [];
         foreach ($articles as $article) {
@@ -205,19 +191,10 @@ class MainAdminController
             'lastPage' => $pageCount,
             'articles' => $records,
             'actionUrl' => $this->request->url()->withPage("")->relative(),
-            'states' => $states,
+            'states' => self::STATES,
             'filters' => $filters,
         ];
         return $this->view->render('articles-form', $data);
-    }
-
-    private function getFilter(int $num): bool
-    {
-        $varname = "realblog_filter$num";
-        if (isset($_GET[$varname])) {
-            return (bool) ($_GET[$varname] ?? false);
-        }
-        return (bool) ($_COOKIE[$varname] ?? false);
     }
 
     /** @return void */
@@ -245,7 +222,7 @@ class MainAdminController
         if ($action === 'create') {
             $article = new FullArticle(0, 0, $this->request->time(), 2147483647, 2147483647, 0, '', '', '', '', false, false);
         } else {
-            $id = max($_GET['realblog_id'] ?? 1, 1);
+            $id = max($this->request->intFromGet("realblog_id"), 1);
             $article = $this->finder->findById($id);
             if (!$article) {
                 $this->response->setOutput($this->view->message("fail", "message_not_found"));
@@ -288,7 +265,7 @@ class MainAdminController
             'calendarIcon' => $this->request->pluginsFolder() . "realblog/images/calendar.png",
             'isAutoPublish' => $this->conf['auto_publish'],
             'isAutoArchive' => $this->conf['auto_archive'],
-            'states' => array('readyforpublishing', 'published', 'archived'),
+            'states' => self::STATES,
             'categories' => trim($article->categories, ','),
             'button' => "btn_{$action}",
         ];
@@ -398,7 +375,7 @@ EOT;
     {
         $parts = explode('-', $date);
         if ($withTime) {
-            $timestamp = getdate();
+            $timestamp = getdate($this->request->time());
         } else {
             $timestamp = array('hours' => 0, 'minutes' => 0, 'seconds' => 0);
         }
@@ -427,9 +404,7 @@ EOT;
     private function renderConfirmation(string $kind): string
     {
         $data = [
-            'ids' => array_filter($_GET["realblog_ids"] ?? [], function ($id) {
-                return (int) $id >= 1;
-            }),
+            'ids' => $this->request->realblogIds(),
             'action' => $this->request->url()->withPage("realblog")->withParams(["admin" => "plugin_main"])->relative(),
             'url' => $this->request->url()->withPage("realblog")
                 ->withParams(["admin" => "plugin_main", "action" => "plugin_text", "realblog_page" => (string) $this->page])
@@ -437,9 +412,7 @@ EOT;
             'csrfToken' => $this->getCsrfToken(),
         ];
         if ($kind === 'change-status') {
-            $data['states'] = array(
-                'new_realblogstatus', 'readyforpublishing', 'published', 'archived'
-            );
+            $data['states'] = self::STATES;
         }
         return $this->view->render("confirm-$kind", $data);
     }

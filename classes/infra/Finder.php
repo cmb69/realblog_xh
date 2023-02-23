@@ -98,7 +98,7 @@ SQL;
         $connection = $this->db->getConnection();
         $statement = $connection->prepare($sql);
         assert($statement !== false);
-        $statement->bindValue(':status', 2, SQLITE3_INTEGER);
+        $statement->bindValue(':status', Article::ARCHIVED, SQLITE3_INTEGER);
         $statement->bindValue(':start', $start, SQLITE3_INTEGER);
         $statement->bindValue(':end', $end, SQLITE3_INTEGER);
         $result = $statement->execute();
@@ -138,13 +138,14 @@ SQL;
         $sql = <<<'SQL'
 SELECT id, date, status, categories, title, teaser, length(body) AS hasBody, feedable, commentable
     FROM articles
-    WHERE (title LIKE :text OR body LIKE :text) AND status = 2
+    WHERE (title LIKE :text OR body LIKE :text) AND status = :status
     ORDER BY date DESC, id DESC
 SQL;
         $connection = $this->db->getConnection();
         $statement = $connection->prepare($sql);
         assert($statement !== false);
         $statement->bindValue(':text', '%' . $search . '%', SQLITE3_TEXT);
+        $statement->bindValue(':status', Article::ARCHIVED, SQLITE3_INTEGER);
         $result = $statement->execute();
         assert($result !== false);
         $objects = array();
@@ -224,12 +225,13 @@ SQL;
     {
         $sql = <<<SQL
 SELECT id, date, status, categories, title, teaser, length(body) AS hasBody, feedable, commentable
-    FROM articles WHERE status = 1 AND feedable = :feedable ORDER BY date DESC, id DESC
+    FROM articles WHERE status = :status AND feedable = :feedable ORDER BY date DESC, id DESC
     LIMIT $count
 SQL;
         $connection = $this->db->getConnection();
         $statement = $connection->prepare($sql);
         assert($statement !== false);
+        $statement->bindValue(':status', Article::PUBLISHED, SQLITE3_INTEGER);
         $statement->bindValue(':feedable', 1, SQLITE3_INTEGER);
         $result = $statement->execute();
         assert($result !== false);

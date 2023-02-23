@@ -52,12 +52,6 @@ class BlogController
     /** @var Pages */
     private $pages;
 
-    /** @var string */
-    private $searchTerm;
-
-    /** @var int */
-    private $year;
-
     /** @var Request */
     private $request;
 
@@ -77,8 +71,6 @@ class BlogController
         $this->finder = $finder;
         $this->view = $view;
         $this->pages = $pages;
-        $this->searchTerm = $_GET['realblog_search'] ?? "";
-        $this->year = (int) ($_GET['realblog_year'] ?? idate("Y"));
     }
 
     public function __invoke(Request $request, string $mode, bool $showSearch, string $category = ""): Response
@@ -86,8 +78,12 @@ class BlogController
         assert(in_array($mode, ["blog", "archive"], true));
         $this->request = $request;
         $this->response = new Response;
-        if (isset($_GET["realblog_id"])) {
-            $this->renderArticle(max((int) ($_GET["realblog_id"] ?? 1), 1));
+        if ($request->admin() && $request->edit() && $request->hasGet("realblog_page")) {
+            $page = max($request->intFromget("realblog_page"), 1);
+            $this->response->addCookie('realblog_page', (string) $page);
+        }
+        if ($request->hasGet("realblog_id")) {
+            $this->renderArticle(max($request->intFromGet("realblog_id"), 1));
             return $this->response;
         }
         if ($mode === "blog") {
@@ -106,7 +102,8 @@ class BlogController
             ? -1 : 1;
         $limit = max(1, (int) $this->conf['entries_per_page']);
         $page = $this->getPage();
-        $articleCount = $this->finder->countArticlesWithStatus(array(1), $category, $this->searchTerm);
+        $searchTerm = $this->request->stringFromGet("realblog_search");
+        $articleCount = $this->finder->countArticlesWithStatus(array(1), $category, $searchTerm);
         $pageCount = (int) ceil($articleCount / $limit);
         $page = min(max($page, 1), $pageCount);
         $articles = $this->finder->findArticles(
@@ -115,9 +112,9 @@ class BlogController
             ($page-1) * $limit,
             $order,
             $category,
-            $this->searchTerm
+            $searchTerm
         );
-        if ($this->searchTerm) {
+        if ($searchTerm) {
             $html .= $this->renderSearchResults($this->request->url(), 'blog', $articleCount);
         }
         $html .= $this->renderArticles($articles, $articleCount, $page, $pageCount);
@@ -131,9 +128,9 @@ class BlogController
         int $page,
         int $pageCount
     ): string {
-        $search = $this->searchTerm;
+        $searchTerm = $this->request->stringFromGet("realblog_search");
         $bridge = ucfirst($this->conf["comments_plugin"]) . "\\RealblogBridge";
-        $params = ["realblog_page" => (string) $this->getPage(), "realblog_search" => $search];
+        $params = ["realblog_page" => (string) $this->getPage(), "realblog_search" => $searchTerm];
         $records = [];
         foreach ($articles as $article) {
             $isCommentable = $this->conf["comments_plugin"] && class_exists($bridge) && $article->commentable;
@@ -154,7 +151,7 @@ class BlogController
             $page,
             $pageCount,
             (int) $this->conf['pagination_radius'],
-            $this->request->url()->withParams(["realblog_search" => $search]),
+            $this->request->url()->withParams(["realblog_search" => $searchTerm]),
             $this->view
         );
         return $this->view->render("articles", [
@@ -178,7 +175,7 @@ class BlogController
     private function renderSearchResults(Url $url, string $what, int $count): string
     {
         return $this->view->render('search-results', [
-            'words' => $this->searchTerm,
+            'words' => $this->request->stringFromGet("realblog_search"),
             'count' => $count,
             'url' => $url->relative(),
             'key' => ($what == 'archive') ? 'back_to_archive' : 'search_show_all',
@@ -205,7 +202,7 @@ class BlogController
             ->setTitle($this->pages->headingOf($this->request->page()) . " – " . $article->title)
             ->setDescription(Util::shortenText($teaser));
         if ($article->status === 2) {
-            $params = array('realblog_year' => (string) $this->year);
+            $params = array('realblog_year' => (string) $this->request->year());
         } else {
             $params = array('realblog_page' => (string) $this->getPage());
         }
@@ -221,8 +218,9 @@ class BlogController
             'back_text' => $article->status === 2 ? 'archiv_back' : 'blog_back',
             'back_url' => $this->request->url()->withParams($params)->relative(),
         ];
-        if ($this->searchTerm) {
-            $params['realblog_search'] = $this->searchTerm;
+        $searchTerm = $this->request->stringFromGet("realblog_search");
+        if ($searchTerm) {
+            $params['realblog_search'] = $searchTerm;
             $data['back_to_search_url'] = $this->request->url()->withParams($params)->relative();
         }
         $data['edit_url'] = $this->request->url()->withPage("realblog")
@@ -258,17 +256,9 @@ class BlogController
     private function getPage(): int
     {
         if ($this->request->admin() && $this->request->edit()) {
-            if (isset($_GET['realblog_page'])) {
-                $page = max((int) ($_GET['realblog_page'] ?? 1), 1);
-                $_COOKIE['realblog_page'] = $page;
-                setcookie('realblog_page', (string) $page, 0, CMSIMPLE_ROOT);
-            } else {
-                $page = max((int) ($_COOKIE['realblog_page'] ?? 1), 1);
-            }
-        } else {
-            $page = max((int) ($_GET['realblog_page'] ?? 1), 1);
+            return max($this->request->intFromGetOrCookie("realblog_page"), 1);
         }
-        return $page;
+        return max($this->request->intFromGet("realblog_page"), 1);
     }
 
     private function allArchivedPosts(bool $showSearch): string
@@ -277,9 +267,9 @@ class BlogController
         if ($showSearch) {
             $html .= $this->renderSearchForm($this->request->url());
         }
-
-        if ($this->searchTerm) {
-            $articles = $this->finder->findArchivedArticlesContaining($this->searchTerm);
+        $searchTerm = $this->request->stringFromGet("realblog_search");
+        if ($searchTerm) {
+            $articles = $this->finder->findArchivedArticlesContaining($searchTerm);
             $articleCount = count($articles);
             $html .= $this->renderSearchResults($this->request->url(), 'archive', $articleCount);
         } else {
@@ -293,8 +283,8 @@ class BlogController
     /** @param list<Article> $articles */
     private function renderArchive(array $articles): string
     {
-        if (!$this->searchTerm) {
-            $year = $this->year;
+        if ($this->request->stringFromGet("realblog_search") === "") {
+            $year = $this->request->year();
             $years = $this->finder->findArchiveYears();
             $key = array_search($year, $years);
             if ($key === false) {
@@ -325,9 +315,9 @@ class BlogController
             $groupRecords = [];
             foreach ($group as $article) {
                 $params = [
-                    'realblog_id' => $article->id,
+                    'realblog_id' => (string) $article->id,
                     'realblog_year' => date('Y', $article->date),
-                    'realblog_search' => $_GET['realblog_search'] ?? "",
+                    'realblog_search' => $this->request->stringFromGet("realblog_search"),
                 ];
                 $groupRecords[] = [
                     "title" => $article->title,
@@ -344,7 +334,7 @@ class BlogController
             'isSearch' => $isSearch,
             'articles' => $records,
             'heading' => $this->conf['heading_level'],
-            'year' => $this->year,
+            'year' => $this->request->year(),
         ];
         if ($back) {
             $data['backUrl'] = $this->request->url()->withParams(['realblog_year' => (string) $back])->relative();
