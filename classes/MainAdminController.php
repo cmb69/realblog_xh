@@ -248,7 +248,6 @@ class MainAdminController
             default:
                 throw new RuntimeException("Unsupported action");
         }
-        $hjs = $this->useCalendar();
         $bjs = '<script>REALBLOG.categories = '
             . json_encode($this->finder->findAllCategories()) . ';</script>' . "\n"
             . '<script src="' . $this->request->pluginsFolder()
@@ -262,7 +261,6 @@ class MainAdminController
             'actionUrl' => $this->request->url()->withPage("realblog")->withParams(["admin" => "plugin_main"])->relative(),
             'action' => "do_{$action}",
             'csrfToken' => $this->getCsrfToken(),
-            'calendarIcon' => $this->request->pluginsFolder() . "realblog/images/calendar.png",
             'isAutoPublish' => $this->conf['auto_publish'],
             'isAutoArchive' => $this->conf['auto_archive'],
             'states' => self::STATES,
@@ -270,37 +268,7 @@ class MainAdminController
             'button' => "btn_{$action}",
         ];
         $this->response->setOutput($this->view->render('article-form', $data))
-            ->setTitle($title)->setHjs($hjs)->setBjs($bjs);
-    }
-
-    private function useCalendar(): string
-    {
-        $calendarFolder = $this->request->pluginsFolder() . 'realblog/jscalendar/';
-        $stylesheet = $calendarFolder . 'calendar-system.css';
-        $mainScript = $calendarFolder . 'calendar.js';
-        $languageScript = $calendarFolder . 'lang/calendar-' . $this->request->language() . '.js';
-        if (!file_exists($languageScript)) {
-            $languageScript = $calendarFolder . 'lang/calendar-en.js';
-        }
-        $setupScript = $calendarFolder . 'calendar-setup.js';
-        return <<<EOT
-<script>/* <![CDATA[ */
-var REALBLOG = REALBLOG || {};
-(function () {
-    var input = document.createElement("input");
-    input.setAttribute("type", "date");
-    REALBLOG.hasNativeDatePicker = (input.type == "date");
-    if (!REALBLOG.hasNativeDatePicker) {
-        document.write(
-            '<link rel="stylesheet" type="text/css" href="$stylesheet">' +
-            '<script src="$mainScript"><\/script>' +
-            '<script src="$languageScript"><\/script>' +
-            '<script src="$setupScript"><\/script>'
-        );
-    }
-}());
-/* ]]> */</script>
-EOT;
+            ->setTitle($title)->setBjs($bjs);
     }
 
     /** @return void */

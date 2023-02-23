@@ -84,15 +84,6 @@ class MainAdminControllerTest extends TestCase
         $this->assertEquals("Create new article", $response->title());
     }
 
-    public function testCreateActionOutputsHjs(): void
-    {
-        $request = $this->createStub(Request::class);
-        $request->method("url")->willReturn((new Url)->withPage("realblog"));
-        $request->method("pluginsFolder")->willReturn("./plugins/");
-        $response = ($this->sut)($request, "create");
-        Approvals::verifyHtml($response->hjs());
-    }
-
     public function testCreateActionOutputsBjs(): void
     {
         $this->finder->method('findAllCategories')->willReturn(["cat1", "cat2"]);
@@ -113,16 +104,6 @@ class MainAdminControllerTest extends TestCase
         $response = ($this->sut)($request, "edit");
         Approvals::verifyHtml($response->output());
         $this->assertEquals("Edit article #1", $response->title());
-    }
-
-    public function testEditActionOutputsHjs(): void
-    {
-        $this->finder->method('findById')->willReturn($this->firstArticle());
-        $_GET = ['realblog_id' => "1"];
-        $request = $this->createStub(Request::class);
-        $request->method("pluginsFolder")->willReturn("./plugins/");
-        $response = ($this->sut)($request, "edit");
-        Approvals::verifyHtml($response->hjs());
     }
 
     public function testEditActionOutputsBjs(): void
@@ -155,17 +136,6 @@ class MainAdminControllerTest extends TestCase
         $response = ($this->sut)($request, "delete");
         Approvals::verifyHtml($response->output());
         $this->assertEquals("Delete article #1", $response->title());
-    }
-
-    public function testDeleteActionOutputsHjs(): void
-    {
-        $this->finder->method('findById')->willReturn($this->firstArticle());
-        $_GET = ['realblog_id' => "1"];
-        $request = $this->createStub(Request::class);
-        $request->method("url")->willReturn((new Url)->withPage("realblog"));
-        $request->method("pluginsFolder")->willReturn("./plugins/");
-        $response = ($this->sut)($request, "delete");
-        Approvals::verifyHtml($response->hjs());
     }
 
     public function testDeletectionOutputsBjs(): void

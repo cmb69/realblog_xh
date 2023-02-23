@@ -13,7 +13,6 @@ use Realblog\Value\FullArticle;
  * @var string $actionUrl
  * @var string $action
  * @var string $csrfToken
- * @var string $calendarIcon
  * @var bool $isAutoPublish
  * @var bool $isAutoArchive
  * @var list<string> $states
@@ -42,12 +41,10 @@ use Realblog\Value\FullArticle;
           <input type="hidden" name="realblog_date_old" value="<?=$this->esc($date)?>">
 <?endif?>
           <input type="date" name="realblog_date" id="realblog_date1" required="required" value="<?=$this->esc($date)?>">
-          <img src="<?=$this->esc($calendarIcon)?>" id="realblog_trig_date1" class="realblog_date_selector" title="<?=$this->text('tooltip_datepicker')?>" alt="">
         </td>
         <td>
 <?if ($isAutoPublish):?>
           <input type="date" name="realblog_startdate" id="realblog_date2" required="required" value="<?=$this->esc($publishing_date)?>">
-          <img src="<?=$this->esc($calendarIcon)?>" id="realblog_trig_date2" class="realblog_date_selector" title="<?=$this->text('tooltip_datepicker')?>" alt="">
 <?else:?>
           <span><?=$this->text('startdate_hint')?></span>
           <input type="hidden" name="realblog_startdate" value="<?=$this->esc($publishing_date)?>">
@@ -56,7 +53,6 @@ use Realblog\Value\FullArticle;
         <td>
 <?if ($isAutoArchive):?>
           <input type="date" name="realblog_enddate" id="realblog_date3" required="required" value="<?=$this->esc($archiving_date)?>">
-          <img src="<?=$this->esc($calendarIcon)?>" id="realblog_trig_date3" class="realblog_date_selector" title="<?=$this->text('tooltip_datepicker')?>" alt="">
 <?else:?>
           <span><?=$this->text('enddate_hint')?></span>
           <input type="hidden" name="realblog_enddate" value="<?=$this->esc($archiving_date)?>">
