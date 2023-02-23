@@ -204,7 +204,7 @@ class BlogController
     private function renderArticle(int $id)
     {
         $article = $this->finder->findById($id);
-        if (isset($article) && $this->request->admin() && $article->status > 0) {
+        if (isset($article) && !$this->request->admin() && $article->status > 0) {
             $this->db->recordPageView($id);
         }
         if (isset($article) && ($this->request->admin() || $article->status > 0)) {
