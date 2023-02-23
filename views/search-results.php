@@ -13,10 +13,12 @@ use Realblog\Infra\View;
 <!-- realblog search results -->
 <div class="realblog_searchresult">
   <p class="realblog_searchresult_head">
-    <?=$this->text('search_result_head')?>
+    <span><?=$this->text('search_searched_for')?></span>
+    <span class="realblog_searchterm"><?=$this->esc($words)?></span>
   </p>
   <p class="realblog_searchresult_body">
-    <?=$this->plural('search_result', $count, $words)?>
+    <span><?=$this->text('search_result')?></span>
+    <span class="realblog_searchcount"><?=$this->esc($count)?></span>
   </p>
   <p class="realblog_searchresult_foot">
     <a class="realblog_button" href="<?=$this->esc($url)?>"><?=$this->text($key)?></a>

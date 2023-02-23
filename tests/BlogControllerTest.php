@@ -85,6 +85,16 @@ class BlogControllerTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
+    public function testRendersEmptySearchResults(): void
+    {
+        $this->finder->method("countArticlesWithStatus")->willReturn(0);
+        $this->finder->method("findArticles")->willReturn([]);
+        $request = $this->createStub(Request::class);
+        $request->method("stringFromGet")->willReturn("search");
+        $response = ($this->sut)($request, "blog", true, "all");
+        Approvals::verifyHtml($response->output());
+    }
+
     private function articles(): array
     {
         $articles = [];
