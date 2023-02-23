@@ -55,6 +55,12 @@ class MainAdminController
     /** @var Editor */
     private $editor;
 
+    /** @var Request */
+    private $request;
+
+    /** @var Response */
+    private $response;
+
     /** @var int */
     private $page;
 
@@ -77,36 +83,50 @@ class MainAdminController
 
     public function __invoke(Request $request, string $action): Response
     {
-        $this->page = $this->getPage($request);
+        $this->request = $request;
+        $this->response = new Response;
+        $this->page = $this->getPage();
         switch ($action) {
             default:
-                return $this->defaultAction($request);
+                $this->defaultAction();
+                break;
             case "create":
-                return $this->createAction($request);
+                $this->createAction();
+                break;
             case "edit":
-                return $this->editAction($request);
+                $this->editAction();
+                break;
             case "delete":
-                return $this->deleteAction($request);
+                $this->deleteAction();
+                break;
             case "do_create":
-                return $this->doCreateAction($request);
+                $this->doCreateAction();
+                break;
             case "do_edit":
-                return $this->doEditAction($request);
+                $this->doEditAction();
+                break;
             case "do_delete":
-                return $this->doDeleteAction($request);
+                $this->doDeleteAction();
+                break;
             case "delete_selected":
-                return $this->deleteSelectedAction($request);
+                $this->deleteSelectedAction();
+                break;
             case "change_status":
-                return $this->changeStatusAction($request);
+                $this->changeStatusAction();
+                break;
             case "do_delete_selected":
-                return $this->doDeleteSelectedAction($request);
+                $this->doDeleteSelectedAction();
+                break;
             case "do_change_status":
-                return $this->doChangeStatusAction($request);
+                $this->doChangeStatusAction();
+                break;
         }
+        return $this->response;
     }
 
-    private function getPage(Request $request): int
+    private function getPage(): int
     {
-        if ($request->admin() && $request->edit()) {
+        if ($this->request->admin() && $this->request->edit()) {
             if (isset($_GET['realblog_page'])) {
                 $page = max((int) ($_GET['realblog_page'] ?? 1), 1);
                 $_COOKIE['realblog_page'] = $page;
@@ -120,13 +140,13 @@ class MainAdminController
         return $page;
     }
 
-    private function defaultAction(Request $request): Response
+    /** @return void */
+    private function defaultAction()
     {
-        $response = new Response;
         for ($i = 0; $i <= 2; $i++) {
             $varname = "realblog_filter$i";
             if (isset($_GET[$varname]) && !isset($_COOKIE[$varname])) {
-                $response = $response->withCookie($varname, $_GET[$varname] ? "on" : "");
+                $this->response->addCookie($varname, $_GET[$varname] ? "on" : "");
             }
         }
         $statuses = $this->getFilterStatuses();
@@ -136,7 +156,7 @@ class MainAdminController
         $page = max(min($this->page, $pageCount), 1);
         $offset = ($page - 1) * $limit;
         $articles = $this->finder->findArticlesWithStatus($statuses, $limit, $offset);
-        return $response->withOutput($this->renderArticles($request, $articles, $pageCount));
+        $this->response->setOutput($this->renderArticles($articles, $pageCount));
     }
 
     /** @return list<int> */
@@ -152,7 +172,7 @@ class MainAdminController
     }
 
     /** @param list<Article> $articles */
-    private function renderArticles(Request $request, array $articles, int $pageCount): string
+    private function renderArticles(array $articles, int $pageCount): string
     {
         $states = ['readyforpublishing', 'published', 'archived'];
         $filters = [];
@@ -171,20 +191,20 @@ class MainAdminController
                 "title" => $article->title,
                 "feedable" => $article->feedable,
                 "commentable" => $article->commentable,
-                "delete_url" => $request->url()->withPage("realblog")
+                "delete_url" => $this->request->url()->withPage("realblog")
                     ->withParams(["action" => "delete"] + $params)->relative(),
-                "edit_url" => $request->url()->withPage("realblog")
+                "edit_url" => $this->request->url()->withPage("realblog")
                     ->withParams(["action" => "edit"] + $params)->relative(),
             ];
         }
         $data = [
-            'imageFolder' => $request->pluginsFolder() . "realblog/images/",
+            'imageFolder' => $this->request->pluginsFolder() . "realblog/images/",
             'page' => $page,
             'prevPage' => max($page - 1, 1),
             'nextPage' => min($page + 1, $pageCount),
             'lastPage' => $pageCount,
             'articles' => $records,
-            'actionUrl' => $request->url()->withPage("")->relative(),
+            'actionUrl' => $this->request->url()->withPage("")->relative(),
             'states' => $states,
             'filters' => $filters,
         ];
@@ -200,37 +220,43 @@ class MainAdminController
         return (bool) ($_COOKIE[$varname] ?? false);
     }
 
-    private function createAction(Request $request): Response
+    /** @return void */
+    private function createAction()
     {
-        return $this->renderArticle($request, 'create');
+        $this->renderArticle('create');
     }
 
-    private function editAction(Request $request): Response
+    /** @return void */
+    private function editAction()
     {
-        return $this->renderArticle($request, 'edit');
+        $this->renderArticle('edit');
     }
 
-    private function deleteAction(Request $request): Response
+    /** @return void */
+    private function deleteAction()
     {
-        return $this->renderArticle($request, 'delete');
+        $this->renderArticle('delete');
     }
 
-    private function renderArticle(Request $request, string $action): Response
+    /** @return void */
+    private function renderArticle(string $action)
     {
         $this->editor->init(['realblog_headline_field', 'realblog_story_field']);
         if ($action === 'create') {
-            $article = new FullArticle(0, 0, $request->time(), 2147483647, 2147483647, 0, '', '', '', '', false, false);
+            $article = new FullArticle(0, 0, $this->request->time(), 2147483647, 2147483647, 0, '', '', '', '', false, false);
         } else {
             $id = max($_GET['realblog_id'] ?? 1, 1);
             $article = $this->finder->findById($id);
             if (!$article) {
-                return (new Response)->withOutput($this->view->message("fail", "message_not_found"));
+                $this->response->setOutput($this->view->message("fail", "message_not_found"));
+                return;
             }
         }
-        return $this->renderForm($article, $request, $action);
+        $this->renderForm($article, $action);
     }
 
-    private function renderForm(FullArticle $article, Request $request, string $action): Response
+    /** @return void */
+    private function renderForm(FullArticle $article, string $action)
     {
         switch ($action) {
             case 'create':
@@ -245,10 +271,10 @@ class MainAdminController
             default:
                 throw new RuntimeException("Unsupported action");
         }
-        $hjs = $this->useCalendar($request);
+        $hjs = $this->useCalendar();
         $bjs = '<script>REALBLOG.categories = '
             . json_encode($this->finder->findAllCategories()) . ';</script>' . "\n"
-            . '<script src="' . $request->pluginsFolder()
+            . '<script src="' . $this->request->pluginsFolder()
             . 'realblog/realblog.js"></script>';
         $data = [
             'article' => $article,
@@ -256,26 +282,26 @@ class MainAdminController
             'date' => (string) date('Y-m-d', $article->date),
             'publishing_date' => (string) date('Y-m-d', $article->publishingDate),
             'archiving_date' => (string) date('Y-m-d', $article->archivingDate),
-            'actionUrl' => $request->url()->withPage("realblog")->withParams(["admin" => "plugin_main"])->relative(),
+            'actionUrl' => $this->request->url()->withPage("realblog")->withParams(["admin" => "plugin_main"])->relative(),
             'action' => "do_{$action}",
             'csrfToken' => $this->getCsrfToken(),
-            'calendarIcon' => $request->pluginsFolder() . "realblog/images/calendar.png",
+            'calendarIcon' => $this->request->pluginsFolder() . "realblog/images/calendar.png",
             'isAutoPublish' => $this->conf['auto_publish'],
             'isAutoArchive' => $this->conf['auto_archive'],
             'states' => array('readyforpublishing', 'published', 'archived'),
             'categories' => trim($article->categories, ','),
             'button' => "btn_{$action}",
         ];
-        return (new Response)->withOutput($this->view->render('article-form', $data))
-            ->withTitle($title)->withHjs($hjs)->withBjs($bjs);
+        $this->response->setOutput($this->view->render('article-form', $data))
+            ->setTitle($title)->setHjs($hjs)->setBjs($bjs);
     }
 
-    private function useCalendar(Request $request): string
+    private function useCalendar(): string
     {
-        $calendarFolder = $request->pluginsFolder() . 'realblog/jscalendar/';
+        $calendarFolder = $this->request->pluginsFolder() . 'realblog/jscalendar/';
         $stylesheet = $calendarFolder . 'calendar-system.css';
         $mainScript = $calendarFolder . 'calendar.js';
-        $languageScript = $calendarFolder . 'lang/calendar-' . $request->language() . '.js';
+        $languageScript = $calendarFolder . 'lang/calendar-' . $this->request->language() . '.js';
         if (!file_exists($languageScript)) {
             $languageScript = $calendarFolder . 'lang/calendar-en.js';
         }
@@ -300,46 +326,52 @@ var REALBLOG = REALBLOG || {};
 EOT;
     }
 
-    private function doCreateAction(Request $request): Response
+    /** @return void */
+    private function doCreateAction()
     {
         $this->csrfProtector->check();
         $article = $this->getArticleFromParameters();
         $res = $this->db->insertArticle($article);
         if ($res === 1) {
-            return $this->redirectToOverviewResponse($request->url());
+            $this->redirectToOverviewResponse($this->request->url());
+            return;
         } else {
             $info = $this->view->message("fail", "story_added_error");
         }
-        $output = $this->renderInfo($request->url(), "tooltip_create", $info);
-        return (new Response)->withOutput($output)->withTitle($this->view->text("tooltip_create"));
+        $output = $this->renderInfo($this->request->url(), "tooltip_create", $info);
+        $this->response->setOutput($output)->setTitle($this->view->text("tooltip_create"));
     }
 
-    private function doEditAction(Request $request): Response
+    /** @return void */
+    private function doEditAction()
     {
         $this->csrfProtector->check();
         $article = $this->getArticleFromParameters();
         $res = $this->db->updateArticle($article);
         if ($res === 1) {
-            return $this->redirectToOverviewResponse($request->url());
+            $this->redirectToOverviewResponse($this->request->url());
+            return;
         } else {
             $info = $this->view->message("fail", "story_modified_error");
         }
-        $output = $this->renderInfo($request->url(), "tooltip_edit", $info);
-        return (new Response)->withOutput($output)->withTitle($this->view->text("tooltip_edit"));
+        $output = $this->renderInfo($this->request->url(), "tooltip_edit", $info);
+        $this->response->setOutput($output)->setTitle($this->view->text("tooltip_edit"));
     }
 
-    private function doDeleteAction(Request $request): Response
+    /** @return void */
+    private function doDeleteAction()
     {
         $this->csrfProtector->check();
         $article = $this->getArticleFromParameters();
         $res = $this->db->deleteArticle($article);
         if ($res === 1) {
-            return $this->redirectToOverviewResponse($request->url());
+            $this->redirectToOverviewResponse($this->request->url());
+            return;
         } else {
             $info = $this->view->message("fail", "story_deleted_error");
         }
-        $output = $this->renderInfo($request->url(), "tooltip_delete", $info);
-        return (new Response)->withOutput($output)->withTitle($this->view->text("tooltip_delete"));
+        $output = $this->renderInfo($this->request->url(), "tooltip_delete", $info);
+        $this->response->setOutput($output)->setTitle($this->view->text("tooltip_delete"));
     }
 
     private function getArticleFromParameters(): FullArticle
@@ -380,24 +412,26 @@ EOT;
         );
     }
 
-    private function deleteSelectedAction(Request $request): Response
+    /** @return void */
+    private function deleteSelectedAction()
     {
-        return (new Response)->withOutput($this->renderConfirmation($request, 'delete'));
+        $this->response->setOutput($this->renderConfirmation('delete'));
     }
 
-    private function changeStatusAction(Request $request): Response
+    /** @return void */
+    private function changeStatusAction()
     {
-        return (new Response)->withOutput($this->renderConfirmation($request, 'change-status'));
+        $this->response->setOutput($this->renderConfirmation('change-status'));
     }
 
-    private function renderConfirmation(Request $request, string $kind): string
+    private function renderConfirmation(string $kind): string
     {
         $data = [
             'ids' => array_filter($_GET["realblog_ids"] ?? [], function ($id) {
                 return (int) $id >= 1;
             }),
-            'action' => $request->url()->withPage("realblog")->withParams(["admin" => "plugin_main"])->relative(),
-            'url' => $request->url()->withPage("realblog")
+            'action' => $this->request->url()->withPage("realblog")->withParams(["admin" => "plugin_main"])->relative(),
+            'url' => $this->request->url()->withPage("realblog")
                 ->withParams(["admin" => "plugin_main", "action" => "plugin_text", "realblog_page" => (string) $this->page])
                 ->relative(),
             'csrfToken' => $this->getCsrfToken(),
@@ -410,7 +444,8 @@ EOT;
         return $this->view->render("confirm-$kind", $data);
     }
 
-    private function doDeleteSelectedAction(Request $request): Response
+    /** @return void */
+    private function doDeleteSelectedAction()
     {
         $this->csrfProtector->check();
         $ids = array_filter($_POST["realblog_ids"] ?? [], function ($id) {
@@ -418,17 +453,19 @@ EOT;
         });
         $res = $this->db->deleteArticlesWithIds($ids);
         if ($res === count($ids)) {
-            return $this->redirectToOverviewResponse($request->url());
+            $this->redirectToOverviewResponse($this->request->url());
+            return;
         } elseif ($res > 0) {
             $info = $this->view->message("warning", "deleteall_warning", $res, count($ids));
         } else {
             $info = $this->view->message("fail", "deleteall_error");
         }
-        $output = $this->renderInfo($request->url(), "tooltip_delete_selected", $info);
-        return (new Response)->withOutput($output)->withTitle($this->view->text("tooltip_delete_selected"));
+        $output = $this->renderInfo($this->request->url(), "tooltip_delete_selected", $info);
+        $this->response->setOutput($output)->setTitle($this->view->text("tooltip_delete_selected"));
     }
 
-    private function doChangeStatusAction(Request $request): Response
+    /** @return void */
+    private function doChangeStatusAction()
     {
         $this->csrfProtector->check();
         $ids = array_filter($_POST["realblog_ids"] ?? [], function ($id) {
@@ -437,14 +474,15 @@ EOT;
         $status = min(max((int) ($_POST["realblog_status"] ?? 0), 0), 2);
         $res = $this->db->updateStatusOfArticlesWithIds($ids, $status);
         if ($res === count($ids)) {
-            return $this->redirectToOverviewResponse($request->url());
+            $this->redirectToOverviewResponse($this->request->url());
+            return;
         } elseif ($res > 0) {
             $info = $this->view->message("warning", "changestatus_warning", $res, count($ids));
         } else {
             $info = $this->view->message("fail", "changestatus_error");
         }
-        $output = $this->renderInfo($request->url(), "tooltip_change_status", $info);
-        return (new Response)->withOutput($output)->withTitle($this->view->text("tooltip_change_status"));
+        $output = $this->renderInfo($this->request->url(), "tooltip_change_status", $info);
+        $this->response->setOutput($output)->setTitle($this->view->text("tooltip_change_status"));
     }
 
     private function getCsrfToken(): ?string
@@ -467,9 +505,10 @@ EOT;
         ]);
     }
 
-    private function redirectToOverviewResponse(Url $url): Response
+    /** @return void */
+    private function redirectToOverviewResponse(Url $url)
     {
         $params = ["admin" => "plugin_main", "action" => "plugin_text", "realblog_page" => (string) $this->page];
-        return (new Response)->redirect($url->withPage("realblog")->withParams($params));
+        $this->response->redirect($url->withPage("realblog")->withParams($params));
     }
 }

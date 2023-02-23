@@ -61,8 +61,9 @@ class LinkController
 
     public function __invoke(Request $request, string $pageUrl, bool $showTeaser = false): Response
     {
+        $response = new Response;
         if (!$this->pages->hasPageWithUrl($pageUrl) || $this->conf['links_visible'] <= 0) {
-            return new Response;
+            return $response;
         }
         $articles = $this->finder->findArticles(1, (int) $this->conf['links_visible']);
         $records = [];
@@ -80,6 +81,6 @@ class LinkController
             'heading' => $this->conf['heading_level'],
             'showTeaser' => $showTeaser,
         ];
-        return (new Response)->withOutput($this->view->render('latest', $data));
+        return $response->setOutput($this->view->render('latest', $data));
     }
 }

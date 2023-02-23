@@ -39,7 +39,7 @@ class FeedLinkController
 
     public function __invoke(Request $request, string $target): Response
     {
-        return (new Response)->withOutput($this->view->render("feed_link", [
+        return (new Response)->setOutput($this->view->render("feed_link", [
             "url" => $request->url()->withPage("")->withParams(["realblog_feed" => "rss"])->relative(),
             "target" => $target,
             "image" => $request->pluginsFolder() . "realblog/images/rss.png",

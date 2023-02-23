@@ -44,6 +44,7 @@ class GeneralController
 
     public function __invoke(Request $request): Response
     {
+        $response = new Response;
         if ($this->conf['auto_publish']) {
             $this->db->autoChangeStatus('publishing_date', 1);
         }
@@ -51,10 +52,10 @@ class GeneralController
             $this->db->autoChangeStatus('archiving_date', 2);
         }
         if ($this->conf['rss_enabled']) {
-            return (new Response)->withHjs(
+            return $response->setHjs(
                 "\n<link rel=\"alternate\" type=\"application/rss+xml\" href=\"./?realblog_feed=rss\">"
             );
         }
-        return new Response;
+        return $response;
     }
 }

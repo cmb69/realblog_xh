@@ -94,60 +94,60 @@ class Response
         return $this->contentType;
     }
 
-    public function withOutput(string $output): self
+    /** @return $this */
+    public function setOutput(string $output): self
     {
-        $that = clone $this;
-        $that->output = $output;
-        return $that;
+        $this->output = $output;
+        return $this;
     }
 
-    public function withTitle(string $title): self
+    /** @return $this */
+    public function setTitle(string $title): self
     {
-        $that = clone $this;
-        $that->title = $title;
-        return $that;
+        $this->title = $title;
+        return $this;
     }
 
-    public function withDescription(string $description): self
+    /** @return $this */
+    public function setDescription(string $description): self
     {
-        $that = clone $this;
-        $that->description = $description;
-        return $that;
+        $this->description = $description;
+        return $this;
     }
 
-    public function withHjs(string $hjs): self
+    /** @return $this */
+    public function setHjs(string $hjs): self
     {
-        $that = clone $this;
-        $that->hjs = $hjs;
-        return $that;
+        $this->hjs = $hjs;
+        return $this;
     }
 
-    public function withBjs(string $bjs): self
+    /** @return $this */
+    public function setBjs(string $bjs): self
     {
-        $that = clone $this;
-        $that->bjs = $bjs;
-        return $that;
+        $this->bjs = $bjs;
+        return $this;
     }
 
-    public function withCookie(string $name, string $value): self
+    /** @return $this */
+    public function addCookie(string $name, string $value): self
     {
-        $that = clone $this;
-        $that->cookies[$name] = $value;
-        return $that;
+        $this->cookies[$name] = $value;
+        return $this;
     }
 
+    /** @return $this */
     public function redirect(Url $location): self
     {
-        $that = clone $this;
-        $that->location = $location;
-        return $that;
+        $this->location = $location;
+        return $this;
     }
 
-    public function withContentType(string $contentType): self
+    /** @return $this */
+    public function setContentType(string $contentType): self
     {
-        $that = clone $this;
-        $that->contentType = $contentType;
-        return $that;
+        $this->contentType = $contentType;
+        return $this;
     }
 
     /** @return string|never */

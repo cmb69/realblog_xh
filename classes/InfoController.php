@@ -58,7 +58,7 @@ class InfoController
                 "state" => "syscheck_$state",
             ];
         }
-        return (new Response)->withOutput($this->view->render("info", [
+        return (new Response)->setOutput($this->view->render("info", [
             "version" => REALBLOG_VERSION,
             "heading" => $this->conf["heading_level"],
             "checks" => $checks,

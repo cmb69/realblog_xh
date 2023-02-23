@@ -43,6 +43,12 @@ class DataExchangeController
     /** @var View */
     private $view;
 
+    /** @var Request */
+    private $request;
+
+    /** @var Response */
+    private $response;
+
     public function __construct(
         DB $db,
         Finder $finder,
@@ -57,55 +63,64 @@ class DataExchangeController
 
     public function __invoke(Request $request, string $action): Response
     {
+        $this->request = $request;
+        $this->response = new Response;
         switch ($action) {
             default:
-                return $this->defaultAction($request);
+                $this->defaultAction();
+                break;
             case "export_to_csv":
-                return $this->exportToCsvAction($request);
+                $this->exportToCsvAction();
+                break;
             case "import_from_csv":
-                return $this->importFromCsvAction($request);
+                $this->importFromCsvAction();
+                break;
         }
+        return $this->response;
     }
 
-    private function defaultAction(Request $request): Response
+    /** @return void */
+    private function defaultAction()
     {
         $data = [
             'csrfToken' => $this->getCsrfToken(),
-            'url' => $request->url()->withPage("realblog")->relative(),
+            'url' => $this->request->url()->withPage("realblog")->relative(),
             'articleCount' => $this->finder->countArticlesWithStatus(array(0, 1, 2)),
             'confirmImport' => $this->view->json("exchange_confirm_import"),
         ];
-        $filename = $request->contentFolder() . "realblog/realblog.csv";
+        $filename = $this->request->contentFolder() . "realblog/realblog.csv";
         if (file_exists($filename)) {
             $data['filename'] = $filename;
             $data['filemtime'] = date('c', (int) filemtime($filename));
         }
-        return (new Response)->withOutput($this->view->render('data-exchange', $data));
+        $this->response->setOutput($this->view->render('data-exchange', $data));
     }
 
-    private function exportToCsvAction(Request $request): Response
+    /** @return void */
+    private function exportToCsvAction()
     {
         $this->csrfProtector->check();
-        $filename = $request->contentFolder() . "realblog/realblog.csv";
+        $filename = $this->request->contentFolder() . "realblog/realblog.csv";
         if ($this->db->exportToCsv($filename)) {
-            return $this->redirectToDefaultResponse($request->url());
+            $this->redirectToDefaultResponse($this->request->url());
         } else {
             $output = "<h1>Realblog &ndash; {$this->view->text("exchange_heading")}</h1>\n"
                 . $this->view->message("fail", "exchange_export_failure", $filename);
-            return (new Response)->withOutput($output);
+            $this->response->setOutput($output);
         }
     }
 
-    private function importFromCsvAction(Request $request): Response
+    /** @return void */
+    private function importFromCsvAction()
     {
         $this->csrfProtector->check();
-        $filename = $request->contentFolder() . "realblog/realblog.csv";
+        $filename = $this->request->contentFolder() . "realblog/realblog.csv";
         if ($this->db->importFromCsv($filename)) {
-            return $this->redirectToDefaultResponse($request->url());
+            $this->redirectToDefaultResponse($this->request->url());
         } else {
             $output = "<h1>Realblog &ndash; {$this->view->text("exchange_heading")}</h1>\n"
                 . $this->view->message("fail", "exchange_import_failure", $filename);
-            return (new Response)->withOutput($output);
+            $this->response->setOutput($output);
         }
     }
 
@@ -118,8 +133,9 @@ class DataExchangeController
         return null;
     }
 
-    private function redirectToDefaultResponse(Url $url): Response
+    /** @return void */
+    private function redirectToDefaultResponse(Url $url)
     {
-        return (new Response)->redirect($url->withPage("realblog")->withParams(["admin" => "data_exchange"]));
+        $this->response->redirect($url->withPage("realblog")->withParams(["admin" => "data_exchange"]));
     }
 }

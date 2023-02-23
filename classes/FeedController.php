@@ -58,8 +58,9 @@ class FeedController
 
     public function __invoke(Request $request): Response
     {
+        $response = new Response;
         if (!$this->conf["rss_enabled"] || ($_GET['realblog_feed'] ?? "") !== "rss") {
-            return new Response;
+            return $response;
         }
         $count = (int) $this->conf['rss_entries'];
         $articles = $this->finder->findFeedableArticles($count);
@@ -80,8 +81,8 @@ class FeedController
             'imageUrl' => $request->url()->withPath($request->imageFolder() . $this->conf['rss_logo'])->absolute(),
             'articles' => $records,
         ];
-        return (new Response)->withContentType("application/rss+xml; charset=UTF-8")
-            ->withOutput(
+        return $response->setContentType("application/rss+xml; charset=UTF-8")
+            ->setOutput(
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                 . $this->view->render('feed', $data)
             );

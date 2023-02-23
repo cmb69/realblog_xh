@@ -52,8 +52,9 @@ class MostPopularController
 
     public function __invoke(Request $request, string $pageUrl): Response
     {
+        $response = new Response;
         if (!$this->pages->hasPageWithUrl($pageUrl) || $this->conf['links_visible'] <= 0) {
-            return new Response;
+            return $response;
         }
         $articles = $this->finder->findMostPopularArticles((int) $this->conf['links_visible']);
         $records = [];
@@ -67,6 +68,6 @@ class MostPopularController
             'articles' => $records,
             'heading' => $this->conf['heading_level'],
         ];
-        return (new Response)->withOutput($this->view->render('most-popular', $data));
+        return $response->setOutput($this->view->render('most-popular', $data));
     }
 }
