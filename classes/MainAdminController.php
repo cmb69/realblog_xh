@@ -73,11 +73,11 @@ class MainAdminController
         $this->csrfProtector = $csrfProtector;
         $this->view = $view;
         $this->editor = $editor;
-        $this->page = $this->getPage();
     }
 
     public function __invoke(Request $request, string $action): Response
     {
+        $this->page = $this->getPage($request);
         switch ($action) {
             default:
                 return $this->defaultAction($request);
@@ -104,11 +104,9 @@ class MainAdminController
         }
     }
 
-    private function getPage(): int
+    private function getPage(Request $request): int
     {
-        global $edit;
-
-        if (defined("XH_ADM") && XH_ADM && $edit) {
+        if ($request->admin() && $request->edit()) {
             if (isset($_GET['realblog_page'])) {
                 $page = max((int) ($_GET['realblog_page'] ?? 1), 1);
                 $_COOKIE['realblog_page'] = $page;

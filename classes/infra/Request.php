@@ -23,6 +23,18 @@ namespace Realblog\Infra;
 
 class Request
 {
+    public function admin(): bool
+    {
+        return defined("XH_ADM") && XH_ADM;
+    }
+
+    public function edit(): bool
+    {
+        global $edit;
+
+        return $edit;
+    }
+
     public function time(): int
     {
         return time();

@@ -95,10 +95,10 @@ abstract class MainController
     protected function renderArticle(Request $request, int $id): Response
     {
         $article = $this->finder->findById($id);
-        if (isset($article) && (defined("XH_ADM") && !XH_ADM) && $article->status > 0) {
+        if (isset($article) && $request->admin() && $article->status > 0) {
             $this->db->recordPageView($id);
         }
-        if (isset($article) && ((defined("XH_ADM") && XH_ADM) || $article->status > 0)) {
+        if (isset($article) && ($request->admin() || $article->status > 0)) {
             return $this->doRenderArticle($request, $article);
         }
         return new Response;
@@ -112,7 +112,7 @@ abstract class MainController
         if ($article->status === 2) {
             $params = array('realblog_year' => (string) $this->year);
         } else {
-            $params = array('realblog_page' => (string) $this->getPage());
+            $params = array('realblog_page' => (string) $this->getPage($request));
         }
 
         $bridge = ucfirst($this->conf['comments_plugin']) . '\\RealblogBridge';
@@ -121,7 +121,7 @@ abstract class MainController
             'title' => $article->title,
             'heading' => $this->conf['heading_level'],
             'heading_above_meta' => $this->conf['heading_above_meta'],
-            'is_admin' => defined("XH_ADM") && XH_ADM,
+            'is_admin' => $request->admin(),
             'wants_comments' => $this->wantsComments(),
             'back_text' => $article->status === 2 ? 'archiv_back' : 'blog_back',
             'back_url' => $request->url()->withParams($params)->relative(),
@@ -172,11 +172,9 @@ abstract class MainController
             && class_exists(ucfirst($this->conf['comments_plugin']) . '\\RealblogBridge');
     }
 
-    protected function getPage(): int
+    protected function getPage(Request $request): int
     {
-        global $edit;
-
-        if (defined("XH_ADM") && XH_ADM && $edit) {
+        if ($request->admin() && $request->edit()) {
             if (isset($_GET['realblog_page'])) {
                 $page = max((int) ($_GET['realblog_page'] ?? 1), 1);
                 $_COOKIE['realblog_page'] = $page;

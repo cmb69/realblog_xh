@@ -49,7 +49,7 @@ class BlogController extends MainController
         $order = ($this->conf['entries_order'] == 'desc')
             ? -1 : 1;
         $limit = max(1, (int) $this->conf['entries_per_page']);
-        $page = $this->getPage();
+        $page = $this->getPage($request);
         $articleCount = $this->finder->countArticlesWithStatus(array(1), $category, $this->searchTerm);
         $pageCount = (int) ceil($articleCount / $limit);
         $page = min(max($page, 1), $pageCount);
@@ -64,24 +64,24 @@ class BlogController extends MainController
         if ($this->searchTerm) {
             $html .= $this->renderSearchResults($request->url(), 'blog', $articleCount);
         }
-        $html .= $this->renderArticles($request->url(), $articles, $articleCount, $page, $pageCount);
+        $html .= $this->renderArticles($request, $articles, $articleCount, $page, $pageCount);
         return $html;
     }
 
     /** @param list<Article> $articles */
-    private function renderArticles(Url $url, array $articles, int $articleCount, int $page, int $pageCount): string
+    private function renderArticles(Request $request, array $articles, int $articleCount, int $page, int $pageCount): string
     {
         $search = $this->searchTerm;
         $bridge = ucfirst($this->conf["comments_plugin"]) . "\\RealblogBridge";
-        $params = ["realblog_page" => (string) $this->getPage(), "realblog_search" => $search];
+        $params = ["realblog_page" => (string) $this->getPage($request), "realblog_search" => $search];
         $records = [];
         foreach ($articles as $article) {
             $isCommentable = $this->conf["comments_plugin"] && class_exists($bridge) && $article->commentable;
             $records[] = [
                 "title" => $article->title,
-                "url" => $url->withParams(["realblog_id" => (string) $article->id] + $params)->relative(),
+                "url" => $request->url()->withParams(["realblog_id" => (string) $article->id] + $params)->relative(),
                 "categories" => implode(", ", explode(",", trim($article->categories, ","))),
-                "link_header" => $article->hasBody || (defined("XH_ADM") && XH_ADM),
+                "link_header" => $article->hasBody || $request->admin(),
                 "date" => $this->view->date($article->date),
                 "teaser" => $this->pages->evaluateScripting($article->teaser),
                 "read_more" => $this->conf["show_read_more_link"]  && $article->hasBody,
@@ -94,7 +94,7 @@ class BlogController extends MainController
             $page,
             $pageCount,
             (int) $this->conf['pagination_radius'],
-            $url->withParams(["realblog_search" => $search]),
+            $request->url()->withParams(["realblog_search" => $search]),
             $this->view
         );
         return $this->view->render("articles", [
