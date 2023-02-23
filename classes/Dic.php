@@ -32,6 +32,11 @@ use Realblog\Infra\View;
 
 class Dic
 {
+    public static function makeGeneralController(): GeneralController
+    {
+        return new GeneralController(self::makeConf(), self::makeDb());
+    }
+
     public static function makeBlogController(): BlogController
     {
         return new BlogController(
@@ -124,7 +129,7 @@ class Dic
         );
     }
 
-    public static function makeDb(): DB
+    private static function makeDb(): DB
     {
         global $pth;
         static $instance = null;

@@ -59,7 +59,7 @@ class InfoController
             ];
         }
         return (new Response)->withOutput($this->view->render("info", [
-            "version" => Plugin::VERSION,
+            "version" => REALBLOG_VERSION,
             "heading" => $this->conf["heading_level"],
             "checks" => $checks,
         ]));

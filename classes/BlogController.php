@@ -49,7 +49,7 @@ class BlogController extends MainController
         $order = ($this->conf['entries_order'] == 'desc')
             ? -1 : 1;
         $limit = max(1, (int) $this->conf['entries_per_page']);
-        $page = Plugin::getPage();
+        $page = $this->getPage();
         $articleCount = $this->finder->countArticlesWithStatus(array(1), $category, $this->searchTerm);
         $pageCount = (int) ceil($articleCount / $limit);
         $page = min(max($page, 1), $pageCount);
@@ -73,7 +73,7 @@ class BlogController extends MainController
     {
         $search = $this->searchTerm;
         $bridge = ucfirst($this->conf["comments_plugin"]) . "\\RealblogBridge";
-        $params = ["realblog_page" => (string) Plugin::getPage(), "realblog_search" => $search];
+        $params = ["realblog_page" => (string) $this->getPage(), "realblog_search" => $search];
         $records = [];
         foreach ($articles as $article) {
             $isCommentable = $this->conf["comments_plugin"] && class_exists($bridge) && $article->commentable;

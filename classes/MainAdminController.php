@@ -73,7 +73,7 @@ class MainAdminController
         $this->csrfProtector = $csrfProtector;
         $this->view = $view;
         $this->editor = $editor;
-        $this->page = Plugin::getPage();
+        $this->page = $this->getPage();
     }
 
     public function __invoke(Request $request, string $action): Response
@@ -102,6 +102,24 @@ class MainAdminController
             case "do_change_status":
                 return $this->doChangeStatusAction($request);
         }
+    }
+
+    private function getPage(): int
+    {
+        global $edit;
+
+        if (defined("XH_ADM") && XH_ADM && $edit) {
+            if (isset($_GET['realblog_page'])) {
+                $page = max((int) ($_GET['realblog_page'] ?? 1), 1);
+                $_COOKIE['realblog_page'] = $page;
+                setcookie('realblog_page', (string) $page, 0, CMSIMPLE_ROOT);
+            } else {
+                $page = max((int) ($_COOKIE['realblog_page'] ?? 1), 1);
+            }
+        } else {
+            $page = max((int) ($_GET['realblog_page'] ?? 1), 1);
+        }
+        return $page;
     }
 
     private function defaultAction(Request $request): Response

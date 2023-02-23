@@ -52,15 +52,17 @@ this program; if not, see <http://www.gnu.org/licenses>.
 
 use Realblog\Dic;
 use Realblog\Infra\Request;
-use Realblog\Plugin;
 
 /**
  * @var array<string,array<string,string>> $pth
  */
 
+const REALBLOG_VERSION = "3.0beta9";
+
 require_once $pth['folder']['plugin'] . 'compat.php';
 
-Plugin::init();
+Dic::makeGeneralController()(new Request)->fire();
+Dic::makeFeedController()(new Request)->fire();
 
 function realblog_blog(bool $showSearch = false, string $category = "all"): string
 {

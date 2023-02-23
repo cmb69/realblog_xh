@@ -1,6 +1,7 @@
 <?php
 
 const CMSIMPLE_URL = "http://example.com/";
+const REALBLOG_VERSION = "3.0beta9";
 
 require_once "./vendor/autoload.php";
 

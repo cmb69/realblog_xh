@@ -35,6 +35,7 @@ class FeedControllerTest extends TestCase
     {
         global $su;
 
+        $_GET = ['realblog_feed' => "rss"];
         $su = "";
         $conf = XH_includeVar("./config/config.php", "plugin_cf")["realblog"];
         $text = XH_includeVar("./languages/en.php", "plugin_tx")["realblog"];
@@ -55,6 +56,7 @@ class FeedControllerTest extends TestCase
     {
         global $su;
 
+        $_GET = ['realblog_feed' => "rss"];
         $su = "";
         $conf = XH_includeVar("./config/config.php", "plugin_cf")["realblog"];
         $conf["rss_logo"] = "rss.png";

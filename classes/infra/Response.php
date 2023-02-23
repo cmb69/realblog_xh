@@ -44,6 +44,9 @@ class Response
     /** @var Url|null */
     private $location = null;
 
+    /** @var string|null */
+    private $contentType = null;
+
     public function output(): string
     {
         return $this->output;
@@ -83,6 +86,12 @@ class Response
     {
         assert($this->location !== null);
         return $this->location->absolute();
+    }
+
+    public function contentType(): string
+    {
+        assert($this->contentType !== null);
+        return $this->contentType;
     }
 
     public function withOutput(string $output): self
@@ -134,6 +143,13 @@ class Response
         return $that;
     }
 
+    public function withContentType(string $contentType): self
+    {
+        $that = clone $this;
+        $that->contentType = $contentType;
+        return $that;
+    }
+
     /** @return string|never */
     public function fire()
     {
@@ -141,6 +157,11 @@ class Response
 
         if ($this->location !== null) {
             header("Location: " . $this->location->absolute());
+            exit;
+        }
+        if ($this->contentType !== null) {
+            header("Content-Type: " . $this->contentType);
+            echo $this->output;
             exit;
         }
         if ($this->title !== null) {

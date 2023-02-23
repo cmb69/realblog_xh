@@ -81,9 +81,4 @@ class DicTest extends TestCase
     {
         $this->assertInstanceOf(DataExchangeController::class, Dic::makeDataExchangeController());
     }
-
-    public function testMakesDb(): void
-    {
-        $this->assertInstanceOf(DB::class, Dic::makeDb());
-    }
 }

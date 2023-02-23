@@ -112,7 +112,7 @@ abstract class MainController
         if ($article->status === 2) {
             $params = array('realblog_year' => (string) $this->year);
         } else {
-            $params = array('realblog_page' => (string) Plugin::getPage());
+            $params = array('realblog_page' => (string) $this->getPage());
         }
 
         $bridge = ucfirst($this->conf['comments_plugin']) . '\\RealblogBridge';
@@ -170,5 +170,23 @@ abstract class MainController
     {
         return $this->conf['comments_plugin']
             && class_exists(ucfirst($this->conf['comments_plugin']) . '\\RealblogBridge');
+    }
+
+    protected function getPage(): int
+    {
+        global $edit;
+
+        if (defined("XH_ADM") && XH_ADM && $edit) {
+            if (isset($_GET['realblog_page'])) {
+                $page = max((int) ($_GET['realblog_page'] ?? 1), 1);
+                $_COOKIE['realblog_page'] = $page;
+                setcookie('realblog_page', (string) $page, 0, CMSIMPLE_ROOT);
+            } else {
+                $page = max((int) ($_COOKIE['realblog_page'] ?? 1), 1);
+            }
+        } else {
+            $page = max((int) ($_GET['realblog_page'] ?? 1), 1);
+        }
+        return $page;
     }
 }
