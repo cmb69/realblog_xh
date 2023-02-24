@@ -29,6 +29,7 @@ use Realblog\Infra\Request;
 use Realblog\Infra\Response;
 use Realblog\Infra\Url;
 use Realblog\Infra\View;
+use Realblog\Value\Article;
 
 class DataExchangeController
 {
@@ -93,7 +94,9 @@ class DataExchangeController
         $this->response->setOutput($this->view->render("data_exchange", [
             "csrf_token" => $this->csrfProtector->token(),
             "url" => $this->request->url()->withPage("realblog")->relative(),
-            "article_count" => $this->finder->countArticlesWithStatus(array(0, 1, 2)),
+            "article_count" => $this->finder->countArticlesWithStatus([
+                Article::UNPUBLISHED, Article::PUBLISHED, Article::ARCHIVED
+            ]),
             "confirm_import" => $this->view->json("exchange_confirm_import"),
             "filename" => $readable ? $filename : null,
             "filemtime" => $readable ? date("c", $this->fileSystem->fileMTime($filename)) : null,
