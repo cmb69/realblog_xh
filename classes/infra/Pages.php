@@ -35,6 +35,11 @@ class Pages
 
     public function evaluateScripting(string $contents): string
     {
+        global $tx;
+
+        if (!isset($tx['error']['plugincall'])) {
+            $tx['error']['plugincall'] = "Function %s() is not defined!";
+        }
         return evaluate_scripting($contents);
     }
 

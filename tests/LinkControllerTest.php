@@ -23,26 +23,57 @@ namespace Realblog;
 
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
+use Realblog\Infra\FakePages;
+use Realblog\Infra\FakeRequest;
 use Realblog\Infra\Finder;
-use Realblog\Infra\Pages;
 use Realblog\Infra\View;
-use Realblog\Infra\Request;
+use Realblog\Value\Article;
 
 class LinkControllerTest extends TestCase
 {
-    public function testDefaultActionRendersLatest(): void
+    public function testRendersLatestArticles(): void
     {
-        $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
-        $conf = $plugin_cf['realblog'];
-        $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
-        $text = $plugin_tx['realblog'];
-        $pages = $this->createStub(Pages::class);
-        $pages->method("hasPageWithUrl")->willReturn(true);
-        $finder = $this->createStub(Finder::class);
-        $finder->method("findArticles")->willReturn([]);
-        $view = new View("./views/", $text);
-        $sut = new LinkController($conf, $pages, $finder, $view);
-        $response = $sut(new Request, "foo", true);
+        $sut = new LinkController($this->conf(), new FakePages(["u" => ["Blog"]]), $this->finder(), $this->view());
+        $response = $sut(new FakeRequest(), "Blog", true);
         Approvals::verifyHtml($response->output());
+    }
+
+    public function testRendersNothingWhenPageDoesNotExist(): void
+    {
+        $sut = new LinkController($this->conf(), new FakePages(), $this->finder(), $this->view());
+        $response = $sut(new FakeRequest(), "Blog", true);
+        $this->assertEquals("", $response->output());
+    }
+
+    private function finder()
+    {
+        $finder = $this->createStub(Finder::class);
+        $finder->method("findArticles")->willReturn([$this->article()]);
+        return $finder;
+    }
+
+    private function view()
+    {
+        return new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["realblog"]);
+    }
+
+    private function conf()
+    {
+        return XH_includeVar("./config/config.php", "plugin_cf")["realblog"];
+    }
+
+    private function article()
+    {
+        return new Article(
+            1,
+            strtotime("2023-02-23"),
+            1,
+            ",,",
+            "My fine Post",
+            "Read it",
+            true,
+            true,
+            false
+        );
     }
 }

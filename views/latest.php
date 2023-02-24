@@ -6,7 +6,7 @@ use Realblog\Infra\View;
  * @var View $this
  * @var string $heading
  * @var list<array{title:string,date:string,url:string,teaser:html}> $articles
- * @var bool $showTeaser
+ * @var bool $show_teaser
  */
 ?>
 <!-- realblog latest -->
@@ -19,10 +19,8 @@ use Realblog\Infra\View;
     <p class="realblog_tpl_show_title">
       <a href="<?=$this->esc($article['url'])?>"><?=$this->esc($article['title'])?></a>
     </p>
-<?      if ($showTeaser):?>
-    <div class="realblog_tpl_show_story">
-      <?=$this->raw($article['teaser'])?>
-    </div>
+<?      if ($show_teaser):?>
+    <div class="realblog_tpl_show_story"><?=$this->raw($article['teaser'])?></div>
     <p class="realblog_tpl_read_more">
       <a class="realblog_button" href="<?=$this->esc($article['url'])?>"><?=$this->text('read_more')?></a>
     </p>
