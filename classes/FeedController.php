@@ -67,14 +67,14 @@ class FeedController
         if (!$this->conf["rss_enabled"] || $request->stringFromGet("realblog_feed") !== "rss") {
             return $response;
         }
-        $count = (int) $this->conf['rss_entries'];
-        $logo = $request->imageFolder() . $this->conf['rss_logo'];
-        $output = $this->view->render('feed', [
-            'url' => $request->url()->withPage($this->conf['rss_page'])->absolute(),
-            'managingEditor' => $this->conf['rss_editor'],
-            'hasLogo' => (bool) $this->conf['rss_logo'],
-            'imageUrl' => $request->url()->withPath($logo)->absolute(),
-            'articles' => $this->articleRecords($this->finder->findFeedableArticles($count)),
+        $count = (int) $this->conf["rss_entries"];
+        $logo = $request->imageFolder() . $this->conf["rss_logo"];
+        $output = $this->view->render("feed", [
+            "url" => $request->url()->withPage($this->conf["rss_page"])->absolute(),
+            "managing_editor" => $this->conf["rss_editor"],
+            "has_logo" => (bool) $this->conf["rss_logo"],
+            "image_url" => $request->url()->withPath($logo)->absolute(),
+            "articles" => $this->articleRecords($this->finder->findFeedableArticles($count)),
         ]);
         return $response->setContentType("application/rss+xml; charset=UTF-8")
             ->setOutput("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" . $output);
@@ -91,9 +91,9 @@ class FeedController
             $records[] = [
                 "title" => $article->title,
                 "url" => $this->request->url()->withPage($this->conf["rss_page"])
-                    ->withParams(['realblog_id' => (string) $article->id])->absolute(),
+                    ->withParams(["realblog_id" => (string) $article->id])->absolute(),
                 "teaser" => $this->pages->evaluateScripting($article->teaser),
-                "date" => (string) date('r', $article->date),
+                "date" => (string) date("r", $article->date),
             ];
         }
         return $records;
