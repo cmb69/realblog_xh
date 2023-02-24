@@ -26,6 +26,7 @@ namespace Realblog;
 use Realblog\Infra\DB;
 use Realblog\Infra\Request;
 use Realblog\Infra\Response;
+use Realblog\Value\Article;
 
 class GeneralController
 {
@@ -46,10 +47,10 @@ class GeneralController
     {
         $response = new Response;
         if ($this->conf['auto_publish']) {
-            $this->db->autoChangeStatus('publishing_date', 1);
+            $this->db->autoChangeStatus('publishing_date', Article::PUBLISHED);
         }
         if ($this->conf['auto_archive']) {
-            $this->db->autoChangeStatus('archiving_date', 2);
+            $this->db->autoChangeStatus('archiving_date', Article::ARCHIVED);
         }
         if ($this->conf['rss_enabled']) {
             return $response->setHjs(
