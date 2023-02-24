@@ -26,75 +26,149 @@ use Realblog\Infra\DB;
 use Realblog\Infra\Finder;
 use Realblog\Infra\View;
 use ApprovalTests\Approvals;
-use Realblog\Infra\Request;
-use Realblog\Infra\Url;
+use Realblog\Infra\FakeCsrfProtector;
+use Realblog\Infra\FakeFileSystem;
+use Realblog\Infra\FakeRequest;
 use XH\CSRFProtection as CsrfProtector;
 
 class DataExchangeControllerTest extends TestCase
 {
-    public function testSuccessfulExportRedirects(): void
+    public function testRendersOverview()
     {
-        $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
-        $text = $plugin_tx['realblog'];
-        $db = $this->createStub(DB::class);
-        $db->method('exportToCsv')->willReturn(true);
-        $finder = $this->createStub(Finder::class);
-        $csrfProtector = $this->createStub(CsrfProtector::class);
-        $view = new View("./views/", $text);
-        $sut = new DataExchangeController($db, $finder, $csrfProtector, $view);
-        $request = $this->createStub(Request::class);
-        $request->method("url")->willReturn(new Url);
-        $request->method("contentFolder")->willReturn("./content/");
+        $sut = new DataExchangeController(
+            $this->db(true),
+            $this->finder(),
+            new FakeCsrfProtector,
+            new FakeFileSystem(),
+            $this->view()
+        );
+        $request = new FakeRequest(["path" => ["folder" => ["content" => "./content/"]]]);
+        $response = $sut($request, "");
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testRendersOverviewWithCsvFile()
+    {
+        $sut = new DataExchangeController(
+            $this->db(true),
+            $this->finder(),
+            new FakeCsrfProtector,
+            new FakeFileSystem(["isReadable" => true, "fileMTime" => 1677251242]),
+            $this->view()
+        );
+        $request = new FakeRequest(["path" => ["folder" => ["content" => "./content/"]]]);
+        $response = $sut($request, "");
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testExportIsCsrfProtected()
+    {
+        $sut = new DataExchangeController(
+            $this->db(true),
+            $this->finder(),
+            $csrfProtector = new FakeCsrfProtector,
+            new FakeFileSystem(),
+            $this->view()
+        );
+        $request = new FakeRequest(["path" => ["folder" => ["content" => "./content/"]]]);
+        $sut($request, "export_to_csv");
+        $this->assertTrue($csrfProtector->hasChecked());
+    }
+
+    public function testSuccessfulExportRedirects()
+    {
+        $sut = new DataExchangeController(
+            $this->db(true),
+            $this->finder(),
+            new FakeCsrfProtector,
+            new FakeFileSystem(),
+            $this->view()
+        );
+        $request = new FakeRequest(["path" => ["folder" => ["content" => "./content/"]]]);
         $response = $sut($request, "export_to_csv");
         $this->assertEquals("http://example.com/?realblog&admin=data_exchange", $response->location());
     }
 
-    public function testExportReportsFailure(): void
+    public function testExportReportsFailure()
     {
-        $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
-        $text = $plugin_tx['realblog'];
-        $db = $this->createStub(DB::class);
-        $db->method('exportToCsv')->willReturn(false);
-        $finder = $this->createStub(Finder::class);
-        $csrfProtector = $this->createStub(CsrfProtector::class);
-        $view = new View("./views/", $text);
-        $sut = new DataExchangeController($db, $finder, $csrfProtector, $view);
-        $request = $this->createStub(Request::class);
-        $request->method("contentFolder")->willReturn("./content/");
+        $sut = new DataExchangeController(
+            $this->db(false),
+            $this->finder(),
+            new FakeCsrfProtector,
+            new FakeFileSystem(),
+            $this->view()
+        );
+        $request = new FakeRequest(["path" => ["folder" => ["content" => "./content/"]]]);
         $response = $sut($request, "export_to_csv");
         Approvals::verifyHtml($response->output());
     }
 
-    public function testSuccessfulImportRedirects(): void
+    public function testImportIsCsrfProtected()
     {
-        $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
-        $text = $plugin_tx['realblog'];
-        $db = $this->createStub(DB::class);
-        $db->method('importFromCsv')->willReturn(true);
-        $finder = $this->createStub(Finder::class);
-        $csrfProtector = $this->createStub(CsrfProtector::class);
-        $view = new View("./views/", $text);
-        $sut = new DataExchangeController($db, $finder, $csrfProtector, $view);
-        $request = $this->createStub(Request::class);
-        $request->method("url")->willReturn(new Url);
-        $request->method("contentFolder")->willReturn("./content/");
+        $sut = new DataExchangeController(
+            $this->db(true),
+            $this->finder(),
+            $csrfProtector = new FakeCsrfProtector,
+            new FakeFileSystem(),
+            $this->view()
+        );
+        $request = new FakeRequest(["path" => ["folder" => ["content" => "./content/"]]]);
+        $sut($request, "import_from_csv");
+        $this->assertTrue($csrfProtector->hasChecked());
+    }
+
+    public function testSuccessfulImportRedirects()
+    {
+        $sut = new DataExchangeController(
+            $this->db(true),
+            $this->finder(),
+            new FakeCsrfProtector,
+            new FakeFileSystem(),
+            $this->view()
+        );
+        $request = new FakeRequest(["path" => ["folder" => ["content" => "./content/"]]]);
         $response = $sut($request, "import_from_csv");
         $this->assertEquals("http://example.com/?realblog&admin=data_exchange", $response->location());
     }
 
-    public function testImportReportsFailure(): void
+    public function testImportReportsFailure()
+    {
+        $sut = new DataExchangeController(
+            $this->db(false),
+            $this->finder(),
+            new FakeCsrfProtector,
+            new FakeFileSystem(),
+            $this->view()
+        );
+        $request = new FakeRequest(["path" => ["folder" => ["content" => "./content/"]]]);
+        $response = $sut($request, "import_from_csv");
+        Approvals::verifyHtml($response->output());
+    }
+
+    private function db($success)
+    {
+        $db = $this->createStub(DB::class);
+        $db->method('exportToCsv')->willReturn($success);
+        $db->method('importFromCsv')->willReturn($success);
+        return $db;
+    }
+
+    private function finder()
+    {
+        $finder = $this->createStub(Finder::class);
+        $finder->method("countArticlesWithStatus")->willReturn(3);
+        return $finder;
+    }
+
+    private function csrfProtector()
+    {
+        return $this->createStub(CsrfProtector::class);
+    }
+
+    private function view()
     {
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $text = $plugin_tx['realblog'];
-        $db = $this->createStub(DB::class);
-        $db->method('importFromCsv')->willReturn(false);
-        $finder = $this->createStub(Finder::class);
-        $csrfProtector = $this->createStub(CsrfProtector::class);
-        $view = new View("./views/", $text);
-        $sut = new DataExchangeController($db, $finder, $csrfProtector, $view);
-        $request = $this->createStub(Request::class);
-        $request->method("contentFolder")->willReturn("./content/");
-        $response = $sut($request, "import_from_csv");
-        Approvals::verifyHtml($response->output());
+        return new View("./views/", $text);
     }
 }

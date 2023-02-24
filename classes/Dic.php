@@ -23,8 +23,10 @@
 
 namespace Realblog;
 
+use Realblog\Infra\CsrfProtector;
 use Realblog\Infra\DB;
 use Realblog\Infra\Editor;
+use Realblog\Infra\FileSystem;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Pages;
 use Realblog\Infra\SystemChecker;
@@ -108,12 +110,11 @@ class Dic
 
     public static function makeDataExchangeController(): DataExchangeController
     {
-        global $_XH_csrfProtection;
-
         return new DataExchangeController(
             Dic::makeDb(),
             new Finder(Dic::makeDb()),
-            $_XH_csrfProtection,
+            new CsrfProtector,
+            new FileSystem,
             self::makeView()
         );
     }

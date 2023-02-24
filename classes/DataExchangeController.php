@@ -21,13 +21,14 @@
 
 namespace Realblog;
 
+use Realblog\Infra\CsrfProtector;
 use Realblog\Infra\DB;
+use Realblog\Infra\FileSystem;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Request;
 use Realblog\Infra\Response;
 use Realblog\Infra\Url;
 use Realblog\Infra\View;
-use XH\CSRFProtection as CsrfProtector;
 
 class DataExchangeController
 {
@@ -43,6 +44,9 @@ class DataExchangeController
     /** @var View */
     private $view;
 
+    /** @var FileSystem */
+    private $fileSystem;
+
     /** @var Request */
     private $request;
 
@@ -53,11 +57,13 @@ class DataExchangeController
         DB $db,
         Finder $finder,
         CsrfProtector $csrfProtector,
+        FileSystem $fileSystem,
         View $view
     ) {
         $this->db = $db;
         $this->finder = $finder;
         $this->csrfProtector = $csrfProtector;
+        $this->fileSystem = $fileSystem;
         $this->view = $view;
     }
 
@@ -67,70 +73,59 @@ class DataExchangeController
         $this->response = new Response;
         switch ($action) {
             default:
-                $this->defaultAction();
+                $this->overview();
                 break;
             case "export_to_csv":
-                $this->exportToCsvAction();
+                $this->exportToCsv();
                 break;
             case "import_from_csv":
-                $this->importFromCsvAction();
+                $this->importFromCsv();
                 break;
         }
         return $this->response;
     }
 
     /** @return void */
-    private function defaultAction()
+    private function overview()
     {
-        $data = [
-            'csrfToken' => $this->getCsrfToken(),
-            'url' => $this->request->url()->withPage("realblog")->relative(),
-            'articleCount' => $this->finder->countArticlesWithStatus(array(0, 1, 2)),
-            'confirmImport' => $this->view->json("exchange_confirm_import"),
-        ];
         $filename = $this->request->contentFolder() . "realblog/realblog.csv";
-        if (file_exists($filename)) {
-            $data['filename'] = $filename;
-            $data['filemtime'] = date('c', (int) filemtime($filename));
-        }
-        $this->response->setOutput($this->view->render('data-exchange', $data));
+        $readable = $this->fileSystem->isReadable($filename);
+        $this->response->setOutput($this->view->render("data_exchange", [
+            "csrf_token" => $this->csrfProtector->token(),
+            "url" => $this->request->url()->withPage("realblog")->relative(),
+            "article_count" => $this->finder->countArticlesWithStatus(array(0, 1, 2)),
+            "confirm_import" => $this->view->json("exchange_confirm_import"),
+            "filename" => $readable ? $filename : null,
+            "filemtime" => $readable ? date("c", $this->fileSystem->fileMTime($filename)) : null,
+        ]));
     }
 
     /** @return void */
-    private function exportToCsvAction()
+    private function exportToCsv()
     {
         $this->csrfProtector->check();
         $filename = $this->request->contentFolder() . "realblog/realblog.csv";
         if ($this->db->exportToCsv($filename)) {
             $this->redirectToDefaultResponse($this->request->url());
-        } else {
-            $output = "<h1>Realblog &ndash; {$this->view->text("exchange_heading")}</h1>\n"
-                . $this->view->message("fail", "exchange_export_failure", $filename);
-            $this->response->setOutput($output);
+            return;
         }
+        $output = "\n<h1>Realblog – {$this->view->text("exchange_heading")}</h1>\n"
+            . $this->view->message("fail", "exchange_export_failure", $filename);
+        $this->response->setOutput($output);
     }
 
     /** @return void */
-    private function importFromCsvAction()
+    private function importFromCsv()
     {
         $this->csrfProtector->check();
         $filename = $this->request->contentFolder() . "realblog/realblog.csv";
         if ($this->db->importFromCsv($filename)) {
             $this->redirectToDefaultResponse($this->request->url());
-        } else {
-            $output = "<h1>Realblog &ndash; {$this->view->text("exchange_heading")}</h1>\n"
-                . $this->view->message("fail", "exchange_import_failure", $filename);
-            $this->response->setOutput($output);
+            return;
         }
-    }
-
-    private function getCsrfToken(): ?string
-    {
-        $html = $this->csrfProtector->tokenInput();
-        if (preg_match('/value="([0-9a-f]+)"/', $html, $matches)) {
-            return $matches[1];
-        }
-        return null;
+        $output = "\n<h1>Realblog – {$this->view->text("exchange_heading")}</h1>\n"
+            . $this->view->message("fail", "exchange_import_failure", $filename);
+        $this->response->setOutput($output);
     }
 
     /** @return void */

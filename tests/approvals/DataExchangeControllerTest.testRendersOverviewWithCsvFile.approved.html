@@ -1,0 +1,22 @@
+<!-- realblog data exchange -->
+<div class="realblog_data_exchange">
+  <h1>Realblog – Data Exchange</h1>
+  <p>
+    <span>The database contains 3 articles.</span>
+  </p>
+  <p>
+    <span>CSV file &quot;./content/realblog/realblog.csv&quot; found (2023-02-24T15:07:22+00:00).</span>
+  </p>
+  <form action="/?realblog" method="post">
+    <input type="hidden" name="admin" value="data_exchange">
+    <input type="hidden" name="action" value="export_to_csv">
+    <input type="hidden" name="xh_csrf_token" value="e3c1b42a6098b48a39f9f54ddb3388f7">
+    <button>Export to CSV</button>
+  </form>
+  <form action="/?realblog" method="post" onsubmit="return confirm(&quot;The CSV import will overwrite all articles in the database!&quot;)">
+    <input type="hidden" name="admin" value="data_exchange">
+    <input type="hidden" name="action" value="import_from_csv">
+    <input type="hidden" name="xh_csrf_token" value="e3c1b42a6098b48a39f9f54ddb3388f7">
+    <button>Import from CSV</button>
+  </form>
+</div>
