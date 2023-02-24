@@ -28,7 +28,7 @@ use Realblog\Infra\View;
 
 class FeedLinkControllerTest extends TestCase
 {
-    public function testDefaultActionRendersFeedLink(): void
+    public function testRendersFeedLink(): void
     {
         $sut = new FeedLinkController($this->view());
         $response = $sut($this->request(), "_self");
