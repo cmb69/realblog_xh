@@ -24,19 +24,30 @@ namespace Realblog;
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 use Realblog\Infra\Request;
-use Realblog\Infra\Url;
 use Realblog\Infra\View;
 
 class FeedLinkControllerTest extends TestCase
 {
     public function testDefaultActionRendersFeedLink(): void
     {
-        $text = XH_includeVar("./languages/en.php", 'plugin_tx')['realblog'];
-        $sut = new FeedLinkController(new View("./views/", $text));
-        $request = $this->createStub(Request::class);
-        $request->method("url")->willReturn((new Url)->withPage(""));
-        $request->method("pluginsFolder")->willReturn("./plugins/");
-        $response = $sut($request, "_self");
+        $sut = new FeedLinkController($this->view());
+        $response = $sut($this->request(), "_self");
         Approvals::verifyHtml($response->output());
+    }
+
+    private function request()
+    {
+        $request = $this->getMockBuilder(Request::class)
+            ->onlyMethods(["path", "su"])
+            ->getMock();
+        $request->method("path")->willReturn(["folder" => ["plugins" => "./plugins/"]]);
+        $request->method("su")->willReturn("");
+        return $request;
+    }
+
+    private function view()
+    {
+        $text = XH_includeVar("./languages/en.php", 'plugin_tx')['realblog'];
+        return new View("./views/", $text);
     }
 }
