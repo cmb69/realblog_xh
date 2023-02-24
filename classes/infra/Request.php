@@ -44,30 +44,22 @@ class Request
 
     public function url(): Url
     {
-        global $su;
-
-        return (new Url())->withPage($su);
+        return (new Url())->withPage($this->su());
     }
 
     public function pluginsFolder(): string
     {
-        global $pth;
-
-        return $pth["folder"]["plugins"];
+        return $this->path()["folder"]["plugins"];
     }
 
     public function contentFolder(): string
     {
-        global $pth;
-
-        return $pth["folder"]["content"];
+        return $this->path()["folder"]["content"];
     }
 
     public function imageFolder(): string
     {
-        global $pth;
-
-        return $pth["folder"]["images"];
+        return $this->path()["folder"]["images"];
     }
 
     public function language(): string
@@ -86,30 +78,30 @@ class Request
 
     public function hasGet(string $name): bool
     {
-        return isset($_GET[$name]);
+        return isset($this->get()[$name]);
     }
 
     public function stringFromGet(string $name): string
     {
-        if (!isset($_GET[$name]) || !is_string($_GET[$name])) {
+        if (!isset($this->get()[$name]) || !is_string($this->get()[$name])) {
             return "";
         }
-        return (string) $_GET[$name];
+        return (string) $this->get()[$name];
     }
 
     public function intFromGet(string $name): int
     {
-        if (!isset($_GET[$name]) || !is_string($_GET[$name])) {
+        if (!isset($this->get()[$name]) || !is_string($this->get()[$name])) {
             return 0;
         }
-        return (int) $_GET[$name];
+        return (int) $this->get()[$name];
     }
 
     /** @return positive-int */
     public function realblogPage(): int
     {
-        if (isset($_GET["realblog_page"]) && is_string($_GET["realblog_page"])) {
-            return max((int) $_GET["realblog_page"], 1);
+        if (isset($this->get()["realblog_page"]) && is_string($this->get()["realblog_page"])) {
+            return max((int) $this->get()["realblog_page"], 1);
         }
         if ($this->admin() && $this->edit()) {
             if (isset($_COOKIE["realblog_page"]) && is_string($_COOKIE["realblog_page"])) {
@@ -121,16 +113,16 @@ class Request
 
     public function year(): int
     {
-        return (int) ($_GET["realblog_year"] ?? idate("Y"));
+        return (int) ($this->get()["realblog_year"] ?? idate("Y"));
     }
 
     /** @return list<int> */
     public function realblogIds(): array
     {
-        if (!isset($_GET["realblog_ids"]) || !is_array($_GET["realblog_ids"])) {
+        if (!isset($this->get()["realblog_ids"]) || !is_array($this->get()["realblog_ids"])) {
             return [];
         }
-        return array_filter($_GET["realblog_ids"], function ($id) {
+        return array_filter($this->get()["realblog_ids"], function ($id) {
             return (int) $id >= 1;
         });
     }
@@ -138,12 +130,12 @@ class Request
     /** @return list<bool>|null */
     public function filtersFromGet(): ?array
     {
-        if (!isset($_GET["realblog_filter"])) {
+        if (!isset($this->get()["realblog_filter"])) {
             return null;
         }
         $filters = [];
         for ($i = Article::UNPUBLISHED; $i <= Article::ARCHIVED; $i++) {
-            $filters[] = (bool) ($_GET["realblog_filter"][$i] ?? false);
+            $filters[] = (bool) ($this->get()["realblog_filter"][$i] ?? false);
         }
         return $filters;
     }
@@ -157,5 +149,26 @@ class Request
         $filters = json_decode($_COOKIE["realblog_filter"]);
         assert(is_array($filters));
         return $filters;
+    }
+
+    protected function su(): string
+    {
+        global $su;
+
+        return $su;
+    }
+
+    /** @return array<string,string> */
+    protected function get(): array
+    {
+        return $_GET;
+    }
+
+    /** @return array{file:array<string,string>,folder:array<string,string>} */
+    protected function path(): array
+    {
+        global $pth;
+
+        return $pth;
     }
 }

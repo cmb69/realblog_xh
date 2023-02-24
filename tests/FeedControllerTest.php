@@ -28,49 +28,77 @@ use Realblog\Infra\Pages;
 use Realblog\Infra\Request;
 use Realblog\Infra\Url;
 use Realblog\Infra\View;
+use Realblog\Value\Article;
 
 class FeedControllerTest extends TestCase
 {
-    public function testRendersFeedWithNoArticles(): void
+    public function testRendersFeedWithAnArticle(): void
     {
-        global $su;
-
-        $su = "";
-        $conf = XH_includeVar("./config/config.php", "plugin_cf")["realblog"];
-        $text = XH_includeVar("./languages/en.php", "plugin_tx")["realblog"];
-        $conf["rss_page"] = $text["rss_page"];
-        $finder = $this->createStub(Finder::class);
-        $finder->method("findFeedableArticles")->willReturn([]);
-        $pages = $this->createStub(Pages::class);
-        $view = new View("./views/", $text);
-        $sut = new FeedController($conf, $finder, $pages, $view);
-        $request = $this->createStub(Request::class);
-        $request->method("url")->willReturn(new Url);
-        $request->method("imageFolder")->willReturn("./userfiles/images/");
-        $request->method("stringFromGet")->willReturn("rss");
-        $response = $sut($request);
+        $sut = new FeedController($this->conf(), $this->finder([$this->article()]), $this->pages(), $this->view());
+        $response = $sut($this->request("rss"));
         Approvals::verifyHtml($response->output());
     }
 
-    public function testRendersFeedWithFeedLogo(): void
+    public function testRendersNothingWhenNotRequested(): void
     {
-        global $su;
+        $sut = new FeedController($this->conf(), $this->finder([]), $this->pages(), $this->view());
+        $response = $sut($this->request(""));
+        $this->assertEquals("", $response->output());
+    }
 
-        $su = "";
+    private function finder(array $articles): Finder
+    {
+        $finder = $this->createStub(Finder::class);
+        $finder->method("findFeedableArticles")->willReturn($articles);
+        return $finder;
+    }
+
+    private function pages(): Pages
+    {
+        return $this->createStub(Pages::class);
+    }
+
+    private function view(): View
+    {
+        return new View("./views/", $this->text());
+    }
+
+    private function conf(): array
+    {
         $conf = XH_includeVar("./config/config.php", "plugin_cf")["realblog"];
         $conf["rss_logo"] = "rss.png";
-        $text = XH_includeVar("./languages/en.php", "plugin_tx")["realblog"];
-        $conf["rss_page"] = $text["rss_page"];
-        $finder = $this->createStub(Finder::class);
-        $finder->method("findFeedableArticles")->willReturn([]);
-        $pages = $this->createStub(Pages::class);
-        $view = new View("./views/", $text);
-        $sut = new FeedController($conf, $finder, $pages, $view);
-        $request = $this->createStub(Request::class);
-        $request->method("url")->willReturn(new Url);
-        $request->method("imageFolder")->willReturn("./userfiles/images/");
-        $request->method("stringFromGet")->willReturn("rss");
-        $response = $sut($request);
-        Approvals::verifyHtml($response->output());
+        $conf["rss_page"] = $this->text()["rss_page"];
+        return $conf;
+    }
+
+    private function text(): array
+    {
+        return XH_includeVar("./languages/en.php", "plugin_tx")["realblog"];
+    }
+
+    private function article(): Article
+    {
+        return new Article(
+            1,
+            strtotime("2023-02-23"),
+            1,
+            ",,",
+            "My fine Post",
+            "Read it",
+            true,
+            true,
+            false
+        );
+    }
+
+    private function request(string $feed): Request
+    {
+        $request = $this->getMockBuilder(Request::class)
+            ->onlyMethods(["path", "get", "su"])
+            ->getMock();
+        $request->method("su")->willReturn("");
+        $request->method("path")->willReturn(["folder" => ["images" => "./userfiles/images/"]]);
+        $request->method("get")->willReturn(["realblog_feed" => $feed]);
+        return $request;
     }
 }

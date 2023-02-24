@@ -28,6 +28,7 @@ use Realblog\Infra\Pages;
 use Realblog\Infra\Request;
 use Realblog\Infra\Response;
 use Realblog\Infra\View;
+use Realblog\Value\Article;
 
 class FeedController
 {
@@ -42,6 +43,9 @@ class FeedController
 
     /** @var View */
     private $view;
+
+    /** @var Request */
+    private $request;
 
     /** @param array<string,string> $conf */
     public function __construct(
@@ -58,33 +62,40 @@ class FeedController
 
     public function __invoke(Request $request): Response
     {
+        $this->request = $request;
         $response = new Response;
         if (!$this->conf["rss_enabled"] || $request->stringFromGet("realblog_feed") !== "rss") {
             return $response;
         }
         $count = (int) $this->conf['rss_entries'];
-        $articles = $this->finder->findFeedableArticles($count);
+        $logo = $request->imageFolder() . $this->conf['rss_logo'];
+        $output = $this->view->render('feed', [
+            'url' => $request->url()->withPage($this->conf['rss_page'])->absolute(),
+            'managingEditor' => $this->conf['rss_editor'],
+            'hasLogo' => (bool) $this->conf['rss_logo'],
+            'imageUrl' => $request->url()->withPath($logo)->absolute(),
+            'articles' => $this->articleRecords($this->finder->findFeedableArticles($count)),
+        ]);
+        return $response->setContentType("application/rss+xml; charset=UTF-8")
+            ->setOutput("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" . $output);
+    }
+
+    /**
+     * @param list<Article> $articles
+     * @return list<array{title:string,url:string,teaser:html,date:string}>
+     */
+    private function articleRecords(array $articles): array
+    {
         $records = [];
         foreach ($articles as $article) {
             $records[] = [
                 "title" => $article->title,
-                "url" => $request->url()->withPage($this->conf["rss_page"])
+                "url" => $this->request->url()->withPage($this->conf["rss_page"])
                     ->withParams(['realblog_id' => (string) $article->id])->absolute(),
                 "teaser" => $this->pages->evaluateScripting($article->teaser),
                 "date" => (string) date('r', $article->date),
             ];
         }
-        $data = [
-            'url' => $request->url()->withPage($this->conf['rss_page'])->absolute(),
-            'managingEditor' => $this->conf['rss_editor'],
-            'hasLogo' => (bool) $this->conf['rss_logo'],
-            'imageUrl' => $request->url()->withPath($request->imageFolder() . $this->conf['rss_logo'])->absolute(),
-            'articles' => $records,
-        ];
-        return $response->setContentType("application/rss+xml; charset=UTF-8")
-            ->setOutput(
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                . $this->view->render('feed', $data)
-            );
+        return $records;
     }
 }
