@@ -22,20 +22,24 @@
 namespace Realblog;
 
 use ApprovalTests\Approvals;
-use PHPUnit\Framework\MockObject;
 use PHPUnit\Framework\TestCase;
+use Realblog\Infra\FakePages;
+use Realblog\Infra\FakeRequest;
 use Realblog\Infra\Finder;
-use Realblog\Infra\Pages;
 use Realblog\Infra\View;
-use Realblog\Infra\Request;
 use Realblog\Value\MostPopularArticle;
 
 class MostPopularControllerTest extends TestCase
 {
     public function testRendersEmptyList(): void
     {
-        $sut = new MostPopularController($this->conf(), $this->pages(), $this->finder([]), $this->view());
-        $response = $sut($this->request(), "foo");
+        $sut = new MostPopularController(
+            $this->conf(),
+            new FakePages(["u" => ["foo"]]),
+            $this->finder([]),
+            $this->view()
+        );
+        $response = $sut(new FakeRequest(), "foo");
         Approvals::verifyHtml($response->output());
     }
 
@@ -43,11 +47,11 @@ class MostPopularControllerTest extends TestCase
     {
         $sut = new MostPopularController(
             $this->conf(),
-            $this->pages(),
+            new FakePages(["u" => ["foo"]]),
             $this->finder($this->articles()),
             $this->view()
         );
-        $response = $sut($this->request(), "foo");
+        $response = $sut(new FakeRequest(), "foo");
         Approvals::verifyHtml($response->output());
     }
 
@@ -55,32 +59,12 @@ class MostPopularControllerTest extends TestCase
     {
         $sut = new MostPopularController(
             $this->conf(),
-            $this->pages(),
+            new FakePages(),
             $this->finder($this->articles()),
             $this->view()
         );
-
-        $response = $sut($this->request(), "bar");
+        $response = $sut(new FakeRequest(), "bar");
         Approvals::verifyHtml($response->output());
-    }
-
-    private function request()
-    {
-        $request = $this->getMockBuilder(Request::class)
-            ->onlyMethods(["su"])
-            ->getMock();
-        $request->method("su")->willReturn("blog");
-        return $request;
-    }
-
-    private function pages()
-    {
-        $pages = $this->createStub(Pages::class);
-        $pages->method("hasPageWithUrl")->willReturnMap([
-            ["foo", true],
-            ["bar", false],
-        ]);
-        return $pages;
     }
 
     private function finder($articles)

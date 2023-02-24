@@ -25,20 +25,32 @@ class Pages
 {
     public function hasPageWithUrl(string $url): bool
     {
-        global $u;
-
-        return in_array($url, $u, true);
+        return in_array($url, $this->u(), true);
     }
 
     public function headingOf(int $num): string
     {
-        global $h;
-
-        return $h[$num];
+        return $this->h()[$num];
     }
 
     public function evaluateScripting(string $contents): string
     {
         return evaluate_scripting($contents);
+    }
+
+    /** @return list<string> */
+    protected function h(): array
+    {
+        global $h;
+
+        return $h;
+    }
+
+    /** @return list<string> */
+    protected function u(): array
+    {
+        global $u;
+
+        return $u;
     }
 }

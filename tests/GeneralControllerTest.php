@@ -24,7 +24,7 @@ namespace Realblog;
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 use Realblog\Infra\DB;
-use Realblog\Infra\Request;
+use Realblog\Infra\FakeRequest;
 use Realblog\Value\Article;
 
 class GeneralControllerTest extends TestCase
@@ -34,7 +34,7 @@ class GeneralControllerTest extends TestCase
         $db = $this->db();
         $db->expects($this->once())->method("autoChangeStatus")->with('publishing_date', Article::PUBLISHED);
         $sut = new GeneralController($this->conf(["auto_publish" => "true"]), $db);
-        $sut($this->request());
+        $sut(new FakeRequest());
     }
 
     public function testAutoArchivesWhenConfigured()
@@ -42,19 +42,14 @@ class GeneralControllerTest extends TestCase
         $db = $this->db();
         $db->expects($this->once())->method("autoChangeStatus")->with('archiving_date', Article::ARCHIVED);
         $sut = new GeneralController($this->conf(["auto_archive" => "true"]), $db);
-        $sut($this->request());
+        $sut(new FakeRequest());
     }
 
     public function testRendersFeedLinkWhenConfigured()
     {
         $sut = new GeneralController($this->conf(["rss_enabled" => "true"]), $this->db());
-        $response = $sut($this->request());
+        $response = $sut(new FakeRequest());
         Approvals::verifyHtml($response->hjs());
-    }
-
-    private function request()
-    {
-        return $this->createStub(Request::class);
     }
 
     private function conf($options = [])

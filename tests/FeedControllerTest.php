@@ -23,10 +23,9 @@ namespace Realblog;
 
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
+use Realblog\Infra\FakeRequest;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Pages;
-use Realblog\Infra\Request;
-use Realblog\Infra\Url;
 use Realblog\Infra\View;
 use Realblog\Value\Article;
 
@@ -35,14 +34,19 @@ class FeedControllerTest extends TestCase
     public function testRendersFeedWithAnArticle(): void
     {
         $sut = new FeedController($this->conf(), $this->finder([$this->article()]), $this->pages(), $this->view());
-        $response = $sut($this->request("rss"));
+        $request = new FakeRequest([
+            "get" => ["realblog_feed" => "rss"],
+            "path" => ["folder" => ["images" => "./userfiles/images/"]]
+        ]);
+        $response = $sut($request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testRendersNothingWhenNotRequested(): void
     {
         $sut = new FeedController($this->conf(), $this->finder([]), $this->pages(), $this->view());
-        $response = $sut($this->request(""));
+        $request = new FakeRequest();
+        $response = $sut($request);
         $this->assertEquals("", $response->output());
     }
 
@@ -89,16 +93,5 @@ class FeedControllerTest extends TestCase
             true,
             false
         );
-    }
-
-    private function request(string $feed): Request
-    {
-        $request = $this->getMockBuilder(Request::class)
-            ->onlyMethods(["path", "get", "su"])
-            ->getMock();
-        $request->method("su")->willReturn("");
-        $request->method("path")->willReturn(["folder" => ["images" => "./userfiles/images/"]]);
-        $request->method("get")->willReturn(["realblog_feed" => $feed]);
-        return $request;
     }
 }

@@ -19,26 +19,24 @@
  * along with Realblog_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Realblog;
+namespace Realblog\Infra;
 
-use ApprovalTests\Approvals;
-use PHPUnit\Framework\TestCase;
-use Realblog\Infra\FakeRequest;
-use Realblog\Infra\View;
-
-class FeedLinkControllerTest extends TestCase
+class FakePages extends Pages
 {
-    public function testRendersFeedLink(): void
+    private $options;
+
+    public function __construct($options = [])
     {
-        $sut = new FeedLinkController($this->view());
-        $request = new FakeRequest(["path" => ["folder" => ["plugins" => "./plugins/"]]]);
-        $response = $sut($request, "_self");
-        Approvals::verifyHtml($response->output());
+        $this->options = $options;
     }
 
-    private function view()
+    protected function h(): array
     {
-        $text = XH_includeVar("./languages/en.php", 'plugin_tx')['realblog'];
-        return new View("./views/", $text);
+        return $this->options["h"] ?? [];
+    }
+
+    protected function u(): array
+    {
+        return $this->options["u"] ?? [];
     }
 }
