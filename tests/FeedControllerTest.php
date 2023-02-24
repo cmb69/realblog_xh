@@ -42,6 +42,17 @@ class FeedControllerTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
+    public function testSetsAppropriateContentType()
+    {
+        $sut = new FeedController($this->conf(), $this->finder([$this->article()]), $this->pages(), $this->view());
+        $request = new FakeRequest([
+            "get" => ["realblog_feed" => "rss"],
+            "path" => ["folder" => ["images" => "./userfiles/images/"]]
+        ]);
+        $response = $sut($request);
+        $this->assertEquals("application/rss+xml; charset=UTF-8", $response->contentType());
+    }
+
     public function testRendersNothingWhenNotRequested(): void
     {
         $sut = new FeedController($this->conf(), $this->finder([]), $this->pages(), $this->view());
