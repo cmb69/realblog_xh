@@ -1,17 +1,26 @@
 <!-- realblog search form -->
 <form class="realblog_search_form" method="get" action="/">
-  <input type="hidden" name="selected" value="Archive">
+  <input type="hidden" name="selected" value="">
   <input type="text" name="realblog_search" class="realblog_search_input"
        title="This search function is searching for the complete string. Searching for several single words (independent from the placement in the text) isn't possible." placeholder="Enter search term">
   <button>Search in Blog</button>
 </form>
+<!-- realblog search results -->
+<div class="realblog_searchresult">
+  <p class="realblog_searchresult_head">
+    <span>Searched for:</span>
+    <span class="realblog_searchterm">search</span>
+  </p>
+  <p class="realblog_searchresult_body">
+    <span>Articles found:</span>
+    <span class="realblog_searchcount">0</span>
+  </p>
+  <p class="realblog_searchresult_foot">
+    <a class="realblog_button" href="/">back to archive »</a>
+  </p>
+</div>
 <!-- realblog archive -->
 <div class="realblog_archive_container">
-
-
-  <div class="realblog_table_paging">
-    <span class="realblog_archive_title">yearly archive: 2023</span>
-  </div>
 
 
   <p>no entries available</p>

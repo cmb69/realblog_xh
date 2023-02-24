@@ -21,42 +21,28 @@
 
 namespace Realblog\Infra;
 
-class FakeRequest extends Request
+use Realblog\CommentsBridge;
+
+class RealblogBridge implements CommentsBridge
 {
-    private $options;
-
-    public function __construct($options = [])
+    public static function count($topic)
     {
-        $this->options = $options;
+        return 3;
     }
 
-    public function admin(): bool
+    public static function handle($topic)
     {
-        return $this->options["admin"] ?? false;
+        return <<<HTML
+        <div class="comments">
+            <div class="comment">The first comment</div>
+            <div class="comment">The second comment</div>
+            <div class="comment">The third comment</div>
+        </div>
+        HTML;
     }
 
-    public function edit(): bool
+    public static function getEditUrl($topic)
     {
-        return $this->options["edit"] ?? false;
-    }
-
-    protected function s(): int
-    {
-        return $this->options["s"] ?? -1;
-    }
-
-    protected function su(): string
-    {
-        return $this->options["su"] ?? "";
-    }
-
-    protected function get(): array
-    {
-        return $this->options["get"] ?? [];
-    }
-
-    protected function path(): array
-    {
-        return $this->options["path"] ?? [];
+        return "/?Blog&comments_action=edit";
     }
 }

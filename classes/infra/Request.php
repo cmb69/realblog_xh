@@ -71,27 +71,28 @@ class Request
 
     public function page(): int
     {
-        global $s;
-
-        return $s;
+        return $this->s();
     }
 
     public function hasGet(string $name): bool
     {
-        return isset($this->get()[$name]);
+        $get = $this->get();
+        return isset($get[$name]);
     }
 
     public function stringFromGet(string $name): string
     {
-        if (!isset($this->get()[$name]) || !is_string($this->get()[$name])) {
+        $get = $this->get();
+        if (!isset($get[$name]) || !is_string($get[$name])) {
             return "";
         }
-        return (string) $this->get()[$name];
+        return (string) $get[$name];
     }
 
     public function intFromGet(string $name): int
     {
-        if (!isset($this->get()[$name]) || !is_string($this->get()[$name])) {
+        $get = $this->get();
+        if (!isset($get[$name]) || !is_string($get[$name])) {
             return 0;
         }
         return (int) $this->get()[$name];
@@ -100,7 +101,8 @@ class Request
     /** @return positive-int */
     public function realblogPage(): int
     {
-        if (isset($this->get()["realblog_page"]) && is_string($this->get()["realblog_page"])) {
+        $get = $this->get();
+        if (isset($get["realblog_page"]) && is_string($get["realblog_page"])) {
             return max((int) $this->get()["realblog_page"], 1);
         }
         if ($this->admin() && $this->edit()) {
@@ -119,18 +121,20 @@ class Request
     /** @return list<int> */
     public function realblogIds(): array
     {
-        if (!isset($this->get()["realblog_ids"]) || !is_array($this->get()["realblog_ids"])) {
+        $get = $this->get();
+        if (!isset($get["realblog_ids"]) || !is_array($get["realblog_ids"])) {
             return [];
         }
-        return array_filter($this->get()["realblog_ids"], function ($id) {
+        return array_map("intval", array_filter($get["realblog_ids"], function ($id) {
             return (int) $id >= 1;
-        });
+        }));
     }
 
     /** @return list<bool>|null */
     public function filtersFromGet(): ?array
     {
-        if (!isset($this->get()["realblog_filter"])) {
+        $get = $this->get();
+        if (!isset($get["realblog_filter"])) {
             return null;
         }
         $filters = [];
@@ -151,6 +155,13 @@ class Request
         return $filters;
     }
 
+    protected function s(): int
+    {
+        global $s;
+
+        return $s;
+    }
+
     protected function su(): string
     {
         global $su;
@@ -158,7 +169,7 @@ class Request
         return $su;
     }
 
-    /** @return array<string,string> */
+    /** @return array<string,string|array<string>> */
     protected function get(): array
     {
         return $_GET;
