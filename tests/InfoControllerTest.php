@@ -23,27 +23,28 @@ namespace Realblog;
 
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
-use Realblog\Infra\Request;
-use Realblog\Infra\SystemChecker;
+use Realblog\Infra\FakeRequest;
+use Realblog\Infra\FakeSystemChecker;
 use Realblog\Infra\View;
 
-class InfroControllerTest extends TestCase
+class InfoControllerTest extends TestCase
 {
     public function testShowsPluginInfo(): void
     {
-        global $pth;
-
-        $pth = ["folder" => ["plugins" => "./plugins/"]];
-        $conf = XH_includeVar("./config/config.php", "plugin_cf")["realblog"];
-        $text = XH_includeVar("./languages/en.php", "plugin_tx")["realblog"];
-        $systemChecker = $this->createStub(SystemChecker::class);
-        $systemChecker->method("checkPHPVersion")->willReturn(false);
-        $systemChecker->method("checkExtension")->willReturn(false);
-        $systemChecker->method("checkXHVersion")->willReturn(false);
-        $systemChecker->method("checkWritability")->willReturn(false);
-        $view = new View("./views/", $text);
-        $sut = new InfoController($conf, $systemChecker, $view);
-        $response = $sut(new Request);
+        $sut = new InfoController($this->conf(), new FakeSystemChecker, $this->view());
+        $request = new FakeRequest(["path" => ["folder" => ["plugins" => "./plugins/"]]]);
+        $response = $sut($request);
         Approvals::verifyHtml($response->output());
+    }
+
+    private function conf()
+    {
+        return XH_includeVar("./config/config.php", "plugin_cf")["realblog"];
+    }
+
+    private function view()
+    {
+        $text = XH_includeVar("./languages/en.php", "plugin_tx")["realblog"];
+        return new View("./views/", $text);
     }
 }
