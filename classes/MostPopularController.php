@@ -26,6 +26,7 @@ use Realblog\Infra\Pages;
 use Realblog\Infra\Request;
 use Realblog\Infra\Response;
 use Realblog\Infra\View;
+use Realblog\Value\MostPopularArticle;
 
 class MostPopularController
 {
@@ -41,6 +42,9 @@ class MostPopularController
     /** @var View */
     private $view;
 
+    /** @var Request */
+    private $request;
+
     /** @param array<string,string> $conf */
     public function __construct(array $conf, Pages $pages, Finder $finder, View $view)
     {
@@ -52,22 +56,34 @@ class MostPopularController
 
     public function __invoke(Request $request, string $pageUrl): Response
     {
+        $this->request = $request;
         $response = new Response;
-        if (!$this->pages->hasPageWithUrl($pageUrl) || $this->conf['links_visible'] <= 0) {
+        if (!$this->pages->hasPageWithUrl($pageUrl) || $this->conf["links_visible"] <= 0) {
             return $response;
         }
-        $articles = $this->finder->findMostPopularArticles((int) $this->conf['links_visible']);
+        $articles = $this->finder->findMostPopularArticles((int) $this->conf["links_visible"]);
+        return $response->setOutput($this->view->render("most_popular", [
+            "articles" => $this->articleRecords($articles, $pageUrl),
+            "heading" => $this->conf["heading_level"],
+        ]));
+    }
+
+    /**
+     * @param list<MostPopularArticle> $articles
+     * @return list<array{id:int,title:string,page_views:int,url:string}>
+     */
+    private function articleRecords(array $articles, string $pageUrl): array
+    {
         $records = [];
         foreach ($articles as $article) {
-            $record = get_object_vars($article);
-            $record["url"] = $request->url()->withPage($pageUrl)
-                ->withParams(["realblog_id" => (string) $article->id])->relative();
-            $records[] = $record;
+            $records[] = [
+                "id" => $article->id,
+                "title" => $article->title,
+                "page_views" => $article->pageViews,
+                "url" => $this->request->url()->withPage($pageUrl)
+                    ->withParams(["realblog_id" => (string) $article->id])->relative(),
+            ];
         }
-        $data = [
-            'articles' => $records,
-            'heading' => $this->conf['heading_level'],
-        ];
-        return $response->setOutput($this->view->render('most-popular', $data));
+        return $records;
     }
 }

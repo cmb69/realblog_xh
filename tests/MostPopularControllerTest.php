@@ -32,48 +32,72 @@ use Realblog\Value\MostPopularArticle;
 
 class MostPopularControllerTest extends TestCase
 {
-    /** @var MostPopularController&MockObject */
-    private $sut;
-
-    /** @var Finder&MockObject */
-    private $finder;
-
-    public function setUp(): void
-    {
-        $conf = XH_includeVar("./config/config.php", 'plugin_cf')['realblog'];
-        $text = XH_includeVar("./languages/en.php", 'plugin_tx')['realblog'];
-        $pages = $this->createStub(Pages::class);
-        $pages->method("hasPageWithUrl")->willReturnMap([
-            ["foo", true],
-            ["bar", false],
-        ]);
-        $this->finder = $this->createStub(Finder::class);
-        $view = new View("./views/", $text);
-        $this->sut = new MostPopularController($conf, $pages, $this->finder, $view);
-    }
-
     public function testRendersEmptyList(): void
     {
-        $this->finder->method("findMostPopularArticles")->willReturn([]);
-        $response = ($this->sut)(new Request, "foo");
+        $sut = new MostPopularController($this->conf(), $this->pages(), $this->finder([]), $this->view());
+        $response = $sut($this->request(), "foo");
         Approvals::verifyHtml($response->output());
     }
 
     public function testRendersMostPopularArticles(): void
     {
-        global $su;
-
-        $su = "Blog";
-        $this->finder->method("findMostPopularArticles")->willReturn($this->articles());
-        $response = ($this->sut)(new Request, "foo");
+        $sut = new MostPopularController(
+            $this->conf(),
+            $this->pages(),
+            $this->finder($this->articles()),
+            $this->view()
+        );
+        $response = $sut($this->request(), "foo");
         Approvals::verifyHtml($response->output());
     }
 
     public function testRendersNothingIfPageDoesNotExist(): void
     {
-        $this->finder->method("findMostPopularArticles")->willReturn($this->articles());
-        $response = ($this->sut)(new Request, "bar");
+        $sut = new MostPopularController(
+            $this->conf(),
+            $this->pages(),
+            $this->finder($this->articles()),
+            $this->view()
+        );
+
+        $response = $sut($this->request(), "bar");
         Approvals::verifyHtml($response->output());
+    }
+
+    private function request()
+    {
+        $request = $this->getMockBuilder(Request::class)
+            ->onlyMethods(["su"])
+            ->getMock();
+        $request->method("su")->willReturn("blog");
+        return $request;
+    }
+
+    private function pages()
+    {
+        $pages = $this->createStub(Pages::class);
+        $pages->method("hasPageWithUrl")->willReturnMap([
+            ["foo", true],
+            ["bar", false],
+        ]);
+        return $pages;
+    }
+
+    private function finder($articles)
+    {
+        $finder = $this->createStub(Finder::class);
+        $finder->method("findMostPopularArticles")->willReturn($articles);
+        return $finder;
+    }
+
+    private function view()
+    {
+        return new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["realblog"]);
+    }
+
+    private function conf()
+    {
+        return XH_includeVar("./config/config.php", "plugin_cf")["realblog"];
     }
 
     private function articles(): array

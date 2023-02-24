@@ -5,7 +5,7 @@ use Realblog\Infra\View;
 /**
  * @var View $this
  * @var string $heading
- * @var list<array{id:int,title:string,pageViews:int,url:string}> $articles
+ * @var list<array{id:int,title:string,page_views:int,url:string}> $articles
  */
 ?>
 <!-- realblog most popular -->
@@ -15,7 +15,7 @@ use Realblog\Infra\View;
 <?  foreach ($articles as $article):?>
   <p>
     <a href="<?=$this->esc($article['url'])?>"><?=$this->esc($article['title'])?></a>
-    <span><?=$this->plural('page_views', $article['pageViews'])?></span>
+    <span><?=$this->plural('page_views', $article['page_views'])?></span>
   </p>
 <?  endforeach?>
 <?else:?>
