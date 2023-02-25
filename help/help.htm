@@ -107,7 +107,7 @@
 <p>To add a commenting facility to your blog, you have to install a compatible comments plugin and enter its name in the configuration of Realblog_XH.</p>
 <p>Note for implementers: to be compatible with Realblog_XH you have to write a class named <code>%YOURPLUGIN%\RealblogBridge</code> which implements the interface <code>Realblog\CommentsBridge</code>, which is defined and documented in <code>plugins/realblog/classes/CommentsBridge.php</code>. Make sure this class and its dependencies are loaded when Realblog_XH needs it; autoloading is recommended.</p>
 <h2 id="backward-compatibility">Backward Compatibility</h2>
-<p>Realblog_XH is mostly backward compatible to Realblog 2.8, so you can reuse its data files (<code>realblog.txt</code>) and use its plugin calls. However, the old plugin calls are deprecated, and may be removed in the future.</p>
+<p>Realblog_XH is mostly backward compatible to the original Realblog, so you can reuse its data files (<code>realblog.txt</code>) and use its plugin calls. However, the old plugin calls are deprecated, and may be removed in the future.</p>
 <p>The RSS feed files (<code>realblog_rss_feed.xml</code>) are not used anymore; instead the feeds are built dynamically. You should delete the old files, so that news readers will not grab the old contents.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <p>Report bugs and ask for support either on <a href="https://github.com/cmb69/realblog_xh/issues">Github</a> or in the <a href="https://cmsimpleforum.com/">CMSimple_XH Forum</a>.</p>

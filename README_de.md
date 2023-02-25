@@ -194,7 +194,7 @@ Realblog_XH sie braucht; Autoloading wird empfohlen.
 
 ## Abwärtskompatibilität
 
-Realblog_XH ist weitgehend abwärtskompatibel zu Realblog 2.8, so dass Sie
+Realblog_XH ist weitgehend abwärtskompatibel zum ursprünglichen Realblog, so dass Sie
 dessen Datendateien (`realblog.txt`) und Pluginaufrufe weiter verwenden können.
 Allerdings gelten diese Pluginaufrufe als missbilligt, und können in einer späteren
 Version entfernt werden.

@@ -184,7 +184,7 @@ dependencies are loaded when Realblog_XH needs it; autoloading is recommended.
 
 ## Backward Compatibility
 
-Realblog_XH is mostly backward compatible to Realblog 2.8, so you can reuse
+Realblog_XH is mostly backward compatible to the original Realblog, so you can reuse
 its data files (`realblog.txt`) and use its plugin calls. However, the old plugin
 calls are deprecated, and may be removed in the future.
 
