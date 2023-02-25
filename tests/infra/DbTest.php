@@ -121,7 +121,7 @@ class DbTest extends TestCase
     {
         vfsStream::setup('root');
         $filename = vfsStream::url('root/realblog.csv');
-        $approval = __DIR__ . "/approvals/DBTest.testExportsToCsv.approved.csv";
+        $approval = __DIR__ . "/approvals/DbTest.testExportsToCsv.approved.csv";
         copy($approval, $filename);
         $result = $this->sut->importFromCsv($filename);
         $this->assertTrue($result);
