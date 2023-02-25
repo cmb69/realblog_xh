@@ -22,7 +22,6 @@
 namespace Realblog;
 
 use PHPUnit\Framework\TestCase;
-use Realblog\Infra\DB;
 use XH\CSRFProtection as CsrfProtector;
 
 class DicTest extends TestCase
@@ -35,6 +34,11 @@ class DicTest extends TestCase
         $plugin_cf = ["realblog" => []];
         $plugin_tx = ["realblog" => ["rss_page" => ""]];
         $_XH_csrfProtection = $this->createStub(CsrfProtector::class);
+    }
+
+    public function testMakesGeneralController(): void
+    {
+        $this->assertInstanceOf(GeneralController::class, Dic::makeGeneralController());
     }
 
     public function testMakesBlogController(): void
