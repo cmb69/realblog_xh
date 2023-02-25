@@ -96,13 +96,11 @@ class Dic
 
     public static function makeMainAdminController(): MainAdminController
     {
-        global $_XH_csrfProtection;
-
         return new MainAdminController(
             self::makeConf(),
             Dic::makeDb(),
             new Finder(Dic::makeDb()),
-            $_XH_csrfProtection,
+            new CsrfProtector,
             self::makeView(),
             new Editor()
         );

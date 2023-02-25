@@ -23,21 +23,25 @@ namespace Realblog\Infra;
 
 class SystemChecker
 {
+    /** @codeCoverageIgnore */
     public function checkPHPVersion(string $version): bool
     {
         return version_compare(PHP_VERSION, $version, 'ge');
     }
 
+    /** @codeCoverageIgnore */
     public function checkExtension(string $extension): bool
     {
         return extension_loaded($extension);
     }
 
+    /** @codeCoverageIgnore */
     public function checkXHVersion(string $version): bool
     {
         return version_compare(CMSIMPLE_XH_VERSION, "CMSimple_XH $version", 'ge');
     }
 
+    /** @codeCoverageIgnore */
     public function checkWritability(string $folder): bool
     {
         return is_writable($folder);

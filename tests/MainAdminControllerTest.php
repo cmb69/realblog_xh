@@ -21,177 +21,437 @@
 
 namespace Realblog;
 
+use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\MockObject;
 use Realblog\Infra\DB;
-use Realblog\Infra\Editor;
+use Realblog\Infra\FakeCsrfProtector;
+use Realblog\Infra\FakeEditor;
+use Realblog\Infra\FakeRequest;
 use Realblog\Infra\Finder;
 use Realblog\Infra\View;
+use Realblog\Value\Article;
 use Realblog\Value\FullArticle;
-use ApprovalTests\Approvals;
-use Realblog\Infra\Request;
-use Realblog\Infra\Url;
-use SebastianBergmann\CodeCoverage\Report\Xml\Report;
-use XH\CSRFProtection as CsrfProtector;
 
 class MainAdminControllerTest extends TestCase
 {
-    /** @var MainAdminController */
-    private $sut;
-
-    /** @var Finder&MockObject */
-    private $finder;
-
-    public function setUp(): void
+    public function testSetsPageCookie()
     {
-        $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
-        $conf = $plugin_cf['realblog'];
-        $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
-        $text = $plugin_tx['realblog'];
-        $db = $this->createStub(DB::class);
-        $this->finder = $this->createStub(Finder::class);
-        $csrfProtector = $this->createStub(CsrfProtector::class);
-        $view = new View("./views/", $text);
-        $editor = $this->createStub(Editor::class);
-        $this->sut = new MainAdminController(
-            $conf,
-            $db,
-            $this->finder,
-            $csrfProtector,
-            $view,
-            $editor,
-            1675205155
-        );
+        $sut = $this->sut();
+        $request = new FakeRequest([
+            "admin" => true,
+            "edit" => true,
+            "get" => ["realblog_page" => "3"],
+            "path" => ["folder" => ["plugins" => "./plugins/"]],
+        ]);
+        $response = $sut($request, "");
+        $this->assertEquals(["realblog_page" => "3"], $response->cookies());
     }
 
     public function testDefaultActionRendersOverview(): void
     {
-        $this->finder->method('findArticlesWithStatus')->willReturn([]);
-        $request = $this->createStub(Request::class);
-        $request->method("pluginsFolder")->willReturn("./plugins/");
-        $response = ($this->sut)($request, "");
+        $sut = $this->sut(["finder" => ["articles" => $this->articles()]]);
+        $request = new FakeRequest(["path" => ["folder" => ["plugins" => "./plugins/"]]]);
+        $response = $sut($request, "");
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testDefaultActionSetsFilterCookie()
+    {
+        $sut = $this->sut();
+        $request = new FakeRequest([
+            "path" => ["folder" => ["plugins" => "./plugins/"]],
+            "get" => ["realblog_filter" => ["on", "", "on"]],
+        ]);
+        $response = $sut($request, "");
+        $this->assertEquals(["realblog_filter" => "[true,false,true]"], $response->cookies());
+    }
+
+    public function testDefaultActionGetsPageAndFilterFromCookie()
+    {
+        $sut = $this->sut();
+        $request = new FakeRequest([
+            "path" => ["folder" => ["plugins" => "./plugins/"]],
+            "admin" => true,
+            "edit" => true,
+            "cookie" => [
+                "realblog_page" => "1",
+                "realblog_filter" => "[true,false,true]",
+            ],
+        ]);
+        $response = $sut($request, "");
         Approvals::verifyHtml($response->output());
     }
 
     public function testCreateActionRendersArticle(): void
     {
-        $request = $this->createStub(Request::class);
-        $request->method("time")->willReturn(1675205155);
-        $request->method("url")->willReturn((new Url)->withPage("realblog"));
-        $request->method("pluginsFolder")->willReturn("./plugins/");
-        $response = ($this->sut)($request, "create");
+        $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
+        $request = new FakeRequest([
+            "path" => ["folder" => ["plugins" => "./plugins/"]],
+            "server" => ["REQUEST_TIME" => 1675205155]
+        ]);
+        $response = $sut($request, "create");
         Approvals::verifyHtml($response->output());
         $this->assertEquals("Create new article", $response->title());
     }
 
+    public function testCreateActionInitializesEditor(): void
+    {
+        $editor = new FakeEditor;
+        $sut = $this->sut(["finder" => ["article" => $this->firstArticle()], "editor" => $editor]);
+        $request = new FakeRequest([
+            "path" => ["folder" => ["plugins" => "./plugins/"]],
+            "server" => ["REQUEST_TIME" => 1675205155]
+        ]);
+        $sut($request, "create");
+        $this->assertEquals(["realblog_headline_field", "realblog_story_field"], $editor->classes());
+    }
+
     public function testCreateActionOutputsBjs(): void
     {
-        $this->finder->method('findAllCategories')->willReturn(["cat1", "cat2"]);
-        $request = $this->createStub(Request::class);
-        $request->method("url")->willReturn((new Url)->withPage("realblog"));
-        $request->method("pluginsFolder")->willReturn("./plugins/");
-        $response = ($this->sut)($request, "create");
+        $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
+        $request = new FakeRequest([
+            "path" => ["folder" => ["plugins" => "./plugins/"]],
+            "server" => ["REQUEST_TIME" => 1675205155]
+        ]);
+        $response = $sut($request, "create");
         Approvals::verifyHtml($response->bjs());
     }
 
     public function testEditActionRendersArticle(): void
     {
-        $this->finder->method('findById')->willReturn($this->firstArticle());
-        $_GET = ['realblog_id' => "1"];
-        $request = $this->createStub(Request::class);
-        $request->method("url")->willReturn((new Url)->withPage("realblog"));
-        $request->method("pluginsFolder")->willReturn("./plugins/");
-        $response = ($this->sut)($request, "edit");
+        $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
+        $request = new FakeRequest(["path" => ["folder" => ["plugins" => "./plugins/"]]]);
+        $response = $sut($request, "edit");
         Approvals::verifyHtml($response->output());
         $this->assertEquals("Edit article #1", $response->title());
     }
 
+    public function testEditActionInitializesEditor(): void
+    {
+        $editor = new FakeEditor;
+        $sut = $this->sut(["finder" => ["article" => $this->firstArticle()], "editor" => $editor]);
+        $request = new FakeRequest(["path" => ["folder" => ["plugins" => "./plugins/"]]]);
+        $sut($request, "edit");
+        $this->assertEquals(["realblog_headline_field", "realblog_story_field"], $editor->classes());
+    }
+
     public function testEditActionOutputsBjs(): void
     {
-        $this->finder->method('findById')->willReturn($this->firstArticle());
-        $this->finder->method('findAllCategories')->willReturn(["cat1", "cat2"]);
-        $_GET = ['realblog_id' => "1"];
-        $request = $this->createStub(Request::class);
-        $request->method("pluginsFolder")->willReturn("./plugins/");
-        $response = ($this->sut)($request, "edit");
+        $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
+        $request = new FakeRequest(["path" => ["folder" => ["plugins" => "./plugins/"]]]);
+        $response = $sut($request, "edit");
         Approvals::verifyHtml($response->bjs());
+    }
+
+    public function testEditActionRendersArticleWithAutoInputs(): void
+    {
+        $sut = $this->sut([
+            "conf" => ["auto_publish" => "true", "auto_archive" => "true"],
+            "finder" => ["article" => $this->firstArticle()]
+        ]);
+        $request = new FakeRequest(["path" => ["folder" => ["plugins" => "./plugins/"]]]);
+        $response = $sut($request, "edit");
+        Approvals::verifyHtml($response->output());
     }
 
     public function testEditActionFailsOnMissingArticle(): void
     {
-        $_GET = ['realblog_id' => "1"];
-        $request = $this->createStub(Request::class);
-        $request->method("edit")->willReturn(false);
-        $response = ($this->sut)($request, "edit");
+        $sut = $this->sut();
+        $request = new FakeRequest();
+        $response = $sut($request, "edit");
         Approvals::verifyHtml($response->output());
     }
 
     public function testDeleteActionRendersArticle(): void
     {
-        $this->finder->method('findById')->willReturn($this->firstArticle());
-        $_GET = ['realblog_id' => "1"];
-        $request = $this->createStub(Request::class);
-        $request->method("url")->willReturn((new Url)->withPage("realblog"));
-        $request->method("pluginsFolder")->willReturn("./plugins/");
-        $response = ($this->sut)($request, "delete");
+        $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
+        $request = new FakeRequest(["path" => ["folder" => ["plugins" => "./plugins/"]]]);
+        $response = $sut($request, "delete");
         Approvals::verifyHtml($response->output());
         $this->assertEquals("Delete article #1", $response->title());
     }
 
+    public function testDeleteActionInitializesEditor(): void
+    {
+        $editor = new FakeEditor;
+        $sut = $this->sut(["finder" => ["article" => $this->firstArticle()], "editor" => $editor]);
+        $request = new FakeRequest(["path" => ["folder" => ["plugins" => "./plugins/"]]]);
+        $sut($request, "delete");
+        $this->assertEquals(["realblog_headline_field", "realblog_story_field"], $editor->classes());
+    }
+
     public function testDeletectionOutputsBjs(): void
     {
-        global $su;
-
-        $su = "realblog";
-        $this->finder->method('findById')->willReturn($this->firstArticle());
-        $this->finder->method('findAllCategories')->willReturn(["cat1", "cat2"]);
-        $_GET = ['realblog_id' => "1"];
-        $request = $this->createStub(Request::class);
-        $request->method("pluginsFolder")->willReturn("./plugins/");
-        $response = ($this->sut)($request, "delete");
+        $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
+        $request = new FakeRequest(["path" => ["folder" => ["plugins" => "./plugins/"]]]);
+        $response = $sut($request, "delete");
         Approvals::verifyHtml($response->bjs());
     }
 
     public function testDeleteActionFailsOnMissingArticle(): void
     {
-        $_GET = ['realblog_id' => "1"];
-        $request = $this->createStub(Request::class);
-        $request->method("edit")->willReturn(false);
-        $response = ($this->sut)($request, "delete");
+        $sut = $this->sut();
+        $request = new FakeRequest();
+        $response = $sut($request, "delete");
         Approvals::verifyHtml($response->output());
+    }
+
+    public function testDoCreateActionIsCsrfProtected()
+    {
+        $_POST = $this->dummyPost();
+        $csrfProtector = new FakeCsrfProtector;
+        $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => ["insert" => 0]]);
+        $request = new FakeRequest(["server" => ["REQUEST_TIME" => 1675205155]]);
+        $sut($request, "do_create");
+        $this->assertTrue($csrfProtector->hasChecked());
+    }
+
+    public function testDoCreateActionRedirectsOnSuccess()
+    {
+        $_POST = $this->dummyPost();
+        $sut = $this->sut(["db" => ["insert" => 1]]);
+        $request = new FakeRequest(["server" => ["REQUEST_TIME" => 1675205155]]);
+        $response = $sut($request, "do_create");
+        $this->assertEquals(
+            "http://example.com/?realblog&admin=plugin_main&action=plugin_text",
+            $response->location()
+        );
     }
 
     public function testDoCreateActionFailureIsReported(): void
     {
         $_POST = $this->dummyPost();
-        $request = $this->createStub(Request::class);
-        $request->method("edit")->willReturn(false);
-        $request->method("url")->willReturn((new Url)->withPage("realblog"));
-        $request->method("realblogPage")->willReturn(1);
-        $response = ($this->sut)($request, "do_create");
+        $sut = $this->sut(["finder" => ["article" => $this->firstArticle()], "db" => ["insert" => 0]]);
+        $request = new FakeRequest(["server" => ["REQUEST_TIME" => 1675205155]]);
+        $response = $sut($request, "do_create");
+        $this->assertEquals("Create new article", $response->title());
         Approvals::verifyHtml($response->output());
+    }
+
+    public function testDoEditActionIsCsrfProtected()
+    {
+        $_POST = $this->dummyPost();
+        $csrfProtector = new FakeCsrfProtector;
+        $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => ["update" => 0]]);
+        $request = new FakeRequest(["server" => ["REQUEST_TIME" => 1675205155]]);
+        $sut($request, "do_edit");
+        $this->assertTrue($csrfProtector->hasChecked());
+    }
+
+    public function testDoEditActionRedirectsOnSuccess()
+    {
+        $_POST = $this->dummyPost();
+        $sut = $this->sut(["db" => ["update" => 1]]);
+        $request = new FakeRequest(["server" => ["REQUEST_TIME" => 1675205155]]);
+        $response = $sut($request, "do_edit");
+        $this->assertEquals(
+            "http://example.com/?realblog&admin=plugin_main&action=plugin_text",
+            $response->location()
+        );
     }
 
     public function testDoEditActionFailureIsReported(): void
     {
         $_POST = $this->dummyPost();
-        $request = $this->createStub(Request::class);
-        $request->method("edit")->willReturn(false);
-        $request->method("url")->willReturn((new Url)->withPage("realblog"));
-        $request->method("realblogPage")->willReturn(1);
-        $response = ($this->sut)($request, "do_edit");
+        $sut = $this->sut(["finder" => ["article" => $this->firstArticle()], "db" => ["update" => 0]]);
+        $request = new FakeRequest(["server" => ["REQUEST_TIME" => 1675205155]]);
+        $response = $sut($request, "do_edit");
+        $this->assertEquals("Edit article", $response->title());
         Approvals::verifyHtml($response->output());
+    }
+
+    public function testDoDeleteActionIsCsrfProtected()
+    {
+        $_POST = $this->dummyPost();
+        $csrfProtector = new FakeCsrfProtector;
+        $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => ["delete" => 0]]);
+        $request = new FakeRequest(["server" => ["REQUEST_TIME" => 1675205155]]);
+        $sut($request, "do_delete");
+        $this->assertTrue($csrfProtector->hasChecked());
+    }
+
+   public function testDoDeleteActionRedirectsOnSuccess()
+    {
+        $_POST = $this->dummyPost();
+        $sut = $this->sut(["db" => ["delete" => 1]]);
+        $request = new FakeRequest(["server" => ["REQUEST_TIME" => 1675205155]]);
+        $response = $sut($request, "do_delete");
+        $this->assertEquals(
+            "http://example.com/?realblog&admin=plugin_main&action=plugin_text",
+            $response->location()
+        );
     }
 
     public function testDoDeleteActionFailureIsReported(): void
     {
         $_POST = $this->dummyPost();
-        $request = $this->createStub(Request::class);
-        $request->method("edit")->willReturn(false);
-        $request->method("url")->willReturn((new Url)->withPage("realblog"));
-        $request->method("realblogPage")->willReturn(1);
-        $response = ($this->sut)($request, "do_delete");
+        $sut = $this->sut(["finder" => ["article" => $this->firstArticle()], "db" => ["delete" => 0]]);
+        $request = new FakeRequest(["server" => ["REQUEST_TIME" => 1675205155]]);
+        $response = $sut($request, "do_delete");
+        $this->assertEquals("Delete article", $response->title());
         Approvals::verifyHtml($response->output());
+    }
+
+    public function testDeleteSelectedActionRendersConfirmation()
+    {
+        $sut = $this->sut();
+        $request = new FakeRequest(["get" => ["realblog_ids" => ["17", "4"]]]);
+        $response = $sut($request, "delete_selected");
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testDeleteSelectedActionReportsIfNothingIsSelected()
+    {
+        $sut = $this->sut();
+        $request = new FakeRequest();
+        $response = $sut($request, "delete_selected");
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testChangeStatusActionRendersConfirmation()
+    {
+        $sut = $this->sut();
+        $request = new FakeRequest(["get" => ["realblog_ids" => ["17", "4"]]]);
+        $response = $sut($request, "change_status");
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testChangeStatusActionReportsIfNothingIsSelected()
+    {
+        $sut = $this->sut();
+        $request = new FakeRequest();
+        $response = $sut($request, "change_status");
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testDoDeleteSelectedActionIsCsrfProtected()
+    {
+        $_POST = ["realblog_ids" => ["17", "4"]];
+        $csrfProtector = new FakeCsrfProtector;
+        $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => ["bulkDelete" => 0]]);
+        $request = new FakeRequest();
+        $sut($request, "do_delete_selected");
+        $this->assertTrue($csrfProtector->hasChecked());
+    }
+
+    public function testDoDeleteSelectedActionRedirectsOnSuccess()
+    {
+        $_POST = ["realblog_ids" => ["17", "4"]];
+        $sut = $this->sut(["db" => ["bulkDelete" => 2]]);
+        $request = new FakeRequest();
+        $response = $sut($request, "do_delete_selected");
+        $this->assertEquals(
+            "http://example.com/?realblog&admin=plugin_main&action=plugin_text",
+            $response->location()
+        );
+    }
+
+    public function testDoDeleteSelectedActionReportsPartialSuccess()
+    {
+        $_POST = ["realblog_ids" => ["17", "4"]];
+        $sut = $this->sut(["db" => ["bulkDelete" => 1]]);
+        $request = new FakeRequest();
+        $response = $sut($request, "do_delete_selected");
+        $this->assertEquals("Delete selected articles", $response->title());
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testDoDeleteSelectedActionReportsFailure()
+    {
+        $_POST = ["realblog_ids" => ["17", "4"]];
+        $sut = $this->sut(["db" => ["bulkDelete" => 0]]);
+        $request = new FakeRequest();
+        $response = $sut($request, "do_delete_selected");
+        $this->assertEquals("Delete selected articles", $response->title());
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testDoChangeStatusActionIsCsrfProtected()
+    {
+        $_POST = ["realblog_ids" => ["17", "4"]];
+        $csrfProtector = new FakeCsrfProtector;
+        $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => ["bulkUpdate" => 0]]);
+        $request = new FakeRequest();
+        $sut($request, "do_change_status");
+        $this->assertTrue($csrfProtector->hasChecked());
+    }
+
+    public function testDoChangeStatusActionRedirectsOnSuccess()
+    {
+        $_POST = ["realblog_ids" => ["17", "4"]];
+        $sut = $this->sut(["db" => ["bulkUpdate" => 2]]);
+        $request = new FakeRequest();
+        $response = $sut($request, "do_change_status");
+        $this->assertEquals("http://example.com/?realblog&admin=plugin_main&action=plugin_text", $response->location());
+    }
+
+    public function testDoChangeStatusActionReportsPartialSuccess()
+    {
+        $_POST = ["realblog_ids" => ["17", "4"]];
+        $sut = $this->sut(["db" => ["bulkUpdate" => 1]]);
+        $request = new FakeRequest();
+        $response = $sut($request, "do_change_status");
+        $this->assertEquals("Change article status", $response->title());
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testDoChangeStatusActionReportsFailure()
+    {
+        $_POST = ["realblog_ids" => ["17", "4"]];
+        $sut = $this->sut(["db" => ["bulkUpdate" => 0]]);
+        $request = new FakeRequest();
+        $response = $sut($request, "do_change_status");
+        $this->assertEquals("Change article status", $response->title());
+        Approvals::verifyHtml($response->output());
+    }
+
+    private function sut($options = [])
+    {
+        return new MainAdminController(
+            $this->conf($options["conf"] ?? []),
+            $this->db($options["db"] ?? []),
+            $this->finder($options["finder"] ?? []),
+            $options["csrfProtector"] ?? new FakeCsrfProtector,
+            $this->view(),
+            $options["editor"] ?? new FakeEditor
+        );
+    }
+
+    private function db($options = [])
+    {
+        $db = $this->createMock(DB::class);
+        $db->expects(isset($options["bulkDelete"]) ? $this->once() : $this->never())
+            ->method("deleteArticlesWithIds")->willReturn($options["bulkDelete"] ?? 0);
+        $db->expects(isset($options["bulkUpdate"]) ? $this->once() : $this->never())
+            ->method("updateStatusOfArticlesWithIds")->willReturn($options["bulkUpdate"] ?? 0);
+        $db->expects(isset($options["insert"]) ? $this->once() : $this->never())
+            ->method("insertArticle")->willReturn($options["insert"] ?? 0);
+        $db->expects(isset($options["update"]) ? $this->once() : $this->never())
+            ->method("updateArticle")->willReturn($options["update"] ?? 0);
+        $db->expects(isset($options["delete"]) ? $this->once() : $this->never())
+            ->method("deleteArticle")->willReturn($options["delete"] ?? 0);
+        return $db;
+    }
+
+    private function finder($options = [])
+    {
+        $finder = $this->createStub(Finder::class);
+        $finder->method("countArticlesWithStatus")->willReturn(count($options["articles"] ?? []));
+        $finder->method('findArticlesWithStatus')->willReturn($options["articles"] ?? []);
+        $finder->method('findById')->willReturn($options["article"] ?? null);
+        $finder->method('findAllCategories')->willReturn(["cat1", "cat2"]);
+        return $finder;
+    }
+
+    private function view()
+    {
+        return new View("./views/", XH_includeVar("./languages/en.php", 'plugin_tx')['realblog']);
+    }
+
+    private function conf($options = [])
+    {
+        $conf = XH_includeVar("./config/config.php", 'plugin_cf')['realblog'];
+        return $options + $conf;
     }
 
     public function dummyPost(): array
@@ -226,5 +486,20 @@ class MainAdminControllerTest extends TestCase
             true,
             false
         );
+    }
+
+    private function articles()
+    {
+        return [new Article(
+            1,
+            strtotime("2023-01-31T22:45:55+00:00"),
+            Article::PUBLISHED,
+            "",
+            "Welcome!",
+            "Welcome to my wonderful new blog",
+            true,
+            true,
+            false
+        )];
     }
 }

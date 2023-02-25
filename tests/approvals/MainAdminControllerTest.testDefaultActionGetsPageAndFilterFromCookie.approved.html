@@ -29,37 +29,13 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>
-            <input type="checkbox" name="realblog_ids[]" value="1">
-          </td>
-          <td>
-            <a href="/?realblog&amp;action=delete&amp;admin=plugin_main&amp;realblog_id=1">
-              <img src="./plugins/realblog/images/delete.png" title="Delete article" alt="Delete article">
-            </a>
-          </td>
-          <td class="realblog_table_line">
-            <a href="/?realblog&amp;action=edit&amp;admin=plugin_main&amp;realblog_id=1">
-              <img src="./plugins/realblog/images/edit.png" title="Edit article" alt="Edit article">
-            </a>
-          </td>
-          <td>1</td>
-          <td>31.01.2023</td>
-          <td>1</td>
-          <td>1</td>
-          <td></td>
-        </tr>
-        <tr>
-          <td colspan="5" class="realblog_table_title">Welcome!</td>
-          <td colspan="3" class="realblog_table_categories"></td>
-        </tr>
       </tbody>
       <tfoot>
         <tr>
           <td colspan="8">
             <input type="hidden" name="realblog_filter[0]" value="">
             <label>
-              <input type="checkbox" name="realblog_filter[0]" >
+              <input type="checkbox" name="realblog_filter[0]" checked>
               not published            </label>
             <input type="hidden" name="realblog_filter[1]" value="">
             <label>
@@ -67,7 +43,7 @@
               published            </label>
             <input type="hidden" name="realblog_filter[2]" value="">
             <label>
-              <input type="checkbox" name="realblog_filter[2]" >
+              <input type="checkbox" name="realblog_filter[2]" checked>
               archived            </label>
             <button title="Filter">
               <img src="./plugins/realblog/images/filter.png" alt="Filter">
@@ -76,17 +52,17 @@
         </tr>
         <tr>
           <td colspan="8">
-            <input type="text" name="realblog_page" value="1" size="2">
-            / 1            <button name="realblog_page" value="1" title="First page">
+            <input type="text" name="realblog_page" value="0" size="2">
+            / 0            <button name="realblog_page" value="1" title="First page">
               <img src="./plugins/realblog/images/first.png" alt="First page">
             </button>
             <button name="realblog_page" value="1" title="previous page">
               <img src="./plugins/realblog/images/prev.png" alt="previous page">
             </button>
-            <button name="realblog_page" value="1" title="next page">
+            <button name="realblog_page" value="0" title="next page">
               <img src="./plugins/realblog/images/next.png" alt="next page">
             </button>
-            <button name="realblog_page" value="1" title="Last page">
+            <button name="realblog_page" value="0" title="Last page">
               <img src="./plugins/realblog/images/last.png" alt="Last page">
             </button>
           </td>

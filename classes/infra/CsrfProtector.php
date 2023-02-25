@@ -41,6 +41,7 @@ class CsrfProtector
         $this->cSRFProtection()->check();
     }
 
+    /** @codeCoverageIgnore */
     protected function cSRFProtection(): CSRFProtection
     {
         global $_XH_csrfProtection;

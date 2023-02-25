@@ -23,11 +23,13 @@ namespace Realblog\Infra;
 
 class FileSystem
 {
+    /** @codeCoverageIgnore */
     public function isReadable(string $filename): bool
     {
         return is_readable($filename);
     }
 
+    /** @codeCoverageIgnore */
     public function fileMTime(string $filename): int
     {
         return (int) filemtime($filename);

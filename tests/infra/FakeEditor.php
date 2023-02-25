@@ -21,15 +21,17 @@
 
 namespace Realblog\Infra;
 
-class Editor
+class FakeEditor extends Editor
 {
-    /**
-     * @codeCoverageIgnore
-     * @param list<string> $classes
-     * @return void
-      */
+    private $classes = [];
+
     public function init(array $classes)
     {
-        init_editor($classes);
+        $this->classes = array_merge($this->classes, $classes);
+    }
+
+    public function classes(): array
+    {
+        return $this->classes;
     }
 }

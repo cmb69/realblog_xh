@@ -22,18 +22,16 @@
 namespace Realblog;
 
 use PHPUnit\Framework\TestCase;
-use XH\CSRFProtection as CsrfProtector;
 
 class DicTest extends TestCase
 {
     public function setUp(): void
     {
-        global $pth, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
+        global $pth, $plugin_cf, $plugin_tx;
 
         $pth = ["folder" => ["content" => "", "images" => "", "plugin" => "", "plugins" => ""]];
         $plugin_cf = ["realblog" => []];
         $plugin_tx = ["realblog" => ["rss_page" => ""]];
-        $_XH_csrfProtection = $this->createStub(CsrfProtector::class);
     }
 
     public function testMakesGeneralController(): void

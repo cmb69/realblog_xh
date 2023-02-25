@@ -43,7 +43,10 @@ class Pages
         return evaluate_scripting($contents);
     }
 
-    /** @return list<string> */
+    /**
+     * @codeCoverageIgnore
+     * @return list<string>
+     */
     protected function h(): array
     {
         global $h;
@@ -51,7 +54,10 @@ class Pages
         return $h;
     }
 
-    /** @return list<string> */
+    /**
+     * @codeCoverageIgnore
+     * @return list<string>
+     */
     protected function u(): array
     {
         global $u;

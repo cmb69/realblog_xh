@@ -23,6 +23,7 @@
 
 namespace Realblog;
 
+use Realblog\Infra\CsrfProtector;
 use Realblog\Infra\DB;
 use Realblog\Infra\Editor;
 use Realblog\Infra\Finder;
@@ -33,7 +34,6 @@ use Realblog\Infra\View;
 use Realblog\Value\Article;
 use Realblog\Value\FullArticle;
 use RuntimeException;
-use XH\CSRFProtection as CsrfProtector;
 
 class MainAdminController
 {
@@ -160,7 +160,11 @@ class MainAdminController
         $page = min(max($this->page, 0), $pageCount);
         $records = [];
         foreach ($articles as $article) {
-            $params = ["admin" => "plugin_main", "realblog_id" => (string) $article->id, "realblog_page" => (string) $page];
+            $params = [
+                "admin" => "plugin_main",
+                "realblog_id" => (string) $article->id,
+                 "realblog_page" => (string) $page
+            ];
             $records[] = [
                 "id" => $article->id,
                 "date" => $this->view->date($article->date),
@@ -212,7 +216,20 @@ class MainAdminController
     {
         $this->editor->init(['realblog_headline_field', 'realblog_story_field']);
         if ($action === 'create') {
-            $article = new FullArticle(0, 0, $this->request->time(), 2147483647, 2147483647, 0, '', '', '', '', false, false);
+            $article = new FullArticle(
+                0,
+                0,
+                $this->request->time(),
+                2147483647,
+                2147483647,
+                0,
+                '',
+                '',
+                '',
+                '',
+                false,
+                false
+            );
         } else {
             $id = max($this->request->intFromGet("realblog_id"), 1);
             $article = $this->finder->findById($id);
@@ -250,9 +267,10 @@ class MainAdminController
             'date' => (string) date('Y-m-d', $article->date),
             'publishing_date' => (string) date('Y-m-d', $article->publishingDate),
             'archiving_date' => (string) date('Y-m-d', $article->archivingDate),
-            'actionUrl' => $this->request->url()->withPage("realblog")->withParams(["admin" => "plugin_main"])->relative(),
+            'actionUrl' => $this->request->url()->withPage("realblog")
+                ->withParams(["admin" => "plugin_main"])->relative(),
             'action' => "do_{$action}",
-            'csrfToken' => $this->getCsrfToken(),
+            'csrfToken' => $this->csrfProtector->token(),
             'isAutoPublish' => $this->conf['auto_publish'],
             'isAutoArchive' => $this->conf['auto_archive'],
             'states' => self::STATES,
@@ -365,11 +383,16 @@ class MainAdminController
     {
         $data = [
             'ids' => $this->request->realblogIds(),
-            'action' => $this->request->url()->withPage("realblog")->withParams(["admin" => "plugin_main"])->relative(),
+            'action' => $this->request->url()->withPage("realblog")
+                ->withParams(["admin" => "plugin_main"])->relative(),
             'url' => $this->request->url()->withPage("realblog")
-                ->withParams(["admin" => "plugin_main", "action" => "plugin_text", "realblog_page" => (string) $this->page])
+                ->withParams([
+                    "admin" => "plugin_main",
+                    "action" => "plugin_text",
+                    "realblog_page" => (string) $this->page
+                ])
                 ->relative(),
-            'csrfToken' => $this->getCsrfToken(),
+            'csrfToken' => $this->csrfProtector->token(),
         ];
         if ($kind === 'change-status') {
             $data['states'] = self::STATES;
@@ -416,15 +439,6 @@ class MainAdminController
         }
         $output = $this->renderInfo($this->request->url(), "tooltip_change_status", $info);
         $this->response->setOutput($output)->setTitle($this->view->text("tooltip_change_status"));
-    }
-
-    private function getCsrfToken(): ?string
-    {
-        $html = $this->csrfProtector->tokenInput();
-        if (preg_match('/value="([0-9a-f]+)"/', $html, $matches)) {
-            return $matches[1];
-        }
-        return null;
     }
 
     private function renderInfo(Url $url, string $title, string $message): string

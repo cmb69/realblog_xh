@@ -25,11 +25,13 @@ use Realblog\Value\Article;
 
 class Request
 {
+    /** @codeCoverageIgnore */
     public function admin(): bool
     {
         return defined("XH_ADM") && XH_ADM;
     }
 
+    /** @codeCoverageIgnore */
     public function edit(): bool
     {
         global $edit;
@@ -39,7 +41,7 @@ class Request
 
     public function time(): int
     {
-        return time();
+        return (int) $this->server()["REQUEST_TIME"];
     }
 
     public function url(): Url
@@ -62,6 +64,7 @@ class Request
         return $this->path()["folder"]["images"];
     }
 
+    /** @codeCoverageIgnore */
     public function language(): string
     {
         global $sl;
@@ -106,8 +109,9 @@ class Request
             return max((int) $this->get()["realblog_page"], 1);
         }
         if ($this->admin() && $this->edit()) {
-            if (isset($_COOKIE["realblog_page"]) && is_string($_COOKIE["realblog_page"])) {
-                return max((int) $_COOKIE["realblog_page"], 1);
+            $cookie = $this->cookie();
+            if (isset($cookie["realblog_page"]) && is_string($cookie["realblog_page"])) {
+                return max((int) $cookie["realblog_page"], 1);
             }
         }
         return 1;
@@ -147,14 +151,16 @@ class Request
     /** @return list<bool>|null */
     public function filtersFromCookie(): ?array
     {
-        if (!isset($_COOKIE["realblog_filter"])) {
+        $cookie = $this->cookie();
+        if (!isset($cookie["realblog_filter"])) {
             return null;
         }
-        $filters = json_decode($_COOKIE["realblog_filter"]);
+        $filters = json_decode($cookie["realblog_filter"]);
         assert(is_array($filters));
         return $filters;
     }
 
+    /** @codeCoverageIgnore */
     protected function s(): int
     {
         global $s;
@@ -162,6 +168,7 @@ class Request
         return $s;
     }
 
+    /** @codeCoverageIgnore */
     protected function su(): string
     {
         global $su;
@@ -169,13 +176,37 @@ class Request
         return $su;
     }
 
-    /** @return array<string,string|array<string>> */
+    /**
+     * @codeCoverageIgnore
+     * @return array<string,string|array<string>>
+     */
     protected function get(): array
     {
         return $_GET;
     }
 
-    /** @return array{file:array<string,string>,folder:array<string,string>} */
+    /**
+     * @codeCoverageIgnore
+     * @return array<string,string>
+     */
+    protected function cookie(): array
+    {
+        return $_COOKIE;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     * @return array<string,string>
+     */
+    protected function server(): array
+    {
+        return $_SERVER;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     * @return array{file:array<string,string>,folder:array<string,string>}
+     */
     protected function path(): array
     {
         global $pth;
