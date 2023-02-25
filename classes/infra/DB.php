@@ -404,6 +404,7 @@ EOS;
         while (($record = fgetcsv($stream, 0, ",", "\"", "\0")) !== false) {
             assert($record !== null);
             $statement->bindValue(':id', $record[0], SQLITE3_INTEGER);
+            $statement->bindValue(':version', 0, SQLITE3_INTEGER);
             $statement->bindValue(':date', strtotime((string) $record[1]), SQLITE3_INTEGER);
             $statement->bindValue(':publishing_date', strtotime((string) $record[2]), SQLITE3_INTEGER);
             $statement->bindValue(':archiving_date', strtotime((string) $record[3]), SQLITE3_INTEGER);
