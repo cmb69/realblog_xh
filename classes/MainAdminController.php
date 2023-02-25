@@ -285,7 +285,7 @@ class MainAdminController
     private function doCreateAction()
     {
         $this->csrfProtector->check();
-        $article = $this->getArticleFromParameters();
+        $article = $this->request->articleFromPost();
         $res = $this->db->insertArticle($article);
         if ($res === 1) {
             $this->redirectToOverviewResponse($this->request->url());
@@ -301,7 +301,7 @@ class MainAdminController
     private function doEditAction()
     {
         $this->csrfProtector->check();
-        $article = $this->getArticleFromParameters();
+        $article = $this->request->articleFromPost();
         $res = $this->db->updateArticle($article);
         if ($res === 1) {
             $this->redirectToOverviewResponse($this->request->url());
@@ -317,7 +317,7 @@ class MainAdminController
     private function doDeleteAction()
     {
         $this->csrfProtector->check();
-        $article = $this->getArticleFromParameters();
+        $article = $this->request->articleFromPost();
         $res = $this->db->deleteArticle($article);
         if ($res === 1) {
             $this->redirectToOverviewResponse($this->request->url());
@@ -327,44 +327,6 @@ class MainAdminController
         }
         $output = $this->renderInfo($this->request->url(), "tooltip_delete", $info);
         $this->response->setOutput($output)->setTitle($this->view->text("tooltip_delete"));
-    }
-
-    private function getArticleFromParameters(): FullArticle
-    {
-        return new FullArticle(
-            (int) $_POST['realblog_id'],
-            (int) $_POST['realblog_version'],
-            !isset($_POST['realblog_date_exact']) || $_POST['realblog_date'] !== $_POST['realblog_date_old']
-                ? $this->stringToTime($_POST['realblog_date'], true)
-                : $_POST['realblog_date_exact'],
-            $this->stringToTime($_POST['realblog_startdate']),
-            $this->stringToTime($_POST['realblog_enddate']),
-            (int) $_POST['realblog_status'],
-            ',' . trim($_POST['realblog_categories']) . ',',
-            $_POST['realblog_title'],
-            $_POST['realblog_headline'],
-            $_POST['realblog_story'],
-            isset($_POST['realblog_rssfeed']),
-            isset($_POST['realblog_comments'])
-        );
-    }
-
-    private function stringToTime(string $date, bool $withTime = false): int
-    {
-        $parts = explode('-', $date);
-        if ($withTime) {
-            $timestamp = getdate($this->request->time());
-        } else {
-            $timestamp = array('hours' => 0, 'minutes' => 0, 'seconds' => 0);
-        }
-        return (int) mktime(
-            $timestamp['hours'],
-            $timestamp['minutes'],
-            $timestamp['seconds'],
-            (int) $parts[1],
-            (int) $parts[2],
-            (int) $parts[0]
-        );
     }
 
     /** @return void */
@@ -382,7 +344,7 @@ class MainAdminController
     private function renderConfirmation(string $kind): string
     {
         $data = [
-            'ids' => $this->request->realblogIds(),
+            'ids' => $this->request->realblogIdsFromGet(),
             'action' => $this->request->url()->withPage("realblog")
                 ->withParams(["admin" => "plugin_main"])->relative(),
             'url' => $this->request->url()->withPage("realblog")
@@ -404,9 +366,7 @@ class MainAdminController
     private function doDeleteSelectedAction()
     {
         $this->csrfProtector->check();
-        $ids = array_filter($_POST["realblog_ids"] ?? [], function ($id) {
-            return (int) $id >= 1;
-        });
+        $ids = $this->request->realblogIdsFromPost();
         $res = $this->db->deleteArticlesWithIds($ids);
         if ($res === count($ids)) {
             $this->redirectToOverviewResponse($this->request->url());
@@ -424,10 +384,8 @@ class MainAdminController
     private function doChangeStatusAction()
     {
         $this->csrfProtector->check();
-        $ids = array_filter($_POST["realblog_ids"] ?? [], function ($id) {
-            return (int) $id >= 1;
-        });
-        $status = min(max((int) ($_POST["realblog_status"] ?? 0), 0), 2);
+        $ids = $this->request->realblogIdsFromPost();
+        $status = $this->request->statusFromPost();
         $res = $this->db->updateStatusOfArticlesWithIds($ids, $status);
         if ($res === count($ids)) {
             $this->redirectToOverviewResponse($this->request->url());

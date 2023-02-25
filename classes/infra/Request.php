@@ -22,6 +22,7 @@
 namespace Realblog\Infra;
 
 use Realblog\Value\Article;
+use Realblog\Value\FullArticle;
 
 class Request
 {
@@ -98,7 +99,7 @@ class Request
         if (!isset($get[$name]) || !is_string($get[$name])) {
             return 0;
         }
-        return (int) $this->get()[$name];
+        return (int) $get[$name];
     }
 
     /** @return positive-int */
@@ -123,7 +124,7 @@ class Request
     }
 
     /** @return list<int> */
-    public function realblogIds(): array
+    public function realblogIdsFromGet(): array
     {
         $get = $this->get();
         if (!isset($get["realblog_ids"]) || !is_array($get["realblog_ids"])) {
@@ -132,6 +133,61 @@ class Request
         return array_map("intval", array_filter($get["realblog_ids"], function ($id) {
             return (int) $id >= 1;
         }));
+    }
+
+    /** @return list<int> */
+    public function realblogIdsFromPost(): array
+    {
+        $post = $this->post();
+        if (!isset($post["realblog_ids"]) || !is_array($post["realblog_ids"])) {
+            return [];
+        }
+        return array_map("intval", array_filter($post["realblog_ids"], function ($id) {
+            return (int) $id >= 1;
+        }));
+    }
+
+    public function statusFromPost(): int
+    {
+        return min(max((int) ($this->post()["realblog_status"] ?? 0), 0), 2);
+    }
+
+    public function articleFromPost(): FullArticle
+    {
+        return new FullArticle(
+            (int) $_POST['realblog_id'],
+            (int) $_POST['realblog_version'],
+            !isset($_POST['realblog_date_exact']) || $_POST['realblog_date'] !== $_POST['realblog_date_old']
+                ? $this->stringToTime($_POST['realblog_date'], true)
+                : $_POST['realblog_date_exact'],
+            $this->stringToTime($_POST['realblog_startdate']),
+            $this->stringToTime($_POST['realblog_enddate']),
+            (int) $_POST['realblog_status'],
+            ',' . trim($_POST['realblog_categories']) . ',',
+            $_POST['realblog_title'],
+            $_POST['realblog_headline'],
+            $_POST['realblog_story'],
+            isset($_POST['realblog_rssfeed']),
+            isset($_POST['realblog_comments'])
+        );
+    }
+
+    private function stringToTime(string $date, bool $withTime = false): int
+    {
+        $parts = explode('-', $date);
+        if ($withTime) {
+            $timestamp = getdate($this->time());
+        } else {
+            $timestamp = array('hours' => 0, 'minutes' => 0, 'seconds' => 0);
+        }
+        return (int) mktime(
+            $timestamp['hours'],
+            $timestamp['minutes'],
+            $timestamp['seconds'],
+            (int) $parts[1],
+            (int) $parts[2],
+            (int) $parts[0]
+        );
     }
 
     /** @return list<bool>|null */
@@ -183,6 +239,15 @@ class Request
     protected function get(): array
     {
         return $_GET;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     * @return array<string,string|array<string>>
+     */
+    protected function post(): array
+    {
+        return $_POST;
     }
 
     /**
