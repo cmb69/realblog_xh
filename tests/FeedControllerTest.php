@@ -50,7 +50,7 @@ class FeedControllerTest extends TestCase
             "path" => ["folder" => ["images" => "./userfiles/images/"]]
         ]);
         $response = $sut($request);
-        $this->assertEquals("application/rss+xml; charset=UTF-8", $response->contentType());
+        $this->assertEquals("application/xml; charset=UTF-8", $response->contentType());
     }
 
     public function testRendersNothingWhenNotRequested(): void

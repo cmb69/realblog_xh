@@ -76,7 +76,7 @@ class FeedController
             "image_url" => $request->url()->withPath($logo)->absolute(),
             "articles" => $this->articleRecords($this->finder->findFeedableArticles($count)),
         ]);
-        return $response->setContentType("application/rss+xml; charset=UTF-8")
+        return $response->setContentType("application/xml; charset=UTF-8")
             ->setOutput("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" . $output);
     }
 
