@@ -21,7 +21,10 @@
 
 namespace Realblog\Infra;
 
+use ApprovalTests\Approvals;
+use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Realblog\Value\Article;
 use Realblog\Value\FullArticle;
 
 class DbTest extends TestCase
@@ -32,6 +35,18 @@ class DbTest extends TestCase
     public function setUp(): void
     {
         $this->sut = new DB(":memory:");
+    }
+
+    public function testImportsFlatfile(): void
+    {
+        $this->sut = null;
+        chdir(__DIR__);
+        $sut = new DB(":memory:");
+        vfsStream::setup('root');
+        mkdir(vfsStream::url('root/realblog/'));
+        $filename = vfsStream::url('root/realblog/realblog.csv');
+        $sut->exportToCsv($filename);
+        Approvals::verifyStringWithFileExtension(file_get_contents($filename), "csv");
     }
 
     public function testCanInsertArticle(): void
@@ -51,6 +66,16 @@ class DbTest extends TestCase
         $this->assertEquals(1, $this->sut->deleteArticle($this->article()));
     }
 
+    public function testAutoChangesStatus(): void
+    {
+        $this->assertEquals(1, $this->sut->insertArticle($this->article()));
+        $result = $this->sut->getConnection()->querySingle("SELECT status FROM articles WHERE id = 1");
+        $this->assertEquals(Article::PUBLISHED, $result);
+        $this->sut->autoChangeStatus("archiving_date", Article::ARCHIVED);
+        $result = $this->sut->getConnection()->querySingle("SELECT status FROM articles WHERE id = 1");
+        $this->assertEquals(Article::ARCHIVED, $result);
+    }
+
     public function testUpdatesStatuses(): void
     {
         $this->assertEquals(1, $this->sut->insertArticle($this->article()));
@@ -65,6 +90,43 @@ class DbTest extends TestCase
         $this->assertEquals(1, $this->sut->insertArticle($this->article()));
         $this->assertEquals(1, $this->sut->insertArticle($this->article()));
         $this->assertEquals(2, $this->sut->deleteArticlesWithIds([1, 3]));
+    }
+
+    public function testExportsToCsv(): void
+    {
+        vfsStream::setup('root');
+        $this->assertEquals(1, $this->sut->insertArticle($this->article()));
+        $this->assertEquals(1, $this->sut->insertArticle($this->article()));
+        $this->assertEquals(1, $this->sut->insertArticle($this->article()));
+        $filename = vfsStream::url('root/realblog.csv');
+        $result = $this->sut->exportToCsv($filename);
+        $this->assertTrue($result);
+        Approvals::verifyStringWithFileExtension(file_get_contents($filename), "csv");
+    }
+
+    public function testDoesNotExportToCsvIfFileNotReadable(): void
+    {
+        vfsStream::setup('root');
+        $this->assertEquals(1, $this->sut->insertArticle($this->article()));
+        $this->assertEquals(1, $this->sut->insertArticle($this->article()));
+        $this->assertEquals(1, $this->sut->insertArticle($this->article()));
+        $filename = vfsStream::url('root/realblog.csv');
+        touch($filename);
+        chmod($filename, 0444);
+        $result = $this->sut->exportToCsv($filename);
+        $this->assertFalse($result);
+    }
+
+    public function testImportsFromCsv(): void
+    {
+        vfsStream::setup('root');
+        $filename = vfsStream::url('root/realblog.csv');
+        $approval = __DIR__ . "/approvals/DBTest.testExportsToCsv.approved.csv";
+        copy($approval, $filename);
+        $result = $this->sut->importFromCsv($filename);
+        $this->assertTrue($result);
+        $result = $this->sut->exportToCsv($filename);
+        $this->assertFileEquals($approval, $filename);
     }
 
     private function article(): FullArticle

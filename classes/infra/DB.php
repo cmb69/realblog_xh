@@ -156,7 +156,9 @@ SQL;
      */
     private function getAndRemoveCategories(&$field)
     {
-        $categories = preg_match('/{{{rbCat\(([^\)]*)\);?}}}/', $field, $matches);
+        if (!preg_match('/{{{(?:PLUGIN:)?rbCat\(([^\)]*)\);?}}}/', $field, $matches)) {
+            return [];
+        }
         $categories = explode('|', trim($matches[1], "'|"));
         $categories = array_map(
             function ($cat) {
@@ -164,7 +166,7 @@ SQL;
             },
             $categories
         );
-        $field = preg_replace('/{{{rbCat\([^\)]*\);?}}}/', '', $field);
+        $field = preg_replace('/{{{(?:PLUGIN:)?rbCat\([^\)]*\);?}}}/', '', $field);
         return $categories;
     }
 
@@ -349,7 +351,7 @@ SQL;
      */
     public function exportToCsv($filename)
     {
-        if (!($stream = fopen($filename, 'w'))) {
+        if (!($stream = @fopen($filename, 'w'))) {
             return false;
         }
         $sql = 'SELECT * FROM articles';
