@@ -31,23 +31,15 @@ class DB
     /** @var string */
     private $filename;
 
-    /**
-     * @var SQLite3|null
-     */
+    /** @var SQLite3|null */
     private $connection = null;
 
-    /**
-     * @param string $filename
-     */
-    public function __construct($filename)
+    public function __construct(string $filename)
     {
         $this->filename = $filename;
     }
 
-    /**
-     * @return SQLite3
-     */
-    public function getConnection()
+    public function getConnection(): SQLite3
     {
         if ($this->connection === null) {
             $this->init();
@@ -56,9 +48,7 @@ class DB
         return $this->connection;
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     private function init()
     {
         try {
@@ -78,9 +68,7 @@ class DB
         $this->updateDatabase();
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     private function createDatabase()
     {
         $sql = <<<'EOS'
@@ -106,9 +94,7 @@ EOS;
         $this->importFlatfile();
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     private function importFlatfile()
     {
         $filename = dirname($this->filename) . "/realblog.txt";
@@ -150,11 +136,8 @@ SQL;
         }
     }
 
-    /**
-     * @param string &$field
-     * @return list<string>
-     */
-    private function getAndRemoveCategories(&$field)
+    /** @return list<string> */
+    private function getAndRemoveCategories(string &$field): array
     {
         if (!preg_match('/{{{(?:PLUGIN:)?rbCat\(([^\)]*)\);?}}}/', $field, $matches)) {
             return [];
@@ -170,9 +153,7 @@ SQL;
         return $categories;
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     private function updateDatabase()
     {
         $sql = <<<'EOS'
@@ -185,10 +166,7 @@ EOS;
         $this->connection->exec($sql);
     }
 
-    /**
-     * @return int
-     */
-    public function insertArticle(FullArticle $article)
+    public function insertArticle(FullArticle $article): int
     {
         $conn = $this->getConnection();
         $sql = <<<'EOS'
@@ -218,10 +196,7 @@ EOS;
         return (int) $res;
     }
 
-    /**
-     * @return int
-     */
-    public function updateArticle(FullArticle $article)
+    public function updateArticle(FullArticle $article): int
     {
         $conn = $this->getConnection();
         $sql = <<<'EOS'
@@ -253,12 +228,8 @@ EOS;
         return (int) $res;
     }
 
-    /**
-     * @param string $field
-     * @param int $status
-     * @return void
-     */
-    public function autoChangeStatus($field, $status)
+    /** @return void */
+    public function autoChangeStatus(string $field, int $status)
     {
         $conn = $this->getConnection();
         $sql = <<<SQL
@@ -272,12 +243,8 @@ SQL;
         $statement->execute();
     }
 
-    /**
-     * @param array<int> $ids
-     * @param int $status
-     * @return int
-     */
-    public function updateStatusOfArticlesWithIds(array $ids, $status)
+    /** @param list<int> $ids */
+    public function updateStatusOfArticlesWithIds(array $ids, int $status): int
     {
         $sql = sprintf(
             'UPDATE articles SET version = version + 1, status = :status WHERE id in (%s)',
@@ -294,10 +261,7 @@ SQL;
         return (int) $res;
     }
 
-    /**
-     * @return int
-     */
-    public function deleteArticle(FullArticle $article)
+    public function deleteArticle(FullArticle $article): int
     {
         $sql = 'DELETE FROM articles WHERE id = :id AND version = :version';
         $conn = $this->getConnection();
@@ -312,11 +276,8 @@ SQL;
         return (int) $res;
     }
 
-    /**
-     * @param array<int> $ids
-     * @return int|false
-     */
-    public function deleteArticlesWithIds(array $ids)
+    /** @param list<int> $ids */
+    public function deleteArticlesWithIds(array $ids): int
     {
         $sql = sprintf(
             'DELETE FROM articles WHERE id in (%s)',
@@ -327,14 +288,11 @@ SQL;
         if ($res) {
             $res = $conn->changes();
         }
-        return $res;
+        return (int) $res;
     }
 
-    /**
-     * @param int $articleId
-     * @return void
-     */
-    public function recordPageView($articleId)
+    /** @return void */
+    public function recordPageView(int $articleId)
     {
         $sql = 'INSERT INTO page_views VALUES (:article_id, :timestamp)';
         $conn = $this->getConnection();
@@ -345,11 +303,7 @@ SQL;
         $statement->execute();
     }
 
-    /**
-     * @param string $filename
-     * @return bool
-     */
-    public function exportToCsv($filename)
+    public function exportToCsv(string $filename): bool
     {
         if (!($stream = @fopen($filename, 'w'))) {
             return false;
@@ -379,11 +333,7 @@ SQL;
         return true;
     }
 
-    /**
-     * @param string $filename
-     * @return bool
-     */
-    public function importFromCsv($filename)
+    public function importFromCsv(string $filename): bool
     {
         $conn = $this->getConnection();
         $conn->exec('BEGIN TRANSACTION');

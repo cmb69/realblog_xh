@@ -39,16 +39,16 @@ class Finder
     }
 
     /**
-     * @param int $status
-     * @param int $limit
-     * @param int $offset
-     * @param int $order
-     * @param string $category
-     * @param string|null $search
-     * @return Article[]
+     * @return list<Article>
      */
-    public function findArticles($status, $limit, $offset = 0, $order = -1, $category = 'all', $search = null)
-    {
+    public function findArticles(
+        int $status,
+        int $limit,
+        int $offset = 0,
+        int $order = -1,
+        string $category = 'all',
+        ?string $search = null
+    ): array {
         if ($order === -1) {
             $order = 'DESC';
         } else {
@@ -82,12 +82,8 @@ SQL;
         return $objects;
     }
 
-    /**
-     * @param int $start
-     * @param int $end
-     * @return Article[]
-     */
-    public function findArchivedArticlesInPeriod($start, $end)
+    /** @return list<Article> */
+    public function findArchivedArticlesInPeriod(int $start, int $end): array
     {
         $sql = <<<'SQL'
 SELECT id, date, status, categories, title, teaser, length(body) AS hasBody, feedable, commentable
@@ -110,10 +106,8 @@ SQL;
         return $objects;
     }
 
-    /**
-     * @return int[]
-     */
-    public function findArchiveYears()
+    /** @return list<int> */
+    public function findArchiveYears(): array
     {
         $db = $this->db->getConnection();
         $sql = <<<'SQL'
@@ -129,11 +123,8 @@ SQL;
         return $years;
     }
 
-    /**
-     * @param string $search
-     * @return Article[]
-     */
-    public function findArchivedArticlesContaining($search)
+    /** @return list<Article> */
+    public function findArchivedArticlesContaining(string $search): array
     {
         $sql = <<<'SQL'
 SELECT id, date, status, categories, title, teaser, length(body) AS hasBody, feedable, commentable
@@ -155,13 +146,8 @@ SQL;
         return $objects;
     }
 
-    /**
-     * @param array<int> $statuses
-     * @param string $category
-     * @param string|null $search
-     * @return int
-     */
-    public function countArticlesWithStatus(array $statuses, $category = 'all', $search = null)
+    /** @param list<int> $statuses */
+    public function countArticlesWithStatus(array $statuses, string $category = 'all', ?string $search = null): int
     {
         $db = $this->db->getConnection();
         if (empty($statuses)) {
@@ -190,12 +176,10 @@ SQL;
     }
 
     /**
-     * @param array<int> $statuses
-     * @param int $limit
-     * @param int $offset
-     * @return Article[]
+     * @param list<int> $statuses
+     * @return list<Article>
      */
-    public function findArticlesWithStatus(array $statuses, $limit, $offset)
+    public function findArticlesWithStatus(array $statuses, int $limit, int $offset): array
     {
         if (empty($statuses)) {
             $whereClause = '';
@@ -217,11 +201,8 @@ SQL;
         return $objects;
     }
 
-    /**
-     * @param int $count
-     * @return Article[]
-     */
-    public function findFeedableArticles($count)
+    /** @return list<Article> */
+    public function findFeedableArticles(int $count)
     {
         $sql = <<<SQL
 SELECT id, date, status, categories, title, teaser, length(body) AS hasBody, feedable, commentable
@@ -242,11 +223,8 @@ SQL;
         return $objects;
     }
 
-    /**
-     * @param int $limit
-     * @return MostPopularArticle[]
-     */
-    public function findMostPopularArticles($limit)
+    /** @return list<MostPopularArticle> */
+    public function findMostPopularArticles(int $limit): array
     {
         $sql = <<<SQL
 SELECT articles.id, articles.title, COUNT(*) AS page_views
@@ -265,10 +243,8 @@ SQL;
         return $objects;
     }
 
-    /**
-     * @return list<string>
-     */
-    public function findAllCategories()
+    /** @return list<string> */
+    public function findAllCategories(): array
     {
         $db = $this->db->getConnection();
         $statement = $db->prepare('SELECT DISTINCT categories FROM articles');
@@ -286,11 +262,7 @@ SQL;
         return $categories;
     }
 
-     /**
-     * @param int $id
-     * @return FullArticle|null
-     */
-    public function findById($id)
+    public function findById(int $id): ?FullArticle
     {
         $db = $this->db->getConnection();
         $statement = $db->prepare('SELECT * FROM articles WHERE id = :id');
