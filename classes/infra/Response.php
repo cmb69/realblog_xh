@@ -156,29 +156,56 @@ class Response
         global $title, $description, $hjs, $bjs;
 
         if ($this->location !== null) {
-            header("Location: " . $this->location->absolute());
-            exit;
-        }
-        if ($this->contentType !== null) {
-            header("Content-Type: " . $this->contentType);
+            $this->header("Location: " . $this->location->absolute());
+            $this->exit();
+        } elseif ($this->contentType !== null) {
+            $this->header("Content-Type: " . $this->contentType);
             echo $this->output;
-            exit;
+            $this->exit();
+        } else {
+            if ($this->title !== null) {
+                $title = $this->title;
+            }
+            if ($this->description !== null) {
+                $description = $this->description;
+            }
+            if ($this->hjs !== null) {
+                $hjs .= $this->hjs;
+            }
+            if ($this->bjs !== null) {
+                $bjs .= $this->bjs;
+            }
+            foreach ($this->cookies as $name => $value) {
+                $this->setcookie($name, $value, 0, CMSIMPLE_ROOT);
+            }
+            return $this->output;
         }
-        if ($this->title !== null) {
-            $title = $this->title;
-        }
-        if ($this->description !== null) {
-            $description = $this->description;
-        }
-        if ($this->hjs !== null) {
-            $hjs .= $this->hjs;
-        }
-        if ($this->bjs !== null) {
-            $bjs .= $this->bjs;
-        }
-        foreach ($this->cookies as $name => $value) {
-            setcookie($name, $value, 0, CMSIMPLE_ROOT);
-        }
-        return $this->output;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     * @return void
+     */
+    protected function setCookie(string $name, string $value)
+    {
+        setcookie($name, $value, 0, CMSIMPLE_ROOT);
+    }
+
+    /**
+     * @codeCoverageIgnore
+     * @return void
+     */
+    protected function header(string $header)
+    {
+        header($header);
+    }
+
+    /**
+     * @codeCoverageIgnore
+     * @return never
+     */
+    protected function exit()
+    {
+        exit;
     }
 }
