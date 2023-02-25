@@ -354,15 +354,26 @@ SQL;
         if (!($stream = @fopen($filename, 'w'))) {
             return false;
         }
-        $sql = 'SELECT * FROM articles';
+        $sql = <<<SQL
+SELECT id, date, publishing_date, archiving_date, status, categories, title, teaser, body, feedable, commentable
+FROM articles
+SQL;
         $conn = $this->getConnection();
         $statement = $conn->prepare($sql);
         assert($statement !== false);
         $result = $statement->execute();
         assert($result !== false);
+        $record = [];
+        for ($i = 0; $i < $result->numColumns(); $i++) {
+            $record[] = $result->columnName($i);
+        }
+        fputcsv($stream, $record, ",", "\"", "\0");
         while (($record = $result->fetchArray(SQLITE3_NUM)) !== false) {
-            $record = array_map('XH_rmws', $record);
-            fputs($stream, implode("\t", $record) . "\n");
+            $record[1] = date("Y-m-d H:i:s", $record[1]);
+            $record[2] = date("Y-m-d H:i:s", $record[2]);
+            $record[3] = date("Y-m-d H:i:s", $record[3]);
+            $record[5] = trim($record[5], ",");
+            fputcsv($stream, $record, ",", "\"", "\0");
         }
         fclose($stream);
         return true;
@@ -389,20 +400,20 @@ EOS;
         if (!($stream = fopen($filename, 'r'))) {
             return false;
         }
-        while (($record = fgetcsv($stream, 0, "\t", "\"", "\0")) !== false) {
+        fgetcsv($stream, 0, ",", "\"", "\0");
+        while (($record = fgetcsv($stream, 0, ",", "\"", "\0")) !== false) {
             assert($record !== null);
             $statement->bindValue(':id', $record[0], SQLITE3_INTEGER);
-            $statement->bindValue(':version', $record[1], SQLITE3_INTEGER);
-            $statement->bindValue(':date', $record[2], SQLITE3_INTEGER);
-            $statement->bindValue(':publishing_date', $record[3], SQLITE3_INTEGER);
-            $statement->bindValue(':archiving_date', $record[4], SQLITE3_INTEGER);
-            $statement->bindValue(':status', $record[5], SQLITE3_INTEGER);
-            $statement->bindValue(':categories', $record[6], SQLITE3_TEXT);
-            $statement->bindValue(':title', $record[7], SQLITE3_TEXT);
-            $statement->bindValue(':teaser', $record[8], SQLITE3_TEXT);
-            $statement->bindValue(':body', $record[9], SQLITE3_TEXT);
-            $statement->bindValue(':feedable', $record[10], SQLITE3_INTEGER);
-            $statement->bindValue(':commentable', $record[11], SQLITE3_INTEGER);
+            $statement->bindValue(':date', strtotime((string) $record[1]), SQLITE3_INTEGER);
+            $statement->bindValue(':publishing_date', strtotime((string) $record[2]), SQLITE3_INTEGER);
+            $statement->bindValue(':archiving_date', strtotime((string) $record[3]), SQLITE3_INTEGER);
+            $statement->bindValue(':status', $record[4], SQLITE3_INTEGER);
+            $statement->bindValue(':categories', ",{$record[5]},", SQLITE3_TEXT);
+            $statement->bindValue(':title', $record[6], SQLITE3_TEXT);
+            $statement->bindValue(':teaser', $record[7], SQLITE3_TEXT);
+            $statement->bindValue(':body', $record[8], SQLITE3_TEXT);
+            $statement->bindValue(':feedable', $record[9], SQLITE3_INTEGER);
+            $statement->bindValue(':commentable', $record[10], SQLITE3_INTEGER);
             if (!$statement->execute()) {
                 return false;
             }

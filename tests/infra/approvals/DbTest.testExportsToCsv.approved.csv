@@ -1,3 +1,4 @@
-1	1	1676974220	1676974220	1676974220	1	,,	My Article	You should read it!	It has a lot of useful info.	0	0
-2	1	1676974220	1676974220	1676974220	1	,,	My Article	You should read it!	It has a lot of useful info.	0	0
-3	1	1676974220	1676974220	1676974220	1	,,	My Article	You should read it!	It has a lot of useful info.	0	0
+id,date,publishing_date,archiving_date,status,categories,title,teaser,body,feedable,commentable
+1,"2023-02-21 10:10:20","2023-02-21 10:10:20","2023-02-21 10:10:20",1,,"My Article","You should read it!","It has a lot of useful info.",0,0
+2,"2023-02-21 10:10:20","2023-02-21 10:10:20","2023-02-21 10:10:20",1,,"My Article","You should read it!","It has a lot of useful info.",0,0
+3,"2023-02-21 10:10:20","2023-02-21 10:10:20","2023-02-21 10:10:20",1,,"My Article","You should read it!","It has a lot of useful info.",0,0
