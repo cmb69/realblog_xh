@@ -389,7 +389,7 @@ EOS;
         if (!($stream = fopen($filename, 'r'))) {
             return false;
         }
-        while (($record = fgetcsv($stream, 0, "\t")) !== false) {
+        while (($record = fgetcsv($stream, 0, "\t", "\"", "\0")) !== false) {
             assert($record !== null);
             $statement->bindValue(':id', $record[0], SQLITE3_INTEGER);
             $statement->bindValue(':version', $record[1], SQLITE3_INTEGER);
