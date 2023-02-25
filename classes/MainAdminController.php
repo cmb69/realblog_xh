@@ -23,6 +23,7 @@
 
 namespace Realblog;
 
+use Error;
 use Realblog\Infra\CsrfProtector;
 use Realblog\Infra\DB;
 use Realblog\Infra\Editor;
@@ -33,7 +34,6 @@ use Realblog\Infra\Url;
 use Realblog\Infra\View;
 use Realblog\Value\Article;
 use Realblog\Value\FullArticle;
-use RuntimeException;
 
 class MainAdminController
 {
@@ -63,9 +63,6 @@ class MainAdminController
     /** @var Response */
     private $response;
 
-    /** @var int */
-    private $page;
-
     /** @param array<string,string> $conf */
     public function __construct(
         array $conf,
@@ -91,7 +88,6 @@ class MainAdminController
             $page = max($request->intFromGet("realblog_page"), 1);
             $this->response->addCookie('realblog_page', (string) $page);
         }
-        $this->page = $this->request->realblogPage();
         switch ($action) {
             default:
                 $this->defaultAction();
@@ -141,7 +137,7 @@ class MainAdminController
         $total = $this->finder->countArticlesWithStatus($statuses);
         $limit = (int) $this->conf['admin_records_page'];
         $pageCount = (int) ceil($total / $limit);
-        $page = max(min($this->page, $pageCount), 1);
+        $page = min($this->request->realblogPage(), $pageCount);
         $offset = ($page - 1) * $limit;
         $articles = $this->finder->findArticlesWithStatus($statuses, $limit, $offset);
         $this->response->setOutput($this->renderArticles($articles, $pageCount));
@@ -156,14 +152,33 @@ class MainAdminController
     /** @param list<Article> $articles */
     private function renderArticles(array $articles, int $pageCount): string
     {
-        $filters = $this->getFilterStatuses();
-        $page = min(max($this->page, 0), $pageCount);
+        $page = min($this->request->realblogPage(), $pageCount);
+        $data = [
+            "imageFolder" => $this->request->pluginsFolder() . "realblog/images/",
+            "page" => $page,
+            "prevPage" => max($page - 1, 1),
+            "nextPage" => min($page + 1, $pageCount),
+            "lastPage" => $pageCount,
+            "articles" => $this->articleRecords($articles, $page),
+            "actionUrl" => $this->request->url()->withPage("")->relative(),
+            "states" => self::STATES,
+            "filters" => $this->getFilterStatuses(),
+        ];
+        return $this->view->render("articles_form", $data);
+    }
+
+    /**
+     * @param list<Article> $articles
+     * @return list<array{id:int,date:string,status:int,categories:string,title:string,feedable:bool,commentable:bool,delete_url:string,edit_url:string}>
+     */
+    private function articleRecords(array $articles, int $page)
+    {
         $records = [];
         foreach ($articles as $article) {
             $params = [
                 "admin" => "plugin_main",
                 "realblog_id" => (string) $article->id,
-                 "realblog_page" => (string) $page
+                "realblog_page" => (string) $page
             ];
             $records[] = [
                 "id" => $article->id,
@@ -179,108 +194,63 @@ class MainAdminController
                     ->withParams(["action" => "edit"] + $params)->relative(),
             ];
         }
-        $data = [
-            'imageFolder' => $this->request->pluginsFolder() . "realblog/images/",
-            'page' => $page,
-            'prevPage' => max($page - 1, 1),
-            'nextPage' => min($page + 1, $pageCount),
-            'lastPage' => $pageCount,
-            'articles' => $records,
-            'actionUrl' => $this->request->url()->withPage("")->relative(),
-            'states' => self::STATES,
-            'filters' => $filters,
-        ];
-        return $this->view->render('articles-form', $data);
+        return $records;
     }
 
     /** @return void */
     private function createAction()
     {
-        $this->renderArticle('create');
+        $timestamp = $this->request->time();
+        $article = new FullArticle(0, 0, $timestamp, 2147483647, 2147483647, 0, '', '', '', '', false, false);
+        $this->renderArticleForm($article, $this->view->text("tooltip_create"), "do_create", "btn_create");
     }
 
     /** @return void */
     private function editAction()
     {
-        $this->renderArticle('edit');
+        $article = $this->finder->findById(max($this->request->intFromGet("realblog_id"), 1));
+        if (!$article) {
+            $this->response->setOutput($this->view->message("fail", "message_not_found"));
+            return;
+        }
+        $this->renderArticleForm($article, $this->view->text("title_edit", $article->id), "do_edit", "btn_edit");
     }
 
     /** @return void */
     private function deleteAction()
     {
-        $this->renderArticle('delete');
+        $article = $this->finder->findById(max($this->request->intFromGet("realblog_id"), 1));
+        if (!$article) {
+            $this->response->setOutput($this->view->message("fail", "message_not_found"));
+            return;
+        }
+        $this->renderArticleForm($article, $this->view->text("title_delete", $article->id), "do_delete", "btn_delete");
     }
 
     /** @return void */
-    private function renderArticle(string $action)
+    private function renderArticleForm(FullArticle $article, string $title, string $action, string $button)
     {
         $this->editor->init(['realblog_headline_field', 'realblog_story_field']);
-        if ($action === 'create') {
-            $article = new FullArticle(
-                0,
-                0,
-                $this->request->time(),
-                2147483647,
-                2147483647,
-                0,
-                '',
-                '',
-                '',
-                '',
-                false,
-                false
-            );
-        } else {
-            $id = max($this->request->intFromGet("realblog_id"), 1);
-            $article = $this->finder->findById($id);
-            if (!$article) {
-                $this->response->setOutput($this->view->message("fail", "message_not_found"));
-                return;
-            }
-        }
-        $this->renderForm($article, $action);
-    }
-
-    /** @return void */
-    private function renderForm(FullArticle $article, string $action)
-    {
-        switch ($action) {
-            case 'create':
-                $title = $this->view->text("tooltip_create");
-                break;
-            case 'edit':
-                $title = $this->view->text("title_edit", $article->id);
-                break;
-            case 'delete':
-                $title = $this->view->text("title_delete", $article->id);
-                break;
-            default:
-                throw new RuntimeException("Unsupported action");
-        }
-        $bjs = '<script>REALBLOG.categories = '
-            . json_encode($this->finder->findAllCategories()) . ';</script>' . "\n"
-            . '<script src="' . $this->request->pluginsFolder()
-            . 'realblog/realblog.js"></script>';
-        $data = [
-            'article' => $article,
-            'title' => $title,
-            'date' => (string) date('Y-m-d', $article->date),
-            'publishing_date' => (string) date('Y-m-d', $article->publishingDate),
-            'archiving_date' => (string) date('Y-m-d', $article->archivingDate),
-            'actionUrl' => $this->request->url()->withPage("realblog")
+        $bjs = "\n<script>REALBLOG.categories = " . json_encode($this->finder->findAllCategories()) . ";</script>"
+            . "\n<script src=\"" . $this->request->pluginsFolder() . "realblog/realblog.js\"></script>";
+        $this->response->setTitle($title)->setBjs($bjs)->setOutput($this->view->render("article_form", [
+            "article" => $article,
+            "title" => $title,
+            "date" => (string) date("Y-m-d", $article->date),
+            "publishing_date" => (string) date("Y-m-d", $article->publishingDate),
+            "archiving_date" => (string) date("Y-m-d", $article->archivingDate),
+            "actionUrl" => $this->request->url()->withPage("realblog")
                 ->withParams(["admin" => "plugin_main"])->relative(),
-            'action' => "do_{$action}",
-            'csrfToken' => $this->csrfProtector->token(),
-            'isAutoPublish' => $this->conf['auto_publish'],
-            'isAutoArchive' => $this->conf['auto_archive'],
-            'states' => self::STATES,
-            'categories' => trim($article->categories, ','),
-            'button' => "btn_{$action}",
-        ];
-        $this->response->setOutput($this->view->render('article-form', $data))
-            ->setTitle($title)->setBjs($bjs);
+            "action" => $action,
+            "csrfToken" => $this->csrfProtector->token(),
+            "isAutoPublish" => (bool) $this->conf["auto_publish"],
+            "isAutoArchive" => (bool) $this->conf["auto_archive"],
+            "states" => self::STATES,
+            "categories" => trim($article->categories, ","),
+            "button" => $button,
+        ]));
     }
-
+    
     /** @return void */
     private function doCreateAction()
     {
@@ -288,13 +258,12 @@ class MainAdminController
         $article = $this->request->articleFromPost();
         $res = $this->db->insertArticle($article);
         if ($res === 1) {
-            $this->redirectToOverviewResponse($this->request->url());
+            $this->response->redirect($this->overviewUrl());
             return;
-        } else {
-            $info = $this->view->message("fail", "story_added_error");
         }
-        $output = $this->renderInfo($this->request->url(), "tooltip_create", $info);
-        $this->response->setOutput($output)->setTitle($this->view->text("tooltip_create"));
+        $info = $this->view->message("fail", "story_added_error");
+        $output = $this->renderInfo("tooltip_create", $info);
+        $this->response->setTitle($this->view->text("tooltip_create"))->setOutput($output);
     }
 
     /** @return void */
@@ -304,13 +273,12 @@ class MainAdminController
         $article = $this->request->articleFromPost();
         $res = $this->db->updateArticle($article);
         if ($res === 1) {
-            $this->redirectToOverviewResponse($this->request->url());
+            $this->response->redirect($this->overviewUrl());
             return;
-        } else {
-            $info = $this->view->message("fail", "story_modified_error");
         }
-        $output = $this->renderInfo($this->request->url(), "tooltip_edit", $info);
-        $this->response->setOutput($output)->setTitle($this->view->text("tooltip_edit"));
+        $info = $this->view->message("fail", "story_modified_error");
+        $output = $this->renderInfo("tooltip_edit", $info);
+        $this->response->setTitle($this->view->text("tooltip_edit"))->setOutput($output);
     }
 
     /** @return void */
@@ -320,13 +288,12 @@ class MainAdminController
         $article = $this->request->articleFromPost();
         $res = $this->db->deleteArticle($article);
         if ($res === 1) {
-            $this->redirectToOverviewResponse($this->request->url());
+            $this->response->redirect($this->overviewUrl());
             return;
-        } else {
-            $info = $this->view->message("fail", "story_deleted_error");
         }
-        $output = $this->renderInfo($this->request->url(), "tooltip_delete", $info);
-        $this->response->setOutput($output)->setTitle($this->view->text("tooltip_delete"));
+        $info = $this->view->message("fail", "story_deleted_error");
+        $output = $this->renderInfo("tooltip_delete", $info);
+        $this->response->setTitle($this->view->text("tooltip_delete"))->setOutput($output);
     }
 
     /** @return void */
@@ -338,7 +305,7 @@ class MainAdminController
     /** @return void */
     private function changeStatusAction()
     {
-        $this->response->setOutput($this->renderConfirmation('change-status'));
+        $this->response->setOutput($this->renderConfirmation('change_status'));
     }
 
     private function renderConfirmation(string $kind): string
@@ -347,19 +314,13 @@ class MainAdminController
             'ids' => $this->request->realblogIdsFromGet(),
             'action' => $this->request->url()->withPage("realblog")
                 ->withParams(["admin" => "plugin_main"])->relative(),
-            'url' => $this->request->url()->withPage("realblog")
-                ->withParams([
-                    "admin" => "plugin_main",
-                    "action" => "plugin_text",
-                    "realblog_page" => (string) $this->page
-                ])
-                ->relative(),
+            'url' => $this->overviewUrl()->relative(),
             'csrfToken' => $this->csrfProtector->token(),
         ];
-        if ($kind === 'change-status') {
+        if ($kind === 'change_status') {
             $data['states'] = self::STATES;
         }
-        return $this->view->render("confirm-$kind", $data);
+        return $this->view->render("confirm_$kind", $data);
     }
 
     /** @return void */
@@ -369,15 +330,16 @@ class MainAdminController
         $ids = $this->request->realblogIdsFromPost();
         $res = $this->db->deleteArticlesWithIds($ids);
         if ($res === count($ids)) {
-            $this->redirectToOverviewResponse($this->request->url());
+            $this->response->redirect($this->overviewUrl());
             return;
-        } elseif ($res > 0) {
+        }
+        if ($res > 0) {
             $info = $this->view->message("warning", "deleteall_warning", $res, count($ids));
         } else {
             $info = $this->view->message("fail", "deleteall_error");
         }
-        $output = $this->renderInfo($this->request->url(), "tooltip_delete_selected", $info);
-        $this->response->setOutput($output)->setTitle($this->view->text("tooltip_delete_selected"));
+        $output = $this->renderInfo("tooltip_delete_selected", $info);
+        $this->response->setTitle($this->view->text("tooltip_delete_selected"))->setOutput($output);
     }
 
     /** @return void */
@@ -388,32 +350,33 @@ class MainAdminController
         $status = $this->request->statusFromPost();
         $res = $this->db->updateStatusOfArticlesWithIds($ids, $status);
         if ($res === count($ids)) {
-            $this->redirectToOverviewResponse($this->request->url());
+            $this->response->redirect($this->overviewUrl());
             return;
-        } elseif ($res > 0) {
+        }
+        if ($res > 0) {
             $info = $this->view->message("warning", "changestatus_warning", $res, count($ids));
         } else {
             $info = $this->view->message("fail", "changestatus_error");
         }
-        $output = $this->renderInfo($this->request->url(), "tooltip_change_status", $info);
-        $this->response->setOutput($output)->setTitle($this->view->text("tooltip_change_status"));
+        $output = $this->renderInfo("tooltip_change_status", $info);
+        $this->response->setTitle($this->view->text("tooltip_change_status"))->setOutput($output);
     }
 
-    private function renderInfo(Url $url, string $title, string $message): string
+    private function renderInfo(string $title, string $message): string
     {
-        $params = ["admin" => "plugin_main", "action" => "plugin_text", "realblog_page" => (string) $this->page];
-
         return $this->view->render("info_message", [
             "title" => $title,
             "message" => $message,
-            "url" => $url->withPage("realblog")->withParams($params)->relative(),
+            "url" => $this->overviewUrl()->relative(),
         ]);
     }
 
-    /** @return void */
-    private function redirectToOverviewResponse(Url $url)
+    private function overviewUrl(): Url
     {
-        $params = ["admin" => "plugin_main", "action" => "plugin_text", "realblog_page" => (string) $this->page];
-        $this->response->redirect($url->withPage("realblog")->withParams($params));
+        return $this->request->url()->withPage("realblog")->withParams([
+            "admin" => "plugin_main",
+            "action" => "plugin_text",
+            "realblog_page" => (string) $this->request->realblogPage()
+        ]);
     }
 }
