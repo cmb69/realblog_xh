@@ -176,7 +176,7 @@ class Response
                 $bjs .= $this->bjs;
             }
             foreach ($this->cookies as $name => $value) {
-                $this->setcookie($name, $value, 0, CMSIMPLE_ROOT);
+                $this->setcookie($name, $value);
             }
             return $this->output;
         }
