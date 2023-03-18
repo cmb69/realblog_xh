@@ -37,4 +37,4 @@ jobs:
       - name: phing stan
         run: cd cmsimplexh/plugins/realblog && PATH=tools:$PATH phing stan
       - name: phing test
-        run: cd cmsimplexh/plugins/realblog && PATH=tools:$PATH phing test
+        run: cd cmsimplexh/plugins/realblog && PATH=tools:vendor/bin:$PATH phing test
