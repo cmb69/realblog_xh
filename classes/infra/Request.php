@@ -111,7 +111,7 @@ class Request
         }
         if ($this->admin() && $this->edit()) {
             $cookie = $this->cookie();
-            if (isset($cookie["realblog_page"]) && is_string($cookie["realblog_page"])) {
+            if (isset($cookie["realblog_page"])) {
                 return max((int) $cookie["realblog_page"], 1);
             }
         }

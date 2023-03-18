@@ -53,11 +53,11 @@ this program; if not, see <http://www.gnu.org/licenses>.
 use Realblog\Dic;
 use Realblog\Infra\Request;
 
+const REALBLOG_VERSION = "3.0beta9";
+
 /**
  * @var array<string,array<string,string>> $pth
  */
-
-const REALBLOG_VERSION = "3.0beta9";
 
 require_once $pth['folder']['plugin'] . 'compat.php';
 
