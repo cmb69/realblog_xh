@@ -42,7 +42,7 @@ class DataExchangeControllerTest extends TestCase
             new FakeFileSystem(),
             $this->view()
         );
-        $request = new FakeRequest(["path" => ["folder" => ["content" => "./content/"]]]);
+        $request = new FakeRequest(["path" => ["folder" => ["content" => "./content/", "plugins" => "./plugins/"]]]);
         $response = $sut($request, "");
         Approvals::verifyHtml($response->output());
     }
@@ -56,7 +56,7 @@ class DataExchangeControllerTest extends TestCase
             new FakeFileSystem(["isReadable" => true, "fileMTime" => 1677251242]),
             $this->view()
         );
-        $request = new FakeRequest(["path" => ["folder" => ["content" => "./content/"]]]);
+        $request = new FakeRequest(["path" => ["folder" => ["content" => "./content/", "plugins" => "./plugins/"]]]);
         $response = $sut($request, "");
         Approvals::verifyHtml($response->output());
     }

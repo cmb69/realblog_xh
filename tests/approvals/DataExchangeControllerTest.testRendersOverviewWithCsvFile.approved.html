@@ -13,7 +13,7 @@
     <input type="hidden" name="xh_csrf_token" value="e3c1b42a6098b48a39f9f54ddb3388f7">
     <button>Export to CSV</button>
   </form>
-  <form action="/?realblog" method="post" onsubmit="return confirm(&quot;The CSV import will overwrite all articles in the database!&quot;)">
+  <form id="realblog_import_csv" action="/?realblog" method="post" data-realblog='"The CSV import will overwrite all articles in the database!"'>
     <input type="hidden" name="admin" value="data_exchange">
     <input type="hidden" name="action" value="import_from_csv">
     <input type="hidden" name="xh_csrf_token" value="e3c1b42a6098b48a39f9f54ddb3388f7">

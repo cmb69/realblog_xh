@@ -106,6 +106,17 @@ class MainAdminControllerTest extends TestCase
         $this->assertEquals(["realblog_headline_field", "realblog_story_field"], $editor->classes());
     }
 
+    public function testCreateActionOutputsHjs(): void
+    {
+        $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
+        $request = new FakeRequest([
+            "path" => ["folder" => ["plugins" => "./plugins/"]],
+            "server" => ["REQUEST_TIME" => 1675205155]
+        ]);
+        $response = $sut($request, "create");
+        Approvals::verifyHtml($response->hjs());
+    }
+
     public function testCreateActionOutputsBjs(): void
     {
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
@@ -133,6 +144,14 @@ class MainAdminControllerTest extends TestCase
         $request = new FakeRequest(["path" => ["folder" => ["plugins" => "./plugins/"]]]);
         $sut($request, "edit");
         $this->assertEquals(["realblog_headline_field", "realblog_story_field"], $editor->classes());
+    }
+
+    public function testEditActionOutputsHjs(): void
+    {
+        $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
+        $request = new FakeRequest(["path" => ["folder" => ["plugins" => "./plugins/"]]]);
+        $response = $sut($request, "edit");
+        Approvals::verifyHtml($response->hjs());
     }
 
     public function testEditActionOutputsBjs(): void
@@ -178,6 +197,14 @@ class MainAdminControllerTest extends TestCase
         $request = new FakeRequest(["path" => ["folder" => ["plugins" => "./plugins/"]]]);
         $sut($request, "delete");
         $this->assertEquals(["realblog_headline_field", "realblog_story_field"], $editor->classes());
+    }
+
+    public function testDeletectionOutputsHjs(): void
+    {
+        $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
+        $request = new FakeRequest(["path" => ["folder" => ["plugins" => "./plugins/"]]]);
+        $response = $sut($request, "delete");
+        Approvals::verifyHtml($response->hjs());
     }
 
     public function testDeletectionOutputsBjs(): void

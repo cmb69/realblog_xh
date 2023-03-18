@@ -231,9 +231,10 @@ class MainAdminController
     private function renderArticleForm(FullArticle $article, string $title, string $action, string $button)
     {
         $this->editor->init(['realblog_headline_field', 'realblog_story_field']);
-        $bjs = "\n<script>var REALBLOG = REALBLOG || {}; REALBLOG.categories = " . json_encode($this->finder->findAllCategories()) . ";</script>"
-            . "\n<script src=\"" . $this->request->pluginsFolder() . "realblog/realblog.js\"></script>";
-        $this->response->setTitle($title)->setBjs($bjs)->setOutput($this->view->render("article_form", [
+        $json = json_encode($this->finder->findAllCategories());
+        $hjs = "\n<meta name=\"realblog\" content='$json'>";
+        $bjs = "\n<script src=\"" . $this->request->pluginsFolder() . "realblog/realblog.js\"></script>";
+        $this->response->setTitle($title)->setHjs($hjs)->setBjs($bjs)->setOutput($this->view->render("article_form", [
             "article" => $article,
             "title" => $title,
             "date" => (string) date("Y-m-d", $article->date),

@@ -19,38 +19,36 @@
  * along with Realblog_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @namespace
- */
-var REALBLOG = REALBLOG || {};
+(function () {
+    let meta = document.getElementsByTagName("meta").realblog;
+    if (!meta) return;
+    let categories = JSON.parse(meta.content);
+    if (!categories) return;
+    let select = document.getElementById("realblog_category_select");
+    if (!select) return
+    for (let i = 0; i < categories.length; i++) {
+        let option = document.createElement("option");
+        option.text = option.value = categories[i];
+        select.add(option);
+    }
+    select.onchange = function (event) {
+        let input = document.getElementById("realblog_categories");
+        let selectedIndex = event.target.selectedIndex;
+        event.target.selectedIndex = 0;
+        if (!input || !selectedIndex) return;
+        let category = event.target[selectedIndex].value;
+        if (input.value) {
+            input.value += "," + category;
+        } else {
+            input.value = category;
+        }
+    };
+}());
 
 (function () {
-    var select, i, option;
-
-    if (REALBLOG.categories) {
-        select = document.getElementById("realblog_category_select");
-        if (select) {
-            for (i = 0; i < REALBLOG.categories.length; i++) {
-                option = document.createElement("option");
-                option.text = option.value = REALBLOG.categories[i];
-                select.add(option);
-            }
-            select.onchange = function (event) {
-                var target, input, category;
-    
-                event = event || window.event;
-                target = event.target || event.srcElement;
-                input = document.getElementById("realblog_categories");
-                if (input && target.selectedIndex) {
-                    category = target[target.selectedIndex].value;
-                    if (input.value) {
-                        input.value += "," + category;
-                    } else {
-                        input.value = category;
-                    }
-                }
-                target.selectedIndex = 0;
-            };
-        }
-    }
+    let importForm = document.getElementById("realblog_import_csv");
+    if (!importForm) return;
+    importForm.onsubmit = function (event) {
+        return confirm(JSON.parse(event.target.dataset.realblog));
+    };
 }());

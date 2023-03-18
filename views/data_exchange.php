@@ -32,7 +32,7 @@ use Realblog\Infra\View;
     <button><?=$this->text('exchange_button_export')?></button>
   </form>
 <?if (isset($filename)):?>
-  <form action="<?=$this->esc($url)?>" method="post" onsubmit="return confirm(<?=$this->esc($confirm_import)?>)">
+  <form id="realblog_import_csv" action="<?=$this->esc($url)?>" method="post" data-realblog='<?=$this->raw($confirm_import)?>'>
     <input type="hidden" name="admin" value="data_exchange">
     <input type="hidden" name="action" value="import_from_csv">
     <input type="hidden" name="xh_csrf_token" value="<?=$this->esc($csrf_token)?>">

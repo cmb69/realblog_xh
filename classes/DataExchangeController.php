@@ -91,16 +91,18 @@ class DataExchangeController
     {
         $filename = $this->request->contentFolder() . "realblog/realblog.csv";
         $readable = $this->fileSystem->isReadable($filename);
-        $this->response->setOutput($this->view->render("data_exchange", [
-            "csrf_token" => $this->csrfProtector->token(),
-            "url" => $this->request->url()->withPage("realblog")->relative(),
-            "article_count" => $this->finder->countArticlesWithStatus([
-                Article::UNPUBLISHED, Article::PUBLISHED, Article::ARCHIVED
-            ]),
-            "confirm_import" => $this->view->json("exchange_confirm_import"),
-            "filename" => $readable ? $filename : null,
-            "filemtime" => $readable ? date("c", $this->fileSystem->fileMTime($filename)) : null,
-        ]));
+        $this->response
+            ->setBjs("\n<script src=\"" . $this->request->pluginsFolder() . "realblog/realblog.js\"></script>")
+            ->setOutput($this->view->render("data_exchange", [
+                "csrf_token" => $this->csrfProtector->token(),
+                "url" => $this->request->url()->withPage("realblog")->relative(),
+                "article_count" => $this->finder->countArticlesWithStatus([
+                    Article::UNPUBLISHED, Article::PUBLISHED, Article::ARCHIVED
+                ]),
+                "confirm_import" => $this->view->json("exchange_confirm_import"),
+                "filename" => $readable ? $filename : null,
+                "filemtime" => $readable ? date("c", $this->fileSystem->fileMTime($filename)) : null,
+            ]));
     }
 
     /** @return void */
