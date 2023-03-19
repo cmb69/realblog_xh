@@ -25,6 +25,7 @@ use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 use Realblog\Infra\DB;
 use Realblog\Infra\FakeRequest;
+use Realblog\Infra\View;
 use Realblog\Value\Article;
 
 class GeneralControllerTest extends TestCase
@@ -33,7 +34,7 @@ class GeneralControllerTest extends TestCase
     {
         $db = $this->db();
         $db->expects($this->once())->method("autoChangeStatus")->with('publishing_date', Article::PUBLISHED);
-        $sut = new GeneralController($this->conf(["auto_publish" => "true"]), $db);
+        $sut = new GeneralController($this->conf(["auto_publish" => "true"]), $db, $this->view());
         $sut(new FakeRequest());
     }
 
@@ -41,13 +42,13 @@ class GeneralControllerTest extends TestCase
     {
         $db = $this->db();
         $db->expects($this->once())->method("autoChangeStatus")->with('archiving_date', Article::ARCHIVED);
-        $sut = new GeneralController($this->conf(["auto_archive" => "true"]), $db);
+        $sut = new GeneralController($this->conf(["auto_archive" => "true"]), $db, $this->view());
         $sut(new FakeRequest());
     }
 
     public function testRendersFeedLinkWhenConfigured()
     {
-        $sut = new GeneralController($this->conf(["rss_enabled" => "true"]), $this->db());
+        $sut = new GeneralController($this->conf(["rss_enabled" => "true"]), $this->db(), $this->view());
         $response = $sut(new FakeRequest());
         Approvals::verifyHtml($response->hjs());
     }
@@ -64,5 +65,10 @@ class GeneralControllerTest extends TestCase
     private function db()
     {
         return $this->createMock(DB::class);
+    }
+
+    private function view()
+    {
+        return new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["realblog"]);
     }
 }

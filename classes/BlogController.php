@@ -27,12 +27,12 @@ use Realblog\Infra\DB;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Pages;
 use Realblog\Infra\Request;
-use Realblog\Infra\Response;
 use Realblog\Infra\Url;
 use Realblog\Infra\View;
 use Realblog\Logic\Util;
 use Realblog\Value\Article;
 use Realblog\Value\FullArticle;
+use Realblog\Value\Response;
 
 class BlogController
 {
@@ -54,9 +54,6 @@ class BlogController
     /** @var Request */
     private $request;
 
-    /** @var Response */
-    private $response;
-
     /** @param array<string,string> $conf */
     public function __construct(
         array $conf,
@@ -76,22 +73,26 @@ class BlogController
     {
         assert(in_array($mode, ["blog", "archive"], true));
         $this->request = $request;
-        $this->response = new Response;
+        $response = $this->dispatch($request, $mode, $showSearch, $category);
         if ($request->admin() && $request->edit() && $request->hasGet("realblog_page")) {
             $page = max($request->intFromget("realblog_page"), 1);
-            $this->response->addCookie("realblog_page", (string) $page);
+            $response = $response->withCookie("realblog_page", (string) $page);
         }
-        if ($request->hasGet("realblog_id")) {
-            $this->oneArticle(max($request->intFromGet("realblog_id"), 1));
-            return $this->response;
-        }
-        if ($mode === "blog") {
-            return $this->response->setOutput($this->allArticles($showSearch, $category));
-        }
-        return $this->response->setOutput($this->allArchivedArticles($showSearch));
+        return $response;
     }
 
-    private function allArticles(bool $showSearch, string $category): string
+    private function dispatch(Request $request, string $mode, bool $showSearch, string $category): Response
+    {
+        if ($request->hasGet("realblog_id")) {
+            return $this->oneArticle(max($request->intFromGet("realblog_id"), 1));
+        }
+        if ($mode === "blog") {
+            return $this->allArticles($showSearch, $category);
+        }
+        return $this->allArchivedArticles($showSearch);
+    }
+
+    private function allArticles(bool $showSearch, string $category): Response
     {
         $html = "";
         if ($showSearch) {
@@ -109,7 +110,7 @@ class BlogController
             $html .= $this->renderSearchResults($this->request->url(), "blog", $articleCount);
         }
         $html .= $this->renderArticles($articles, $articleCount, $page, $pageCount);
-        return $html;
+        return Response::create($html);
     }
 
     /** @param list<Article> $articles */
@@ -173,8 +174,7 @@ class BlogController
         ]);
     }
 
-    /** @return void */
-    private function oneArticle(int $id)
+    private function oneArticle(int $id): Response
     {
         $article = $this->finder->findById($id);
         if (isset($article)) {
@@ -182,18 +182,15 @@ class BlogController
                 $this->db->recordPageView($id);
             }
             if ($this->request->admin() || $article->status > Article::UNPUBLISHED) {
-                $this->renderArticle($article);
+                return $this->renderArticle($article);
             }
         }
+        return Response::create();
     }
 
-    /** @return void */
-    private function renderArticle(FullArticle $article)
+    private function renderArticle(FullArticle $article): Response
     {
         $teaser = trim(html_entity_decode(strip_tags($article->teaser), ENT_COMPAT, "UTF-8"));
-        $this->response
-            ->setTitle($this->pages->headingOf($this->request->page()) . " – " . $article->title)
-            ->setDescription(Util::shortenText($teaser));
         if ($article->status === Article::ARCHIVED) {
             $params = ["realblog_year" => (string) $this->request->year()];
         } else {
@@ -217,7 +214,7 @@ class BlogController
         } else {
             $story = ($article->body !== "") ? $article->body : $article->teaser;
         }
-        $this->response->setOutput($this->view->render("article", [
+        return Response::create($this->view->render("article", [
             "title" => $article->title,
             "heading" => $this->conf["heading_level"],
             "heading_above_meta" => $this->conf["heading_above_meta"],
@@ -233,10 +230,11 @@ class BlogController
             "date" => $this->view->date($article->date),
             "categories" => implode(", ", explode(",", trim($article->categories, ","))),
             "story" => $this->pages->evaluateScripting($story),
-        ]));
+        ]))->withTitle($this->pages->headingOf($this->request->page()) . " – " . $article->title)
+            ->withDescription(Util::shortenText($teaser));
     }
 
-    private function allArchivedArticles(bool $showSearch): string
+    private function allArchivedArticles(bool $showSearch): Response
     {
         $html = "";
         if ($showSearch) {
@@ -250,7 +248,7 @@ class BlogController
             $articles = array();
         }
         $html .= $this->renderArchive($articles);
-        return $html;
+        return Response::create($html);
     }
 
     /** @param list<Article> $articles */

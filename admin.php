@@ -24,6 +24,7 @@
 namespace Realblog;
 
 use Realblog\Infra\Request;
+use Realblog\Infra\Responder;
 
 /**
  * @var array<string,array<string,string>> $plugin_tx
@@ -47,13 +48,13 @@ if (XH_wantsPluginAdministration("realblog")) {
     $o .= pluginMenu("SHOW");
     switch ($admin) {
         case "":
-            $o .= Dic::makeInfoController()(new Request)->fire();
+            $o .= Responder::respond(Dic::makeInfoController()(new Request));
             break;
         case "plugin_main":
-            $o .= Dic::makeMainAdminController()(new Request, $action)->fire();
+            $o .= Responder::respond(Dic::makeMainAdminController()(new Request, $action));
             break;
         case "data_exchange":
-            $o .= Dic::makeDataExchangeController()(new Request, $action)->fire();
+            $o .= Responder::respond(Dic::makeDataExchangeController()(new Request, $action));
             break;
         default:
             $o .= plugin_admin_common();

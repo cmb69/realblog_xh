@@ -52,6 +52,7 @@ this program; if not, see <http://www.gnu.org/licenses>.
 
 use Realblog\Dic;
 use Realblog\Infra\Request;
+use Realblog\Infra\Responder;
 
 const REALBLOG_VERSION = "3.0beta9";
 
@@ -61,30 +62,30 @@ const REALBLOG_VERSION = "3.0beta9";
 
 require_once $pth['folder']['plugin'] . 'compat.php';
 
-Dic::makeGeneralController()(new Request)->fire();
-Dic::makeFeedController()(new Request)->fire();
+Responder::respond(Dic::makeGeneralController()(new Request));
+Responder::respond(Dic::makeFeedController()(new Request));
 
 function realblog_blog(bool $showSearch = false, string $category = "all"): string
 {
-    return Dic::makeBlogController()(new Request, "blog", $showSearch, $category)->fire();
+    return Responder::respond(Dic::makeBlogController()(new Request, "blog", $showSearch, $category));
 }
 
 function realblog_archive(bool $showSearch = false): string
 {
-    return Dic::makeBlogController()(new Request, "archive", $showSearch)->fire();
+    return Responder::respond(Dic::makeBlogController()(new Request, "archive", $showSearch));
 }
 
 function realblog_link(string $pageUrl, bool $showTeaser = false): string
 {
-    return Dic::makeLinkController()(new Request, $pageUrl, $showTeaser)->fire();
+    return Responder::respond(Dic::makeLinkController()(new Request, $pageUrl, $showTeaser));
 }
 
 function realblog_mostpopular(string $pageUrl): string
 {
-    return Dic::makeMostPopularController()(new Request, $pageUrl)->fire();
+    return Responder::respond(Dic::makeMostPopularController()(new Request, $pageUrl));
 }
 
 function realblog_feedlink(string $target = "_self"): string
 {
-    return Dic::makeFeedLinkController()(new Request, $target)->fire();
+    return Responder::respond(Dic::makeFeedLinkController()(new Request, $target));
 }

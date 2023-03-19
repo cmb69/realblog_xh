@@ -24,9 +24,9 @@ namespace Realblog;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Pages;
 use Realblog\Infra\Request;
-use Realblog\Infra\Response;
 use Realblog\Infra\View;
 use Realblog\Value\MostPopularArticle;
+use Realblog\Value\Response;
 
 class MostPopularController
 {
@@ -57,12 +57,11 @@ class MostPopularController
     public function __invoke(Request $request, string $pageUrl): Response
     {
         $this->request = $request;
-        $response = new Response;
         if (!$this->pages->hasPageWithUrl($pageUrl) || $this->conf["links_visible"] <= 0) {
-            return $response;
+            return Response::create();
         }
         $articles = $this->finder->findMostPopularArticles((int) $this->conf["links_visible"]);
-        return $response->setOutput($this->view->render("most_popular", [
+        return Response::create($this->view->render("most_popular", [
             "articles" => $this->articleRecords($articles, $pageUrl),
             "heading" => $this->conf["heading_level"],
         ]));

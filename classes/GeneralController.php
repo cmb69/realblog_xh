@@ -25,8 +25,9 @@ namespace Realblog;
 
 use Realblog\Infra\DB;
 use Realblog\Infra\Request;
-use Realblog\Infra\Response;
+use Realblog\Infra\View;
 use Realblog\Value\Article;
+use Realblog\Value\Response;
 
 class GeneralController
 {
@@ -36,16 +37,19 @@ class GeneralController
     /** @var DB */
     private $db;
 
+    /** @var View */
+    private $view;
+
     /** @param array<string,string> $conf */
-    public function __construct(array $conf, DB $db)
+    public function __construct(array $conf, DB $db, View $view)
     {
         $this->conf = $conf;
         $this->db = $db;
+        $this->view = $view;
     }
 
     public function __invoke(Request $request): Response
     {
-        $response = new Response;
         if ($this->conf['auto_publish']) {
             $this->db->autoChangeStatus('publishing_date', Article::PUBLISHED);
         }
@@ -53,10 +57,8 @@ class GeneralController
             $this->db->autoChangeStatus('archiving_date', Article::ARCHIVED);
         }
         if ($this->conf['rss_enabled']) {
-            return $response->setHjs(
-                "\n<link rel=\"alternate\" type=\"application/rss+xml\" href=\"./?realblog_feed=rss\">"
-            );
+            return Response::create()->withHjs($this->view->renderLink("./?realblog_feed=rss"));
         }
-        return $response;
+        return Response::create();
     }
 }

@@ -26,10 +26,10 @@ use Realblog\Infra\DB;
 use Realblog\Infra\FileSystem;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Request;
-use Realblog\Infra\Response;
 use Realblog\Infra\Url;
 use Realblog\Infra\View;
 use Realblog\Value\Article;
+use Realblog\Value\Response;
 
 class DataExchangeController
 {
@@ -51,9 +51,6 @@ class DataExchangeController
     /** @var Request */
     private $request;
 
-    /** @var Response */
-    private $response;
-
     public function __construct(
         DB $db,
         Finder $finder,
@@ -71,71 +68,58 @@ class DataExchangeController
     public function __invoke(Request $request, string $action): Response
     {
         $this->request = $request;
-        $this->response = new Response;
         switch ($action) {
             default:
-                $this->overview();
-                break;
+                return $this->overview();
             case "export_to_csv":
-                $this->exportToCsv();
-                break;
+                return $this->exportToCsv();
             case "import_from_csv":
-                $this->importFromCsv();
-                break;
+                return $this->importFromCsv();
         }
-        return $this->response;
     }
 
-    /** @return void */
-    private function overview()
+    private function overview(): Response
     {
         $filename = $this->request->contentFolder() . "realblog/realblog.csv";
         $readable = $this->fileSystem->isReadable($filename);
-        $this->response
-            ->setBjs("\n<script src=\"" . $this->request->pluginsFolder() . "realblog/realblog.js\"></script>")
-            ->setOutput($this->view->render("data_exchange", [
-                "csrf_token" => $this->csrfProtector->token(),
-                "url" => $this->request->url()->withPage("realblog")->relative(),
-                "article_count" => $this->finder->countArticlesWithStatus([
-                    Article::UNPUBLISHED, Article::PUBLISHED, Article::ARCHIVED
-                ]),
-                "confirm_import" => $this->view->json("exchange_confirm_import"),
-                "filename" => $readable ? $filename : null,
-                "filemtime" => $readable ? date("c", $this->fileSystem->fileMTime($filename)) : null,
-            ]));
+        return Response::create($this->view->render("data_exchange", [
+            "csrf_token" => $this->csrfProtector->token(),
+            "url" => $this->request->url()->withPage("realblog")->relative(),
+            "article_count" => $this->finder->countArticlesWithStatus([
+                Article::UNPUBLISHED, Article::PUBLISHED, Article::ARCHIVED
+            ]),
+            "confirm_import" => $this->view->json("exchange_confirm_import"),
+            "filename" => $readable ? $filename : null,
+            "filemtime" => $readable ? date("c", $this->fileSystem->fileMTime($filename)) : null,
+        ]))->withBjs($this->view->renderScript($this->request->pluginsFolder() . "realblog/realblog.js"));
     }
 
-    /** @return void */
-    private function exportToCsv()
+    private function exportToCsv(): Response
     {
         $this->csrfProtector->check();
         $filename = $this->request->contentFolder() . "realblog/realblog.csv";
         if ($this->db->exportToCsv($filename)) {
-            $this->redirectToDefaultResponse($this->request->url());
-            return;
+            return Response::redirect($this->overviewUrl());
         }
         $output = "\n<h1>Realblog – {$this->view->text("exchange_heading")}</h1>\n"
             . $this->view->message("fail", "exchange_export_failure", $filename);
-        $this->response->setOutput($output);
+        return Response::create($output);
     }
 
-    /** @return void */
-    private function importFromCsv()
+    private function importFromCsv(): Response
     {
         $this->csrfProtector->check();
         $filename = $this->request->contentFolder() . "realblog/realblog.csv";
         if ($this->db->importFromCsv($filename)) {
-            $this->redirectToDefaultResponse($this->request->url());
-            return;
+            return Response::redirect($this->overviewUrl());
         }
         $output = "\n<h1>Realblog – {$this->view->text("exchange_heading")}</h1>\n"
             . $this->view->message("fail", "exchange_import_failure", $filename);
-        $this->response->setOutput($output);
+        return Response::create($output);
     }
 
-    /** @return void */
-    private function redirectToDefaultResponse(Url $url)
+    private function overviewUrl(): string
     {
-        $this->response->redirect($url->withPage("realblog")->withParams(["admin" => "data_exchange"]));
+        return $this->request->url()->withPage("realblog")->withParams(["admin" => "data_exchange"])->absolute();
     }
 }

@@ -24,9 +24,9 @@
 namespace Realblog;
 
 use Realblog\Infra\Request;
-use Realblog\Infra\Response;
 use Realblog\Infra\SystemChecker;
 use Realblog\Infra\View;
+use Realblog\Value\Response;
 
 class InfoController
 {
@@ -58,7 +58,7 @@ class InfoController
                 "state" => "syscheck_$state",
             ];
         }
-        return (new Response)->setOutput($this->view->render("info", [
+        return Response::create($this->view->render("info", [
             "version" => REALBLOG_VERSION,
             "heading" => $this->conf["heading_level"],
             "checks" => $checks,
