@@ -23,9 +23,16 @@ namespace Realblog\Infra;
 
 use Realblog\Value\Article;
 use Realblog\Value\FullArticle;
+use Realblog\Value\Url;
 
 class Request
 {
+    /** @codeCoverageIgnore */
+    public static function current(): self
+    {
+        return new self;
+    }
+
     /** @codeCoverageIgnore */
     public function admin(): bool
     {
@@ -37,7 +44,7 @@ class Request
     {
         global $edit;
 
-        return $edit;
+        return defined("XH_ADM") && XH_ADM && $edit;
     }
 
     public function time(): int
@@ -47,30 +54,11 @@ class Request
 
     public function url(): Url
     {
-        return (new Url())->withPage($this->su());
-    }
-
-    public function pluginsFolder(): string
-    {
-        return $this->path()["folder"]["plugins"];
-    }
-
-    public function contentFolder(): string
-    {
-        return $this->path()["folder"]["content"];
-    }
-
-    public function imageFolder(): string
-    {
-        return $this->path()["folder"]["images"];
-    }
-
-    /** @codeCoverageIgnore */
-    public function language(): string
-    {
-        global $sl;
-
-        return $sl;
+        $rest = $_SERVER["QUERY_STRING"];
+        if ($rest !== "") {
+            $rest = "?" . $rest;
+        }
+        return Url::from(CMSIMPLE_URL . $rest);
     }
 
     public function page(): int
@@ -78,36 +66,30 @@ class Request
         return $this->s();
     }
 
-    public function hasGet(string $name): bool
-    {
-        $get = $this->get();
-        return isset($get[$name]);
-    }
-
     public function stringFromGet(string $name): string
     {
-        $get = $this->get();
-        if (!isset($get[$name]) || !is_string($get[$name])) {
+        $param = $this->url()->param($name);
+        if ($param === null || !is_string($param)) {
             return "";
         }
-        return (string) $get[$name];
+        return $param;
     }
 
     public function intFromGet(string $name): int
     {
-        $get = $this->get();
-        if (!isset($get[$name]) || !is_string($get[$name])) {
+        $param = $this->url()->param($name);
+        if ($param === null || !is_string($param)) {
             return 0;
         }
-        return (int) $get[$name];
+        return (int) $param;
     }
 
     /** @return positive-int */
     public function realblogPage(): int
     {
-        $get = $this->get();
-        if (isset($get["realblog_page"]) && is_string($get["realblog_page"])) {
-            return max((int) $this->get()["realblog_page"], 1);
+        $param = $this->url()->param("realblog_page");
+        if ($param !== null && is_string($param)) {
+            return max((int) $param, 1);
         }
         if ($this->admin() && $this->edit()) {
             $cookie = $this->cookie();
@@ -120,17 +102,18 @@ class Request
 
     public function year(): int
     {
-        return (int) ($this->get()["realblog_year"] ?? idate("Y"));
+        $param = $this->url()->param("realblog_year");
+        return (int) ($param ?? idate("Y"));
     }
 
     /** @return list<int> */
     public function realblogIdsFromGet(): array
     {
-        $get = $this->get();
-        if (!isset($get["realblog_ids"]) || !is_array($get["realblog_ids"])) {
+        $param = $this->url()->param("realblog_ids");
+        if ($param === null || !is_array($param)) {
             return [];
         }
-        return array_map("intval", array_filter($get["realblog_ids"], function ($id) {
+        return array_map("intval", array_filter($param, function ($id) {
             return (int) $id >= 1;
         }));
     }
@@ -193,13 +176,13 @@ class Request
     /** @return list<bool>|null */
     public function filtersFromGet(): ?array
     {
-        $get = $this->get();
-        if (!isset($get["realblog_filter"])) {
+        $param = $this->url()->param("realblog_filter");
+        if ($param === null) {
             return null;
         }
         $filters = [];
         for ($i = Article::UNPUBLISHED; $i <= Article::ARCHIVED; $i++) {
-            $filters[] = (bool) ($this->get()["realblog_filter"][$i] ?? false);
+            $filters[] = (bool) ($param[$i] ?? false);
         }
         return $filters;
     }
@@ -222,23 +205,6 @@ class Request
         global $s;
 
         return $s;
-    }
-
-    /** @codeCoverageIgnore */
-    protected function su(): string
-    {
-        global $su;
-
-        return $su;
-    }
-
-    /**
-     * @codeCoverageIgnore
-     * @return array<string,string|array<string>>
-     */
-    protected function get(): array
-    {
-        return $_GET;
     }
 
     /**
@@ -266,16 +232,5 @@ class Request
     protected function server(): array
     {
         return $_SERVER;
-    }
-
-    /**
-     * @codeCoverageIgnore
-     * @return array{file:array<string,string>,folder:array<string,string>}
-     */
-    protected function path(): array
-    {
-        global $pth;
-
-        return $pth;
     }
 }

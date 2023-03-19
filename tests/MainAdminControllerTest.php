@@ -31,6 +31,7 @@ use Realblog\Infra\Finder;
 use Realblog\Infra\View;
 use Realblog\Value\Article;
 use Realblog\Value\FullArticle;
+use Realblog\Value\Url;
 
 class MainAdminControllerTest extends TestCase
 {
@@ -40,8 +41,7 @@ class MainAdminControllerTest extends TestCase
         $request = new FakeRequest([
             "admin" => true,
             "edit" => true,
-            "get" => ["realblog_page" => "3"],
-            "path" => ["folder" => ["plugins" => "./plugins/"]],
+            "url" => Url::from("http://example.com/?&realblog_page=3"),
         ]);
         $response = $sut($request, "");
         $this->assertEquals(["realblog_page" => "3"], $response->cookies());
@@ -50,7 +50,7 @@ class MainAdminControllerTest extends TestCase
     public function testDefaultActionRendersOverview(): void
     {
         $sut = $this->sut(["finder" => ["articles" => $this->articles()]]);
-        $request = new FakeRequest(["path" => ["folder" => ["plugins" => "./plugins/"]]]);
+        $request = new FakeRequest();
         $response = $sut($request, "");
         Approvals::verifyHtml($response->output());
     }
@@ -59,8 +59,7 @@ class MainAdminControllerTest extends TestCase
     {
         $sut = $this->sut();
         $request = new FakeRequest([
-            "path" => ["folder" => ["plugins" => "./plugins/"]],
-            "get" => ["realblog_filter" => ["on", "", "on"]],
+            "url" => Url::from("http://example.com/?&realblog_filter[]=on&realblog_filter[]=&realblog_filter[]=on"),
         ]);
         $response = $sut($request, "");
         $this->assertEquals(["realblog_filter" => "[true,false,true]"], $response->cookies());
@@ -70,7 +69,6 @@ class MainAdminControllerTest extends TestCase
     {
         $sut = $this->sut();
         $request = new FakeRequest([
-            "path" => ["folder" => ["plugins" => "./plugins/"]],
             "admin" => true,
             "edit" => true,
             "cookie" => [
@@ -86,7 +84,6 @@ class MainAdminControllerTest extends TestCase
     {
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
         $request = new FakeRequest([
-            "path" => ["folder" => ["plugins" => "./plugins/"]],
             "server" => ["REQUEST_TIME" => 1675205155]
         ]);
         $response = $sut($request, "create");
@@ -99,7 +96,6 @@ class MainAdminControllerTest extends TestCase
         $editor = new FakeEditor;
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()], "editor" => $editor]);
         $request = new FakeRequest([
-            "path" => ["folder" => ["plugins" => "./plugins/"]],
             "server" => ["REQUEST_TIME" => 1675205155]
         ]);
         $sut($request, "create");
@@ -110,7 +106,6 @@ class MainAdminControllerTest extends TestCase
     {
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
         $request = new FakeRequest([
-            "path" => ["folder" => ["plugins" => "./plugins/"]],
             "server" => ["REQUEST_TIME" => 1675205155]
         ]);
         $response = $sut($request, "create");
@@ -121,7 +116,6 @@ class MainAdminControllerTest extends TestCase
     {
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
         $request = new FakeRequest([
-            "path" => ["folder" => ["plugins" => "./plugins/"]],
             "server" => ["REQUEST_TIME" => 1675205155]
         ]);
         $response = $sut($request, "create");
@@ -131,7 +125,7 @@ class MainAdminControllerTest extends TestCase
     public function testEditActionRendersArticle(): void
     {
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
-        $request = new FakeRequest(["path" => ["folder" => ["plugins" => "./plugins/"]]]);
+        $request = new FakeRequest();
         $response = $sut($request, "edit");
         Approvals::verifyHtml($response->output());
         $this->assertEquals("Edit article #1", $response->title());
@@ -141,7 +135,7 @@ class MainAdminControllerTest extends TestCase
     {
         $editor = new FakeEditor;
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()], "editor" => $editor]);
-        $request = new FakeRequest(["path" => ["folder" => ["plugins" => "./plugins/"]]]);
+        $request = new FakeRequest();
         $sut($request, "edit");
         $this->assertEquals(["realblog_headline_field", "realblog_story_field"], $editor->classes());
     }
@@ -149,7 +143,7 @@ class MainAdminControllerTest extends TestCase
     public function testEditActionOutputsHjs(): void
     {
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
-        $request = new FakeRequest(["path" => ["folder" => ["plugins" => "./plugins/"]]]);
+        $request = new FakeRequest();
         $response = $sut($request, "edit");
         Approvals::verifyHtml($response->hjs());
     }
@@ -157,7 +151,7 @@ class MainAdminControllerTest extends TestCase
     public function testEditActionOutputsBjs(): void
     {
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
-        $request = new FakeRequest(["path" => ["folder" => ["plugins" => "./plugins/"]]]);
+        $request = new FakeRequest();
         $response = $sut($request, "edit");
         Approvals::verifyHtml($response->bjs());
     }
@@ -168,7 +162,7 @@ class MainAdminControllerTest extends TestCase
             "conf" => ["auto_publish" => "true", "auto_archive" => "true"],
             "finder" => ["article" => $this->firstArticle()]
         ]);
-        $request = new FakeRequest(["path" => ["folder" => ["plugins" => "./plugins/"]]]);
+        $request = new FakeRequest();
         $response = $sut($request, "edit");
         Approvals::verifyHtml($response->output());
     }
@@ -184,7 +178,7 @@ class MainAdminControllerTest extends TestCase
     public function testDeleteActionRendersArticle(): void
     {
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
-        $request = new FakeRequest(["path" => ["folder" => ["plugins" => "./plugins/"]]]);
+        $request = new FakeRequest();
         $response = $sut($request, "delete");
         Approvals::verifyHtml($response->output());
         $this->assertEquals("Delete article #1", $response->title());
@@ -194,7 +188,7 @@ class MainAdminControllerTest extends TestCase
     {
         $editor = new FakeEditor;
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()], "editor" => $editor]);
-        $request = new FakeRequest(["path" => ["folder" => ["plugins" => "./plugins/"]]]);
+        $request = new FakeRequest();
         $sut($request, "delete");
         $this->assertEquals(["realblog_headline_field", "realblog_story_field"], $editor->classes());
     }
@@ -202,7 +196,7 @@ class MainAdminControllerTest extends TestCase
     public function testDeletectionOutputsHjs(): void
     {
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
-        $request = new FakeRequest(["path" => ["folder" => ["plugins" => "./plugins/"]]]);
+        $request = new FakeRequest();
         $response = $sut($request, "delete");
         Approvals::verifyHtml($response->hjs());
     }
@@ -210,7 +204,7 @@ class MainAdminControllerTest extends TestCase
     public function testDeletectionOutputsBjs(): void
     {
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
-        $request = new FakeRequest(["path" => ["folder" => ["plugins" => "./plugins/"]]]);
+        $request = new FakeRequest();
         $response = $sut($request, "delete");
         Approvals::verifyHtml($response->bjs());
     }
@@ -322,7 +316,9 @@ class MainAdminControllerTest extends TestCase
     public function testDeleteSelectedActionRendersConfirmation()
     {
         $sut = $this->sut();
-        $request = new FakeRequest(["get" => ["realblog_ids" => ["17", "4"]]]);
+        $request = new FakeRequest([
+            "url" => Url::from("http://example.com/?&realblog_ids[]=17&realblog_ids[]=4"),
+        ]);
         $response = $sut($request, "delete_selected");
         Approvals::verifyHtml($response->output());
     }
@@ -338,7 +334,9 @@ class MainAdminControllerTest extends TestCase
     public function testChangeStatusActionRendersConfirmation()
     {
         $sut = $this->sut();
-        $request = new FakeRequest(["get" => ["realblog_ids" => ["17", "4"]]]);
+        $request = new FakeRequest([
+            "url" => Url::from("http://example.com/?&realblog_ids[]=17&realblog_ids[]=4"),
+        ]);
         $response = $sut($request, "change_status");
         Approvals::verifyHtml($response->output());
     }
@@ -435,6 +433,7 @@ class MainAdminControllerTest extends TestCase
     private function sut($options = [])
     {
         return new MainAdminController(
+            "./plugins/realblog/",
             $this->conf($options["conf"] ?? []),
             $this->db($options["db"] ?? []),
             $this->finder($options["finder"] ?? []),

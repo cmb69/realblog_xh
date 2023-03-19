@@ -57,7 +57,7 @@ class GeneralController
             $this->db->autoChangeStatus('archiving_date', Article::ARCHIVED);
         }
         if ($this->conf['rss_enabled']) {
-            return Response::create()->withHjs($this->view->renderLink("./?realblog_feed=rss"));
+            return Response::create()->withHjs($this->view->renderLink("./?function=realblog_feed"));
         }
         return Response::create();
     }

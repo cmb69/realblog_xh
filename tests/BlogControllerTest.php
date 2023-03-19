@@ -30,6 +30,7 @@ use Realblog\Infra\Finder;
 use Realblog\Infra\View;
 use Realblog\Value\Article;
 use Realblog\Value\FullArticle;
+use Realblog\Value\Url;
 
 class BlogControllerTest extends TestCase
 {
@@ -37,7 +38,7 @@ class BlogControllerTest extends TestCase
     {
         $finder = $this->finder(["count" => 7, "articles" => $this->articles()]);
         $sut = new BlogController($this->conf(), $this->db(), $finder, $this->view(), new FakePages());
-        $request = new FakeRequest(["su" => "Blog"]);
+        $request = new FakeRequest(["url" => Url::from("http://example.com/?Blog")]);
         $response = $sut($request, "blog", true, "all");
         Approvals::verifyHtml($response->output());
     }
@@ -49,8 +50,7 @@ class BlogControllerTest extends TestCase
         $sut = new BlogController($conf, $this->db(), $this->finder(), $this->view(), $pages);
         $request = new FakeRequest([
             "s" => 1,
-            "su" => "Blog",
-            "get" => ["realblog_id" => "3", "realblog_search" => "word"]
+            "url" => Url::from("http://example.com/?Blog&realblog_id=3&realblog_search=word"),
         ]);
         $response = $sut($request, "blog", true, "all");
         Approvals::verifyHtml($response->output());
@@ -60,7 +60,10 @@ class BlogControllerTest extends TestCase
     {
         $pages = new FakePages(["h" => ["", "Blog"]]);
         $sut = new BlogController($this->conf(), $this->db(), $this->finder(), $this->view(), $pages);
-        $request = new FakeRequest(["s" => 1, "get" => ["realblog_id" => "3"]]);
+        $request = new FakeRequest([
+            "s" => 1,
+            "url" => Url::from("http://example.com/?/&realblog_id=3"),
+        ]);
         $response = $sut($request, "blog", true, "all");
         $this->assertEquals("Blog – Title", $response->title());
         $this->assertEquals("Teaser", $response->description());
@@ -72,14 +75,19 @@ class BlogControllerTest extends TestCase
         $db->expects($this->once())->method("recordPageView")->with(3);
         $pages = new FakePages(["h" => ["", "Blog"]]);
         $sut = new BlogController($this->conf(), $db, $this->finder(), $this->view(), $pages);
-        $request = new FakeRequest(["s" => 1, "get" => ["realblog_id" => "3"]]);
+        $request = new FakeRequest([
+            "s" => 1,
+            "url" => Url::from("http://example.com/?&realblog_id=3"),
+        ]);
         $sut($request, "blog", false, "all");
     }
 
     public function testRendersEmptySearchResults(): void
     {
         $sut = new BlogController($this->conf(), $this->db(), $this->finder(), $this->view(), new FakePages());
-        $request = new FakeRequest(["get" => ["realblog_search" => "search"]]);
+        $request = new FakeRequest([
+            "url" => Url::from("http://example.com/?&realblog_search=search"),
+        ]);
         $response = $sut($request, "blog", true, "all");
         Approvals::verifyHtml($response->output());
     }
@@ -87,7 +95,11 @@ class BlogControllerTest extends TestCase
     public function testSetsCookieInEditMode()
     {
         $sut = new BlogController($this->conf(), $this->db(), $this->finder(), $this->view(), new FakePages());
-        $request = new FakeRequest(["get" => ["realblog_page" => "3"], "admin" => true, "edit" => "true"]);
+        $request = new FakeRequest([
+            "admin" => true,
+            "edit" => "true",
+            "url" => Url::from("http://example.com/?&realblog_page=3"),
+        ]);
         $response = $sut($request, "blog", false, "all");
         $this->assertEquals(["realblog_page" => "3"], $response->cookies());
     }
@@ -100,7 +112,7 @@ class BlogControllerTest extends TestCase
         $sut = new BlogController($conf, $this->db(), $finder, $this->view(), $pages);
         $request = new FakeRequest([
             "s" => 1,
-            "su" => "Blog",
+            "url" => Url::from("http://example.com/?Blog"),
         ]);
         $response = $sut($request, "blog", true, "all");
         Approvals::verifyHtml($response->output());
@@ -114,8 +126,7 @@ class BlogControllerTest extends TestCase
         $sut = new BlogController($conf, $this->db(), $finder, $this->view(), $pages);
         $request = new FakeRequest([
             "s" => 1,
-            "su" => "Blog",
-            "get" => ["realblog_id" => "3", "realblog_search" => "word"]
+            "url" => Url::from("http://example.com/?Blog&realblog_id=3&realblog_search=word"),
         ]);
         $response = $sut($request, "blog", true, "all");
         Approvals::verifyHtml($response->output());
@@ -126,7 +137,7 @@ class BlogControllerTest extends TestCase
         $conf = $this->conf(["heading_above_meta" => "true", "comments_plugin" => "Realblog\\Infra"]);
         $finder = $this->finder(["count" => 7, "articles" => $this->articles()]);
         $sut = new BlogController($conf, $this->db(), $finder, $this->view(), new FakePages());
-        $request = new FakeRequest(["su" => "Blog"]);
+        $request = new FakeRequest(["url" => Url::from("http://example.com/?Blog")]);
         $response = $sut($request, "blog", true, "all");
         Approvals::verifyHtml($response->output());
     }
@@ -140,8 +151,7 @@ class BlogControllerTest extends TestCase
         $request = new FakeRequest([
             "admin" => true,
             "s" => 1,
-            "su" => "Blog",
-            "get" => ["realblog_id" => "3"]
+            "url" => Url::from("http://example.com/?Blog&realblog_id=3"),
         ]);
         $response = $sut($request, "blog", true, "all");
         Approvals::verifyHtml($response->output());
@@ -150,7 +160,7 @@ class BlogControllerTest extends TestCase
     public function testRendersEmptyArchive(): void
     {
         $sut = new BlogController($this->conf(), $this->db(), $this->finder(), $this->view(), new FakePages());
-        $request = new FakeRequest(["su" => "Archive"]);
+        $request = new FakeRequest(["url" => Url::from("http://example.com/?Archive")]);
         $response = $sut($request, "archive", true);
         Approvals::verifyHtml($response->output());
     }
@@ -159,7 +169,7 @@ class BlogControllerTest extends TestCase
     {
         $finder = $this->finder(["articles" => $this->archivedArticles()]);
         $sut = new BlogController($this->conf(), $this->db(), $finder, $this->view(), new FakePages());
-        $request = new FakeRequest(["su" => "Archive"]);
+        $request = new FakeRequest(["url" => Url::from("http://example.com/?Archive")]);
         $response = $sut($request, "archive", true);
         Approvals::verifyHtml($response->output());
     }
@@ -169,7 +179,10 @@ class BlogControllerTest extends TestCase
         $finder = $this->finder(["article" => $this->archivedArticle()]);
         $pages = new FakePages(["h" => ["irrelevant0", "irrelevant1", "Archive"]]);
         $sut = new BlogController($this->conf(), $this->db(), $finder, $this->view(), $pages);
-        $request = new FakeRequest(["s" => 2, "su" => "Archive", "get" => ["realblog_id" => "3"]]);
+        $request = new FakeRequest([
+            "s" => 2,
+            "url" => Url::from("http://example.com/?Archive&realblog_id=3"),
+        ]);
         $response = $sut($request, "archive", true);
         Approvals::verifyHtml($response->output());
     }
@@ -177,7 +190,9 @@ class BlogControllerTest extends TestCase
     public function testRendersArchiveWithEmptySearchResults(): void
     {
         $sut = new BlogController($this->conf(), $this->db(), $this->finder(), $this->view(), new FakePages());
-        $request = new FakeRequest(["get" => ["realblog_search" => "search"]]);
+        $request = new FakeRequest([
+            "url" => Url::from("http://example.com/?&realblog_search=search"),
+        ]);
         $response = $sut($request, "archive", true, "all");
         Approvals::verifyHtml($response->output());
     }

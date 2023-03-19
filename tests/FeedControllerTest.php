@@ -28,15 +28,21 @@ use Realblog\Infra\Finder;
 use Realblog\Infra\Pages;
 use Realblog\Infra\View;
 use Realblog\Value\Article;
+use Realblog\Value\Url;
 
 class FeedControllerTest extends TestCase
 {
     public function testRendersFeedWithAnArticle(): void
     {
-        $sut = new FeedController($this->conf(), $this->finder([$this->article()]), $this->pages(), $this->view());
+        $sut = new FeedController(
+            "./userfiles/images/",
+            $this->conf(),
+            $this->finder([$this->article()]),
+            $this->pages(),
+            $this->view()
+        );
         $request = new FakeRequest([
-            "get" => ["realblog_feed" => "rss"],
-            "path" => ["folder" => ["images" => "./userfiles/images/"]]
+            "url" => Url::from(CMSIMPLE_URL . "?&function=realblog_feed"),
         ]);
         $response = $sut($request);
         Approvals::verifyHtml($response->output());
@@ -44,10 +50,15 @@ class FeedControllerTest extends TestCase
 
     public function testSetsAppropriateContentType()
     {
-        $sut = new FeedController($this->conf(), $this->finder([$this->article()]), $this->pages(), $this->view());
+        $sut = new FeedController(
+            "./userfiles/images/",
+            $this->conf(),
+            $this->finder([$this->article()]),
+            $this->pages(),
+            $this->view()
+        );
         $request = new FakeRequest([
-            "get" => ["realblog_feed" => "rss"],
-            "path" => ["folder" => ["images" => "./userfiles/images/"]]
+            "url" => Url::from(CMSIMPLE_URL . "?&function=realblog_feed"),
         ]);
         $response = $sut($request);
         $this->assertEquals("application/xml; charset=UTF-8", $response->contentType());
@@ -55,7 +66,13 @@ class FeedControllerTest extends TestCase
 
     public function testRendersNothingWhenNotRequested(): void
     {
-        $sut = new FeedController($this->conf(), $this->finder([]), $this->pages(), $this->view());
+        $sut = new FeedController(
+            "./userfiles/images/",
+            $this->conf(),
+            $this->finder([]),
+            $this->pages(),
+            $this->view()
+        );
         $request = new FakeRequest();
         $response = $sut($request);
         $this->assertEquals("", $response->output());

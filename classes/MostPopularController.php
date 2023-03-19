@@ -27,6 +27,7 @@ use Realblog\Infra\Request;
 use Realblog\Infra\View;
 use Realblog\Value\MostPopularArticle;
 use Realblog\Value\Response;
+use Realblog\Value\Url;
 
 class MostPopularController
 {
@@ -42,9 +43,6 @@ class MostPopularController
     /** @var View */
     private $view;
 
-    /** @var Request */
-    private $request;
-
     /** @param array<string,string> $conf */
     public function __construct(array $conf, Pages $pages, Finder $finder, View $view)
     {
@@ -56,13 +54,12 @@ class MostPopularController
 
     public function __invoke(Request $request, string $pageUrl): Response
     {
-        $this->request = $request;
         if (!$this->pages->hasPageWithUrl($pageUrl) || $this->conf["links_visible"] <= 0) {
             return Response::create();
         }
         $articles = $this->finder->findMostPopularArticles((int) $this->conf["links_visible"]);
         return Response::create($this->view->render("most_popular", [
-            "articles" => $this->articleRecords($articles, $pageUrl),
+            "articles" => $this->articleRecords($request->url(), $articles, $pageUrl),
             "heading" => $this->conf["heading_level"],
         ]));
     }
@@ -71,7 +68,7 @@ class MostPopularController
      * @param list<MostPopularArticle> $articles
      * @return list<array{id:int,title:string,page_views:int,url:string}>
      */
-    private function articleRecords(array $articles, string $pageUrl): array
+    private function articleRecords(Url $url, array $articles, string $pageUrl): array
     {
         $records = [];
         foreach ($articles as $article) {
@@ -79,8 +76,7 @@ class MostPopularController
                 "id" => $article->id,
                 "title" => $article->title,
                 "page_views" => $article->pageViews,
-                "url" => $this->request->url()->withPage($pageUrl)
-                    ->withParams(["realblog_id" => (string) $article->id])->relative(),
+                "url" => $url->withPage($pageUrl)->with("realblog_id", (string) $article->id)->relative(),
             ];
         }
         return $records;

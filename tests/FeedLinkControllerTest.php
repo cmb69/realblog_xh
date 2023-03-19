@@ -30,8 +30,8 @@ class FeedLinkControllerTest extends TestCase
 {
     public function testRendersFeedLink(): void
     {
-        $sut = new FeedLinkController($this->view());
-        $request = new FakeRequest(["path" => ["folder" => ["plugins" => "./plugins/"]]]);
+        $sut = new FeedLinkController("./plugins/realblog/", $this->view());
+        $request = new FakeRequest();
         $response = $sut($request, "_self");
         Approvals::verifyHtml($response->output());
     }

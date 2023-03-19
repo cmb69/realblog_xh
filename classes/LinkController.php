@@ -29,6 +29,7 @@ use Realblog\Infra\Request;
 use Realblog\Infra\View;
 use Realblog\Value\Article;
 use Realblog\Value\Response;
+use Realblog\Value\Url;
 
 class LinkController
 {
@@ -43,9 +44,6 @@ class LinkController
 
     /** @var View */
     private $view;
-
-    /** @var Request */
-    private $request;
 
     /**
      * @param array<string,string> $conf
@@ -65,13 +63,12 @@ class LinkController
 
     public function __invoke(Request $request, string $pageUrl, bool $showTeaser = false): Response
     {
-        $this->request = $request;
         if (!$this->pages->hasPageWithUrl($pageUrl) || $this->conf["links_visible"] <= 0) {
             return Response::create();
         }
         $articles = $this->finder->findArticles(1, (int) $this->conf["links_visible"]);
         return Response::create($this->view->render("latest", [
-            "articles" => $this->articleRecords($articles, $pageUrl),
+            "articles" => $this->articleRecords($request->url(), $articles, $pageUrl),
             "heading" => $this->conf["heading_level"],
             "show_teaser" => $showTeaser,
         ]));
@@ -81,15 +78,15 @@ class LinkController
      * @param list<Article> $articles
      * @return list<array{title:string,date:string,url:string,teaser:html}>
      */
-    private function articleRecords(array $articles, string $pageUrl): array
+    private function articleRecords(Url $url, array $articles, string $pageUrl): array
     {
         $records = [];
         foreach ($articles as $article) {
             $records[] = [
                 "title" => $article->title,
                 "date" => $this->view->date($article->date),
-                "url" => $this->request->url()->withPage($pageUrl)
-                    ->withParams(["realblog_id" => (string) $article->id])->relative(),
+                "url" => $url->withPage($pageUrl)
+                    ->with("realblog_id", (string) $article->id)->relative(),
                 "teaser" => $this->pages->evaluateScripting($article->teaser),
             ];
         }

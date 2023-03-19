@@ -62,7 +62,8 @@ class Dic
 
     public static function makeFeedLinkController(): FeedLinkController
     {
-        return new FeedLinkController(self::makeView());
+        global $pth;
+        return new FeedLinkController($pth["folder"]["plugins"] . "realblog/", self::makeView());
     }
 
     public static function makeMostPopularController(): MostPopularController
@@ -77,7 +78,9 @@ class Dic
 
     public static function makeFeedController(): FeedController
     {
+        global $pth;
         return new FeedController(
+            $pth["folder"]["images"],
             self::makeConf(),
             new Finder(Dic::makeDb()),
             new Pages,
@@ -87,7 +90,9 @@ class Dic
 
     public static function makeInfoController(): InfoController
     {
+        global $pth;
         return new InfoController(
+            $pth["folder"]["plugins"] . "realblog/",
             self::makeConf(),
             new SystemChecker,
             self::makeView()
@@ -96,7 +101,9 @@ class Dic
 
     public static function makeMainAdminController(): MainAdminController
     {
+        global $pth;
         return new MainAdminController(
+            $pth["folder"]["plugins"] . "realblog/",
             self::makeConf(),
             Dic::makeDb(),
             new Finder(Dic::makeDb()),
@@ -108,7 +115,10 @@ class Dic
 
     public static function makeDataExchangeController(): DataExchangeController
     {
+        global $pth;
         return new DataExchangeController(
+            $pth["folder"]["plugins"] . "realblog/",
+            $pth["folder"]["content"],
             Dic::makeDb(),
             new Finder(Dic::makeDb()),
             new CsrfProtector,

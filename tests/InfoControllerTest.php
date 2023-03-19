@@ -31,8 +31,8 @@ class InfoControllerTest extends TestCase
 {
     public function testShowsPluginInfo(): void
     {
-        $sut = new InfoController($this->conf(), new FakeSystemChecker, $this->view());
-        $request = new FakeRequest(["path" => ["folder" => ["plugins" => "./plugins/"]]]);
+        $sut = new InfoController("./plugins/realblog/", $this->conf(), new FakeSystemChecker, $this->view());
+        $request = new FakeRequest();
         $response = $sut($request);
         Approvals::verifyHtml($response->output());
     }

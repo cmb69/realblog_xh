@@ -30,6 +30,9 @@ use Realblog\Value\Response;
 
 class InfoController
 {
+    /** @var string */
+    private $pluginFolder;
+
     /** @var array<string,string> */
     private $conf;
 
@@ -40,8 +43,9 @@ class InfoController
     private $view;
 
     /** @param array<string,string> $conf */
-    public function __construct(array $conf, SystemChecker $systemChecker, View $view)
+    public function __construct(string $pluginFolder, array $conf, SystemChecker $systemChecker, View $view)
     {
+        $this->pluginFolder = $pluginFolder;
         $this->conf = $conf;
         $this->systemChecker = $systemChecker;
         $this->view = $view;
@@ -50,7 +54,7 @@ class InfoController
     public function __invoke(Request $request): Response
     {
         $checks = [];
-        foreach ($this->getChecks($request->pluginsFolder()) as [$key, $arg, $state]) {
+        foreach ($this->getChecks() as [$key, $arg, $state]) {
             $checks[] = [
                 "key" => $key,
                 "arg" => $arg,
@@ -66,7 +70,7 @@ class InfoController
     }
 
     /** @return list<array{string,string,string}> */
-    public function getChecks(string $pluginsFolder): array
+    public function getChecks(): array
     {
         $checks = [];
         $phpVersion = "7.1.0";
@@ -89,9 +93,9 @@ class InfoController
             $this->systemChecker->checkXHVersion($xhVersion) ? "success" : "fail",
         ];
         $folders = array(
-            $pluginsFolder . "realblog/config",
-            $pluginsFolder ."realblog/css",
-            $pluginsFolder . "realblog/languages",
+            $this->pluginFolder . "config",
+            $this->pluginFolder ."css",
+            $this->pluginFolder . "languages",
         );
         foreach ($folders as $folder) {
             $checks[] = [

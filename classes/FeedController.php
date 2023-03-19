@@ -29,9 +29,13 @@ use Realblog\Infra\Request;
 use Realblog\Infra\View;
 use Realblog\Value\Article;
 use Realblog\Value\Response;
+use Realblog\Value\Url;
 
 class FeedController
 {
+    /** @var string */
+    private $imageFolder;
+
     /** @var array<string,string> */
     private $conf;
 
@@ -44,16 +48,15 @@ class FeedController
     /** @var View */
     private $view;
 
-    /** @var Request */
-    private $request;
-
     /** @param array<string,string> $conf */
     public function __construct(
+        string $imageFolder,
         array $conf,
         Finder $finder,
         Pages $pages,
         View $view
     ) {
+        $this->imageFolder = $imageFolder;
         $this->conf = $conf;
         $this->finder = $finder;
         $this->pages = $pages;
@@ -62,19 +65,17 @@ class FeedController
 
     public function __invoke(Request $request): Response
     {
-        $this->request = $request;
-        $response = new Response;
-        if (!$this->conf["rss_enabled"] || $request->stringFromGet("realblog_feed") !== "rss") {
+        if (!$this->conf["rss_enabled"] || $request->url()->param("function") !== "realblog_feed") {
             return Response::create();
         }
         $count = (int) $this->conf["rss_entries"];
-        $logo = $request->imageFolder() . $this->conf["rss_logo"];
+        $logo = $this->imageFolder . $this->conf["rss_logo"];
         $output = $this->view->render("feed", [
             "url" => $request->url()->withPage($this->conf["rss_page"])->absolute(),
             "managing_editor" => $this->conf["rss_editor"],
             "has_logo" => (bool) $this->conf["rss_logo"],
             "image_url" => $request->url()->withPath($logo)->absolute(),
-            "articles" => $this->articleRecords($this->finder->findFeedableArticles($count)),
+            "articles" => $this->articleRecords($request->url(), $this->finder->findFeedableArticles($count)),
         ]);
         return Response::create(("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" . $output))
             ->withContentType("application/xml; charset=UTF-8");
@@ -84,14 +85,14 @@ class FeedController
      * @param list<Article> $articles
      * @return list<array{title:string,url:string,teaser:html,date:string}>
      */
-    private function articleRecords(array $articles): array
+    private function articleRecords(Url $url, array $articles): array
     {
         $records = [];
         foreach ($articles as $article) {
             $records[] = [
                 "title" => $article->title,
-                "url" => $this->request->url()->withPage($this->conf["rss_page"])
-                    ->withParams(["realblog_id" => (string) $article->id])->absolute(),
+                "url" => $url->withPage($this->conf["rss_page"])
+                    ->with("realblog_id", (string) $article->id)->absolute(),
                 "teaser" => $this->pages->evaluateScripting($article->teaser),
                 "date" => (string) date("r", $article->date),
             ];

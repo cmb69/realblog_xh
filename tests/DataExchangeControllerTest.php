@@ -36,13 +36,15 @@ class DataExchangeControllerTest extends TestCase
     public function testRendersOverview()
     {
         $sut = new DataExchangeController(
+            "./plugins/realblog/",
+            "./content/",
             $this->db(true),
             $this->finder(),
             new FakeCsrfProtector,
             new FakeFileSystem(),
             $this->view()
         );
-        $request = new FakeRequest(["path" => ["folder" => ["content" => "./content/", "plugins" => "./plugins/"]]]);
+        $request = new FakeRequest();
         $response = $sut($request, "");
         Approvals::verifyHtml($response->output());
     }
@@ -50,13 +52,15 @@ class DataExchangeControllerTest extends TestCase
     public function testRendersOverviewWithCsvFile()
     {
         $sut = new DataExchangeController(
+            "./plugins/realblog/",
+            "./content/",
             $this->db(true),
             $this->finder(),
             new FakeCsrfProtector,
             new FakeFileSystem(["isReadable" => true, "fileMTime" => 1677251242]),
             $this->view()
         );
-        $request = new FakeRequest(["path" => ["folder" => ["content" => "./content/", "plugins" => "./plugins/"]]]);
+        $request = new FakeRequest();
         $response = $sut($request, "");
         Approvals::verifyHtml($response->output());
     }
@@ -64,13 +68,15 @@ class DataExchangeControllerTest extends TestCase
     public function testExportIsCsrfProtected()
     {
         $sut = new DataExchangeController(
+            "./plugins/realblog/",
+            "./content/",
             $this->db(true),
             $this->finder(),
             $csrfProtector = new FakeCsrfProtector,
             new FakeFileSystem(),
             $this->view()
         );
-        $request = new FakeRequest(["path" => ["folder" => ["content" => "./content/"]]]);
+        $request = new FakeRequest();
         $sut($request, "export_to_csv");
         $this->assertTrue($csrfProtector->hasChecked());
     }
@@ -78,13 +84,15 @@ class DataExchangeControllerTest extends TestCase
     public function testSuccessfulExportRedirects()
     {
         $sut = new DataExchangeController(
+            "./plugins/realblog/",
+            "./content/",
             $this->db(true),
             $this->finder(),
             new FakeCsrfProtector,
             new FakeFileSystem(),
             $this->view()
         );
-        $request = new FakeRequest(["path" => ["folder" => ["content" => "./content/"]]]);
+        $request = new FakeRequest();
         $response = $sut($request, "export_to_csv");
         $this->assertEquals("http://example.com/?realblog&admin=data_exchange", $response->location());
     }
@@ -92,13 +100,15 @@ class DataExchangeControllerTest extends TestCase
     public function testExportReportsFailure()
     {
         $sut = new DataExchangeController(
+            "./plugins/realblog/",
+            "./content/",
             $this->db(false),
             $this->finder(),
             new FakeCsrfProtector,
             new FakeFileSystem(),
             $this->view()
         );
-        $request = new FakeRequest(["path" => ["folder" => ["content" => "./content/"]]]);
+        $request = new FakeRequest();
         $response = $sut($request, "export_to_csv");
         Approvals::verifyHtml($response->output());
     }
@@ -106,13 +116,15 @@ class DataExchangeControllerTest extends TestCase
     public function testImportIsCsrfProtected()
     {
         $sut = new DataExchangeController(
+            "./plugins/realblog/",
+            "./content/",
             $this->db(true),
             $this->finder(),
             $csrfProtector = new FakeCsrfProtector,
             new FakeFileSystem(),
             $this->view()
         );
-        $request = new FakeRequest(["path" => ["folder" => ["content" => "./content/"]]]);
+        $request = new FakeRequest();
         $sut($request, "import_from_csv");
         $this->assertTrue($csrfProtector->hasChecked());
     }
@@ -120,13 +132,15 @@ class DataExchangeControllerTest extends TestCase
     public function testSuccessfulImportRedirects()
     {
         $sut = new DataExchangeController(
+            "./plugins/realblog/",
+            "./content/",
             $this->db(true),
             $this->finder(),
             new FakeCsrfProtector,
             new FakeFileSystem(),
             $this->view()
         );
-        $request = new FakeRequest(["path" => ["folder" => ["content" => "./content/"]]]);
+        $request = new FakeRequest();
         $response = $sut($request, "import_from_csv");
         $this->assertEquals("http://example.com/?realblog&admin=data_exchange", $response->location());
     }
@@ -134,13 +148,15 @@ class DataExchangeControllerTest extends TestCase
     public function testImportReportsFailure()
     {
         $sut = new DataExchangeController(
+            "./plugins/realblog/",
+            "./content/",
             $this->db(false),
             $this->finder(),
             new FakeCsrfProtector,
             new FakeFileSystem(),
             $this->view()
         );
-        $request = new FakeRequest(["path" => ["folder" => ["content" => "./content/"]]]);
+        $request = new FakeRequest();
         $response = $sut($request, "import_from_csv");
         Approvals::verifyHtml($response->output());
     }

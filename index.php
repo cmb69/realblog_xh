@@ -62,30 +62,30 @@ const REALBLOG_VERSION = "3.0beta9";
 
 require_once $pth['folder']['plugin'] . 'compat.php';
 
-Responder::respond(Dic::makeGeneralController()(new Request));
-Responder::respond(Dic::makeFeedController()(new Request));
+Responder::respond(Dic::makeGeneralController()(Request::current()));
+Responder::respond(Dic::makeFeedController()(Request::current()));
 
 function realblog_blog(bool $showSearch = false, string $category = "all"): string
 {
-    return Responder::respond(Dic::makeBlogController()(new Request, "blog", $showSearch, $category));
+    return Responder::respond(Dic::makeBlogController()(Request::current(), "blog", $showSearch, $category));
 }
 
 function realblog_archive(bool $showSearch = false): string
 {
-    return Responder::respond(Dic::makeBlogController()(new Request, "archive", $showSearch));
+    return Responder::respond(Dic::makeBlogController()(Request::current(), "archive", $showSearch));
 }
 
 function realblog_link(string $pageUrl, bool $showTeaser = false): string
 {
-    return Responder::respond(Dic::makeLinkController()(new Request, $pageUrl, $showTeaser));
+    return Responder::respond(Dic::makeLinkController()(Request::current(), $pageUrl, $showTeaser));
 }
 
 function realblog_mostpopular(string $pageUrl): string
 {
-    return Responder::respond(Dic::makeMostPopularController()(new Request, $pageUrl));
+    return Responder::respond(Dic::makeMostPopularController()(Request::current(), $pageUrl));
 }
 
 function realblog_feedlink(string $target = "_self"): string
 {
-    return Responder::respond(Dic::makeFeedLinkController()(new Request, $target));
+    return Responder::respond(Dic::makeFeedLinkController()(Request::current(), $target));
 }

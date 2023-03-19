@@ -29,20 +29,24 @@ use Realblog\Value\Response;
 
 class FeedLinkController
 {
+    /** @var string */
+    private $pluginFolder;
+
     /** @var View */
     private $view;
 
-    public function __construct(View $view)
+    public function __construct(string $pluginFolder, View $view)
     {
+        $this->pluginFolder = $pluginFolder;
         $this->view = $view;
     }
 
     public function __invoke(Request $request, string $target): Response
     {
         return Response::create($this->view->render("feed_link", [
-            "url" => $request->url()->withPage("")->withParams(["realblog_feed" => "rss"])->relative(),
+            "url" => $request->url()->withPage("")->with("function", "realblog_feed")->relative(),
             "target" => $target,
-            "image" => $request->pluginsFolder() . "realblog/images/rss.png",
+            "image" => $this->pluginFolder . "images/rss.png",
         ]));
     }
 }

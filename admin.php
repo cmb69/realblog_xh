@@ -35,7 +35,7 @@ use Realblog\Infra\Responder;
 
 $temp = [
     "heading" => $plugin_tx["realblog"]["exchange_heading"],
-    "url" => (new Request)->url()->withPage("realblog")->withParams(["admin" => "data_exchange"])->relative(),
+    "url" => Request::current()->url()->withPage("realblog")->with("admin", "data_exchange")->relative(),
 ];
 
 XH_registerStandardPluginMenuItems(true);
@@ -48,13 +48,13 @@ if (XH_wantsPluginAdministration("realblog")) {
     $o .= pluginMenu("SHOW");
     switch ($admin) {
         case "":
-            $o .= Responder::respond(Dic::makeInfoController()(new Request));
+            $o .= Responder::respond(Dic::makeInfoController()(Request::current()));
             break;
         case "plugin_main":
-            $o .= Responder::respond(Dic::makeMainAdminController()(new Request, $action));
+            $o .= Responder::respond(Dic::makeMainAdminController()(Request::current(), $action));
             break;
         case "data_exchange":
-            $o .= Responder::respond(Dic::makeDataExchangeController()(new Request, $action));
+            $o .= Responder::respond(Dic::makeDataExchangeController()(Request::current(), $action));
             break;
         default:
             $o .= plugin_admin_common();
