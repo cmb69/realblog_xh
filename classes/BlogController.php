@@ -31,6 +31,7 @@ use Realblog\Infra\View;
 use Realblog\Logic\Util;
 use Realblog\Value\Article;
 use Realblog\Value\FullArticle;
+use Realblog\Value\Html;
 use Realblog\Value\Response;
 use Realblog\Value\Url;
 
@@ -127,7 +128,7 @@ class BlogController
             "articles" => $this->articleRecords($request, $articles, $url),
             "heading" => $this->conf["heading_level"],
             "heading_above_meta" => $this->conf["heading_above_meta"],
-            "pagination" => $pagination,
+            "pagination" => Html::of($pagination),
             "top_pagination" => (bool) $this->conf["pagination_top"],
             "bottom_pagination" => (bool) $this->conf["pagination_bottom"],
         ]);
@@ -149,7 +150,7 @@ class BlogController
                 "categories" => implode(", ", explode(",", trim($article->categories, ","))),
                 "link_header" => $article->hasBody || $request->admin(),
                 "date" => $this->view->date($article->date),
-                "teaser" => $this->pages->evaluateScripting($article->teaser),
+                "teaser" => Html::of($this->pages->evaluateScripting($article->teaser)),
                 "read_more" => $this->conf["show_read_more_link"]  && $article->hasBody,
                 "commentable" => $isCommentable,
                 "comment_count" => $isCommentable ? $bridge::count("realblog{$article->id}") : null,
@@ -166,23 +167,22 @@ class BlogController
         }
         return $this->view->render("pagination", [
             "itemCount" => $itemCount,
-            "currentPage" => $page,
             "pages" => $this->pageRecords($page, $pageCount, $radius, $url),
         ]);
     }
 
     /**
      * @param int<2,max> $pageCount
-     * @return list<array{num:int,url:string}|null>
+     * @return list<array{num:int,url:?string}|null>
      */
-    private function pageRecords(int $page, int $pageCount, int $radius, Url $url): array
+    private function pageRecords(int $currentPage, int $pageCount, int $radius, Url $url): array
     {
         $pages = [];
-        foreach (Util::gatherPages($page, $pageCount, $radius) as $page) {
+        foreach (Util::gatherPages($currentPage, $pageCount, $radius) as $page) {
             if ($page !== null) {
                 $pages[] = [
                     "num" => $page,
-                    "url" => $url->with("realblog_page", (string) $page)->relative(),
+                    "url" => $page !== $currentPage ? $url->with("realblog_page", (string) $page)->relative() : null,
                 ];
             } else {
                 $pages[] = null;
@@ -242,10 +242,10 @@ class BlogController
             "edit_url" => $editUrl,
             "edit_comments_url" => !empty($commentsUrl) ? $commentsUrl : null,
             "comment_count" => !empty($commentsUrl) ? $bridge::count("realblog{$article->id}") : null,
-            "comments" => !empty($commentsUrl) ? $bridge::handle("realblog{$article->id}"): null,
+            "comments" => !empty($commentsUrl) ? Html::of($bridge::handle("realblog{$article->id}")) : null,
             "date" => $this->view->date($article->date),
             "categories" => implode(", ", explode(",", trim($article->categories, ","))),
-            "story" => $this->pages->evaluateScripting($story),
+            "story" => Html::of($this->pages->evaluateScripting($story)),
         ]))->withTitle($this->pages->headingOf($request->page()) . " – " . $article->title)
             ->withDescription(Util::shortenText($teaser));
     }

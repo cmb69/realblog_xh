@@ -28,6 +28,7 @@ use Realblog\Infra\Pages;
 use Realblog\Infra\Request;
 use Realblog\Infra\View;
 use Realblog\Value\Article;
+use Realblog\Value\Html;
 use Realblog\Value\Response;
 use Realblog\Value\Url;
 
@@ -70,15 +71,13 @@ class FeedController
         }
         $count = (int) $this->conf["rss_entries"];
         $logo = $this->imageFolder . $this->conf["rss_logo"];
-        $output = $this->view->render("feed", [
+        return Response::create(($this->view->renderXmlDeclaration() . $this->view->render("feed", [
             "url" => $request->url()->withPage($this->conf["rss_page"])->absolute(),
             "managing_editor" => $this->conf["rss_editor"],
             "has_logo" => (bool) $this->conf["rss_logo"],
             "image_url" => $request->url()->withPath($logo)->absolute(),
             "articles" => $this->articleRecords($request->url(), $this->finder->findFeedableArticles($count)),
-        ]);
-        return Response::create(("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" . $output))
-            ->withContentType("application/xml; charset=UTF-8");
+        ])))->withContentType("application/xml; charset=UTF-8");
     }
 
     /**
@@ -93,7 +92,7 @@ class FeedController
                 "title" => $article->title,
                 "url" => $url->withPage($this->conf["rss_page"])
                     ->with("realblog_id", (string) $article->id)->absolute(),
-                "teaser" => $this->pages->evaluateScripting($article->teaser),
+                "teaser" => Html::of($this->pages->evaluateScripting($article->teaser)),
                 "date" => (string) date("r", $article->date),
             ];
         }

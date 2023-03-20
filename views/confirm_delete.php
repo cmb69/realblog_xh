@@ -15,12 +15,12 @@ use Realblog\Infra\View;
   <h1>Realblog – <?=$this->text('tooltip_delete_selected')?></h1>
 <?if (count($ids)):?>
   <p class="xh_warning"><?=$this->text('confirm_deleteall')?></p>
-  <form name="confirm" method="post" action="<?=$this->esc($action)?>">
+  <form name="confirm" method="post" action="<?=$action?>">
 <?foreach ($ids as $id):?>
-    <input type="hidden" name="realblog_ids[]" value="<?=$this->esc($id)?>">
+    <input type="hidden" name="realblog_ids[]" value="<?=$id?>">
 <?endforeach?>
     <input type="hidden" name="action" value="do_delete_selected"?>
-    <input type="hidden" name="xh_csrf_token" value="<?=$this->esc($csrfToken)?>">
+    <input type="hidden" name="xh_csrf_token" value="<?=$csrfToken?>">
     <p style="text-align: center">
       <input type="submit" name="submit" value="<?=$this->text('btn_delete')?>">
     </p>
@@ -28,5 +28,5 @@ use Realblog\Infra\View;
 <?else:?>
   <p class="xh_info"><?=$this->text('nothing_selected')?></p>
 <?endif?>
-  <p><a href="<?=$this->esc($url)?>"><?=$this->text('blog_back')?></a></p>
+  <p><a href="<?=$url?>"><?=$this->text('blog_back')?></a></p>
 </div>

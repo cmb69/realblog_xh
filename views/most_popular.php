@@ -10,11 +10,11 @@ use Realblog\Infra\View;
 ?>
 <!-- realblog most popular -->
 <div class="realblog_most_popular">
-  <<?=$this->esc($heading)?>><?=$this->text('most_popular')?></<?=$this->esc($heading)?>>
+  <<?=$heading?>><?=$this->text('most_popular')?></<?=$heading?>>
 <?if (!empty($articles)):?>
 <?  foreach ($articles as $article):?>
   <p>
-    <a href="<?=$this->esc($article['url'])?>"><?=$this->esc($article['title'])?></a>
+    <a href="<?=$article['url']?>"><?=$article['title']?></a>
     <span><?=$this->plural('page_views', $article['page_views'])?></span>
   </p>
 <?  endforeach?>

@@ -4,8 +4,8 @@ use Realblog\Infra\View;
 
 /**
  * @var View $this
- * @var list<array{title:string,url:string,categories:string,link_header:bool,date:string,teaser:html,read_more:bool,commentable:bool,comment_count:int}> $articles
- * @var html $pagination
+ * @var list<array{title:string,url:string,categories:string,link_header:bool,date:string,teaser:string,read_more:bool,commentable:bool,comment_count:int}> $articles
+ * @var string $pagination
  * @var bool $top_pagination
  * @var bool $bottom_pagination
  * @var string $heading
@@ -15,7 +15,7 @@ use Realblog\Infra\View;
 <!-- realblog articles -->
 <div class="realblog_show_box">
 <?if ($top_pagination):?>
-  <?=$this->raw($pagination)?>
+  <?=$pagination?>
 <?endif?>
   <div id="realblog_entries_preview" class="realblog_entries_preview">
 <?foreach ($articles as $article):?>
@@ -33,9 +33,9 @@ use Realblog\Infra\View;
 <?endif?>
       <<?=$heading?>>
 <?  if ($article['link_header']):?>
-        <a href="<?=$this->esc($article['url'])?>" title="<?=$this->text('tooltip_view')?>">
+        <a href="<?=$article['url']?>" title="<?=$this->text('tooltip_view')?>">
 <?  endif?>
-        <?=$this->esc($article['title'])?>
+        <?=$article['title']?>
 <?  if ($article['link_header']):?>
         </a>
 <?  endif?>
@@ -51,11 +51,11 @@ use Realblog\Infra\View;
 <?  endif?>
       </div>
 <?endif?>
-      <div class="realblog_show_story"><?=$this->raw($article['teaser'])?></div>
+      <div class="realblog_show_story"><?=$article['teaser']?></div>
 <?  if ($article['link_header']):?>
       <div class="realblog_entry_footer">
         <p class="realblog_read_more">
-          <a class="realblog_button" href="<?=$this->esc($article['url'])?>" title="<?=$this->text('tooltip_view')?>"><?=$this->text('read_more')?></a>
+          <a class="realblog_button" href="<?=$article['url']?>" title="<?=$this->text('tooltip_view')?>"><?=$this->text('read_more')?></a>
         </p>
       </div>
 <?  endif?>
@@ -63,6 +63,6 @@ use Realblog\Infra\View;
 <?endforeach?>
   </div>
 <?if ($bottom_pagination):?>
-  <?=$this->raw($pagination)?>
+  <?=$pagination?>
 <?endif?>
 </div>

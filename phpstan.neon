@@ -14,5 +14,3 @@ parameters:
     - ../../cmsimple/adminfuncs.php
     - ../../cmsimple/functions.php
     - ../../cmsimple/utf8.php
-  typeAliases:
-    html: string

@@ -25,17 +25,17 @@ use Realblog\Infra\View;
     <span><?=$this->text('exchange_file_notfound')?></span>
 <?endif?>
   </p>
-  <form action="<?=$this->esc($url)?>" method="post">
+  <form action="<?=$url?>" method="post">
     <input type="hidden" name="admin" value="data_exchange">
     <input type="hidden" name="action" value="export_to_csv">
-    <input type="hidden" name="xh_csrf_token" value="<?=$this->esc($csrf_token)?>">
+    <input type="hidden" name="xh_csrf_token" value="<?=$csrf_token?>">
     <button><?=$this->text('exchange_button_export')?></button>
   </form>
 <?if (isset($filename)):?>
-  <form id="realblog_import_csv" action="<?=$this->esc($url)?>" method="post" data-realblog='<?=$this->raw($confirm_import)?>'>
+  <form id="realblog_import_csv" action="<?=$url?>" method="post" data-realblog='<?=$confirm_import?>'>
     <input type="hidden" name="admin" value="data_exchange">
     <input type="hidden" name="action" value="import_from_csv">
-    <input type="hidden" name="xh_csrf_token" value="<?=$this->esc($csrf_token)?>">
+    <input type="hidden" name="xh_csrf_token" value="<?=$csrf_token?>">
     <button><?=$this->text('exchange_button_import')?></button>
   </form>
 <?endif?>

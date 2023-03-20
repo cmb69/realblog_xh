@@ -28,6 +28,7 @@ use Realblog\Infra\Finder;
 use Realblog\Infra\Request;
 use Realblog\Infra\View;
 use Realblog\Value\Article;
+use Realblog\Value\Html;
 use Realblog\Value\Response;
 use Realblog\Value\Url;
 
@@ -94,7 +95,7 @@ class DataExchangeController
             "article_count" => $this->finder->countArticlesWithStatus([
                 Article::UNPUBLISHED, Article::PUBLISHED, Article::ARCHIVED
             ]),
-            "confirm_import" => $this->view->json("exchange_confirm_import"),
+            "confirm_import" => Html::of($this->view->json("exchange_confirm_import")),
             "filename" => $readable ? $filename : null,
             "filemtime" => $readable ? date("c", $this->fileSystem->fileMTime($filename)) : null,
         ]))->withBjs($this->view->renderScript($this->pluginFolder . "realblog.js"));

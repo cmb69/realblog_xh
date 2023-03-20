@@ -28,6 +28,7 @@ use Realblog\Infra\Pages;
 use Realblog\Infra\Request;
 use Realblog\Infra\View;
 use Realblog\Value\Article;
+use Realblog\Value\Html;
 use Realblog\Value\Response;
 use Realblog\Value\Url;
 
@@ -76,7 +77,7 @@ class LinkController
 
     /**
      * @param list<Article> $articles
-     * @return list<array{title:string,date:string,url:string,teaser:html}>
+     * @return list<array{title:string,date:string,url:string,teaser:Html}>
      */
     private function articleRecords(Url $url, array $articles, string $pageUrl): array
     {
@@ -87,7 +88,7 @@ class LinkController
                 "date" => $this->view->date($article->date),
                 "url" => $url->withPage($pageUrl)
                     ->with("realblog_id", (string) $article->id)->relative(),
-                "teaser" => $this->pages->evaluateScripting($article->teaser),
+                "teaser" => Html::of($this->pages->evaluateScripting($article->teaser)),
             ];
         }
         return $records;

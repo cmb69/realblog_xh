@@ -1,61 +1,68 @@
 <?php
 
 use Realblog\Infra\View;
-use Realblog\Value\FullArticle;
 
 /**
  * @var View $this
- * @var FullArticle $article
+ * @var int $id
+ * @var int $version
+ * @var int $timestamp
+ * @var int $status
+ * @var string $title
+ * @var string $teaser
+ * @var string $body
+ * @var bool $feedable
+ * @var bool $commentable
  * @var string $date
  * @var string $publishing_date
  * @var string $archiving_date
- * @var string $title
+ * @var string $page_title
  * @var string $actionUrl
  * @var string $action
  * @var string $csrfToken
  * @var bool $isAutoPublish
  * @var bool $isAutoArchive
- * @var list<string> $states
+ * @var list<array{value:int,label:string,selected:string}> $states
  * @var string $categories
  * @var string $button
  */
 ?>
 <!-- realblog article form -->
 <div class="realblog_fields_block">
-  <h1>Realblog – <?=$this->esc($title)?></h1>
-  <form name="realblog" method="post" action="<?=$this->esc($actionUrl)?>">
-    <input type="hidden" name="action" value="<?=$this->esc($action)?>">
-    <input type="hidden" name="realblog_id" value="<?=$this->esc($article->id)?>">
-    <input type="hidden" name="realblog_version" value="<?=$this->esc($article->version)?>">
-    <input type="hidden" name="xh_csrf_token" value="<?=$this->esc($csrfToken)?>">
+  <h1>Realblog – <?=$page_title?></h1>
+  <form name="realblog" method="post" action="<?=$actionUrl?>">
+    <input type="hidden" name="action" value="<?=$action?>">
+    <input type="hidden" name="realblog_id" value="<?=$id?>">
+    <input type="hidden" name="realblog_version" value="<?=$version?>">
+    <input type="hidden" name="xh_csrf_token" value="<?=$csrfToken?>">
     <table>
       <tr>
-        <td><label for="date1" class="realblog_label"><?=$this->text('date_label')?></label></td>
-        <td><label for="date2" class="realblog_label"><?=$this->text('startdate_label')?></label></td>
-        <td><label for="date3" class="realblog_label"><?=$this->text('enddate_label')?></span></label>
+        <td><label for="realblog_date1" class="realblog_label"><?=$this->text('date_label')?></label></td>
+        <td><label for="realblog_date2" class="realblog_label"><?=$this->text('startdate_label')?></label></td>
+        <td><label for="realblog_date3" class="realblog_label"><?=$this->text('enddate_label')?></span></label>
       </tr>
       <tr>
         <td>
-<?if ($article->id === 0):?>
-          <input type="hidden" name="realblog_date_exact" value="<?=$this->esc($article->date)?>">
-          <input type="hidden" name="realblog_date_old" value="<?=$this->esc($date)?>">
+<?if (empty($id)):?>
+          <input type="hidden" name="realblog_date_exact" value="<?=$timestamp?>">
+          <input type="hidden" name="realblog_date_old" value="<?=$date?>">
 <?endif?>
-          <input type="date" name="realblog_date" id="realblog_date1" required="required" value="<?=$this->esc($date)?>">
+          <input type="date" name="realblog_date" id="realblog_date1" required="required" value="<?=$date?>">
         </td>
         <td>
 <?if ($isAutoPublish):?>
-          <input type="date" name="realblog_startdate" id="realblog_date2" required="required" value="<?=$this->esc($publishing_date)?>">
+          <input type="date" name="realblog_startdate" id="realblog_date2" required="required" value="<?=$publishing_date?>">
 <?else:?>
           <span><?=$this->text('startdate_hint')?></span>
-          <input type="hidden" name="realblog_startdate" value="<?=$this->esc($publishing_date)?>">
+          <input type="hidden" name="realblog_startdate" value="<?=$publishing_date?>">
 <?endif?>
         </td>
         <td>
 <?if ($isAutoArchive):?>
-          <input type="date" name="realblog_enddate" id="realblog_date3" required="required" value="<?=$this->esc($archiving_date)?>">
+          <input type="date" name="realblog_enddate" id="realblog_date3" required="required" value="<?=$archiving_date?>">
 <?else:?>
           <span><?=$this->text('enddate_hint')?></span>
-          <input type="hidden" name="realblog_enddate" value="<?=$this->esc($archiving_date)?>">
+          <input type="hidden" name="realblog_enddate" value="<?=$archiving_date?>">
 <?endif?>
         </td>
       </tr>
@@ -66,20 +73,20 @@ use Realblog\Value\FullArticle;
       <tr>
         <td>
           <select id="realblog_status" name="realblog_status">
-<?foreach ($states as $i => $state):?>
-            <option value="<?=$this->esc($i)?>" <?php if ($article->status === $i) echo 'selected'?>><?=$this->text($state)?></option>
+<?foreach ($states as $state):?>
+            <option value="<?=$state['value']?>" <?=$state['selected']?>><?=$this->text($state['label'])?></option>
 <?endforeach?>
           </select>
         </td>
         <td>
           <label>
-            <input type="checkbox" name="realblog_comments" <?php if ($article->commentable) echo 'checked'?>>
+            <input type="checkbox" name="realblog_comments" <?=$commentable?>>
             <span><?=$this->text('comment_label')?></span>
           </label>
         </td>
         <td>
           <label>
-            <input type="checkbox" name="realblog_rssfeed" <?php if ($article->feedable) echo 'checked'?>>
+            <input type="checkbox" name="realblog_rssfeed" <?=$feedable?>>
             <span><?=$this->text('label_rss')?></span>
           </label>
         </td>
@@ -87,22 +94,22 @@ use Realblog\Value\FullArticle;
     </table>
     <p>
       <label for="realblog_categories" class="realblog_label"><?=$this->text('label_categories')?></label>
-      <input type="text" id="realblog_categories" name="realblog_categories" value="<?=$this->esc($categories)?>" size="50">
+      <input type="text" id="realblog_categories" name="realblog_categories" value="<?=$categories?>" size="50">
       <select id="realblog_category_select">
         <option><?=$this->text('label_category_add')?></option>
       </select>
     </p>
     <p>
       <label for="realblog_title" class="realblog_label"><?=$this->text('title_label')?></label>
-      <input type="text" id="realblog_title" name="realblog_title" value="<?=$this->esc($article->title)?>" size="50">
+      <input type="text" id="realblog_title" name="realblog_title" value="<?=$title?>" size="50">
     </p>
     <p>
       <label for="realblog_headline" class="realblog_label"><?=$this->text('headline_label')?></label>
-      <textarea class="realblog_headline_field" id="realblog_headline" name="realblog_headline" rows="6" cols="60"><?=$this->esc($article->teaser)?></textarea>
+      <textarea class="realblog_headline_field" id="realblog_headline" name="realblog_headline" rows="6" cols="60"><?=$teaser?></textarea>
     </p>
     <p>
       <label for="realblog_story" class="realblog_label"><?=$this->text('story_label')?></label>
-      <textarea class="realblog_story_field" id="realblog_story" name="realblog_story" rows="30" cols="80"><?=$this->esc($article->body)?></textarea>
+      <textarea class="realblog_story_field" id="realblog_story" name="realblog_story" rows="30" cols="80"><?=$body?></textarea>
     </p>
     <p style="text-align: center"><input type="submit" name="save" value="<?=$this->text($button)?>"></p>
   </form>

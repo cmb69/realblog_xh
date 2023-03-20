@@ -21,6 +21,9 @@
 
 namespace Realblog\Infra;
 
+use Error;
+use Realblog\Value\Html;
+
 class View
 {
     /** @var string */
@@ -39,7 +42,7 @@ class View
     /** @param scalar $args */
     public function text(string $key, ...$args): string
     {
-        return $this->esc(sprintf($this->text[$key], ...$args));
+        return sprintf($this->esc($this->text[$key]), ...$args);
     }
 
     /** @param scalar $args */
@@ -50,7 +53,7 @@ class View
         } else {
             $key .= XH_numberSuffix($count);
         }
-        return $this->esc(sprintf($this->text[$key], $count, ...$args));
+        return sprintf($this->esc($this->text[$key]), $count, ...$args);
     }
 
     public function date(int $timestamp): string
@@ -78,6 +81,15 @@ class View
     /** @param array<string,mixed> $_data */
     public function render(string $_template, array $_data): string
     {
+        array_walk_recursive($_data, function (&$value) {
+            if (is_string($value)) {
+                $value = $this->esc($value);
+            } elseif ($value instanceof Html) {
+                $value = (string) $value;
+            } elseif (!is_null($value) && !is_scalar($value) && !is_array($value)) {
+                throw new Error("unsupported view value type");
+            }
+        });
         extract($_data);
         ob_start();
         include "{$this->viewFolder}{$_template}.php";
@@ -104,14 +116,14 @@ class View
         return "\n<link rel=\"alternate\" type=\"application/rss+xml\" href=\"$href\">";
     }
 
+    public function renderXmlDeclaration(): string
+    {
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+    }
+
     /** @param scalar $value */
     public function esc($value): string
     {
         return XH_hsc((string) $value);
-    }
-
-    public function raw(string $value): string
-    {
-        return $value;
     }
 }

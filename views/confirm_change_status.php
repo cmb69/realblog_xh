@@ -16,17 +16,17 @@ use Realblog\Infra\View;
   <h1>Realblog – <?=$this->text('tooltip_change_status')?></h1>
 <?if (count($ids)):?>
   <p class="xh_warning"><?=$this->text('confirm_changestatus')?></p>
-  <form name="confirm" method="post" action="<?=$this->esc($action)?>">
+  <form name="confirm" method="post" action="<?=$action?>">
 <?foreach ($ids as $id):?>
-    <input type="hidden" name="realblog_ids[]" value="<?=$this->esc($id)?>">
+    <input type="hidden" name="realblog_ids[]" value="<?=$id?>">
 <?endforeach?>
     <input type="hidden" name="action" value="do_change_status"?>
-    <input type="hidden" name="xh_csrf_token" value="<?=$this->esc($csrfToken)?>">
+    <input type="hidden" name="xh_csrf_token" value="<?=$csrfToken?>">
     <p style="text-align: center">
       <select name="realblog_status">
-      <option value="<?=$this->esc(-1)?>"><?=$this->text('new_realblogstatus')?></option>
+      <option value="<?=-1?>"><?=$this->text('new_realblogstatus')?></option>
 <?foreach ($states as $i => $state):?>
-        <option value="<?=$this->esc($i)?>"><?=$this->text($state)?></option>
+        <option value="<?=$i?>"><?=$this->text($state)?></option>
 <?endforeach?>
       </select>
       <input type="submit" name="submit" value="<?=$this->text('btn_ok')?>">
@@ -35,5 +35,5 @@ use Realblog\Infra\View;
 <?else:?>
   <p class="xh_info"><?=$this->text('nothing_selected')?></p>
 <?endif?>
-  <p><a href="<?=$this->esc($url)?>"><?=$this->text('blog_back')?></a></p>
+  <p><a href="<?=$url?>"><?=$this->text('blog_back')?></a></p>
 </div>

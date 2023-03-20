@@ -31,6 +31,7 @@ use Realblog\Infra\Request;
 use Realblog\Infra\View;
 use Realblog\Value\Article;
 use Realblog\Value\FullArticle;
+use Realblog\Value\Html;
 use Realblog\Value\Response;
 use Realblog\Value\Url;
 
@@ -151,8 +152,8 @@ class MainAdminController
             "lastPage" => $pageCount,
             "articles" => $this->articleRecords($request, $articles, $page),
             "actionUrl" => $request->url()->withPage("")->relative(),
-            "states" => self::STATES,
-            "filters" => $this->getFilterStatuses($request),
+            "states" => $this->statusRecords($this->getFilterStatuses($request)),
+            // "filters" => $this->getFilterStatuses($request),
         ];
         return $this->view->render("articles_form", $data);
     }
@@ -180,6 +181,21 @@ class MainAdminController
             ];
         }
         return $records;
+    }
+
+    /**
+     * @param list<bool> $filters
+     * @return list<array{value:int,label:string,checked:string}>
+     */
+    private function statusRecords(array $filters): array
+    {
+        return array_map(function (int $state, string $label) use ($filters) {
+            return [
+                "value" => $state,
+                "label" => $label,
+                "checked" => $filters[$state] ? "checked" : "",
+            ];
+        }, array_keys(self::STATES), array_values(self::STATES));
     }
 
     private function createAction(Request $request): Response
@@ -236,8 +252,16 @@ class MainAdminController
         $hjs = $this->view->renderMeta("realblog", $this->finder->findAllCategories());
         $bjs = $this->view->renderScript($this->pluginFolder . "realblog.js");
         return Response::create($this->view->render("article_form", [
-            "article" => $article,
-            "title" => $title,
+            "id" => $article->id,
+            "version" => $article->version,
+            "timestamp" => $article->date,
+            "status" => $article->status,
+            "title" => $article->title,
+            "teaser" => $article->teaser,
+            "body" => $article->body,
+            "feedable" => $article->feedable ? "checked" : "",
+            "commentable" => $article->commentable ? "checked" : "",
+            "page_title" => $title,
             "date" => (string) date("Y-m-d", $article->date),
             "publishing_date" => (string) date("Y-m-d", $article->publishingDate),
             "archiving_date" => (string) date("Y-m-d", $article->archivingDate),
@@ -246,12 +270,24 @@ class MainAdminController
             "csrfToken" => $this->csrfProtector->token(),
             "isAutoPublish" => (bool) $this->conf["auto_publish"],
             "isAutoArchive" => (bool) $this->conf["auto_archive"],
-            "states" => self::STATES,
+            "states" => $this->stateRecords($article),
             "categories" => trim($article->categories, ","),
             "button" => $button,
         ]))->withTitle($title)->withHjs($hjs)->withBjs($bjs);
     }
-    
+
+    /** @return list<array{value:int,label:string,selected:string}> */
+    private function stateRecords(FullArticle $article): array
+    {
+        return array_map(function (int $status, string $label) use ($article) {
+            return [
+                "value" => $status,
+                "label" => $label,
+                "selected" => $status === $article->status ? "selected" : "",
+            ];
+        }, array_keys(self::STATES), array_values(self::STATES));
+    }
+
     private function doCreateAction(Request $request): Response
     {
         $this->csrfProtector->check();
@@ -354,7 +390,7 @@ class MainAdminController
     {
         return $this->view->render("info_message", [
             "title" => $title,
-            "message" => $message,
+            "message" => Html::of($message),
             "url" => $this->overviewUrl($request)->relative(),
         ]);
     }
