@@ -79,9 +79,9 @@ class MainAdminController
         $this->editor = $editor;
     }
 
-    public function __invoke(Request $request, string $action): Response
+    public function __invoke(Request $request): Response
     {
-        $response = $this->dispatch($request, $action);
+        $response = $this->dispatch($request);
         if ($request->edit() && $request->url()->param("realblog_page") !== null) {
             $page = max($request->intFromGet("realblog_page"), 1);
             $response = $response->withCookie('realblog_page', (string) $page);
@@ -89,9 +89,9 @@ class MainAdminController
         return $response;
     }
 
-    private function dispatch(Request $request, string $action): Response
+    private function dispatch(Request $request): Response
     {
-        switch ($action) {
+        switch ($request->action()) {
             default:
                 return $this->defaultAction($request);
             case "create":
@@ -202,13 +202,10 @@ class MainAdminController
     {
         $timestamp = $request->time();
         $article = new FullArticle(0, 0, $timestamp, 2147483647, 2147483647, 0, '', '', '', '', false, false);
-        return $this->renderArticleForm(
-            $request,
-            $article,
-            $this->view->text("tooltip_create"),
-            "do_create",
-            "btn_create"
-        );
+        $title = $this->view->text("tooltip_create");
+        [$hjs, $bjs] = $this->renderJs();
+        return Response::create($this->renderArticleForm($article, $title, "btn_create"))
+            ->withTitle($title)->withHjs($hjs)->withBjs($bjs);
     }
 
     private function editAction(Request $request): Response
@@ -217,13 +214,10 @@ class MainAdminController
         if (!$article) {
             return Response::create($this->view->message("fail", "message_not_found"));
         }
-        return $this->renderArticleForm(
-            $request,
-            $article,
-            $this->view->text("title_edit", $article->id),
-            "do_edit",
-            "btn_edit"
-        );
+        $title = $this->view->text("title_edit", $this->view->esc($article->id));
+        [$hjs, $bjs] = $this->renderJs();
+        return Response::create($this->renderArticleForm($article, $title, "btn_edit"))
+            ->withTitle($title)->withHjs($hjs)->withBjs($bjs);
     }
 
     private function deleteAction(Request $request): Response
@@ -232,26 +226,74 @@ class MainAdminController
         if (!$article) {
             return Response::create($this->view->message("fail", "message_not_found"));
         }
-        return $this->renderArticleForm(
-            $request,
-            $article,
-            $this->view->text("title_delete", $article->id),
-            "do_delete",
-            "btn_delete"
-        );
+        $title = $this->view->text("title_delete", $this->view->esc($article->id));
+        [$hjs, $bjs] = $this->renderJs();
+        return Response::create($this->renderArticleForm($article, $title, "btn_delete"))
+            ->withTitle($title)->withHjs($hjs)->withBjs($bjs);
     }
 
-    private function renderArticleForm(
-        Request $request,
-        FullArticle $article,
-        string $title,
-        string $action,
-        string $button
-    ): Response {
+    private function doCreateAction(Request $request): Response
+    {
+        $this->csrfProtector->check();
+        $article = $request->articleFromPost();
+        $res = $this->db->insertArticle($article);
+        if ($res !== 1) {
+            $title = $this->view->text("tooltip_create");
+            $errors = [Html::of($this->view->message("fail", "story_added_error"))];
+            [$hjs, $bjs] = $this->renderJs();
+            return Response::create($this->renderArticleForm($article, $title, "btn_create", $errors))
+                ->withTitle($title)->withHjs($hjs)->withBjs($bjs);
+        }
+        return Response::redirect($this->overviewUrl($request)->absolute());
+    }
+
+    private function doEditAction(Request $request): Response
+    {
+        $this->csrfProtector->check();
+        $article = $request->articleFromPost();
+        $res = $this->db->updateArticle($article);
+        if ($res !== 1) {
+            $title = $this->view->text("title_edit", $this->view->esc($article->id));
+            $errors = [Html::of($this->view->message("fail", "story_modified_error"))];
+            [$hjs, $bjs] = $this->renderJs();
+            return Response::create($this->renderArticleForm($article, $title, "btn_edit", $errors))
+                ->withTitle($title)->withHjs($hjs)->withBjs($bjs);
+        }
+        return Response::redirect($this->overviewUrl($request)->absolute());
+    }
+
+    private function doDeleteAction(Request $request): Response
+    {
+        $this->csrfProtector->check();
+        $article = $request->articleFromPost();
+        $res = $this->db->deleteArticle($article);
+        if ($res !== 1) {
+            $title = $this->view->text("title_delete", $this->view->esc($article->id));
+            $errors = [Html::of($this->view->message("fail", "story_deleted_error"))];
+            [$hjs, $bjs] = $this->renderJs();
+            return Response::create($this->renderArticleForm($article, $title, "btn_delete", $errors))
+                ->withTitle($title)->withHjs($hjs)->withBjs($bjs);
+        }
+        return Response::redirect($this->overviewUrl($request)->absolute());
+    }
+
+    /** @return array{string,string} */
+    private function renderJs(): array
+    {
         $this->editor->init(['realblog_headline_field', 'realblog_story_field']);
         $hjs = $this->view->renderMeta("realblog", $this->finder->findAllCategories());
         $bjs = $this->view->renderScript($this->pluginFolder . "realblog.js");
-        return Response::create($this->view->render("article_form", [
+        return [$hjs, $bjs];
+    }
+
+    /** @param list<Html> $errors */
+    private function renderArticleForm(
+        FullArticle $article,
+        string $title,
+        string $button,
+        array $errors = []
+    ): string {
+        return $this->view->render("article_form", [
             "id" => $article->id,
             "version" => $article->version,
             "timestamp" => $article->date,
@@ -265,15 +307,14 @@ class MainAdminController
             "date" => (string) date("Y-m-d", $article->date),
             "publishing_date" => (string) date("Y-m-d", $article->publishingDate),
             "archiving_date" => (string) date("Y-m-d", $article->archivingDate),
-            "actionUrl" => $request->url()->withPage("realblog")->with("admin", "plugin_main")->relative(),
-            "action" => $action,
             "csrfToken" => $this->csrfProtector->token(),
             "isAutoPublish" => (bool) $this->conf["auto_publish"],
             "isAutoArchive" => (bool) $this->conf["auto_archive"],
             "states" => $this->stateRecords($article),
             "categories" => trim($article->categories, ","),
             "button" => $button,
-        ]))->withTitle($title)->withHjs($hjs)->withBjs($bjs);
+            "errors" => $errors,
+        ]);
     }
 
     /** @return list<array{value:int,label:string,selected:string}> */
@@ -288,111 +329,62 @@ class MainAdminController
         }, array_keys(self::STATES), array_values(self::STATES));
     }
 
-    private function doCreateAction(Request $request): Response
-    {
-        $this->csrfProtector->check();
-        $article = $request->articleFromPost();
-        $res = $this->db->insertArticle($article);
-        if ($res === 1) {
-            return Response::redirect($this->overviewUrl($request)->absolute());
-        }
-        $info = $this->view->message("fail", "story_added_error");
-        $output = $this->renderInfo($request, "tooltip_create", $info);
-        return Response::create($output)->withTitle($this->view->text("tooltip_create"));
-    }
-
-    private function doEditAction(Request $request): Response
-    {
-        $this->csrfProtector->check();
-        $article = $request->articleFromPost();
-        $res = $this->db->updateArticle($article);
-        if ($res === 1) {
-            return Response::redirect($this->overviewUrl($request)->absolute());
-        }
-        $info = $this->view->message("fail", "story_modified_error");
-        $output = $this->renderInfo($request, "tooltip_edit", $info);
-        return Response::create($output)->withTitle($this->view->text("tooltip_edit"));
-    }
-
-    private function doDeleteAction(Request $request): Response
-    {
-        $this->csrfProtector->check();
-        $article = $request->articleFromPost();
-        $res = $this->db->deleteArticle($article);
-        if ($res === 1) {
-            return Response::redirect($this->overviewUrl($request)->absolute());
-        }
-        $info = $this->view->message("fail", "story_deleted_error");
-        $output = $this->renderInfo($request, "tooltip_delete", $info);
-        return Response::create($output)->withTitle($this->view->text("tooltip_delete"));
-    }
-
     private function deleteSelectedAction(Request $request): Response
     {
-        return Response::create($this->renderConfirmation($request, 'delete'));
+        return Response::create($this->renderConfirmation($request, 'delete'))
+            ->withTitle($this->view->text("tooltip_delete_selected"));
     }
 
     private function changeStatusAction(Request $request): Response
     {
-        return Response::create($this->renderConfirmation($request, 'change_status'));
-    }
-
-    private function renderConfirmation(Request $request, string $kind): string
-    {
-        $data = [
-            'ids' => $request->realblogIdsFromGet(),
-            'action' => $request->url()->withPage("realblog")->with("admin", "plugin_main")->relative(),
-            'url' => $this->overviewUrl($request)->relative(),
-            'csrfToken' => $this->csrfProtector->token(),
-        ];
-        if ($kind === 'change_status') {
-            $data['states'] = self::STATES;
-        }
-        return $this->view->render("confirm_$kind", $data);
+        return Response::create($this->renderConfirmation($request, 'change_status'))
+            ->withTitle($this->view->text("tooltip_change_status"));
     }
 
     private function doDeleteSelectedAction(Request $request): Response
     {
         $this->csrfProtector->check();
-        $ids = $request->realblogIdsFromPost();
+        $ids = $request->realblogIdsFromGet();
         $res = $this->db->deleteArticlesWithIds($ids);
-        if ($res === count($ids)) {
-            return Response::redirect($this->overviewUrl($request)->absolute());
+        if ($res !== count($ids)) {
+            $errors = $res > 0
+                ? [Html::of($this->view->message("warning", "deleteall_warning", $res, count($ids)))]
+                : [Html::of($this->view->message("fail", "deleteall_error"))];
+            return Response::create($this->renderConfirmation($request, "delete", $errors))
+                ->withTitle($this->view->text("tooltip_delete_selected"));
         }
-        if ($res > 0) {
-            $info = $this->view->message("warning", "deleteall_warning", $res, count($ids));
-        } else {
-            $info = $this->view->message("fail", "deleteall_error");
-        }
-        $output = $this->renderInfo($request, "tooltip_delete_selected", $info);
-        return Response::create($output)->withTitle($this->view->text("tooltip_delete_selected"));
+        return Response::redirect($this->overviewUrl($request)->absolute());
     }
 
     private function doChangeStatusAction(Request $request): Response
     {
         $this->csrfProtector->check();
-        $ids = $request->realblogIdsFromPost();
+        $ids = $request->realblogIdsFromGet();
         $status = $request->statusFromPost();
         $res = $this->db->updateStatusOfArticlesWithIds($ids, $status);
-        if ($res === count($ids)) {
-            return Response::redirect($this->overviewUrl($request)->absolute());
+        if ($res !== count($ids)) {
+            $errors = $res > 0
+                ? [Html::of($this->view->message("warning", "changestatus_warning", $res, count($ids)))]
+                : [Html::of($this->view->message("fail", "changestatus_error"))];
+            return Response::create($this->renderConfirmation($request, "change_status", $errors))
+                ->withTitle($this->view->text("tooltip_change_status"));
         }
-        if ($res > 0) {
-            $info = $this->view->message("warning", "changestatus_warning", $res, count($ids));
-        } else {
-            $info = $this->view->message("fail", "changestatus_error");
-        }
-        $output = $this->renderInfo($request, "tooltip_change_status", $info);
-        return Response::create($output)->withTitle($this->view->text("tooltip_change_status"));
+        return Response::redirect($this->overviewUrl($request)->absolute());
     }
 
-    private function renderInfo(Request $request, string $title, string $message): string
+    /** @param list<Html> $errors */
+    private function renderConfirmation(Request $request, string $kind, array $errors = []): string
     {
-        return $this->view->render("info_message", [
-            "title" => $title,
-            "message" => Html::of($message),
-            "url" => $this->overviewUrl($request)->relative(),
-        ]);
+        $data = [
+            'ids' => $request->realblogIdsFromGet(),
+            'url' => $this->overviewUrl($request)->relative(),
+            'csrfToken' => $this->csrfProtector->token(),
+            "errors" => $errors,
+        ];
+        if ($kind === 'change_status') {
+            $data['states'] = self::STATES;
+        }
+        return $this->view->render("confirm_$kind", $data);
     }
 
     private function overviewUrl(Request $request): Url

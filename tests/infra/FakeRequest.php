@@ -52,6 +52,11 @@ class FakeRequest extends Request
         return $this->options["s"] ?? -1;
     }
 
+    public function action(): string
+    {
+        return $this->options["action"] ?? "";
+    }
+
     protected function cookie(): array
     {
         return $this->options["cookie"] ?? [];

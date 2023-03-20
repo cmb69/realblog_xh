@@ -2,13 +2,10 @@
 <div class="realblog_confirm_delete">
   <h1>Realblog – Delete selected articles</h1>
   <p class="xh_warning">Do you really want to delete selected entries?</p>
-  <form name="confirm" method="post" action="/?realblog&amp;admin=plugin_main">
-    <input type="hidden" name="realblog_ids[]" value="17">
-    <input type="hidden" name="realblog_ids[]" value="4">
-    <input type="hidden" name="action" value="do_delete_selected"?>
+  <form name="confirm" method="post">
     <input type="hidden" name="xh_csrf_token" value="e3c1b42a6098b48a39f9f54ddb3388f7">
     <p style="text-align: center">
-      <input type="submit" name="submit" value="Delete">
+      <button name="realblog_do">Delete</button>
     </p>
   </form>
   <p><a href="/?realblog&amp;admin=plugin_main&amp;action=plugin_text">entries overview</a></p>

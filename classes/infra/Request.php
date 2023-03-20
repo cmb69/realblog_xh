@@ -66,6 +66,19 @@ class Request
         return $this->s();
     }
 
+    /** @codeCoverageIgnore */
+    public function action(): string
+    {
+        global $action;
+        if (!strncmp($action, "do_", strlen("do_"))) {
+            return "";
+        }
+        if (!isset($_POST["realblog_do"])) {
+            return $action;
+        }
+        return "do_$action";
+    }
+
     public function stringFromGet(string $name): string
     {
         $param = $this->url()->param($name);
@@ -114,18 +127,6 @@ class Request
             return [];
         }
         return array_map("intval", array_filter($param, function ($id) {
-            return (int) $id >= 1;
-        }));
-    }
-
-    /** @return list<int> */
-    public function realblogIdsFromPost(): array
-    {
-        $post = $this->post();
-        if (!isset($post["realblog_ids"]) || !is_array($post["realblog_ids"])) {
-            return [];
-        }
-        return array_map("intval", array_filter($post["realblog_ids"], function ($id) {
             return (int) $id >= 1;
         }));
     }

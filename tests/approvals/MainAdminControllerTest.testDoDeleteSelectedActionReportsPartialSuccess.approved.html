@@ -1,3 +1,13 @@
-<!-- realblog info message -->
-<h1>Realblog – Delete selected articles</h1>
-<p class="xh_warning">Only 1 of 2 requested articles have been deleted!</p><p><a href="/?realblog&amp;admin=plugin_main&amp;action=plugin_text">entries overview</a></p>
+<!-- realblog confirm delete -->
+<div class="realblog_confirm_delete">
+  <h1>Realblog – Delete selected articles</h1>
+  <div><p class="xh_warning">Only 1 of 2 requested articles have been deleted!</p></div>
+  <p class="xh_warning">Do you really want to delete selected entries?</p>
+  <form name="confirm" method="post">
+    <input type="hidden" name="xh_csrf_token" value="e3c1b42a6098b48a39f9f54ddb3388f7">
+    <p style="text-align: center">
+      <button name="realblog_do">Delete</button>
+    </p>
+  </form>
+  <p><a href="/?realblog&amp;admin=plugin_main&amp;action=plugin_text">entries overview</a></p>
+</div>

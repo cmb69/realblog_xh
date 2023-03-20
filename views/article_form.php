@@ -17,21 +17,22 @@ use Realblog\Infra\View;
  * @var string $publishing_date
  * @var string $archiving_date
  * @var string $page_title
- * @var string $actionUrl
- * @var string $action
  * @var string $csrfToken
  * @var bool $isAutoPublish
  * @var bool $isAutoArchive
  * @var list<array{value:int,label:string,selected:string}> $states
  * @var string $categories
  * @var string $button
+ * @var list<string> $errors
  */
 ?>
 <!-- realblog article form -->
 <div class="realblog_fields_block">
   <h1>Realblog – <?=$page_title?></h1>
-  <form name="realblog" method="post" action="<?=$actionUrl?>">
-    <input type="hidden" name="action" value="<?=$action?>">
+<?foreach ($errors as $error):?>
+  <div><?=$error?></div>
+<?endforeach?>
+  <form name="realblog" method="post">
     <input type="hidden" name="realblog_id" value="<?=$id?>">
     <input type="hidden" name="realblog_version" value="<?=$version?>">
     <input type="hidden" name="xh_csrf_token" value="<?=$csrfToken?>">
@@ -111,6 +112,6 @@ use Realblog\Infra\View;
       <label for="realblog_story" class="realblog_label"><?=$this->text('story_label')?></label>
       <textarea class="realblog_story_field" id="realblog_story" name="realblog_story" rows="30" cols="80"><?=$body?></textarea>
     </p>
-    <p style="text-align: center"><input type="submit" name="save" value="<?=$this->text($button)?>"></p>
+    <p style="text-align: center"><button name="realblog_do"><?=$this->text($button)?></button></p>
   </form>
 </div>

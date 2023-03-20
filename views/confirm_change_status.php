@@ -5,22 +5,21 @@ use Realblog\Infra\View;
 /**
  * @var View $this
  * @var list<int> $ids
- * @var string $action
  * @var string $csrfToken
  * @var list<string> $states
  * @var string $url
+ * @var list<string> $errors
  */
 ?>
 <!-- realblog confirm change status -->
 <div class="realblog_confirm_change_status">
   <h1>Realblog – <?=$this->text('tooltip_change_status')?></h1>
+<?foreach ($errors as $error):?>
+  <div><?=$error?></div>
+<?endforeach?>
 <?if (count($ids)):?>
   <p class="xh_warning"><?=$this->text('confirm_changestatus')?></p>
-  <form name="confirm" method="post" action="<?=$action?>">
-<?foreach ($ids as $id):?>
-    <input type="hidden" name="realblog_ids[]" value="<?=$id?>">
-<?endforeach?>
-    <input type="hidden" name="action" value="do_change_status"?>
+  <form name="confirm" method="post">
     <input type="hidden" name="xh_csrf_token" value="<?=$csrfToken?>">
     <p style="text-align: center">
       <select name="realblog_status">
@@ -29,7 +28,7 @@ use Realblog\Infra\View;
         <option value="<?=$i?>"><?=$this->text($state)?></option>
 <?endforeach?>
       </select>
-      <input type="submit" name="submit" value="<?=$this->text('btn_ok')?>">
+      <button name="realblog_do"><?=$this->text('btn_ok')?></button>
     </p>
   </form>
 <?else:?>

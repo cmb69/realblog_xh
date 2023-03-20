@@ -43,7 +43,7 @@ class MainAdminControllerTest extends TestCase
             "edit" => true,
             "url" => Url::from("http://example.com/?&realblog_page=3"),
         ]);
-        $response = $sut($request, "");
+        $response = $sut($request);
         $this->assertEquals(["realblog_page" => "3"], $response->cookies());
     }
 
@@ -51,7 +51,7 @@ class MainAdminControllerTest extends TestCase
     {
         $sut = $this->sut(["finder" => ["articles" => $this->articles()]]);
         $request = new FakeRequest();
-        $response = $sut($request, "");
+        $response = $sut($request);
         Approvals::verifyHtml($response->output());
     }
 
@@ -61,7 +61,7 @@ class MainAdminControllerTest extends TestCase
         $request = new FakeRequest([
             "url" => Url::from("http://example.com/?&realblog_filter[]=on&realblog_filter[]=&realblog_filter[]=on"),
         ]);
-        $response = $sut($request, "");
+        $response = $sut($request);
         $this->assertEquals(["realblog_filter" => "[true,false,true]"], $response->cookies());
     }
 
@@ -76,7 +76,7 @@ class MainAdminControllerTest extends TestCase
                 "realblog_filter" => "[true,false,true]",
             ],
         ]);
-        $response = $sut($request, "");
+        $response = $sut($request);
         Approvals::verifyHtml($response->output());
     }
 
@@ -84,9 +84,10 @@ class MainAdminControllerTest extends TestCase
     {
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
         $request = new FakeRequest([
+            "action" => "create",
             "server" => ["REQUEST_TIME" => 1675205155]
         ]);
-        $response = $sut($request, "create");
+        $response = $sut($request);
         Approvals::verifyHtml($response->output());
         $this->assertEquals("Create new article", $response->title());
     }
@@ -96,9 +97,10 @@ class MainAdminControllerTest extends TestCase
         $editor = new FakeEditor;
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()], "editor" => $editor]);
         $request = new FakeRequest([
+            "action" => "create",
             "server" => ["REQUEST_TIME" => 1675205155]
         ]);
-        $sut($request, "create");
+        $sut($request);
         $this->assertEquals(["realblog_headline_field", "realblog_story_field"], $editor->classes());
     }
 
@@ -106,9 +108,10 @@ class MainAdminControllerTest extends TestCase
     {
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
         $request = new FakeRequest([
+            "action" => "create",
             "server" => ["REQUEST_TIME" => 1675205155]
         ]);
-        $response = $sut($request, "create");
+        $response = $sut($request);
         Approvals::verifyHtml($response->hjs());
     }
 
@@ -116,17 +119,18 @@ class MainAdminControllerTest extends TestCase
     {
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
         $request = new FakeRequest([
+            "action" => "create",
             "server" => ["REQUEST_TIME" => 1675205155]
         ]);
-        $response = $sut($request, "create");
+        $response = $sut($request);
         Approvals::verifyHtml($response->bjs());
     }
 
     public function testEditActionRendersArticle(): void
     {
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
-        $request = new FakeRequest();
-        $response = $sut($request, "edit");
+        $request = new FakeRequest(["action" => "edit"]);
+        $response = $sut($request);
         Approvals::verifyHtml($response->output());
         $this->assertEquals("Edit article #1", $response->title());
     }
@@ -135,24 +139,24 @@ class MainAdminControllerTest extends TestCase
     {
         $editor = new FakeEditor;
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()], "editor" => $editor]);
-        $request = new FakeRequest();
-        $sut($request, "edit");
+        $request = new FakeRequest(["action" => "edit"]);
+        $sut($request);
         $this->assertEquals(["realblog_headline_field", "realblog_story_field"], $editor->classes());
     }
 
     public function testEditActionOutputsHjs(): void
     {
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
-        $request = new FakeRequest();
-        $response = $sut($request, "edit");
+        $request = new FakeRequest(["action" => "edit"]);
+        $response = $sut($request);
         Approvals::verifyHtml($response->hjs());
     }
 
     public function testEditActionOutputsBjs(): void
     {
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
-        $request = new FakeRequest();
-        $response = $sut($request, "edit");
+        $request = new FakeRequest(["action" => "edit"]);
+        $response = $sut($request);
         Approvals::verifyHtml($response->bjs());
     }
 
@@ -162,24 +166,24 @@ class MainAdminControllerTest extends TestCase
             "conf" => ["auto_publish" => "true", "auto_archive" => "true"],
             "finder" => ["article" => $this->firstArticle()]
         ]);
-        $request = new FakeRequest();
-        $response = $sut($request, "edit");
+        $request = new FakeRequest(["action" => "edit"]);
+        $response = $sut($request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testEditActionFailsOnMissingArticle(): void
     {
         $sut = $this->sut();
-        $request = new FakeRequest();
-        $response = $sut($request, "edit");
+        $request = new FakeRequest(["action" => "edit"]);
+        $response = $sut($request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testDeleteActionRendersArticle(): void
     {
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
-        $request = new FakeRequest();
-        $response = $sut($request, "delete");
+        $request = new FakeRequest(["action" => "delete"]);
+        $response = $sut($request);
         Approvals::verifyHtml($response->output());
         $this->assertEquals("Delete article #1", $response->title());
     }
@@ -188,32 +192,32 @@ class MainAdminControllerTest extends TestCase
     {
         $editor = new FakeEditor;
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()], "editor" => $editor]);
-        $request = new FakeRequest();
-        $sut($request, "delete");
+        $request = new FakeRequest(["action" => "delete"]);
+        $sut($request);
         $this->assertEquals(["realblog_headline_field", "realblog_story_field"], $editor->classes());
     }
 
     public function testDeletectionOutputsHjs(): void
     {
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
-        $request = new FakeRequest();
-        $response = $sut($request, "delete");
+        $request = new FakeRequest(["action" => "delete"]);
+        $response = $sut($request);
         Approvals::verifyHtml($response->hjs());
     }
 
     public function testDeletectionOutputsBjs(): void
     {
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
-        $request = new FakeRequest();
-        $response = $sut($request, "delete");
+        $request = new FakeRequest(["action" => "delete"]);
+        $response = $sut($request);
         Approvals::verifyHtml($response->bjs());
     }
 
     public function testDeleteActionFailsOnMissingArticle(): void
     {
         $sut = $this->sut();
-        $request = new FakeRequest();
-        $response = $sut($request, "delete");
+        $request = new FakeRequest(["action" => "delete"]);
+        $response = $sut($request);
         Approvals::verifyHtml($response->output());
     }
 
@@ -222,8 +226,8 @@ class MainAdminControllerTest extends TestCase
         $_POST = $this->dummyPost();
         $csrfProtector = new FakeCsrfProtector;
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => ["insert" => 0]]);
-        $request = new FakeRequest(["server" => ["REQUEST_TIME" => 1675205155]]);
-        $sut($request, "do_create");
+        $request = new FakeRequest(["action" => "do_create", "server" => ["REQUEST_TIME" => 1675205155]]);
+        $sut($request);
         $this->assertTrue($csrfProtector->hasChecked());
     }
 
@@ -231,8 +235,8 @@ class MainAdminControllerTest extends TestCase
     {
         $_POST = $this->dummyPost();
         $sut = $this->sut(["db" => ["insert" => 1]]);
-        $request = new FakeRequest(["server" => ["REQUEST_TIME" => 1675205155]]);
-        $response = $sut($request, "do_create");
+        $request = new FakeRequest(["action" => "do_create", "server" => ["REQUEST_TIME" => 1675205155]]);
+        $response = $sut($request);
         $this->assertEquals(
             "http://example.com/?realblog&admin=plugin_main&action=plugin_text",
             $response->location()
@@ -243,8 +247,8 @@ class MainAdminControllerTest extends TestCase
     {
         $_POST = $this->dummyPost();
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()], "db" => ["insert" => 0]]);
-        $request = new FakeRequest(["server" => ["REQUEST_TIME" => 1675205155]]);
-        $response = $sut($request, "do_create");
+        $request = new FakeRequest(["action" => "do_create", "server" => ["REQUEST_TIME" => 1675205155]]);
+        $response = $sut($request);
         $this->assertEquals("Create new article", $response->title());
         Approvals::verifyHtml($response->output());
     }
@@ -254,8 +258,8 @@ class MainAdminControllerTest extends TestCase
         $_POST = $this->dummyPost();
         $csrfProtector = new FakeCsrfProtector;
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => ["update" => 0]]);
-        $request = new FakeRequest(["server" => ["REQUEST_TIME" => 1675205155]]);
-        $sut($request, "do_edit");
+        $request = new FakeRequest(["action" => "do_edit", "server" => ["REQUEST_TIME" => 1675205155]]);
+        $sut($request);
         $this->assertTrue($csrfProtector->hasChecked());
     }
 
@@ -263,8 +267,8 @@ class MainAdminControllerTest extends TestCase
     {
         $_POST = $this->dummyPost();
         $sut = $this->sut(["db" => ["update" => 1]]);
-        $request = new FakeRequest(["server" => ["REQUEST_TIME" => 1675205155]]);
-        $response = $sut($request, "do_edit");
+        $request = new FakeRequest(["action" => "do_edit", "server" => ["REQUEST_TIME" => 1675205155]]);
+        $response = $sut($request);
         $this->assertEquals(
             "http://example.com/?realblog&admin=plugin_main&action=plugin_text",
             $response->location()
@@ -275,9 +279,9 @@ class MainAdminControllerTest extends TestCase
     {
         $_POST = $this->dummyPost();
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()], "db" => ["update" => 0]]);
-        $request = new FakeRequest(["server" => ["REQUEST_TIME" => 1675205155]]);
-        $response = $sut($request, "do_edit");
-        $this->assertEquals("Edit article", $response->title());
+        $request = new FakeRequest(["action" => "do_edit", "server" => ["REQUEST_TIME" => 1675205155]]);
+        $response = $sut($request);
+        $this->assertEquals("Edit article #0", $response->title());
         Approvals::verifyHtml($response->output());
     }
 
@@ -286,8 +290,8 @@ class MainAdminControllerTest extends TestCase
         $_POST = $this->dummyPost();
         $csrfProtector = new FakeCsrfProtector;
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => ["delete" => 0]]);
-        $request = new FakeRequest(["server" => ["REQUEST_TIME" => 1675205155]]);
-        $sut($request, "do_delete");
+        $request = new FakeRequest(["action" => "do_delete", "server" => ["REQUEST_TIME" => 1675205155]]);
+        $sut($request);
         $this->assertTrue($csrfProtector->hasChecked());
     }
 
@@ -295,8 +299,8 @@ class MainAdminControllerTest extends TestCase
     {
         $_POST = $this->dummyPost();
         $sut = $this->sut(["db" => ["delete" => 1]]);
-        $request = new FakeRequest(["server" => ["REQUEST_TIME" => 1675205155]]);
-        $response = $sut($request, "do_delete");
+        $request = new FakeRequest(["action" => "do_delete", "server" => ["REQUEST_TIME" => 1675205155]]);
+        $response = $sut($request);
         $this->assertEquals(
             "http://example.com/?realblog&admin=plugin_main&action=plugin_text",
             $response->location()
@@ -307,9 +311,9 @@ class MainAdminControllerTest extends TestCase
     {
         $_POST = $this->dummyPost();
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()], "db" => ["delete" => 0]]);
-        $request = new FakeRequest(["server" => ["REQUEST_TIME" => 1675205155]]);
-        $response = $sut($request, "do_delete");
-        $this->assertEquals("Delete article", $response->title());
+        $request = new FakeRequest(["action" => "do_delete", "server" => ["REQUEST_TIME" => 1675205155]]);
+        $response = $sut($request);
+        $this->assertEquals("Delete article #0", $response->title());
         Approvals::verifyHtml($response->output());
     }
 
@@ -317,17 +321,19 @@ class MainAdminControllerTest extends TestCase
     {
         $sut = $this->sut();
         $request = new FakeRequest([
+            "action" => "delete_selected",
             "url" => Url::from("http://example.com/?&realblog_ids[]=17&realblog_ids[]=4"),
         ]);
-        $response = $sut($request, "delete_selected");
+        $response = $sut($request);
+        $this->assertEquals("Delete selected articles", $response->title());
         Approvals::verifyHtml($response->output());
     }
 
     public function testDeleteSelectedActionReportsIfNothingIsSelected()
     {
         $sut = $this->sut();
-        $request = new FakeRequest();
-        $response = $sut($request, "delete_selected");
+        $request = new FakeRequest(["action" => "delete_selected"]);
+        $response = $sut($request);
         Approvals::verifyHtml($response->output());
     }
 
@@ -335,36 +341,42 @@ class MainAdminControllerTest extends TestCase
     {
         $sut = $this->sut();
         $request = new FakeRequest([
+            "action" => "change_status",
             "url" => Url::from("http://example.com/?&realblog_ids[]=17&realblog_ids[]=4"),
         ]);
-        $response = $sut($request, "change_status");
+        $response = $sut($request);
+        $this->assertEquals("Change article status", $response->title());
         Approvals::verifyHtml($response->output());
     }
 
     public function testChangeStatusActionReportsIfNothingIsSelected()
     {
         $sut = $this->sut();
-        $request = new FakeRequest();
-        $response = $sut($request, "change_status");
+        $request = new FakeRequest(["action" => "change_status"]);
+        $response = $sut($request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testDoDeleteSelectedActionIsCsrfProtected()
     {
-        $_POST = ["realblog_ids" => ["17", "4"]];
         $csrfProtector = new FakeCsrfProtector;
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => ["bulkDelete" => 0]]);
-        $request = new FakeRequest();
-        $sut($request, "do_delete_selected");
+        $request = new FakeRequest([
+            "action" => "do_delete_selected",
+            "url" => Url::from("http://example.com/?&realblog_ids[]=17&realblog_ids[]=4"),
+        ]);
+        $sut($request);
         $this->assertTrue($csrfProtector->hasChecked());
     }
 
     public function testDoDeleteSelectedActionRedirectsOnSuccess()
     {
-        $_POST = ["realblog_ids" => ["17", "4"]];
         $sut = $this->sut(["db" => ["bulkDelete" => 2]]);
-        $request = new FakeRequest();
-        $response = $sut($request, "do_delete_selected");
+        $request = new FakeRequest([
+            "action" => "do_delete_selected",
+            "url" => Url::from("http://example.com/?&realblog_ids[]=17&realblog_ids[]=4"),
+        ]);
+        $response = $sut($request);
         $this->assertEquals(
             "http://example.com/?realblog&admin=plugin_main&action=plugin_text",
             $response->location()
@@ -373,59 +385,71 @@ class MainAdminControllerTest extends TestCase
 
     public function testDoDeleteSelectedActionReportsPartialSuccess()
     {
-        $_POST = ["realblog_ids" => ["17", "4"]];
         $sut = $this->sut(["db" => ["bulkDelete" => 1]]);
-        $request = new FakeRequest();
-        $response = $sut($request, "do_delete_selected");
+        $request = new FakeRequest([
+            "action" => "do_delete_selected",
+            "url" => Url::from("http://example.com/?&realblog_ids[]=17&realblog_ids[]=4"),
+        ]);
+        $response = $sut($request);
         $this->assertEquals("Delete selected articles", $response->title());
         Approvals::verifyHtml($response->output());
     }
 
     public function testDoDeleteSelectedActionReportsFailure()
     {
-        $_POST = ["realblog_ids" => ["17", "4"]];
         $sut = $this->sut(["db" => ["bulkDelete" => 0]]);
-        $request = new FakeRequest();
-        $response = $sut($request, "do_delete_selected");
+        $request = new FakeRequest([
+            "action" => "do_delete_selected",
+            "url" => Url::from("http://example.com/?&realblog_ids[]=17&realblog_ids[]=4"),
+        ]);
+        $response = $sut($request);
         $this->assertEquals("Delete selected articles", $response->title());
         Approvals::verifyHtml($response->output());
     }
 
     public function testDoChangeStatusActionIsCsrfProtected()
     {
-        $_POST = ["realblog_ids" => ["17", "4"]];
         $csrfProtector = new FakeCsrfProtector;
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => ["bulkUpdate" => 0]]);
-        $request = new FakeRequest();
-        $sut($request, "do_change_status");
+        $request = new FakeRequest([
+            "action" => "do_change_status",
+            "url" => Url::from("http://example.com/?&realblog_ids[]=17&realblog_ids[]=4"),
+        ]);
+        $sut($request);
         $this->assertTrue($csrfProtector->hasChecked());
     }
 
     public function testDoChangeStatusActionRedirectsOnSuccess()
     {
-        $_POST = ["realblog_ids" => ["17", "4"]];
         $sut = $this->sut(["db" => ["bulkUpdate" => 2]]);
-        $request = new FakeRequest();
-        $response = $sut($request, "do_change_status");
+        $request = new FakeRequest([
+            "action" => "do_change_status",
+            "url" => Url::from("http://example.com/?&realblog_ids[]=17&realblog_ids[]=4"),
+        ]);
+        $response = $sut($request);
         $this->assertEquals("http://example.com/?realblog&admin=plugin_main&action=plugin_text", $response->location());
     }
 
     public function testDoChangeStatusActionReportsPartialSuccess()
     {
-        $_POST = ["realblog_ids" => ["17", "4"]];
         $sut = $this->sut(["db" => ["bulkUpdate" => 1]]);
-        $request = new FakeRequest();
-        $response = $sut($request, "do_change_status");
+        $request = new FakeRequest([
+            "action" => "do_change_status",
+            "url" => Url::from("http://example.com/?&realblog_ids[]=17&realblog_ids[]=4"),
+        ]);
+        $response = $sut($request);
         $this->assertEquals("Change article status", $response->title());
         Approvals::verifyHtml($response->output());
     }
 
     public function testDoChangeStatusActionReportsFailure()
     {
-        $_POST = ["realblog_ids" => ["17", "4"]];
         $sut = $this->sut(["db" => ["bulkUpdate" => 0]]);
-        $request = new FakeRequest();
-        $response = $sut($request, "do_change_status");
+        $request = new FakeRequest([
+            "action" => "do_change_status",
+            "url" => Url::from("http://example.com/?&realblog_ids[]=17&realblog_ids[]=4"),
+        ]);
+        $response = $sut($request);
         $this->assertEquals("Change article status", $response->title());
         Approvals::verifyHtml($response->output());
     }
