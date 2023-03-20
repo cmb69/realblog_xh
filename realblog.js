@@ -44,11 +44,3 @@
         }
     };
 }());
-
-(function () {
-    let importForm = document.getElementById("realblog_import_csv");
-    if (!importForm) return;
-    importForm.onsubmit = function (event) {
-        return confirm(JSON.parse(event.target.dataset.realblog));
-    };
-}());

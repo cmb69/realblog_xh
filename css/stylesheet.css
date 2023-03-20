@@ -254,3 +254,7 @@ padding: 2px 5px;
 .realblog_data_exchange form {
     margin: 1em 0;
 }
+.realblog_data_exchange fieldset {
+    padding: 0.35em 0.75em 0.625em 0.75em;
+    margin: 1em 0;
+}

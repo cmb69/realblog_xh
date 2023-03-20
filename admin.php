@@ -54,7 +54,7 @@ if (XH_wantsPluginAdministration("realblog")) {
             $o .= Responder::respond(Dic::makeMainAdminController()(Request::current()));
             break;
         case "data_exchange":
-            $o .= Responder::respond(Dic::makeDataExchangeController()(Request::current(), $action));
+            $o .= Responder::respond(Dic::makeDataExchangeController()(Request::current()));
             break;
         default:
             $o .= plugin_admin_common();

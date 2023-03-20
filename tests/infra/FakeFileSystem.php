@@ -30,6 +30,11 @@ class FakeFileSystem extends FileSystem
         $this->options = $options;
     }
 
+    public function fileExists(string $filename): bool
+    {
+        return $this->options["fileExists"] ?? false;
+    }
+
     public function isReadable(string $filename): bool
     {
         return $this->options["isReadable"] ?? false;

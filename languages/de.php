@@ -40,6 +40,7 @@ $plugin_tx['realblog']['exchange_file_found']="CSV Datei \"%s\" gefunden (%s).";
 $plugin_tx['realblog']['exchange_file_notfound']="Keine CSV Datei gefunden.";
 $plugin_tx['realblog']['exchange_button_export']="Export nach CSV";
 $plugin_tx['realblog']['exchange_button_import']="Import von CSV";
+$plugin_tx['realblog']['exchange_confirm_export']="Der Datenbank-Export wird die CSV-Datei \"%s\" überschreiben!";
 $plugin_tx['realblog']['exchange_confirm_import']="Der CSV Import wird alle Artikel in der Datenbank überschreiben!";
 $plugin_tx['realblog']['exchange_export_failure']="Konnte nicht nach \"%s\" exportieren!";
 $plugin_tx['realblog']['exchange_import_failure']="Konnte nicht von \"%s\" importieren!";

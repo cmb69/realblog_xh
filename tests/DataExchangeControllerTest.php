@@ -45,7 +45,7 @@ class DataExchangeControllerTest extends TestCase
             $this->view()
         );
         $request = new FakeRequest();
-        $response = $sut($request, "");
+        $response = $sut($request);
         Approvals::verifyHtml($response->output());
     }
 
@@ -61,7 +61,24 @@ class DataExchangeControllerTest extends TestCase
             $this->view()
         );
         $request = new FakeRequest();
-        $response = $sut($request, "");
+        $response = $sut($request);
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testRendersExportConfirmation(): void
+    {
+        $sut = new DataExchangeController(
+            "./plugins/realblog/",
+            "./content/",
+            $this->db(true),
+            $this->finder(),
+            new FakeCsrfProtector,
+            new FakeFileSystem(["fileExists" => true,]),
+            $this->view()
+        );
+        $request = new FakeRequest(["action" => "export"]);
+        $response = $sut($request);
+        $this->assertEquals("Realblog – Export to CSV", $response->title());
         Approvals::verifyHtml($response->output());
     }
 
@@ -76,8 +93,8 @@ class DataExchangeControllerTest extends TestCase
             new FakeFileSystem(),
             $this->view()
         );
-        $request = new FakeRequest();
-        $sut($request, "export_to_csv");
+        $request = new FakeRequest(["action" => "do_export"]);
+        $sut($request);
         $this->assertTrue($csrfProtector->hasChecked());
     }
 
@@ -92,8 +109,8 @@ class DataExchangeControllerTest extends TestCase
             new FakeFileSystem(),
             $this->view()
         );
-        $request = new FakeRequest();
-        $response = $sut($request, "export_to_csv");
+        $request = new FakeRequest(["action" => "do_export"]);
+        $response = $sut($request);
         $this->assertEquals("http://example.com/?realblog&admin=data_exchange", $response->location());
     }
 
@@ -108,9 +125,44 @@ class DataExchangeControllerTest extends TestCase
             new FakeFileSystem(),
             $this->view()
         );
-        $request = new FakeRequest();
-        $response = $sut($request, "export_to_csv");
+        $request = new FakeRequest(["action" => "do_export"]);
+        $response = $sut($request);
+        $this->assertEquals("Realblog – Export to CSV", $response->title());
         Approvals::verifyHtml($response->output());
+    }
+
+    public function testRendersImportConfirmation(): void
+    {
+        $sut = new DataExchangeController(
+            "./plugins/realblog/",
+            "./content/",
+            $this->db(true),
+            $this->finder(),
+            new FakeCsrfProtector,
+            new FakeFileSystem(["isReadable" => true, "fileMTime" => 1677251242]),
+            $this->view()
+        );
+        $request = new FakeRequest(["action" => "import"]);
+        $response = $sut($request);
+        $this->assertEquals("Realblog – Import from CSV", $response->title());
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testImportRedirectsIfCsvFileIsMissing(): void
+    {
+        $sut = new DataExchangeController(
+            "./plugins/realblog/",
+            "./content/",
+            $this->db(true),
+            $this->finder(),
+            new FakeCsrfProtector,
+            new FakeFileSystem(["isReadable" => false]),
+            $this->view()
+        );
+        $request = new FakeRequest(["action" => "import"]);
+        $response = $sut($request);
+        $this->assertEquals("http://example.com/?realblog&admin=data_exchange", $response->location());
+
     }
 
     public function testImportIsCsrfProtected()
@@ -124,8 +176,8 @@ class DataExchangeControllerTest extends TestCase
             new FakeFileSystem(),
             $this->view()
         );
-        $request = new FakeRequest();
-        $sut($request, "import_from_csv");
+        $request = new FakeRequest(["action" => "do_import"]);
+        $sut($request);
         $this->assertTrue($csrfProtector->hasChecked());
     }
 
@@ -140,8 +192,8 @@ class DataExchangeControllerTest extends TestCase
             new FakeFileSystem(),
             $this->view()
         );
-        $request = new FakeRequest();
-        $response = $sut($request, "import_from_csv");
+        $request = new FakeRequest(["action" => "do_import"]);
+        $response = $sut($request);
         $this->assertEquals("http://example.com/?realblog&admin=data_exchange", $response->location());
     }
 
@@ -156,8 +208,9 @@ class DataExchangeControllerTest extends TestCase
             new FakeFileSystem(),
             $this->view()
         );
-        $request = new FakeRequest();
-        $response = $sut($request, "import_from_csv");
+        $request = new FakeRequest(["action" => "do_import"]);
+        $response = $sut($request);
+        $this->assertEquals("Realblog – Import from CSV", $response->title());
         Approvals::verifyHtml($response->output());
     }
 
