@@ -78,6 +78,15 @@ class Util
         return utf8_substr($text, 0, 150) . '…';
     }
 
+    /** @return array{int,int,int} */
+    public static function paginationOffset(int $itemCount, int $itemsPerPage, int $page): array
+    {
+        $pageCount = (int) ceil($itemCount / $itemsPerPage);
+        $page = min(max($page, 1), $pageCount);
+        $offset = ($page - 1) * $itemsPerPage;
+        return [$offset, $pageCount, $page];
+    }
+
     /**
      * @param int<2,max> $count
      * @return list<int|null>

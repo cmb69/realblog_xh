@@ -7,14 +7,14 @@ use Realblog\Infra\View;
  * @var list<int> $ids
  * @var string $url
  * @var string $csrfToken
- * @var list<string> $errors
+ * @var list<array{string}> $errors
  */
 ?>
 <!-- realblog confirm delete -->
 <div class="realblog_confirm_delete">
   <h1>Realblog – <?=$this->text('tooltip_delete_selected')?></h1>
 <?foreach ($errors as $error):?>
-  <div><?=$error?></div>
+  <p class="xh_fail"><?=$this->text(...$error)?></p>
 <?endforeach?>
 <?if (count($ids)):?>
   <p class="xh_warning"><?=$this->text('confirm_deleteall')?></p>

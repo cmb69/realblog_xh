@@ -8,14 +8,14 @@ use Realblog\Infra\View;
  * @var string $csrfToken
  * @var list<string> $states
  * @var string $url
- * @var list<string> $errors
+ * @var list<array{string}> $errors
  */
 ?>
 <!-- realblog confirm change status -->
 <div class="realblog_confirm_change_status">
   <h1>Realblog – <?=$this->text('tooltip_change_status')?></h1>
 <?foreach ($errors as $error):?>
-  <div><?=$error?></div>
+  <p class="xh_fail"><?=$this->text(...$error)?></p>
 <?endforeach?>
 <?if (count($ids)):?>
   <p class="xh_warning"><?=$this->text('confirm_changestatus')?></p>

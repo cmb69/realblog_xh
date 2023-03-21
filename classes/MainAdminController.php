@@ -32,7 +32,6 @@ use Realblog\Infra\View;
 use Realblog\Logic\Util;
 use Realblog\Value\Article;
 use Realblog\Value\FullArticle;
-use Realblog\Value\Html;
 use Realblog\Value\Response;
 use Realblog\Value\Url;
 
@@ -121,11 +120,9 @@ class MainAdminController
     private function defaultAction(Request $request): Response
     {
         $statuses = array_keys(array_filter($this->getFilterStatuses($request)));
-        $total = $this->finder->countArticlesWithStatus($statuses);
+        $articleCount = $this->finder->countArticlesWithStatus($statuses);
         $limit = (int) $this->conf['admin_records_page'];
-        $pageCount = (int) ceil($total / $limit);
-        $page = min($request->realblogPage(), $pageCount);
-        $offset = ($page - 1) * $limit;
+        [$offset, $pageCount] = Util::paginationOffset($articleCount, $limit, $request->realblogPage());
         $articles = $this->finder->findArticlesWithStatus($statuses, $limit, $offset);
         $response = Response::create($this->renderArticles($request, $articles, $pageCount));
         $filters = $request->filtersFromGet();
@@ -145,18 +142,15 @@ class MainAdminController
     private function renderArticles(Request $request, array $articles, int $pageCount): string
     {
         $page = min($request->realblogPage(), $pageCount);
-        $data = [
+        return $this->view->render("articles_form", [
             "imageFolder" => $this->pluginFolder . "images/",
             "page" => $page,
             "prevPage" => max($page - 1, 1),
             "nextPage" => min($page + 1, $pageCount),
             "lastPage" => $pageCount,
             "articles" => $this->articleRecords($request, $articles, $page),
-            "actionUrl" => $request->url()->withPage("")->relative(),
             "states" => $this->statusRecords($this->getFilterStatuses($request)),
-            // "filters" => $this->getFilterStatuses($request),
-        ];
-        return $this->view->render("articles_form", $data);
+        ]);
     }
 
     /**
@@ -165,11 +159,11 @@ class MainAdminController
      */
     private function articleRecords(Request $request, array $articles, int $page)
     {
-        $records = [];
-        foreach ($articles as $article) {
-            $url = $request->url()->withPage("realblog")->with("admin", "plugin_main")
-                ->with("realblog_id", (string) $article->id)->with("realblog_page", (string) $page);
-            $records[] = [
+        $url = $request->url()->withPage("realblog")->with("admin", "plugin_main")
+            ->with("realblog_page", (string) $page);
+        return array_map(function (Article $article) use ($url) {
+            $url = $url->with("realblog_id", (string) $article->id);
+            return [
                 "id" => $article->id,
                 "date" => $this->view->date($article->date),
                 "status" => $article->status,
@@ -180,8 +174,7 @@ class MainAdminController
                 "delete_url" => $url->with("action", "delete")->relative(),
                 "edit_url" => $url->with("action", "edit")->relative(),
             ];
-        }
-        return $records;
+        }, $articles);
     }
 
     /**
@@ -234,8 +227,7 @@ class MainAdminController
         }
         $res = $this->db->insertArticle($article);
         if ($res !== 1) {
-            $errors = [["story_added_error"]];
-            return $this->showArticleEditor($article, "create", $errors);
+            return $this->showArticleEditor($article, "create", [["story_added_error"]]);
         }
         return Response::redirect($this->overviewUrl($request)->absolute());
     }
@@ -250,8 +242,7 @@ class MainAdminController
         }
         $res = $this->db->updateArticle($article);
         if ($res !== 1) {
-            $errors = [["story_modified_error"]];
-            return $this->showArticleEditor($article, "edit", $errors);
+            return $this->showArticleEditor($article, "edit", [["story_modified_error"]]);
         }
         return Response::redirect($this->overviewUrl($request)->absolute());
     }
@@ -262,8 +253,7 @@ class MainAdminController
         $article = FullArticle::fromStrings(...$request->articlePost());
         $res = $this->db->deleteArticle($article);
         if ($res !== 1) {
-            $errors = [["story_deleted_error"]];
-            return $this->showArticleEditor($article, "delete", $errors);
+            return $this->showArticleEditor($article, "delete", [["story_deleted_error"]]);
         }
         return Response::redirect($this->overviewUrl($request)->absolute());
     }
@@ -326,13 +316,13 @@ class MainAdminController
 
     private function deleteSelectedAction(Request $request): Response
     {
-        return Response::create($this->renderConfirmation($request, 'delete'))
+        return Response::create($this->renderDeleteConfirmation($request))
             ->withTitle($this->view->text("tooltip_delete_selected"));
     }
 
     private function changeStatusAction(Request $request): Response
     {
-        return Response::create($this->renderConfirmation($request, 'change_status'))
+        return Response::create($this->renderChangeStatusConfirmation($request))
             ->withTitle($this->view->text("tooltip_change_status"));
     }
 
@@ -342,10 +332,8 @@ class MainAdminController
         $ids = $request->realblogIdsFromGet();
         $res = $this->db->deleteArticlesWithIds($ids);
         if ($res !== count($ids)) {
-            $errors = $res > 0
-                ? [Html::of($this->view->message("warning", "deleteall_warning", $res, count($ids)))]
-                : [Html::of($this->view->message("fail", "deleteall_error"))];
-            return Response::create($this->renderConfirmation($request, "delete", $errors))
+            $errors = $res > 0 ? [["deleteall_warning", $res, count($ids)]] : [["deleteall_error"]];
+            return Response::create($this->renderDeleteConfirmation($request, $errors))
                 ->withTitle($this->view->text("tooltip_delete_selected"));
         }
         return Response::redirect($this->overviewUrl($request)->absolute());
@@ -355,31 +343,36 @@ class MainAdminController
     {
         $this->csrfProtector->check();
         $ids = $request->realblogIdsFromGet();
-        $status = $request->statusFromPost();
-        $res = $this->db->updateStatusOfArticlesWithIds($ids, $status);
+        $res = $this->db->updateStatusOfArticlesWithIds($ids, $request->statusFromPost());
         if ($res !== count($ids)) {
-            $errors = $res > 0
-                ? [Html::of($this->view->message("warning", "changestatus_warning", $res, count($ids)))]
-                : [Html::of($this->view->message("fail", "changestatus_error"))];
-            return Response::create($this->renderConfirmation($request, "change_status", $errors))
+            $errors = $res > 0 ? [["changestatus_warning", $res, count($ids)]] : [["changestatus_error"]];
+            return Response::create($this->renderChangeStatusConfirmation($request, $errors))
                 ->withTitle($this->view->text("tooltip_change_status"));
         }
         return Response::redirect($this->overviewUrl($request)->absolute());
     }
 
-    /** @param list<Html> $errors */
-    private function renderConfirmation(Request $request, string $kind, array $errors = []): string
+    /** @param list<array{string}> $errors */
+    private function renderDeleteConfirmation(Request $request, array $errors = []): string
     {
-        $data = [
-            'ids' => $request->realblogIdsFromGet(),
-            'url' => $this->overviewUrl($request)->relative(),
-            'csrfToken' => $this->csrfProtector->token(),
+        return $this->view->render("confirm_delete", [
+            "ids" => $request->realblogIdsFromGet(),
+            "url" => $this->overviewUrl($request)->relative(),
+            "csrfToken" => $this->csrfProtector->token(),
             "errors" => $errors,
-        ];
-        if ($kind === 'change_status') {
-            $data['states'] = self::STATES;
-        }
-        return $this->view->render("confirm_$kind", $data);
+        ]);
+    }
+
+    /** @param list<array{string}> $errors */
+    private function renderChangeStatusConfirmation(Request $request, array $errors = []): string
+    {
+        return $this->view->render("confirm_change_status", [
+            "ids" => $request->realblogIdsFromGet(),
+            "url" => $this->overviewUrl($request)->relative(),
+            "csrfToken" => $this->csrfProtector->token(),
+            "errors" => $errors,
+            "states" => self::STATES,
+        ]);
     }
 
     private function overviewUrl(Request $request): Url

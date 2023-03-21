@@ -10,14 +10,13 @@ use Realblog\Infra\View;
  * @var int $nextPage
  * @var int $lastPage
  * @var list<array{id:int,date:string,status:int,categories:string,title:string,feedable:bool,commentable:bool,delete_url:string,edit_url:string}> $articles
- * @var string $actionUrl
  * @var list<array{value:int,label:string,checked:string}> $states
  */
 ?>
 <!-- realblog articles form -->
 <div class="realblog_articles_form">
   <h1>Realblog – <?=$this->text('story_overview')?></h1>
-  <form method="get" action="<?=$actionUrl?>">
+  <form method="get">
     <input type="hidden" name="selected" value="realblog">
     <input type="hidden" name="admin" value="plugin_main">
     <table class="realblog_table">

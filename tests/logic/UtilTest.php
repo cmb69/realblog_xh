@@ -45,6 +45,21 @@ class UtilTest extends TestCase
         ];
     }
 
+    /** @dataProvider paginationOffsets */
+    public function testPaginationOffset(int $itemCount, int $itemsPerPage, int $page, array $expected): void
+    {
+        $offset = Util::paginationOffset($itemCount, $itemsPerPage, $page);
+        $this->assertEquals($offset, $expected);
+    }
+
+    public function paginationOffsets(): array
+    {
+        return [
+            [100, 10, 1, [0, 10, 1]],
+            [100, 10, 3, [20, 10, 3]],
+        ];
+    }
+
     /** @dataProvider dataForGatherPages */
     public function testGatherPages(int $page, int $count, int $radius, array $expected)
     {

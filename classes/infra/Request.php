@@ -100,7 +100,7 @@ class Request
         return (int) $param;
     }
 
-    /** @return positive-int */
+    /** @return int */
     public function realblogPage(): int
     {
         $param = $this->url()->param("realblog_page");
