@@ -109,12 +109,15 @@ SQL;
     /** @return list<int> */
     public function findArchiveYears(): array
     {
-        $db = $this->db->getConnection();
         $sql = <<<'SQL'
 SELECT DISTINCT strftime('%Y', date, 'unixepoch') AS year
-    FROM articles ORDER BY year
+    FROM articles WHERE status = :status ORDER BY year
 SQL;
-        $res = $db->query($sql);
+        $connection = $this->db->getConnection();
+        $statement = $connection->prepare($sql);
+        assert($statement !== false);
+        $statement->bindValue(':status', Article::ARCHIVED, SQLITE3_INTEGER);
+        $res = $statement->execute();
         assert($res !== false);
         $years = array();
         while (($record = $res->fetchArray(SQLITE3_ASSOC)) !== false) {
