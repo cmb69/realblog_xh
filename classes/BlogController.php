@@ -310,26 +310,28 @@ class BlogController
 
     /**
      * @param list<Article> $articles
-     * @return list<list<array{title:string,date:string,url:string,year:string,month:int}>>
+     * @return list<array{year:int,month:int,articles:list<array{title:string,date:string,url:string}>}>
      */
     private function archivedArticleRecords(Request $request, $articles): array
     {
         $records = [];
         foreach (Util::groupArticlesByMonth($articles) as $group) {
-            $groupRecords = [];
-            foreach ($group as $article) {
+            $articleRecords = [];
+            foreach ($group["articles"] as $article) {
                 $url = $request->url()->with("realblog_id", (string) $article->id)
                     ->with("realblog_year", date("Y", $article->date))
                     ->with("realblog_search", $request->stringFromGet("realblog_search"));
-                $groupRecords[] = [
+                $articleRecords[] = [
                     "title" => $article->title,
                     "date" => $this->view->date($article->date),
                     "url" => $url->relative(),
-                    "year" => date("Y", $article->date),
-                    "month" => idate("n", $article->date) - 1,
                 ];
             }
-            $records[] = $groupRecords;
+            $records[] = [
+                "year" => $group["year"],
+                "month" => $group["month"] - 1,
+                "articles" => $articleRecords
+            ];
         }
         return $records;
     }

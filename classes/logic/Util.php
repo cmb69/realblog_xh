@@ -30,28 +30,39 @@ class Util
 {
     /**
      * @param list<Article> $articles
-     * @return list<list<Article>>
+     * @return list<array{year:int,month:int,articles:list<Article>}>
      */
     public static function groupArticlesByMonth(array $articles): array
     {
         $currentYear = $currentMonth = null;
         $groups = $currentGroup = [];
         foreach ($articles as $article) {
-            $year = (int) date('Y', $article->date);
-            $month = (int) date('n', $article->date);
+            $year = (int) idate('Y', $article->date);
+            $month =(int) idate('n', $article->date);
             if ($year !== $currentYear || $month !== $currentMonth) {
+                if (!empty($currentGroup)) {
+                    assert($currentYear !== null);
+                    assert($currentMonth !== null);
+                    $groups[] = [
+                        "year" => $currentYear,
+                        "month" => $currentMonth,
+                        "articles" => $currentGroup
+                    ];
+                }
                 $currentYear = $year;
                 $currentMonth = $month;
-                if (!empty($currentGroup)) {
-                    $groups[] = $currentGroup;
-                }
                 $currentGroup = [];
-            } else {
             }
             $currentGroup[] = $article;
         }
         if (!empty($currentGroup)) {
-            $groups[] = $currentGroup;
+            assert($currentYear !== null);
+            assert($currentMonth !== null);
+            $groups[] = [
+                "year" => $currentYear,
+                "month" => $currentMonth,
+                "articles" => $currentGroup,
+            ];
         }
         return $groups;
     }
