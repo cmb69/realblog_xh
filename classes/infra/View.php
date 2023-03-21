@@ -21,7 +21,6 @@
 
 namespace Realblog\Infra;
 
-use Error;
 use Realblog\Value\Html;
 
 class View
@@ -82,12 +81,11 @@ class View
     public function render(string $_template, array $_data): string
     {
         array_walk_recursive($_data, function (&$value) {
+            assert(is_null($value) || is_scalar($value) || is_array($value) || $value instanceof Html);
             if (is_string($value)) {
                 $value = $this->esc($value);
             } elseif ($value instanceof Html) {
                 $value = (string) $value;
-            } elseif (!is_null($value) && !is_scalar($value) && !is_array($value)) {
-                throw new Error("unsupported view value type");
             }
         });
         extract($_data);

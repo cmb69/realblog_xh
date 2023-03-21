@@ -23,7 +23,6 @@
 
 namespace Realblog;
 
-use Error;
 use Realblog\Infra\CsrfProtector;
 use Realblog\Infra\DB;
 use Realblog\Infra\Editor;
@@ -272,14 +271,13 @@ class MainAdminController
     /** @param list<array{string}> $errors */
     private function showArticleEditor(FullArticle $article, string $action, array $errors = []): Response
     {
+        assert(in_array($action, ["create", "edit", "delete"], true));
         if ($action === "create") {
             $title = $this->view->text("tooltip_create");
         } elseif ($action === "edit") {
             $title = $this->view->text("title_edit", $this->view->esc($article->id));
         } elseif ($action === "delete") {
             $title = $this->view->text("title_delete", $this->view->esc($article->id));
-        } else {
-            throw new Error("unsupported action");
         }
         $this->editor->init(['realblog_headline_field', 'realblog_story_field']);
         $hjs = $this->view->renderMeta("realblog", $this->finder->findAllCategories());
