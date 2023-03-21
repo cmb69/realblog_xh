@@ -72,11 +72,6 @@ class View
         return XH_message($type, $this->text[$key], ...$args);
     }
 
-    public function json(string $key): string
-    {
-        return (string) json_encode($this->text[$key]);
-    }
-
     /** @param array<string,mixed> $_data */
     public function render(string $_template, array $_data): string
     {
