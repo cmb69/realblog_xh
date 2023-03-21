@@ -1,7 +1,7 @@
 <!-- realblog article form -->
 <div class="realblog_fields_block">
   <h1>Realblog – Edit article #0</h1>
-  <div><p class="xh_fail">Article couldn't be modified!</p></div>
+  <p class="xh_fail">Article couldn't be modified!</p>
   <form name="realblog" method="post">
     <input type="hidden" name="realblog_id" value="0">
     <input type="hidden" name="realblog_version" value="0">
@@ -14,8 +14,6 @@
       </tr>
       <tr>
         <td>
-          <input type="hidden" name="realblog_date_exact" value="1675291555">
-          <input type="hidden" name="realblog_date_old" value="2023-02-01">
           <input type="date" name="realblog_date" id="realblog_date1" required="required" value="2023-02-01">
         </td>
         <td>
@@ -41,13 +39,15 @@
         </td>
         <td>
           <label>
-            <input type="checkbox" name="realblog_comments" >
+            <input type="hidden" name="realblog_comments" value="">
+            <input type="checkbox" name="realblog_comments" value="1" >
             <span>enable comments function</span>
           </label>
         </td>
         <td>
           <label>
-            <input type="checkbox" name="realblog_rssfeed" >
+            <input type="hidden" name="realblog_rssfeed" value="">
+            <input type="checkbox" name="realblog_rssfeed" value="1" >
             <span>RSS feed</span>
           </label>
         </td>
@@ -62,7 +62,7 @@
     </p>
     <p>
       <label for="realblog_title" class="realblog_label">title</label>
-      <input type="text" id="realblog_title" name="realblog_title" value="" size="50">
+      <input type="text" id="realblog_title" name="realblog_title" value="title" size="50">
     </p>
     <p>
       <label for="realblog_headline" class="realblog_label">teaser</label>

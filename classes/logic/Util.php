@@ -24,6 +24,7 @@
 namespace Realblog\Logic;
 
 use Realblog\Value\Article;
+use Realblog\Value\FullArticle;
 
 class Util
 {
@@ -86,5 +87,33 @@ class Util
         }
         $pages[] = $count;
         return $pages;
+    }
+
+    /** @return list<array{string}> */
+    public static function validateArticle(FullArticle $article): array
+    {
+        $errors = [];
+        if ($article->id < 0) {
+            $errors[] = ["error_id"];
+        }
+        if ($article->version < 0) {
+            $errors[] = ["error_version"];
+        }
+        if ($article->date <= 0) {
+            $errors[] = ["error_date"];
+        }
+        if ($article->publishingDate <= 0) {
+            $errors[] = ["error_publishing_date"];
+        }
+        if ($article->archivingDate <= 0) {
+            $errors[] = ["error_archiving_date"];
+        }
+        if ($article->status < Article::UNPUBLISHED || $article->status > Article::ARCHIVED) {
+            $errors[] = ["error_status"];
+        }
+        if ($article->title === "") {
+            $errors[] = ["error_title"];
+        }
+        return $errors;
     }
 }

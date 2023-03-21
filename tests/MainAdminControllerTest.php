@@ -223,19 +223,25 @@ class MainAdminControllerTest extends TestCase
 
     public function testDoCreateActionIsCsrfProtected()
     {
-        $_POST = $this->dummyPost();
         $csrfProtector = new FakeCsrfProtector;
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => ["insert" => 0]]);
-        $request = new FakeRequest(["action" => "do_create", "server" => ["REQUEST_TIME" => 1675205155]]);
+        $request = new FakeRequest([
+            "action" => "do_create",
+            "post" => $this->dummyPost(),
+            "server" => ["REQUEST_TIME" => 1675205155]],
+        );
         $sut($request);
         $this->assertTrue($csrfProtector->hasChecked());
     }
 
     public function testDoCreateActionRedirectsOnSuccess()
     {
-        $_POST = $this->dummyPost();
         $sut = $this->sut(["db" => ["insert" => 1]]);
-        $request = new FakeRequest(["action" => "do_create", "server" => ["REQUEST_TIME" => 1675205155]]);
+        $request = new FakeRequest([
+            "action" => "do_create",
+            "post" => $this->dummyPost(),
+            "server" => ["REQUEST_TIME" => 1675205155],
+        ]);
         $response = $sut($request);
         $this->assertEquals(
             "http://example.com/?realblog&admin=plugin_main&action=plugin_text",
@@ -243,11 +249,27 @@ class MainAdminControllerTest extends TestCase
         );
     }
 
+    public function testDoCreateActionReportsInvalidArticle(): void
+    {
+        $sut = $this->sut();
+        $request = new FakeRequest([
+            "action" => "do_create",
+            "post" => $this->invalidPost(),
+            "server" => ["REQUEST_TIME" => 1675205155],
+        ]);
+        $response = $sut($request);
+        $this->assertEquals("Create new article", $response->title());
+        Approvals::verifyHtml($response->output());
+    }
+
     public function testDoCreateActionFailureIsReported(): void
     {
-        $_POST = $this->dummyPost();
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()], "db" => ["insert" => 0]]);
-        $request = new FakeRequest(["action" => "do_create", "server" => ["REQUEST_TIME" => 1675205155]]);
+        $request = new FakeRequest([
+            "action" => "do_create",
+            "post" => $this->dummyPost(),
+            "server" => ["REQUEST_TIME" => 1675205155],
+        ]);
         $response = $sut($request);
         $this->assertEquals("Create new article", $response->title());
         Approvals::verifyHtml($response->output());
@@ -255,19 +277,25 @@ class MainAdminControllerTest extends TestCase
 
     public function testDoEditActionIsCsrfProtected()
     {
-        $_POST = $this->dummyPost();
         $csrfProtector = new FakeCsrfProtector;
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => ["update" => 0]]);
-        $request = new FakeRequest(["action" => "do_edit", "server" => ["REQUEST_TIME" => 1675205155]]);
+        $request = new FakeRequest([
+            "action" => "do_edit",
+            "post" => $this->dummyPost(),
+            "server" => ["REQUEST_TIME" => 1675205155],
+        ]);
         $sut($request);
         $this->assertTrue($csrfProtector->hasChecked());
     }
 
     public function testDoEditActionRedirectsOnSuccess()
     {
-        $_POST = $this->dummyPost();
         $sut = $this->sut(["db" => ["update" => 1]]);
-        $request = new FakeRequest(["action" => "do_edit", "server" => ["REQUEST_TIME" => 1675205155]]);
+        $request = new FakeRequest([
+            "action" => "do_edit",
+            "post" => $this->dummyPost(),
+            "server" => ["REQUEST_TIME" => 1675205155],
+        ]);
         $response = $sut($request);
         $this->assertEquals(
             "http://example.com/?realblog&admin=plugin_main&action=plugin_text",
@@ -275,11 +303,27 @@ class MainAdminControllerTest extends TestCase
         );
     }
 
+    public function testDoEditActionReportsInvalidArticle(): void
+    {
+        $sut = $this->sut();
+        $request = new FakeRequest([
+            "action" => "do_edit",
+            "post" => $this->invalidPost(),
+            "server" => ["REQUEST_TIME" => 1675205155],
+        ]);
+        $response = $sut($request);
+        $this->assertEquals("Edit article #-1", $response->title());
+        Approvals::verifyHtml($response->output());
+    }
+
     public function testDoEditActionFailureIsReported(): void
     {
-        $_POST = $this->dummyPost();
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()], "db" => ["update" => 0]]);
-        $request = new FakeRequest(["action" => "do_edit", "server" => ["REQUEST_TIME" => 1675205155]]);
+        $request = new FakeRequest([
+            "action" => "do_edit",
+            "post" => $this->dummyPost(),
+            "server" => ["REQUEST_TIME" => 1675205155],
+        ]);
         $response = $sut($request);
         $this->assertEquals("Edit article #0", $response->title());
         Approvals::verifyHtml($response->output());
@@ -287,19 +331,25 @@ class MainAdminControllerTest extends TestCase
 
     public function testDoDeleteActionIsCsrfProtected()
     {
-        $_POST = $this->dummyPost();
         $csrfProtector = new FakeCsrfProtector;
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => ["delete" => 0]]);
-        $request = new FakeRequest(["action" => "do_delete", "server" => ["REQUEST_TIME" => 1675205155]]);
+        $request = new FakeRequest([
+            "action" => "do_delete",
+            "post" => $this->dummyPost(),
+            "server" => ["REQUEST_TIME" => 1675205155],
+        ]);
         $sut($request);
         $this->assertTrue($csrfProtector->hasChecked());
     }
 
    public function testDoDeleteActionRedirectsOnSuccess()
     {
-        $_POST = $this->dummyPost();
         $sut = $this->sut(["db" => ["delete" => 1]]);
-        $request = new FakeRequest(["action" => "do_delete", "server" => ["REQUEST_TIME" => 1675205155]]);
+        $request = new FakeRequest([
+            "action" => "do_delete",
+            "post" => $this->dummyPost(),
+            "server" => ["REQUEST_TIME" => 1675205155],
+        ]);
         $response = $sut($request);
         $this->assertEquals(
             "http://example.com/?realblog&admin=plugin_main&action=plugin_text",
@@ -309,9 +359,12 @@ class MainAdminControllerTest extends TestCase
 
     public function testDoDeleteActionFailureIsReported(): void
     {
-        $_POST = $this->dummyPost();
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()], "db" => ["delete" => 0]]);
-        $request = new FakeRequest(["action" => "do_delete", "server" => ["REQUEST_TIME" => 1675205155]]);
+        $request = new FakeRequest([
+            "action" => "do_delete",
+            "post" => $this->dummyPost(),
+            "server" => ["REQUEST_TIME" => 1675205155],
+        ]);
         $response = $sut($request);
         $this->assertEquals("Delete article #0", $response->title());
         Approvals::verifyHtml($response->output());
@@ -514,9 +567,29 @@ class MainAdminControllerTest extends TestCase
             'realblog_enddate' => "2024-02-01",
             'realblog_status' => "",
             'realblog_categories' => "",
+            'realblog_title' => "title",
+            'realblog_headline' => "",
+            'realblog_story' => "",
+            "realblog_comments" => "",
+            "realblog_rssfeed" => "",
+        ];
+    }
+
+    public function invalidPost(): array
+    {
+        return [
+            'realblog_id' => "-1",
+            'realblog_version' => "-1",
+            'realblog_date' => "",
+            'realblog_startdate' => "",
+            'realblog_enddate' => "",
+            'realblog_status' => "3",
+            'realblog_categories' => "",
             'realblog_title' => "",
             'realblog_headline' => "",
             'realblog_story' => "",
+            "realblog_comments" => "",
+            "realblog_rssfeed" => "",
         ];
     }
 

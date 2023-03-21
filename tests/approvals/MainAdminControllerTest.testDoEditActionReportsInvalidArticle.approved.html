@@ -1,9 +1,16 @@
 <!-- realblog article form -->
 <div class="realblog_fields_block">
-  <h1>Realblog – Edit article #1</h1>
+  <h1>Realblog – Edit article #-1</h1>
+  <p class="xh_fail">Invalid ID!</p>
+  <p class="xh_fail">Invalid version!</p>
+  <p class="xh_fail">Invalid date!</p>
+  <p class="xh_fail">Invalid publishing date!</p>
+  <p class="xh_fail">Invalid archiving date!</p>
+  <p class="xh_fail">Invalid status!</p>
+  <p class="xh_fail">Title must not be empty!</p>
   <form name="realblog" method="post">
-    <input type="hidden" name="realblog_id" value="1">
-    <input type="hidden" name="realblog_version" value="1">
+    <input type="hidden" name="realblog_id" value="-1">
+    <input type="hidden" name="realblog_version" value="-1">
     <input type="hidden" name="xh_csrf_token" value="e3c1b42a6098b48a39f9f54ddb3388f7">
     <table>
       <tr>
@@ -13,13 +20,15 @@
       </tr>
       <tr>
         <td>
-          <input type="date" name="realblog_date" id="realblog_date1" required="required" value="2023-01-31">
+          <input type="date" name="realblog_date" id="realblog_date1" required="required" value="1970-01-01">
         </td>
         <td>
-          <input type="date" name="realblog_startdate" id="realblog_date2" required="required" value="2023-01-31">
+          <span>auto publishing disabled</span>
+          <input type="hidden" name="realblog_startdate" value="1970-01-01">
         </td>
         <td>
-          <input type="date" name="realblog_enddate" id="realblog_date3" required="required" value="1970-01-01">
+          <span>auto archiving disabled</span>
+          <input type="hidden" name="realblog_enddate" value="1970-01-01">
         </td>
       </tr>
       <tr>
@@ -30,7 +39,7 @@
         <td>
           <select id="realblog_status" name="realblog_status">
             <option value="0" >not published</option>
-            <option value="1" selected>published</option>
+            <option value="1" >published</option>
             <option value="2" >archived</option>
           </select>
         </td>
@@ -44,7 +53,7 @@
         <td>
           <label>
             <input type="hidden" name="realblog_rssfeed" value="">
-            <input type="checkbox" name="realblog_rssfeed" value="1" checked>
+            <input type="checkbox" name="realblog_rssfeed" value="1" >
             <span>RSS feed</span>
           </label>
         </td>
@@ -52,22 +61,22 @@
     </table>
     <p>
       <label for="realblog_categories" class="realblog_label">Categories</label>
-      <input type="text" id="realblog_categories" name="realblog_categories" value="cat1" size="50">
+      <input type="text" id="realblog_categories" name="realblog_categories" value="" size="50">
       <select id="realblog_category_select">
         <option>Add Category:</option>
       </select>
     </p>
     <p>
       <label for="realblog_title" class="realblog_label">title</label>
-      <input type="text" id="realblog_title" name="realblog_title" value="Welcome!" size="50">
+      <input type="text" id="realblog_title" name="realblog_title" value="" size="50">
     </p>
     <p>
       <label for="realblog_headline" class="realblog_label">teaser</label>
-      <textarea class="realblog_headline_field" id="realblog_headline" name="realblog_headline" rows="6" cols="60">Welcome to my wonderful new blog</textarea>
+      <textarea class="realblog_headline_field" id="realblog_headline" name="realblog_headline" rows="6" cols="60"></textarea>
     </p>
     <p>
       <label for="realblog_story" class="realblog_label">entry</label>
-      <textarea class="realblog_story_field" id="realblog_story" name="realblog_story" rows="30" cols="80">Some lengthy blog post.</textarea>
+      <textarea class="realblog_story_field" id="realblog_story" name="realblog_story" rows="30" cols="80"></textarea>
     </p>
     <p style="text-align: center"><button name="realblog_do">Save</button></p>
   </form>

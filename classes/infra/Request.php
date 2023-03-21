@@ -22,7 +22,6 @@
 namespace Realblog\Infra;
 
 use Realblog\Value\Article;
-use Realblog\Value\FullArticle;
 use Realblog\Value\Url;
 
 class Request
@@ -136,42 +135,32 @@ class Request
         return min(max((int) ($this->post()["realblog_status"] ?? 0), 0), 2);
     }
 
-    public function articleFromPost(): FullArticle
+    /** @return array{string,string,string,string,string,string,string,string,string,string,string,string} */
+    public function articlePost(): array
     {
-        return new FullArticle(
-            (int) $_POST['realblog_id'],
-            (int) $_POST['realblog_version'],
-            !isset($_POST['realblog_date_exact']) || $_POST['realblog_date'] !== $_POST['realblog_date_old']
-                ? $this->stringToTime($_POST['realblog_date'], true)
-                : $_POST['realblog_date_exact'],
-            $this->stringToTime($_POST['realblog_startdate']),
-            $this->stringToTime($_POST['realblog_enddate']),
-            (int) $_POST['realblog_status'],
-            ',' . trim($_POST['realblog_categories']) . ',',
-            $_POST['realblog_title'],
-            $_POST['realblog_headline'],
-            $_POST['realblog_story'],
-            isset($_POST['realblog_rssfeed']),
-            isset($_POST['realblog_comments'])
-        );
+        return [
+            $this->trimmedPostString("realblog_id"),
+            $this->trimmedPostString("realblog_version"),
+            $this->trimmedPostString("realblog_date"),
+            $this->trimmedPostString("realblog_startdate"),
+            $this->trimmedPostString("realblog_enddate"),
+            $this->trimmedPostString("realblog_status"),
+            $this->trimmedPostString("realblog_categories"),
+            $this->trimmedPostString("realblog_title"),
+            $this->trimmedPostString("realblog_headline"),
+            $this->trimmedPostString("realblog_story"),
+            $this->trimmedPostString("realblog_rssfeed"),
+            $this->trimmedPostString("realblog_comments"),
+        ];
     }
 
-    private function stringToTime(string $date, bool $withTime = false): int
+    private function trimmedPostString(string $name): string
     {
-        $parts = explode('-', $date);
-        if ($withTime) {
-            $timestamp = getdate($this->time());
-        } else {
-            $timestamp = array('hours' => 0, 'minutes' => 0, 'seconds' => 0);
+        $post = $this->post();
+        if (!isset($post[$name]) || !is_string($post[$name])) {
+            return "";
         }
-        return (int) mktime(
-            $timestamp['hours'],
-            $timestamp['minutes'],
-            $timestamp['seconds'],
-            (int) $parts[1],
-            (int) $parts[2],
-            (int) $parts[0]
-        );
+        return trim($post[$name]);
     }
 
     /** @return list<bool>|null */

@@ -23,12 +23,14 @@
 
 namespace Realblog;
 
+use Error;
 use Realblog\Infra\CsrfProtector;
 use Realblog\Infra\DB;
 use Realblog\Infra\Editor;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Request;
 use Realblog\Infra\View;
+use Realblog\Logic\Util;
 use Realblog\Value\Article;
 use Realblog\Value\FullArticle;
 use Realblog\Value\Html;
@@ -202,10 +204,7 @@ class MainAdminController
     {
         $timestamp = $request->time();
         $article = new FullArticle(0, 0, $timestamp, 2147483647, 2147483647, 0, '', '', '', '', false, false);
-        $title = $this->view->text("tooltip_create");
-        [$hjs, $bjs] = $this->renderJs();
-        return Response::create($this->renderArticleForm($article, $title, "btn_create"))
-            ->withTitle($title)->withHjs($hjs)->withBjs($bjs);
+        return $this->showArticleEditor($article, "create");
     }
 
     private function editAction(Request $request): Response
@@ -214,10 +213,7 @@ class MainAdminController
         if (!$article) {
             return Response::create($this->view->message("fail", "message_not_found"));
         }
-        $title = $this->view->text("title_edit", $this->view->esc($article->id));
-        [$hjs, $bjs] = $this->renderJs();
-        return Response::create($this->renderArticleForm($article, $title, "btn_edit"))
-            ->withTitle($title)->withHjs($hjs)->withBjs($bjs);
+        return $this->showArticleEditor($article, "edit");
     }
 
     private function deleteAction(Request $request): Response
@@ -226,23 +222,21 @@ class MainAdminController
         if (!$article) {
             return Response::create($this->view->message("fail", "message_not_found"));
         }
-        $title = $this->view->text("title_delete", $this->view->esc($article->id));
-        [$hjs, $bjs] = $this->renderJs();
-        return Response::create($this->renderArticleForm($article, $title, "btn_delete"))
-            ->withTitle($title)->withHjs($hjs)->withBjs($bjs);
+        return $this->showArticleEditor($article, "delete");
     }
 
     private function doCreateAction(Request $request): Response
     {
         $this->csrfProtector->check();
-        $article = $request->articleFromPost();
+        $article = FullArticle::fromStrings(...$request->articlePost());
+        $errors = Util::validateArticle($article);
+        if ($errors) {
+            return $this->showArticleEditor($article, "create", $errors);
+        }
         $res = $this->db->insertArticle($article);
         if ($res !== 1) {
-            $title = $this->view->text("tooltip_create");
-            $errors = [Html::of($this->view->message("fail", "story_added_error"))];
-            [$hjs, $bjs] = $this->renderJs();
-            return Response::create($this->renderArticleForm($article, $title, "btn_create", $errors))
-                ->withTitle($title)->withHjs($hjs)->withBjs($bjs);
+            $errors = [["story_added_error"]];
+            return $this->showArticleEditor($article, "create", $errors);
         }
         return Response::redirect($this->overviewUrl($request)->absolute());
     }
@@ -250,14 +244,15 @@ class MainAdminController
     private function doEditAction(Request $request): Response
     {
         $this->csrfProtector->check();
-        $article = $request->articleFromPost();
+        $article = FullArticle::fromStrings(...$request->articlePost());
+        $errors = Util::validateArticle($article);
+        if ($errors) {
+            return $this->showArticleEditor($article, "edit", $errors);
+        }
         $res = $this->db->updateArticle($article);
         if ($res !== 1) {
-            $title = $this->view->text("title_edit", $this->view->esc($article->id));
-            $errors = [Html::of($this->view->message("fail", "story_modified_error"))];
-            [$hjs, $bjs] = $this->renderJs();
-            return Response::create($this->renderArticleForm($article, $title, "btn_edit", $errors))
-                ->withTitle($title)->withHjs($hjs)->withBjs($bjs);
+            $errors = [["story_modified_error"]];
+            return $this->showArticleEditor($article, "edit", $errors);
         }
         return Response::redirect($this->overviewUrl($request)->absolute());
     }
@@ -265,38 +260,40 @@ class MainAdminController
     private function doDeleteAction(Request $request): Response
     {
         $this->csrfProtector->check();
-        $article = $request->articleFromPost();
+        $article = FullArticle::fromStrings(...$request->articlePost());
         $res = $this->db->deleteArticle($article);
         if ($res !== 1) {
-            $title = $this->view->text("title_delete", $this->view->esc($article->id));
-            $errors = [Html::of($this->view->message("fail", "story_deleted_error"))];
-            [$hjs, $bjs] = $this->renderJs();
-            return Response::create($this->renderArticleForm($article, $title, "btn_delete", $errors))
-                ->withTitle($title)->withHjs($hjs)->withBjs($bjs);
+            $errors = [["story_deleted_error"]];
+            return $this->showArticleEditor($article, "delete", $errors);
         }
         return Response::redirect($this->overviewUrl($request)->absolute());
     }
 
-    /** @return array{string,string} */
-    private function renderJs(): array
+    /** @param list<array{string}> $errors */
+    private function showArticleEditor(FullArticle $article, string $action, array $errors = []): Response
     {
+        if ($action === "create") {
+            $title = $this->view->text("tooltip_create");
+        } elseif ($action === "edit") {
+            $title = $this->view->text("title_edit", $this->view->esc($article->id));
+        } elseif ($action === "delete") {
+            $title = $this->view->text("title_delete", $this->view->esc($article->id));
+        } else {
+            throw new Error("unsupported action");
+        }
         $this->editor->init(['realblog_headline_field', 'realblog_story_field']);
         $hjs = $this->view->renderMeta("realblog", $this->finder->findAllCategories());
         $bjs = $this->view->renderScript($this->pluginFolder . "realblog.js");
-        return [$hjs, $bjs];
+        return Response::create($this->renderArticleForm($article, $title, "btn_$action", $errors))
+            ->withTitle($title)->withHjs($hjs)->withBjs($bjs);
     }
 
-    /** @param list<Html> $errors */
-    private function renderArticleForm(
-        FullArticle $article,
-        string $title,
-        string $button,
-        array $errors = []
-    ): string {
+    /** @param list<array{string}> $errors */
+    private function renderArticleForm(FullArticle $article, string $title, string $button, array $errors): string
+    {
         return $this->view->render("article_form", [
             "id" => $article->id,
             "version" => $article->version,
-            "timestamp" => $article->date,
             "status" => $article->status,
             "title" => $article->title,
             "teaser" => $article->teaser,

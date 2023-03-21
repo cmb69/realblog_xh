@@ -23,6 +23,7 @@ namespace Realblog;
 
 use PHPUnit\Framework\TestCase;
 use Realblog\Logic\Util;
+use Realblog\Value\FullArticle;
 
 class UtilTest extends TestCase
 {
@@ -57,6 +58,28 @@ class UtilTest extends TestCase
             "start" => [1, 9, 3, [1, 2, 3, 4, null, 9]],
             "middle" => [5, 9, 2, [1, null, 3, 4, 5, 6, 7, null, 9]],
             "end" => [9, 9, 3, [1, null, 6, 7, 8, 9]],
+        ];
+    }
+
+    /** @dataProvider validateArticles */
+    public function testValidateArticle(FullArticle $article, array $expected): void
+    {
+        $errors = Util::validateArticle($article);
+        $this->assertEquals($expected, $errors);
+    }
+
+    public function validateArticles(): array
+    {
+        return [
+            [new FullArticle(-1, -1, 0, 0, 0, 3, "", "", "", "", true, false), [
+                ["error_id"],
+                ["error_version"],
+                ["error_date"],
+                ["error_publishing_date"],
+                ["error_archiving_date"],
+                ["error_status"],
+                ["error_title"],
+            ]],
         ];
     }
 }

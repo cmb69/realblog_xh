@@ -6,7 +6,6 @@ use Realblog\Infra\View;
  * @var View $this
  * @var int $id
  * @var int $version
- * @var int $timestamp
  * @var int $status
  * @var string $title
  * @var string $teaser
@@ -23,14 +22,14 @@ use Realblog\Infra\View;
  * @var list<array{value:int,label:string,selected:string}> $states
  * @var string $categories
  * @var string $button
- * @var list<string> $errors
+ * @var list<array{string}> $errors
  */
 ?>
 <!-- realblog article form -->
 <div class="realblog_fields_block">
   <h1>Realblog – <?=$page_title?></h1>
 <?foreach ($errors as $error):?>
-  <div><?=$error?></div>
+  <p class="xh_fail"><?=$this->text(...$error)?></p>
 <?endforeach?>
   <form name="realblog" method="post">
     <input type="hidden" name="realblog_id" value="<?=$id?>">
@@ -44,10 +43,6 @@ use Realblog\Infra\View;
       </tr>
       <tr>
         <td>
-<?if (empty($id)):?>
-          <input type="hidden" name="realblog_date_exact" value="<?=$timestamp?>">
-          <input type="hidden" name="realblog_date_old" value="<?=$date?>">
-<?endif?>
           <input type="date" name="realblog_date" id="realblog_date1" required="required" value="<?=$date?>">
         </td>
         <td>
@@ -81,13 +76,15 @@ use Realblog\Infra\View;
         </td>
         <td>
           <label>
-            <input type="checkbox" name="realblog_comments" <?=$commentable?>>
+            <input type="hidden" name="realblog_comments" value="">
+            <input type="checkbox" name="realblog_comments" value="1" <?=$commentable?>>
             <span><?=$this->text('comment_label')?></span>
           </label>
         </td>
         <td>
           <label>
-            <input type="checkbox" name="realblog_rssfeed" <?=$feedable?>>
+            <input type="hidden" name="realblog_rssfeed" value="">
+            <input type="checkbox" name="realblog_rssfeed" value="1" <?=$feedable?>>
             <span><?=$this->text('label_rss')?></span>
           </label>
         </td>

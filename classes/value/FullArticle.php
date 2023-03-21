@@ -59,6 +59,36 @@ class FullArticle
     /** @var bool */
     public $commentable;
 
+    public static function fromStrings(
+        string $id,
+        string $version,
+        string $date,
+        string $publishingDate,
+        string $archivingDate,
+        string $status,
+        string $categories,
+        string $title,
+        string $teaser,
+        string $body,
+        string $feedable,
+        string $commentable
+    ): self {
+        return new self(
+            (int) $id,
+            (int) $version,
+            strtotime($date) ?: 0,
+            strtotime($publishingDate) ?: 0,
+            strtotime($archivingDate) ?: 0,
+            (int) $status,
+            "," . $categories . ",",
+            $title,
+            $teaser,
+            $body,
+            (bool) $feedable,
+            (bool) $commentable
+        );
+    }
+
     public function __construct(
         int $id,
         int $version,
