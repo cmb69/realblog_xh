@@ -1,7 +1,6 @@
 <?php
 
 $plugin_tx['realblog']['archiv_back']="zur Archiv-Übersicht";
-$plugin_tx['realblog']['archive_year']="Jahresarchiv:";
 $plugin_tx['realblog']['archived']="Archiviert";
 $plugin_tx['realblog']['article_count_0']="Kein Artikel";
 $plugin_tx['realblog']['article_count_1']="Ein Artikel";
@@ -123,9 +122,7 @@ $plugin_tx['realblog']['tooltip_hidesearch']="Suchoptionen verstecken";
 $plugin_tx['realblog']['tooltip_last']="Letzte Seite";
 $plugin_tx['realblog']['tooltip_edit']="Artikel bearbeiten";
 $plugin_tx['realblog']['tooltip_next']="Nächste Seite";
-$plugin_tx['realblog']['tooltip_nextyear']="Nächstes Jahr";
 $plugin_tx['realblog']['tooltip_previous']="Vorherige Seite";
-$plugin_tx['realblog']['tooltip_previousyear']="Vorheriges Jahr";
 $plugin_tx['realblog']['tooltip_refresh']="Aktualisieren";
 $plugin_tx['realblog']['tooltip_view']="Zeige Artikel";
 $plugin_tx['realblog']['window_close']="Fenster schliessen";

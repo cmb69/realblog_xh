@@ -102,13 +102,6 @@ border: 0;
     text-align: right;
 }
 
-.realblog_table_paging {
-    text-align: center;
-}
-.realblog_table_paging a {
-    text-decoration: none;
-}
-
 /* entries overwiew */
 
 .realblog_entries_preview {
@@ -214,9 +207,6 @@ color: White;
 display: block;
 }
 
-.realblog_archive_title {
-    font-weight: bold;
-}
 .realblog_archive {
     padding-left: 0;
 }

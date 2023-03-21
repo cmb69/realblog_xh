@@ -209,7 +209,7 @@ class BlogController
     {
         $teaser = trim(html_entity_decode(strip_tags($article->teaser), ENT_COMPAT, "UTF-8"));
         if ($article->status === Article::ARCHIVED) {
-            $url = $request->url()->with("realblog_year", (string) $request->year());
+            $url = $request->url()->with("realblog_year", $this->year($request));
         } else {
             $url = $request->url()->with("realblog_page", (string) $request->realblogPage());
         }
@@ -261,7 +261,12 @@ class BlogController
             $articles = $this->finder->findArchivedArticlesContaining($searchTerm);
             $html .= $this->renderSearchResults($request, "archive", count($articles));
         } else {
-            $articles = array();
+            $year = $this->year($request);
+            if ($request->url()->param("realblog_year") === null && $year !== "") {
+                $url = $request->url()->without("realblog_search")->with("realblog_year", $year)->absolute();
+                return Response::redirect($url);
+            }
+            $articles = [];
         }
         $html .= $this->renderArchive($request, $articles);
         return Response::create($html);
@@ -271,40 +276,27 @@ class BlogController
     private function renderArchive(Request $request, array $articles): string
     {
         if ($request->stringFromGet("realblog_search") === "") {
-            $year = $request->year();
-            $years = $this->finder->findArchiveYears();
-            $key = array_search($year, $years);
-            if ($key === false) {
-                $key = count($years) - 1;
-                $year = $years[$key];
-            }
-            $back = ($key > 0) ? $years[(int) $key - 1] : null;
-            $next = ($key < count($years) - 1) ? $years[(int) $key + 1] : null;
+            $year = (int) $this->year($request);
             $articles = $this->finder->findArchivedArticlesInPeriod(
                 (int) mktime(0, 0, 0, 1, 1, $year),
                 (int) mktime(0, 0, 0, 1, 1, $year + 1)
             );
-            return $this->renderArchivedArticles($request, $articles, false, $back, $next);
+            return $this->renderArchivedArticles($request, $articles, false);
         }
-        return $this->renderArchivedArticles($request, $articles, true, null, null);
+        return $this->renderArchivedArticles($request, $articles, true);
     }
 
     /** @param list<Article> $articles */
-    private function renderArchivedArticles(
-        Request $request,
-        array $articles,
-        bool $isSearch,
-        ?int $back,
-        ?int $next
-    ): string {
-        $url = $request->url();
+    private function renderArchivedArticles(Request $request, array $articles, bool $isSearch): string
+    {
+        $heading = $this->conf["heading_level"];
         return $this->view->render("archive", [
             "isSearch" => $isSearch,
             "articles" => $this->archivedArticleRecords($request, $articles),
-            "heading" => $this->conf["heading_level"],
-            "year" => $request->year(),
-            "backUrl" => $back ? $url->with("realblog_year", (string) $back)->relative() : null,
-            "nextUrl" => $next ? $url->with("realblog_year", (string) $next)->relative() : null,
+            "heading" => $heading,
+            "years" => $isSearch
+                ? null
+                : $this->yearPaginationRecords($request, $this->finder->findArchiveYears()),
         ]);
     }
 
@@ -336,10 +328,40 @@ class BlogController
         return $records;
     }
 
+    /**
+     * @param list<int> $years
+     * @return list<array{year:int,url:?string}>
+     */
+    private function yearPaginationRecords(Request $request, array $years)
+    {
+        $records = [];
+        foreach ($years as $year) {
+            $records[] = [
+                "year" => $year,
+                "url" => $year === (int) $this->year($request)
+                    ? null
+                    : $request->url()->with("realblog_year", (string) $year)->relative(),
+            ];
+        }
+        return $records;
+    }
+
+    private function year(Request $request): string
+    {
+        $param = $request->url()->param("realblog_year");
+        if (is_string($param)) {
+            return $param;
+        }
+        $archiveYears = $this->finder->findArchiveYears();
+        if (!$archiveYears) {
+            return "";
+        }
+        return (string) end($archiveYears);
+    }
+
     private function renderSearchForm(Url $url): string
     {
         return $this->view->render("search_form", [
-            "actionUrl" => $url->withPage("")->relative(),
             "pageUrl" => $url->page(),
         ]);
     }

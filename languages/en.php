@@ -1,7 +1,6 @@
 <?php
 
 $plugin_tx['realblog']['archiv_back']="archive overview";
-$plugin_tx['realblog']['archive_year']="yearly archive:";
 $plugin_tx['realblog']['archived']="archived";
 $plugin_tx['realblog']['article_count_0']="no article";
 $plugin_tx['realblog']['article_count_1']="one article";
@@ -123,9 +122,7 @@ $plugin_tx['realblog']['tooltip_hidesearch']="hide search options";
 $plugin_tx['realblog']['tooltip_last']="Last page";
 $plugin_tx['realblog']['tooltip_edit']="Edit article";
 $plugin_tx['realblog']['tooltip_next']="next page";
-$plugin_tx['realblog']['tooltip_nextyear']="next year";
 $plugin_tx['realblog']['tooltip_previous']="previous page";
-$plugin_tx['realblog']['tooltip_previousyear']="previous year";
 $plugin_tx['realblog']['tooltip_refresh']="Refresh";
 $plugin_tx['realblog']['tooltip_view']="show entry";
 $plugin_tx['realblog']['window_close']="close window";

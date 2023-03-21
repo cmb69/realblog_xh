@@ -116,12 +116,6 @@ class Request
         return 1;
     }
 
-    public function year(): int
-    {
-        $param = $this->url()->param("realblog_year");
-        return (int) ($param ?? idate("Y"));
-    }
-
     /** @return list<int> */
     public function realblogIdsFromGet(): array
     {

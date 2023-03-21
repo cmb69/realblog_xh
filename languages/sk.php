@@ -1,7 +1,6 @@
 <?php
 
 $plugin_tx['realblog']['archiv_back']="Prahľad archívu";
-$plugin_tx['realblog']['archive_year']="Ročný archív:";
 $plugin_tx['realblog']['archived']="archívované";
 $plugin_tx['realblog']['back_to_archive']="naspäť do archívu »";
 $plugin_tx['realblog']['backuped']="uložené";
@@ -65,9 +64,7 @@ $plugin_tx['realblog']['tooltip_filter']="Filter";
 $plugin_tx['realblog']['tooltip_hidesearch']="ukryť možnosť vyhľadávania";
 $plugin_tx['realblog']['tooltip_edit']="upraviť článok";
 $plugin_tx['realblog']['tooltip_next']="ďalšia strana";
-$plugin_tx['realblog']['tooltip_nextyear']="ďalší rok";
 $plugin_tx['realblog']['tooltip_previous']="predošlá strana";
-$plugin_tx['realblog']['tooltip_previousyear']="predošlý rok";
 $plugin_tx['realblog']['tooltip_view']="ukázať článok";
 $plugin_tx['realblog']['window_close']="zatvoriť okno";
 $plugin_tx['realblog']['window_print']="vytlačiť vybraté články";

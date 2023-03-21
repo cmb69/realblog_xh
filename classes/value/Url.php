@@ -30,7 +30,7 @@ class Url
         assert(isset($parts["scheme"], $parts["host"], $parts["path"]));
         $that->base = $parts["scheme"] . "://" . $parts["host"];
         $that->path = $parts["path"];
-        $match = preg_match('/^([^=]*)(?:&|$)(.*)/', $parts["query"] ?? "", $matches);
+        $match = preg_match('/^([^=&]*)(?:&|$)(.*)/', $parts["query"] ?? "", $matches);
         assert($match !== false);
         $that->page = $matches[1];
         parse_str($matches[2], $that->params);
@@ -81,10 +81,7 @@ class Url
     public function with(string $key, $value): self
     {
         $that = clone $this;
-        if (($key !== "realblog_page" || $value !== "1")
-            && ($key !== "realblog_year" || $value !== date("Y"))
-            && ($key !== "realblog_search" || $value !== "")
-        ) {
+        if (($key !== "realblog_page" || $value !== "1") && ($key !== "realblog_search" || $value !== "")) {
             $that->params[$key] = $value;
         } else {
             unset($that->params[$key]);

@@ -160,7 +160,7 @@ class BlogControllerTest extends TestCase
     public function testRendersEmptyArchive(): void
     {
         $sut = new BlogController($this->conf(), $this->db(), $this->finder(), $this->view(), new FakePages());
-        $request = new FakeRequest(["server" => ["QUERY_STRING" => "Archive"]]);
+        $request = new FakeRequest(["server" => ["QUERY_STRING" => "Archive&realblog_year=2023"]]);
         $response = $sut($request, "archive", true);
         Approvals::verifyHtml($response->output());
     }
@@ -169,9 +169,18 @@ class BlogControllerTest extends TestCase
     {
         $finder = $this->finder(["articles" => $this->archivedArticles()]);
         $sut = new BlogController($this->conf(), $this->db(), $finder, $this->view(), new FakePages());
-        $request = new FakeRequest(["server" => ["QUERY_STRING" => "Archive"]]);
+        $request = new FakeRequest(["server" => ["QUERY_STRING" => "Archive&realblog_year=2022"]]);
         $response = $sut($request, "archive", true);
         Approvals::verifyHtml($response->output());
+    }
+
+    public function testRedirectsToExplicitRealblogYear(): void
+    {
+        $finder = $this->finder(["articles" => $this->archivedArticles()]);
+        $sut = new BlogController($this->conf(), $this->db(), $finder, $this->view(), new FakePages());
+        $request = new FakeRequest(["server" => ["QUERY_STRING" => "Archive"]]);
+        $response = $sut($request, "archive", true);
+        $this->assertEquals("http://example.com/?Archive&realblog_year=2022", $response->location());
     }
 
     public function testRendersArchivedArticle(): void
@@ -267,12 +276,9 @@ class BlogControllerTest extends TestCase
     private function archivedArticles(): array
     {
         $articles = [];
-        foreach (range(1, 7) as $num) {
-            $month = (3 * $num) % 12 + 1;
-            $year = intdiv(3 * $num, 12) + 2020;
-            if ($year === 2021) {
-                $year++;
-            }
+        foreach (range(2, 5) as $num) {
+            $month = $num;
+            $year = 2022;
             $articles[] = new Article(
                 $num,
                 gmmktime(12, 0, 0, $month, 14, $year),

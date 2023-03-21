@@ -1,7 +1,6 @@
 <?php
 
 $plugin_tx['realblog']['archiv_back']="archief overzicht";
-$plugin_tx['realblog']['archive_year']="archief per jaar:";
 $plugin_tx['realblog']['archived']="gearchiveerd";
 $plugin_tx['realblog']['back_to_archive']="terug naar archief »";
 $plugin_tx['realblog']['backuped']="opgeslagen";
@@ -69,9 +68,7 @@ $plugin_tx['realblog']['tooltip_filter']="Filter";
 $plugin_tx['realblog']['tooltip_hidesearch']="verberg zoekopties";
 $plugin_tx['realblog']['tooltip_edit']="artikel aanpassen";
 $plugin_tx['realblog']['tooltip_next']="volgende pagina";
-$plugin_tx['realblog']['tooltip_nextyear']="volgend jaar";
 $plugin_tx['realblog']['tooltip_previous']="vorige pagina";
-$plugin_tx['realblog']['tooltip_previousyear']="vorig jaar";
 $plugin_tx['realblog']['tooltip_view']="laat artikel zien";
 $plugin_tx['realblog']['window_close']="sluit venster";
 $plugin_tx['realblog']['window_print']="print geselecteerde artikelen";

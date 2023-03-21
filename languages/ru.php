@@ -8,7 +8,6 @@
  */
 
 $plugin_tx['realblog']['archiv_back']="Обзор архива";
-$plugin_tx['realblog']['archive_year']="Архив по годам: ";
 $plugin_tx['realblog']['archived']=" • архивирована";
 $plugin_tx['realblog']['back_to_archive']="Возврат к архиву »";
 $plugin_tx['realblog']['backuped']=" • сохранена";
@@ -89,9 +88,7 @@ $plugin_tx['realblog']['tooltip_delete_selected']="Удаление выбран
 $plugin_tx['realblog']['tooltip_hidesearch']="Убрать поиск";
 $plugin_tx['realblog']['tooltip_edit']="Изменение записи";
 $plugin_tx['realblog']['tooltip_next']="Следующая страница";
-$plugin_tx['realblog']['tooltip_nextyear']="Следующий год";
 $plugin_tx['realblog']['tooltip_previous']="Предыдущая страница";
-$plugin_tx['realblog']['tooltip_previousyear']="Предыдущий год";
 $plugin_tx['realblog']['tooltip_view']="Просмотр записи";
 $plugin_tx['realblog']['window_close']="Закрытие окна";
 $plugin_tx['realblog']['window_print']="Печать выбранной записи";
