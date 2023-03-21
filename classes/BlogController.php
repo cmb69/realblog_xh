@@ -93,7 +93,7 @@ class BlogController
     {
         $html = "";
         if ($showSearch) {
-            $html .= $this->renderSearchForm($request->url());
+            $html .= $this->renderSearchForm($request, "blog");
         }
         $order = ($this->conf["entries_order"] == "desc") ? -1 : 1;
         $limit = max(1, (int) $this->conf["entries_per_page"]);
@@ -254,7 +254,7 @@ class BlogController
     {
         $html = "";
         if ($showSearch) {
-            $html .= $this->renderSearchForm($request->url());
+            $html .= $this->renderSearchForm($request, "archive");
         }
         $searchTerm = $request->stringFromGet("realblog_search");
         if ($searchTerm) {
@@ -310,13 +310,10 @@ class BlogController
         foreach (Util::groupArticlesByMonth($articles) as $group) {
             $articleRecords = [];
             foreach ($group["articles"] as $article) {
-                $url = $request->url()->with("realblog_id", (string) $article->id)
-                    ->with("realblog_year", date("Y", $article->date))
-                    ->with("realblog_search", $request->stringFromGet("realblog_search"));
                 $articleRecords[] = [
                     "title" => $article->title,
                     "date" => $this->view->date($article->date),
-                    "url" => $url->relative(),
+                    "url" => $request->url()->with("realblog_id", (string) $article->id)->relative(),
                 ];
             }
             $records[] = [
@@ -346,23 +343,14 @@ class BlogController
         return $records;
     }
 
-    private function year(Request $request): string
+    private function renderSearchForm(Request $request, string $mode): string
     {
-        $param = $request->url()->param("realblog_year");
-        if (is_string($param)) {
-            return $param;
-        }
-        $archiveYears = $this->finder->findArchiveYears();
-        if (!$archiveYears) {
-            return "";
-        }
-        return (string) end($archiveYears);
-    }
-
-    private function renderSearchForm(Url $url): string
-    {
+        $page = $request->realblogPage();
+        $year = (int) $this->year($request);
         return $this->view->render("search_form", [
-            "pageUrl" => $url->page(),
+            "selected" => $request->url()->page(),
+            "page" => $mode === "blog" && $page !== 1 ? $page : null,
+            "year" => $mode === "archive" && $year ? $year : null,
         ]);
     }
 
@@ -374,5 +362,18 @@ class BlogController
             "url" => $request->url()->without("realblog_search")->relative(),
             "key" => ($what == "archive") ? "back_to_archive" : "search_show_all",
         ]);
+    }
+
+    private function year(Request $request): string
+    {
+        $param = $request->url()->param("realblog_year");
+        if (is_string($param)) {
+            return $param;
+        }
+        $archiveYears = $this->finder->findArchiveYears();
+        if (!$archiveYears) {
+            return "";
+        }
+        return (string) end($archiveYears);
     }
 }
