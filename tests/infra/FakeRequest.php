@@ -21,8 +21,6 @@
 
 namespace Realblog\Infra;
 
-use Realblog\Value\Url;
-
 class FakeRequest extends Request
 {
     private $options;
@@ -42,19 +40,9 @@ class FakeRequest extends Request
         return $this->options["edit"] ?? false;
     }
 
-    public function url(): Url
-    {
-        return $this->options["url"] ?? Url::from(CMSIMPLE_URL);
-    }
-
     protected function s(): int
     {
         return $this->options["s"] ?? -1;
-    }
-
-    public function action(): string
-    {
-        return $this->options["action"] ?? "";
     }
 
     protected function post(): array
@@ -69,6 +57,6 @@ class FakeRequest extends Request
 
     protected function server(): array
     {
-        return $this->options["server"] ?? [];
+        return $this->options["server"] ?? ["QUERY_STRING" => ""];
     }
 }

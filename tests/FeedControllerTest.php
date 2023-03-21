@@ -28,7 +28,6 @@ use Realblog\Infra\Finder;
 use Realblog\Infra\Pages;
 use Realblog\Infra\View;
 use Realblog\Value\Article;
-use Realblog\Value\Url;
 
 class FeedControllerTest extends TestCase
 {
@@ -42,7 +41,7 @@ class FeedControllerTest extends TestCase
             $this->view()
         );
         $request = new FakeRequest([
-            "url" => Url::from(CMSIMPLE_URL . "?&function=realblog_feed"),
+            "server" => ["QUERY_STRING" => "&function=realblog_feed"],
         ]);
         $response = $sut($request);
         Approvals::verifyHtml($response->output());
@@ -58,7 +57,7 @@ class FeedControllerTest extends TestCase
             $this->view()
         );
         $request = new FakeRequest([
-            "url" => Url::from(CMSIMPLE_URL . "?&function=realblog_feed"),
+            "server" => ["QUERY_STRING" => "&function=realblog_feed"],
         ]);
         $response = $sut($request);
         $this->assertEquals("application/xml; charset=UTF-8", $response->contentType());

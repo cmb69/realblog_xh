@@ -53,7 +53,8 @@ class Request
 
     public function url(): Url
     {
-        $rest = $_SERVER["QUERY_STRING"];
+        $server = $this->server();
+        $rest = $server["QUERY_STRING"];
         if ($rest !== "") {
             $rest = "?" . $rest;
         }
@@ -65,14 +66,17 @@ class Request
         return $this->s();
     }
 
-    /** @codeCoverageIgnore */
     public function action(): string
     {
-        global $action;
+        $action = $this->url()->param("action");
+        if (!is_string($action)) {
+            return "";
+        }
         if (!strncmp($action, "do_", strlen("do_"))) {
             return "";
         }
-        if (!isset($_POST["realblog_do"])) {
+        $post = $this->post();
+        if (!isset($post["realblog_do"])) {
             return $action;
         }
         return "do_$action";

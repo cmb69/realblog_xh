@@ -76,7 +76,7 @@ class DataExchangeControllerTest extends TestCase
             new FakeFileSystem(["fileExists" => true,]),
             $this->view()
         );
-        $request = new FakeRequest(["action" => "export"]);
+        $request = new FakeRequest(["server" => ["QUERY_STRING" => "&action=export", "post" => ["realblog_do" => ""]]]);
         $response = $sut($request);
         $this->assertEquals("Realblog – Export to CSV", $response->title());
         Approvals::verifyHtml($response->output());
@@ -93,7 +93,7 @@ class DataExchangeControllerTest extends TestCase
             new FakeFileSystem(),
             $this->view()
         );
-        $request = new FakeRequest(["action" => "do_export"]);
+        $request = new FakeRequest(["server" => ["QUERY_STRING" => "&action=export"], "post" => ["realblog_do" => ""]]);
         $sut($request);
         $this->assertTrue($csrfProtector->hasChecked());
     }
@@ -109,7 +109,7 @@ class DataExchangeControllerTest extends TestCase
             new FakeFileSystem(),
             $this->view()
         );
-        $request = new FakeRequest(["action" => "do_export"]);
+        $request = new FakeRequest(["server" => ["QUERY_STRING" => "&action=export"], "post" => ["realblog_do" => ""]]);
         $response = $sut($request);
         $this->assertEquals("http://example.com/?realblog&admin=data_exchange", $response->location());
     }
@@ -125,7 +125,7 @@ class DataExchangeControllerTest extends TestCase
             new FakeFileSystem(),
             $this->view()
         );
-        $request = new FakeRequest(["action" => "do_export"]);
+        $request = new FakeRequest(["server" => ["QUERY_STRING" => "&action=export"], "post" => ["realblog_do" => ""]]);
         $response = $sut($request);
         $this->assertEquals("Realblog – Export to CSV", $response->title());
         Approvals::verifyHtml($response->output());
@@ -142,7 +142,7 @@ class DataExchangeControllerTest extends TestCase
             new FakeFileSystem(["isReadable" => true, "fileMTime" => 1677251242]),
             $this->view()
         );
-        $request = new FakeRequest(["action" => "import"]);
+        $request = new FakeRequest(["server" => ["QUERY_STRING" => "&action=import"]]);
         $response = $sut($request);
         $this->assertEquals("Realblog – Import from CSV", $response->title());
         Approvals::verifyHtml($response->output());
@@ -159,7 +159,7 @@ class DataExchangeControllerTest extends TestCase
             new FakeFileSystem(["isReadable" => false]),
             $this->view()
         );
-        $request = new FakeRequest(["action" => "import"]);
+        $request = new FakeRequest(["server" => ["QUERY_STRING" => "&action=import"], "post" => ["realblog_do" => ""]]);
         $response = $sut($request);
         $this->assertEquals("http://example.com/?realblog&admin=data_exchange", $response->location());
 
@@ -176,7 +176,7 @@ class DataExchangeControllerTest extends TestCase
             new FakeFileSystem(),
             $this->view()
         );
-        $request = new FakeRequest(["action" => "do_import"]);
+        $request = new FakeRequest(["server" => ["QUERY_STRING" => "&action=import"], "post" => ["realblog_do" => ""]]);
         $sut($request);
         $this->assertTrue($csrfProtector->hasChecked());
     }
@@ -192,7 +192,7 @@ class DataExchangeControllerTest extends TestCase
             new FakeFileSystem(),
             $this->view()
         );
-        $request = new FakeRequest(["action" => "do_import"]);
+        $request = new FakeRequest(["server" => ["QUERY_STRING" => "&action=import"], "post" => ["realblog_do" => ""]]);
         $response = $sut($request);
         $this->assertEquals("http://example.com/?realblog&admin=data_exchange", $response->location());
     }
@@ -208,7 +208,7 @@ class DataExchangeControllerTest extends TestCase
             new FakeFileSystem(),
             $this->view()
         );
-        $request = new FakeRequest(["action" => "do_import"]);
+        $request = new FakeRequest(["server" => ["QUERY_STRING" => "&action=import"], "post" => ["realblog_do" => ""]]);
         $response = $sut($request);
         $this->assertEquals("Realblog – Import from CSV", $response->title());
         Approvals::verifyHtml($response->output());
