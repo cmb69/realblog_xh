@@ -102,7 +102,7 @@ class BlogController
         $articleCount = $this->finder->countArticlesWithStatus([Article::PUBLISHED], $category, $searchTerm);
         $pageCount = (int) ceil($articleCount / $limit);
         $page = min(max($page, 1), $pageCount);
-        $articles = $this->finder->findArticles(1, $limit, ($page-1) * $limit, $order, $category, $searchTerm);
+        $articles = $this->finder->findArticles(Article::PUBLISHED, $limit, ($page-1) * $limit, $order, $category, $searchTerm);
         if ($searchTerm) {
             $html .= $this->renderSearchResults($request, "blog", $articleCount);
         }
