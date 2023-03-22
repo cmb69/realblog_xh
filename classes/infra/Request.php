@@ -161,29 +161,23 @@ class Request
         return trim($post[$name]);
     }
 
-    /** @return list<bool>|null */
-    public function filtersFromGet(): ?array
+    public function stateFilter(): int
     {
         $param = $this->url()->param("realblog_filter");
-        if ($param === null) {
-            return null;
+        if (!is_array($param)) {
+            $cookie = $this->cookie();
+            if (!isset($cookie["realblog_filter"])) {
+                return Article::MASK_ALL;
+            }
+            return (int) $cookie["realblog_filter"];
         }
-        $filters = [];
-        for ($i = Article::UNPUBLISHED; $i <= Article::ARCHIVED; $i++) {
-            $filters[] = (bool) ($param[$i] ?? false);
+        $filters = 0;
+        foreach ($param as $state) {
+            if (!in_array($state, ["0", "1", "2"], true)) {
+                continue;
+            }
+            $filters |= 1 << $state;
         }
-        return $filters;
-    }
-
-    /** @return list<bool>|null */
-    public function filtersFromCookie(): ?array
-    {
-        $cookie = $this->cookie();
-        if (!isset($cookie["realblog_filter"])) {
-            return null;
-        }
-        $filters = json_decode($cookie["realblog_filter"]);
-        assert(is_array($filters));
         return $filters;
     }
 

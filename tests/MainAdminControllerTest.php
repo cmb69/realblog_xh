@@ -34,7 +34,7 @@ use Realblog\Value\FullArticle;
 
 class MainAdminControllerTest extends TestCase
 {
-    public function testSetsPageCookie()
+    public function testSetsCookies()
     {
         $sut = $this->sut();
         $request = new FakeRequest([
@@ -43,7 +43,10 @@ class MainAdminControllerTest extends TestCase
             "server" => ["QUERY_STRING" => "&realblog_page=3"],
         ]);
         $response = $sut($request);
-        $this->assertEquals(["realblog_page" => "3"], $response->cookies());
+        $this->assertEquals(
+            ["realblog_page" => "3", "realblog_filter" => (string) Article::MASK_ALL],
+            $response->cookies()
+        );
     }
 
     public function testDefaultActionRendersOverview(): void
@@ -58,10 +61,10 @@ class MainAdminControllerTest extends TestCase
     {
         $sut = $this->sut();
         $request = new FakeRequest([
-            "server" => ["QUERY_STRING" => "&realblog_filter[]=on&realblog_filter[]=&realblog_filter[]=on"],
+            "server" => ["QUERY_STRING" => "&realblog_filter[]=0&realblog_filter[]=2"],
         ]);
         $response = $sut($request);
-        $this->assertEquals(["realblog_filter" => "[true,false,true]"], $response->cookies());
+        $this->assertEquals(["realblog_filter" => "5"], $response->cookies());
     }
 
     public function testDefaultActionGetsPageAndFilterFromCookie()
@@ -72,7 +75,7 @@ class MainAdminControllerTest extends TestCase
             "edit" => true,
             "cookie" => [
                 "realblog_page" => "1",
-                "realblog_filter" => "[true,false,true]",
+                "realblog_filter" => "5",
             ],
         ]);
         $response = $sut($request);

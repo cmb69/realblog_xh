@@ -26,6 +26,11 @@ class Article
     public const UNPUBLISHED = 0;
     public const PUBLISHED = 1;
     public const ARCHIVED = 2;
+    public const FIRST_STATE = self::UNPUBLISHED;
+    public const LAST_STATE = self::ARCHIVED;
+
+    public const MASK_PUBLISHED = 1 << self::PUBLISHED;
+    public const MASK_ALL = (1 << self::UNPUBLISHED) | (1 << self::PUBLISHED) | (1 << self::ARCHIVED);
 
     /**
      * @var int

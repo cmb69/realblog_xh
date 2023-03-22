@@ -98,7 +98,7 @@ class BlogController
         $order = ($this->conf["entries_order"] == "desc") ? -1 : 1;
         $limit = max(1, (int) $this->conf["entries_per_page"]);
         $searchTerm = $request->stringFromGet("realblog_search");
-        $articleCount = $this->finder->countArticlesWithStatus([Article::PUBLISHED], $category, $searchTerm);
+        $articleCount = $this->finder->countArticlesWithStatus(Article::MASK_PUBLISHED, $category, $searchTerm);
         [$offset, $pageCount, $page] = Util::paginationOffset($articleCount, $limit, $request->realblogPage());
         $articles = $this->finder->findArticles(Article::PUBLISHED, $limit, $offset, $order, $category, $searchTerm);
         if ($searchTerm) {

@@ -10,7 +10,7 @@ use Realblog\Infra\View;
  * @var int $nextPage
  * @var int $lastPage
  * @var list<array{id:int,date:string,status:int,categories:string,title:string,feedable:bool,commentable:bool,delete_url:string,edit_url:string}> $articles
- * @var list<array{value:int,label:string,checked:string}> $states
+ * @var list<array{int,string,string}> $states
  */
 ?>
 <!-- realblog articles form -->
@@ -74,11 +74,10 @@ use Realblog\Infra\View;
       <tfoot>
         <tr>
           <td colspan="8">
-<?foreach ($states as $status):?>
-            <input type="hidden" name="realblog_filter[<?=$status['value']?>]" value="">
+<?foreach ($states as [$value,$label,$checked]):?>
             <label>
-              <input type="checkbox" name="realblog_filter[<?=$status['value']?>]" <?=$status['checked']?>>
-              <?=$this->text($status['label'])?>
+              <input type="checkbox" name="realblog_filter[]" value="<?=$value?>" <?=$checked?>>
+              <?=$this->text($label)?>
             </label>
 <?endforeach?>
             <button title="<?=$this->text('tooltip_filter')?>">

@@ -115,7 +115,7 @@ class FinderTest extends TestCase
         $this->assertEquals(1, $this->db->insertArticle($article));
         $article = $this->article(["status" => 2]);
         $this->assertEquals(1, $this->db->insertArticle($article));
-        $this->assertEquals(1, $this->sut->countArticlesWithStatus([1]));
+        $this->assertEquals(1, $this->sut->countArticlesWithStatus(Article::MASK_PUBLISHED));
     }
 
     public function testFindsArticlesWithStatus(): void
@@ -126,7 +126,7 @@ class FinderTest extends TestCase
         $this->assertEquals(1, $this->db->insertArticle($article));
         $article = $this->article(["status" => 2]);
         $this->assertEquals(1, $this->db->insertArticle($article));
-        $articles = $this->sut->findArticlesWithStatus([1], 100, 0);
+        $articles = $this->sut->findArticlesWithStatus(Article::MASK_PUBLISHED, 100, 0);
         $this->assertCount(1, $articles);
         $this->assertContainsOnlyInstancesOf(Article::class, $articles);
     }

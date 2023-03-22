@@ -19,7 +19,7 @@ use Realblog\Infra\View;
  * @var string $csrfToken
  * @var bool $isAutoPublish
  * @var bool $isAutoArchive
- * @var list<array{value:int,label:string,selected:string}> $states
+ * @var list<array{int,string,string}> $states
  * @var string $categories
  * @var string $button
  * @var list<array{string}> $errors
@@ -69,8 +69,8 @@ use Realblog\Infra\View;
       <tr>
         <td>
           <select id="realblog_status" name="realblog_status">
-<?foreach ($states as $state):?>
-            <option value="<?=$state['value']?>" <?=$state['selected']?>><?=$this->text($state['label'])?></option>
+<?foreach ($states as [$value, $label, $selected]):?>
+            <option value="<?=$value?>" <?=$selected?>><?=$this->text($label)?></option>
 <?endforeach?>
           </select>
         </td>

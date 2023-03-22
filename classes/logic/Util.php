@@ -128,7 +128,7 @@ class Util
         if ($article->archivingDate <= 0) {
             $errors[] = ["error_archiving_date"];
         }
-        if ($article->status < Article::UNPUBLISHED || $article->status > Article::ARCHIVED) {
+        if ($article->status < Article::FIRST_STATE || $article->status > Article::LAST_STATE) {
             $errors[] = ["error_status"];
         }
         if ($article->title === "") {

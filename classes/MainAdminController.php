@@ -119,29 +119,20 @@ class MainAdminController
 
     private function defaultAction(Request $request): Response
     {
-        $statuses = array_keys(array_filter($this->getFilterStatuses($request)));
-        $articleCount = $this->finder->countArticlesWithStatus($statuses);
+        $states = $request->stateFilter();
+        $articleCount = $this->finder->countArticlesWithStatus($states);
         $limit = (int) $this->conf['admin_records_page'];
         [$offset, $pageCount] = Util::paginationOffset($articleCount, $limit, $request->realblogPage());
-        $articles = $this->finder->findArticlesWithStatus($statuses, $limit, $offset);
-        $response = Response::create($this->renderArticles($request, $articles, $pageCount));
-        $filters = $request->filtersFromGet();
-        if ($filters !== null && $filters !== $request->filtersFromCookie()) {
-            $response = $response->withCookie("realblog_filter", (string) json_encode($filters));
-        }
-        return $response;
-    }
-
-    /** @return list<bool> */
-    private function getFilterStatuses(Request $request): array
-    {
-        return $request->filtersFromGet() ?? $request->filtersFromCookie() ?? [false, false, false];
+        $articles = $this->finder->findArticlesWithStatus($states, $limit, $offset);
+        return Response::create($this->renderArticles($request, $articles, $pageCount))
+            ->withCookie("realblog_filter", (string) $states);
     }
 
     /** @param list<Article> $articles */
     private function renderArticles(Request $request, array $articles, int $pageCount): string
     {
         $page = min($request->realblogPage(), $pageCount);
+        $states = $request->stateFilter();
         return $this->view->render("articles_form", [
             "imageFolder" => $this->pluginFolder . "images/",
             "page" => $page,
@@ -149,7 +140,9 @@ class MainAdminController
             "nextPage" => min($page + 1, $pageCount),
             "lastPage" => $pageCount,
             "articles" => $this->articleRecords($request, $articles, $page),
-            "states" => $this->statusRecords($this->getFilterStatuses($request)),
+            "states" => $this->stateTuples("checked", function (int $state) use ($states) {
+                return (bool) ((1 << $state) & $states);
+            }),
         ]);
     }
 
@@ -175,21 +168,6 @@ class MainAdminController
                 "edit_url" => $url->with("action", "edit")->relative(),
             ];
         }, $articles);
-    }
-
-    /**
-     * @param list<bool> $filters
-     * @return list<array{value:int,label:string,checked:string}>
-     */
-    private function statusRecords(array $filters): array
-    {
-        return array_map(function (int $state, string $label) use ($filters) {
-            return [
-                "value" => $state,
-                "label" => $label,
-                "checked" => $filters[$state] ? "checked" : "",
-            ];
-        }, array_keys(self::STATES), array_values(self::STATES));
     }
 
     private function createAction(Request $request): Response
@@ -295,23 +273,13 @@ class MainAdminController
             "csrfToken" => $this->csrfProtector->token(),
             "isAutoPublish" => (bool) $this->conf["auto_publish"],
             "isAutoArchive" => (bool) $this->conf["auto_archive"],
-            "states" => $this->stateRecords($article),
+            "states" => $this->stateTuples("selected", function (int $state) use ($article) {
+                return $state === $article->status;
+            }),
             "categories" => trim($article->categories, ","),
             "button" => $button,
             "errors" => $errors,
         ]);
-    }
-
-    /** @return list<array{value:int,label:string,selected:string}> */
-    private function stateRecords(FullArticle $article): array
-    {
-        return array_map(function (int $status, string $label) use ($article) {
-            return [
-                "value" => $status,
-                "label" => $label,
-                "selected" => $status === $article->status ? "selected" : "",
-            ];
-        }, array_keys(self::STATES), array_values(self::STATES));
     }
 
     private function deleteSelectedAction(Request $request): Response
@@ -373,6 +341,17 @@ class MainAdminController
             "errors" => $errors,
             "states" => self::STATES,
         ]);
+    }
+
+    /**
+     * @param callable(int):bool $predicate
+     * @return list<array{int,string,string}>
+     */
+    private function stateTuples(string $attribute, callable $predicate): array
+    {
+        return array_map(function (int $state, string $label) use ($attribute, $predicate) {
+            return [$state, $label, $predicate($state) ? $attribute : ""];
+        }, array_keys(self::STATES), array_values(self::STATES));
     }
 
     private function overviewUrl(Request $request): Url

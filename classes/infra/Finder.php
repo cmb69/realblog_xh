@@ -149,15 +149,10 @@ SQL;
         return $objects;
     }
 
-    /** @param list<int> $statuses */
-    public function countArticlesWithStatus(array $statuses, string $category = 'all', ?string $search = null): int
+    public function countArticlesWithStatus(int $states, string $category = 'all', ?string $search = null): int
     {
         $db = $this->db->getConnection();
-        if (empty($statuses)) {
-            $whereClause = 'WHERE 1 = 1';
-        } else {
-            $whereClause = sprintf('WHERE status IN (%s)', implode(', ', $statuses));
-        }
+        $whereClause = $this->statesToWhereClause($states);
         $categoryClause = ($category !== 'all')
             ? 'AND categories LIKE :category'
             : '';
@@ -165,7 +160,7 @@ SQL;
             ? 'AND (title LIKE :search OR body LIKE :search)'
             : '';
         $sql = <<<SQL
-SELECT COUNT(*) AS count FROM articles $whereClause $categoryClause $searchClause
+SELECT COUNT(*) AS count FROM articles WHERE $whereClause $categoryClause $searchClause
 SQL;
         $statement = $db->prepare($sql);
         assert($statement !== false);
@@ -178,21 +173,14 @@ SQL;
         return $record['count'];
     }
 
-    /**
-     * @param list<int> $statuses
-     * @return list<Article>
-     */
-    public function findArticlesWithStatus(array $statuses, int $limit, int $offset): array
+    /** @return list<Article>*/
+    public function findArticlesWithStatus(int $states, int $limit, int $offset): array
     {
-        if (empty($statuses)) {
-            $whereClause = '';
-        } else {
-            $whereClause = sprintf('WHERE status IN (%s)', implode(', ', $statuses));
-        }
+        $whereClause = $this->statesToWhereClause($states);
         $sql = <<<SQL
 SELECT id, date, status, trim(categories, ',') as categories, title, teaser,
         length(body) AS hasBody, feedable, commentable
-    FROM articles $whereClause ORDER BY id DESC LIMIT $limit OFFSET $offset
+    FROM articles WHERE $whereClause ORDER BY id DESC LIMIT $limit OFFSET $offset
 SQL;
         $connection = $this->db->getConnection();
         $result = $connection->query($sql);
@@ -202,6 +190,20 @@ SQL;
             $objects[] = new Article(...$record);
         }
         return $objects;
+    }
+
+    private function statesToWhereClause(int $states): string
+    {
+        if ($states === 0) {
+            return "1 = 0";
+        }
+        $result = [];
+        for ($i = Article::FIRST_STATE; $i <= Article::LAST_STATE; $i++) {
+            if ($states & (1 << $i)) {
+                $result[] = $i;
+            }
+        }
+        return sprintf("status IN (%s)", implode(", ", $result));
     }
 
     /** @return list<Article> */

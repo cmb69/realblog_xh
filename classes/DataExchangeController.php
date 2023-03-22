@@ -94,9 +94,7 @@ class DataExchangeController
         $filename = $this->filename();
         $readable = $this->fileSystem->isReadable($filename);
         return Response::create($this->view->render("data_exchange", [
-            "article_count" => $this->finder->countArticlesWithStatus([
-                Article::UNPUBLISHED, Article::PUBLISHED, Article::ARCHIVED
-            ]),
+            "article_count" => $this->finder->countArticlesWithStatus(Article::MASK_ALL),
             "filename" => $filename,
             "filemtime" => $readable ? date("c", $this->fileSystem->fileMTime($filename)) : null,
         ]))->withBjs($this->view->renderScript($this->pluginFolder . "realblog.js"));
@@ -124,9 +122,7 @@ class DataExchangeController
     private function renderExportForm(array $errors = []): string
     {
         return $this->view->render("export", [
-            "article_count" => $this->finder->countArticlesWithStatus([
-                Article::UNPUBLISHED, Article::PUBLISHED, Article::ARCHIVED
-            ]),
+            "article_count" => $this->finder->countArticlesWithStatus(Article::MASK_ALL),
             "csrf_token" => $this->csrfProtector->token(),
             "filename" => $this->filename(),
             "file_exists" => $this->fileSystem->fileExists($this->filename()),
@@ -160,9 +156,7 @@ class DataExchangeController
     {
         $readable = $this->fileSystem->isReadable($this->filename());
         return $this->view->render("import", [
-            "article_count" => $this->finder->countArticlesWithStatus([
-                Article::UNPUBLISHED, Article::PUBLISHED, Article::ARCHIVED
-            ]),
+            "article_count" => $this->finder->countArticlesWithStatus(Article::MASK_ALL),
             "csrf_token" => $this->csrfProtector->token(),
             "filename" => $this->filename(),
             "filemtime" => $readable ? date("c", $this->fileSystem->fileMTime($this->filename())) : null,
