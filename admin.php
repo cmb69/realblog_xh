@@ -24,7 +24,6 @@
 namespace Realblog;
 
 use Plib\Request;
-use Realblog\Infra\Responder;
 
 /**
  * @var array<string,array<string,string>> $plugin_tx
@@ -51,7 +50,7 @@ if (XH_wantsPluginAdministration("realblog")) {
             $o .= Dic::makeInfoController()(Request::current())();
             break;
         case "plugin_main":
-            $o .= Responder::respond(Dic::makeMainAdminController()(Request::current()));
+            $o .= Dic::makeMainAdminController()(Request::current())();
             break;
         case "data_exchange":
             $o .= Dic::makeDataExchangeController()(Request::current())();
