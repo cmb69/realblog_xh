@@ -20,7 +20,7 @@ jobs:
       - name: Checkout Realblog_XH
         uses: actions/checkout@v3
         with:
-          path:'cmsimplexh/plugins/realblog
+          path: cmsimplexh/plugins/realblog
       - name: Cache tools
         id: cache-tools
         uses: actions/cache@v3
