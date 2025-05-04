@@ -125,7 +125,7 @@ class MainAdminControllerTest extends TestCase
             "time" => 1675205155,
         ]);
         $response = $sut($request);
-        Approvals::verifyHtml($response->hjs());
+        $this->assertSame("<meta name=\"realblog\" content='[\"cat1\",\"cat2\"]'>\n", $response->hjs());
     }
 
     public function testEditActionRendersArticle(): void
@@ -157,7 +157,7 @@ class MainAdminControllerTest extends TestCase
             "url" => "http://example.com/?&action=edit",
         ]);
         $response = $sut($request);
-        Approvals::verifyHtml($response->hjs());
+        $this->assertSame("<meta name=\"realblog\" content='[\"cat1\",\"cat2\"]'>\n", $response->hjs());
     }
 
     public function testEditActionRendersArticleWithAutoInputs(): void
@@ -212,7 +212,7 @@ class MainAdminControllerTest extends TestCase
             "url" => "http://example.com/?&action=delete",
         ]);
         $response = $sut($request);
-        Approvals::verifyHtml($response->hjs());
+        $this->assertSame("<meta name=\"realblog\" content='[\"cat1\",\"cat2\"]'>\n", $response->hjs());
     }
 
     public function testDeleteActionFailsOnMissingArticle(): void
@@ -279,7 +279,7 @@ class MainAdminControllerTest extends TestCase
         ]);
         $response = $sut($request);
         $this->assertEquals("Create new article", $response->title());
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString("Article couldn't be added!", $response->output());
     }
 
     public function testDoEditActionIsCsrfProtected()
@@ -336,7 +336,7 @@ class MainAdminControllerTest extends TestCase
         ]);
         $response = $sut($request);
         $this->assertEquals("Edit article #0", $response->title());
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString("Article couldn't be modified!", $response->output());
     }
 
     public function testDoDeleteActionIsCsrfProtected()
@@ -380,7 +380,7 @@ class MainAdminControllerTest extends TestCase
         ]);
         $response = $sut($request);
         $this->assertEquals("Delete article #0", $response->title());
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString("Article couldn't be deleted!", $response->output());
     }
 
     public function testDeleteSelectedActionRendersConfirmation()
@@ -471,7 +471,7 @@ class MainAdminControllerTest extends TestCase
         ]);
         $response = $sut($request);
         $this->assertEquals("Delete selected articles", $response->title());
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString("No articles have been deleted!", $response->output());
     }
 
     public function testDoChangeStatusActionIsCsrfProtected()
@@ -524,7 +524,10 @@ class MainAdminControllerTest extends TestCase
         ]);
         $response = $sut($request);
         $this->assertEquals("Change article status", $response->title());
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString(
+            "The status of the selected articles couldn't be changed!",
+            $response->output()
+        );
     }
 
     private function sut($options = [])

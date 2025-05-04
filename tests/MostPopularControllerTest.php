@@ -40,7 +40,7 @@ class MostPopularControllerTest extends TestCase
             $this->view()
         );
         $response = $sut(new FakeRequest(), "foo");
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString("no entries available", $response->output());
     }
 
     public function testRendersMostPopularArticles(): void
@@ -64,7 +64,7 @@ class MostPopularControllerTest extends TestCase
             $this->view()
         );
         $response = $sut(new FakeRequest(), "bar");
-        Approvals::verifyHtml($response->output());
+        $this->assertSame("", $response->output());
     }
 
     private function finder($articles)

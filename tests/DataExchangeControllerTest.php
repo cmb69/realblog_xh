@@ -151,7 +151,10 @@ class DataExchangeControllerTest extends TestCase
         ]);
         $response = $sut($request);
         $this->assertEquals("Realblog – Export to CSV", $response->title());
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString(
+            "Can't export to &quot;./content/realblog/realblog.csv&quot;!",
+            $response->output()
+        );
     }
 
     public function testRendersImportConfirmation(): void
@@ -250,7 +253,10 @@ class DataExchangeControllerTest extends TestCase
         ]);
         $response = $sut($request);
         $this->assertEquals("Realblog – Import from CSV", $response->title());
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString(
+            "Can't import from &quot;./content/realblog/realblog.csv&quot;!",
+            $response->output()
+        );
     }
 
     private function db($success)

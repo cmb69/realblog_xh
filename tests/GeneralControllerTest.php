@@ -21,7 +21,6 @@
 
 namespace Realblog;
 
-use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 use Plib\FakeRequest;
 use Plib\View;
@@ -50,7 +49,10 @@ class GeneralControllerTest extends TestCase
     {
         $sut = new GeneralController($this->conf(["rss_enabled" => "true"]), $this->db(), $this->view());
         $response = $sut(new FakeRequest());
-        Approvals::verifyHtml($response->hjs());
+        $this->assertSame(
+            "\n<link rel=\"alternate\" type=\"application/rss+xml\" href=\"./?function=realblog_feed\">\n",
+            $response->hjs()
+        );
     }
 
     private function conf($options = [])
