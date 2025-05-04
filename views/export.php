@@ -22,7 +22,7 @@ use Plib\View;
   <p class="xh_warning"><?=$this->text('exchange_confirm_export', $filename)?></p>
 <?endif?>
   <form method="post">
-    <input type="hidden" name="xh_csrf_token" value="<?=$this->esc($csrf_token)?>">
+    <input type="hidden" name="realblog_token" value="<?=$this->esc($csrf_token)?>">
     <button name="realblog_do"><?=$this->text('exchange_button_export')?></button>
   </form>
 </div>

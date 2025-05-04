@@ -208,7 +208,7 @@ class DataExchangeControllerTest extends TestCase
             "url" => "http://example.com/?&action=import",
             "post" => ["realblog_do" => ""],
         ]);
-        $sut($request);
+        $response = $sut($request);
         $this->assertStringContainsString("You are not authorized for this action!", $response->output());
     }
 

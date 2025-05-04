@@ -23,10 +23,10 @@
 
 namespace Realblog;
 
+use Plib\CsrfProtector;
 use Plib\Request;
 use Plib\Url;
 use Plib\View;
-use Realblog\Infra\CsrfProtector;
 use Realblog\Infra\DB;
 use Realblog\Infra\Editor;
 use Realblog\Infra\Finder;
@@ -232,7 +232,9 @@ class MainAdminController
 
     private function doCreateAction(Request $request): Response
     {
-        $this->csrfProtector->check();
+        if (!$this->csrfProtector->check($request->post("realblog_token"))) {
+            return Response::create($this->view->message("fail", "error_unauthorized"));
+        }
         $article = FullArticle::fromStrings(...$this->articlePost($request));
         $errors = Util::validateArticle($article);
         if ($errors) {
@@ -247,7 +249,9 @@ class MainAdminController
 
     private function doEditAction(Request $request): Response
     {
-        $this->csrfProtector->check();
+        if (!$this->csrfProtector->check($request->post("realblog_token"))) {
+            return Response::create($this->view->message("fail", "error_unauthorized"));
+        }
         $article = FullArticle::fromStrings(...$this->articlePost($request));
         $errors = Util::validateArticle($article);
         if ($errors) {
@@ -262,7 +266,9 @@ class MainAdminController
 
     private function doDeleteAction(Request $request): Response
     {
-        $this->csrfProtector->check();
+        if (!$this->csrfProtector->check($request->post("realblog_token"))) {
+            return Response::create($this->view->message("fail", "error_unauthorized"));
+        }
         $article = FullArticle::fromStrings(...$this->articlePost($request));
         $res = $this->db->deleteArticle($article);
         if ($res !== 1) {
@@ -354,7 +360,9 @@ class MainAdminController
 
     private function doDeleteSelectedAction(Request $request): Response
     {
-        $this->csrfProtector->check();
+        if (!$this->csrfProtector->check($request->post("realblog_token"))) {
+            return Response::create($this->view->message("fail", "error_unauthorized"));
+        }
         $ids = $this->realblogIdsFromGet($request);
         $res = $this->db->deleteArticlesWithIds($ids);
         if ($res !== count($ids)) {
@@ -367,7 +375,9 @@ class MainAdminController
 
     private function doChangeStatusAction(Request $request): Response
     {
-        $this->csrfProtector->check();
+        if (!$this->csrfProtector->check($request->post("realblog_token"))) {
+            return Response::create($this->view->message("fail", "error_unauthorized"));
+        }
         $ids = $this->realblogIdsFromGet($request);
         $status = min(max((int) ($request->post("realblog_status") ?? 0), 0), 2);
         $res = $this->db->updateStatusOfArticlesWithIds($ids, $status);

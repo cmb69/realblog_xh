@@ -22,7 +22,9 @@
 namespace Realblog;
 
 use ApprovalTests\Approvals;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
+use Plib\CsrfProtector;
 use Plib\FakeRequest;
 use Plib\View;
 use Realblog\Infra\DB;
@@ -34,6 +36,15 @@ use Realblog\Value\FullArticle;
 
 class MainAdminControllerTest extends TestCase
 {
+    /** @var CsrfProtector&Stub */
+    private $csrfProtector;
+
+    public function setUp(): void
+    {
+        $this->csrfProtector = $this->createStub(CsrfProtector::class);
+        $this->csrfProtector->method("token")->willReturn("e3c1b42a6098b48a39f9f54ddb3388f7");
+    }
+
     public function testSetsCookies()
     {
         $sut = $this->sut();
@@ -216,19 +227,20 @@ class MainAdminControllerTest extends TestCase
 
     public function testDoCreateActionIsCsrfProtected()
     {
-        $csrfProtector = new FakeCsrfProtector;
-        $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => ["insert" => 0]]);
+        $this->csrfProtector->method("check")->willReturn(false);
+        $sut = $this->sut();
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=create",
             "post" => $this->dummyPost(),
             "time" => 1675205155,
         ]);
-        $sut($request);
-        $this->assertTrue($csrfProtector->hasChecked());
+        $repsonse = $sut($request);
+        $this->assertStringContainsString("You are not authorized for this action!", $repsonse->output());
     }
 
     public function testDoCreateActionRedirectsOnSuccess()
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $sut = $this->sut(["db" => ["insert" => 1]]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=create",
@@ -244,6 +256,7 @@ class MainAdminControllerTest extends TestCase
 
     public function testDoCreateActionReportsInvalidArticle(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $sut = $this->sut();
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=create",
@@ -257,6 +270,7 @@ class MainAdminControllerTest extends TestCase
 
     public function testDoCreateActionFailureIsReported(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()], "db" => ["insert" => 0]]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=create",
@@ -270,19 +284,20 @@ class MainAdminControllerTest extends TestCase
 
     public function testDoEditActionIsCsrfProtected()
     {
-        $csrfProtector = new FakeCsrfProtector;
-        $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => ["update" => 0]]);
+        $this->csrfProtector->method("check")->willReturn(false);
+        $sut = $this->sut();
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=edit",
             "post" => $this->dummyPost(),
             "time" => 1675205155,
         ]);
-        $sut($request);
-        $this->assertTrue($csrfProtector->hasChecked());
+        $response = $sut($request);
+        $this->assertStringContainsString("You are not authorized for this action!", $response->output());
     }
 
     public function testDoEditActionRedirectsOnSuccess()
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $sut = $this->sut(["db" => ["update" => 1]]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=edit",
@@ -298,6 +313,7 @@ class MainAdminControllerTest extends TestCase
 
     public function testDoEditActionReportsInvalidArticle(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $sut = $this->sut();
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=edit",
@@ -311,6 +327,7 @@ class MainAdminControllerTest extends TestCase
 
     public function testDoEditActionFailureIsReported(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()], "db" => ["update" => 0]]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=edit",
@@ -324,19 +341,20 @@ class MainAdminControllerTest extends TestCase
 
     public function testDoDeleteActionIsCsrfProtected()
     {
-        $csrfProtector = new FakeCsrfProtector;
-        $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => ["delete" => 0]]);
+        $this->csrfProtector->method("check")->willReturn(false);
+        $sut = $this->sut();
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=delete",
             "post" => $this->dummyPost(),
             "time" => 1675205155,
         ]);
-        $sut($request);
-        $this->assertTrue($csrfProtector->hasChecked());
+        $response = $sut($request);
+        $this->assertStringContainsString("You are not authorized for this action!", $response->output());
     }
 
    public function testDoDeleteActionRedirectsOnSuccess()
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $sut = $this->sut(["db" => ["delete" => 1]]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=delete",
@@ -352,6 +370,7 @@ class MainAdminControllerTest extends TestCase
 
     public function testDoDeleteActionFailureIsReported(): void
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()], "db" => ["delete" => 0]]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=delete",
@@ -404,18 +423,19 @@ class MainAdminControllerTest extends TestCase
 
     public function testDoDeleteSelectedActionIsCsrfProtected()
     {
-        $csrfProtector = new FakeCsrfProtector;
-        $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => ["bulkDelete" => 0]]);
+        $this->csrfProtector->method("check")->willReturn(false);
+        $sut = $this->sut();
         $request = new FakeRequest([
             "url" => "http://example.com/?&realblog_ids[]=17&realblog_ids[]=4&action=delete_selected",
             "post" => ["realblog_do" => ""],
         ]);
-        $sut($request);
-        $this->assertTrue($csrfProtector->hasChecked());
+        $response = $sut($request);
+        $this->assertStringContainsString("You are not authorized for this action!", $response->output());
     }
 
     public function testDoDeleteSelectedActionRedirectsOnSuccess()
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $sut = $this->sut(["db" => ["bulkDelete" => 2]]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&realblog_ids[]=17&realblog_ids[]=4&action=delete_selected",
@@ -430,6 +450,7 @@ class MainAdminControllerTest extends TestCase
 
     public function testDoDeleteSelectedActionReportsPartialSuccess()
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $sut = $this->sut(["db" => ["bulkDelete" => 1]]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&realblog_ids[]=17&realblog_ids[]=4&action=delete_selected",
@@ -442,6 +463,7 @@ class MainAdminControllerTest extends TestCase
 
     public function testDoDeleteSelectedActionReportsFailure()
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $sut = $this->sut(["db" => ["bulkDelete" => 0]]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&realblog_ids[]=17&realblog_ids[]=4&action=delete_selected",
@@ -454,18 +476,19 @@ class MainAdminControllerTest extends TestCase
 
     public function testDoChangeStatusActionIsCsrfProtected()
     {
-        $csrfProtector = new FakeCsrfProtector;
-        $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => ["bulkUpdate" => 0]]);
+        $this->csrfProtector->method("check")->willReturn(false);
+        $sut = $this->sut();
         $request = new FakeRequest([
             "url" => "http://example.com/?&realblog_ids[]=17&realblog_ids[]=4&action=change_status",
             "post" => ["realblog_do" => ""],
         ]);
-        $sut($request);
-        $this->assertTrue($csrfProtector->hasChecked());
+        $response = $sut($request);
+        $this->assertStringContainsString("You are not authorized for this action!", $response->output());
     }
 
     public function testDoChangeStatusActionRedirectsOnSuccess()
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $sut = $this->sut(["db" => ["bulkUpdate" => 2]]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&realblog_ids[]=17&realblog_ids[]=4&action=change_status",
@@ -480,6 +503,7 @@ class MainAdminControllerTest extends TestCase
 
     public function testDoChangeStatusActionReportsPartialSuccess()
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $sut = $this->sut(["db" => ["bulkUpdate" => 1]]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&realblog_ids[]=17&realblog_ids[]=4&action=change_status",
@@ -492,6 +516,7 @@ class MainAdminControllerTest extends TestCase
 
     public function testDoChangeStatusActionReportsFailure()
     {
+        $this->csrfProtector->method("check")->willReturn(true);
         $sut = $this->sut(["db" => ["bulkUpdate" => 0]]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&realblog_ids[]=17&realblog_ids[]=4&action=change_status",
@@ -509,7 +534,7 @@ class MainAdminControllerTest extends TestCase
             $this->conf($options["conf"] ?? []),
             $this->db($options["db"] ?? []),
             $this->finder($options["finder"] ?? []),
-            $options["csrfProtector"] ?? new FakeCsrfProtector,
+            $this->csrfProtector,
             $this->view(),
             $options["editor"] ?? new FakeEditor
         );
