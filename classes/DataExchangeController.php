@@ -74,7 +74,7 @@ class DataExchangeController
 
     public function __invoke(Request $request): Response
     {
-        switch ($request->action()) {
+        switch ($this->action($request)) {
             default:
                 return $this->overview($request);
             case "export":
@@ -86,6 +86,22 @@ class DataExchangeController
             case "do_import":
                 return $this->doImport($request);
         }
+    }
+
+    private function action(Request $request): string
+    {
+        $action = $request->url()->param("action");
+        if (!is_string($action)) {
+            return "";
+        }
+        if (!strncmp($action, "do_", strlen("do_"))) {
+            return "";
+        }
+        $post = $request->post();
+        if (!isset($post["realblog_do"])) {
+            return $action;
+        }
+        return "do_$action";
     }
 
     private function overview(Request $request): Response

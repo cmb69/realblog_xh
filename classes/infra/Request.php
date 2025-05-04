@@ -66,22 +66,6 @@ class Request
         return $this->s();
     }
 
-    public function action(): string
-    {
-        $action = $this->url()->param("action");
-        if (!is_string($action)) {
-            return "";
-        }
-        if (!strncmp($action, "do_", strlen("do_"))) {
-            return "";
-        }
-        $post = $this->post();
-        if (!isset($post["realblog_do"])) {
-            return $action;
-        }
-        return "do_$action";
-    }
-
     public function stringFromGet(string $name): string
     {
         $param = $this->url()->param($name);

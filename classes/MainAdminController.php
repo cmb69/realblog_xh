@@ -91,7 +91,7 @@ class MainAdminController
 
     private function dispatch(Request $request): Response
     {
-        switch ($request->action()) {
+        switch ($this->action($request)) {
             default:
                 return $this->defaultAction($request);
             case "create":
@@ -115,6 +115,22 @@ class MainAdminController
             case "do_change_status":
                 return $this->doChangeStatusAction($request);
         }
+    }
+
+    private function action(Request $request): string
+    {
+        $action = $request->url()->param("action");
+        if (!is_string($action)) {
+            return "";
+        }
+        if (!strncmp($action, "do_", strlen("do_"))) {
+            return "";
+        }
+        $post = $request->post();
+        if (!isset($post["realblog_do"])) {
+            return $action;
+        }
+        return "do_$action";
     }
 
     private function defaultAction(Request $request): Response
