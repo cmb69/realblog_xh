@@ -128,11 +128,6 @@ class Request
         }));
     }
 
-    public function statusFromPost(): int
-    {
-        return min(max((int) ($this->post()["realblog_status"] ?? 0), 0), 2);
-    }
-
     public function trimmedPostString(string $name): string
     {
         $post = $this->post();
@@ -174,7 +169,7 @@ class Request
      * @codeCoverageIgnore
      * @return array<string,string|array<string>>
      */
-    protected function post(): array
+    public function post(): array
     {
         return $_POST;
     }

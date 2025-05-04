@@ -334,7 +334,8 @@ class MainAdminController
     {
         $this->csrfProtector->check();
         $ids = $request->realblogIdsFromGet();
-        $res = $this->db->updateStatusOfArticlesWithIds($ids, $request->statusFromPost());
+        $status = min(max((int) ($request->post()["realblog_status"] ?? 0), 0), 2);
+        $res = $this->db->updateStatusOfArticlesWithIds($ids, $status);
         if ($res !== count($ids)) {
             $errors = $res > 0 ? [["changestatus_warning", $res, count($ids)]] : [["changestatus_error"]];
             return Response::create($this->renderChangeStatusConfirmation($request, $errors))
