@@ -28,17 +28,23 @@ use Plib\View;
 
 class FeedLinkControllerTest extends TestCase
 {
-    public function testRendersFeedLink(): void
+    /** @var View */
+    private $view;
+
+    public function setUp(): void
     {
-        $sut = new FeedLinkController("./plugins/realblog/", $this->view());
-        $request = new FakeRequest();
-        $response = $sut($request, "_self");
-        Approvals::verifyHtml($response->output());
+        $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["realblog"]);
     }
 
-    private function view()
+    private function sut(): FeedLinkController
     {
-        $text = XH_includeVar("./languages/en.php", 'plugin_tx')['realblog'];
-        return new View("./views/", $text);
+        return new FeedLinkController("./plugins/realblog/", $this->view);
+    }
+
+    public function testRendersFeedLink(): void
+    {
+        $request = new FakeRequest();
+        $response = $this->sut()($request, "_self");
+        Approvals::verifyHtml($response->output());
     }
 }

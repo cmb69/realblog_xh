@@ -21,6 +21,7 @@
 
 namespace Realblog;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Plib\FakeRequest;
 use Plib\View;
@@ -29,48 +30,51 @@ use Realblog\Value\Article;
 
 class GeneralControllerTest extends TestCase
 {
+    /** @var array<string,string> */
+    private $conf;
+
+    /** @var DB&MockObject */
+    private $db;
+
+    /** @var View */
+    private $view;
+
+    public function setUp(): void
+    {
+        $this->conf = XH_includeVar("./config/config.php", "plugin_cf")["realblog"];
+        $this->conf['auto_archive'] = "";
+        $this->conf["auto_publish"] = "";
+        $this->conf['rss_enabled'] = "";
+        $this->db = $this->createMock(DB::class);;
+        $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["realblog"]);
+    }
+
+    private function sut(): GeneralController
+    {
+        return new GeneralController($this->conf, $this->db, $this->view);
+    }
+
     public function testAutoPublishesWhenConfigured()
     {
-        $db = $this->db();
-        $db->expects($this->once())->method("autoChangeStatus")->with('publishing_date', Article::PUBLISHED);
-        $sut = new GeneralController($this->conf(["auto_publish" => "true"]), $db, $this->view());
-        $sut(new FakeRequest());
+        $this->conf["auto_publish"] = "true";
+        $this->db->expects($this->once())->method("autoChangeStatus")->with('publishing_date', Article::PUBLISHED);
+        $this->sut()(new FakeRequest());
     }
 
     public function testAutoArchivesWhenConfigured()
     {
-        $db = $this->db();
-        $db->expects($this->once())->method("autoChangeStatus")->with('archiving_date', Article::ARCHIVED);
-        $sut = new GeneralController($this->conf(["auto_archive" => "true"]), $db, $this->view());
-        $sut(new FakeRequest());
+        $this->conf["auto_archive"] = "true";
+        $this->db->expects($this->once())->method("autoChangeStatus")->with('archiving_date', Article::ARCHIVED);
+        $this->sut()(new FakeRequest());
     }
 
     public function testRendersFeedLinkWhenConfigured()
     {
-        $sut = new GeneralController($this->conf(["rss_enabled" => "true"]), $this->db(), $this->view());
-        $response = $sut(new FakeRequest());
+        $this->conf["rss_enabled"] = "true";
+        $response = $this->sut()(new FakeRequest());
         $this->assertSame(
             "\n<link rel=\"alternate\" type=\"application/rss+xml\" href=\"./?function=realblog_feed\">\n",
             $response->hjs()
         );
-    }
-
-    private function conf($options = [])
-    {
-        $conf = XH_includeVar("./config/config.php", "plugin_cf")["realblog"];
-        $conf['auto_archive'] = "";
-        $conf["auto_publish"] = "";
-        $conf['rss_enabled'] = "";
-        return $options + $conf;
-    }
-
-    private function db()
-    {
-        return $this->createMock(DB::class);
-    }
-
-    private function view()
-    {
-        return new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["realblog"]);
     }
 }

@@ -22,6 +22,7 @@
 namespace Realblog;
 
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 use Plib\CsrfProtector;
 use Plib\FakeRequest;
@@ -36,59 +37,64 @@ class DataExchangeControllerTest extends TestCase
     /** @var CsrfProtector&MockObject */
     private $csrfProtector;
 
+    /** @var DB&Stub */
+    private $db;
+
+    /** @var Finder&Stub */
+    private $finder;
+
+    /** @var FakeFileSystem */
+    private $fileSystem;
+
+    /** @var View */
+    private $view;
+
     public function setUp(): void
     {
         $this->csrfProtector = $this->createStub(CsrfProtector::class);
         $this->csrfProtector->method("token")->willReturn("e3c1b42a6098b48a39f9f54ddb3388f7");
+        $this->db = $this->db(true);
+        $this->finder = $this->createStub(Finder::class);
+        $this->finder->method("countArticlesWithStatus")->willReturn(3);
+        $this->fileSystem = new FakeFileSystem();
+        $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["realblog"]);
+    }
+
+    private function sut(): DataExchangeController
+    {
+        return new DataExchangeController(
+            "./plugins/realblog/",
+            "./content/",
+            $this->db,
+            $this->finder,
+            $this->csrfProtector,
+            $this->fileSystem,
+            $this->view
+        );
     }
 
     public function testRendersOverview()
     {
-        $sut = new DataExchangeController(
-            "./plugins/realblog/",
-            "./content/",
-            $this->db(true),
-            $this->finder(),
-            $this->csrfProtector,
-            new FakeFileSystem(),
-            $this->view()
-        );
         $request = new FakeRequest();
-        $response = $sut($request);
+        $response = $this->sut()($request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testRendersOverviewWithCsvFile()
     {
-        $sut = new DataExchangeController(
-            "./plugins/realblog/",
-            "./content/",
-            $this->db(true),
-            $this->finder(),
-            $this->csrfProtector,
-            new FakeFileSystem(["isReadable" => true, "fileMTime" => 1677251242]),
-            $this->view()
-        );
+        $this->fileSystem = new FakeFileSystem(["isReadable" => true, "fileMTime" => 1677251242]);
         $request = new FakeRequest();
-        $response = $sut($request);
+        $response = $this->sut()($request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testRendersExportConfirmation(): void
     {
-        $sut = new DataExchangeController(
-            "./plugins/realblog/",
-            "./content/",
-            $this->db(true),
-            $this->finder(),
-            $this->csrfProtector,
-            new FakeFileSystem(["fileExists" => true,]),
-            $this->view()
-        );
+        $this->fileSystem = new FakeFileSystem(["fileExists" => true]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=export",
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertEquals("Realblog – Export to CSV", $response->title());
         Approvals::verifyHtml($response->output());
     }
@@ -96,60 +102,34 @@ class DataExchangeControllerTest extends TestCase
     public function testExportIsCsrfProtected()
     {
         $this->csrfProtector->method("check")->willReturn(false);
-        $sut = new DataExchangeController(
-            "./plugins/realblog/",
-            "./content/",
-            $this->db(true),
-            $this->finder(),
-            $this->csrfProtector,
-            new FakeFileSystem(),
-            $this->view()
-        );
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=export",
             "post" => ["realblog_do" => ""]],
         );
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertStringContainsString("You are not authorized for this action!", $response->output());
     }
 
     public function testSuccessfulExportRedirects()
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $sut = new DataExchangeController(
-            "./plugins/realblog/",
-            "./content/",
-            $this->db(true),
-            $this->finder(),
-            $this->csrfProtector,
-            new FakeFileSystem(),
-            $this->view()
-        );
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=export",
             "post" => ["realblog_do" => ""],
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertEquals("http://example.com/?realblog&admin=data_exchange", $response->location());
     }
 
     public function testExportReportsFailure()
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $sut = new DataExchangeController(
-            "./plugins/realblog/",
-            "./content/",
-            $this->db(false),
-            $this->finder(),
-            $this->csrfProtector,
-            new FakeFileSystem(),
-            $this->view()
-        );
+        $this->db = $this->db(false);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=export",
             "post" => ["realblog_do" => ""],
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertEquals("Realblog – Export to CSV", $response->title());
         $this->assertStringContainsString(
             "Can't export to &quot;./content/realblog/realblog.csv&quot;!",
@@ -159,38 +139,22 @@ class DataExchangeControllerTest extends TestCase
 
     public function testRendersImportConfirmation(): void
     {
-        $sut = new DataExchangeController(
-            "./plugins/realblog/",
-            "./content/",
-            $this->db(true),
-            $this->finder(),
-            $this->csrfProtector,
-            new FakeFileSystem(["isReadable" => true, "fileMTime" => 1677251242]),
-            $this->view()
-        );
+        $this->fileSystem = new FakeFileSystem(["isReadable" => true, "fileMTime" => 1677251242]);
         $request = new FakeRequest(["url" => "http://example.com/?&action=import"]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertEquals("Realblog – Import from CSV", $response->title());
         Approvals::verifyHtml($response->output());
     }
 
     public function testImportRedirectsIfCsvFileIsMissing(): void
     {
+        $this->fileSystem = new FakeFileSystem(["isReadable" => false]);
         $this->csrfProtector->method("check")->willReturn(true);
-        $sut = new DataExchangeController(
-            "./plugins/realblog/",
-            "./content/",
-            $this->db(true),
-            $this->finder(),
-            $this->csrfProtector,
-            new FakeFileSystem(["isReadable" => false]),
-            $this->view()
-        );
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=import",
             "post" => ["realblog_do" => ""],
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertEquals("http://example.com/?realblog&admin=data_exchange", $response->location());
 
     }
@@ -198,60 +162,34 @@ class DataExchangeControllerTest extends TestCase
     public function testImportIsCsrfProtected()
     {
         $this->csrfProtector->method("check")->willReturn(false);
-        $sut = new DataExchangeController(
-            "./plugins/realblog/",
-            "./content/",
-            $this->db(true),
-            $this->finder(),
-            $this->csrfProtector,
-            new FakeFileSystem(),
-            $this->view()
-        );
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=import",
             "post" => ["realblog_do" => ""],
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertStringContainsString("You are not authorized for this action!", $response->output());
     }
 
     public function testSuccessfulImportRedirects()
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $sut = new DataExchangeController(
-            "./plugins/realblog/",
-            "./content/",
-            $this->db(true),
-            $this->finder(),
-            $this->csrfProtector,
-            new FakeFileSystem(),
-            $this->view()
-        );
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=import",
             "post" => ["realblog_do" => ""],
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertEquals("http://example.com/?realblog&admin=data_exchange", $response->location());
     }
 
     public function testImportReportsFailure()
     {
+        $this->db = $this->db(false);
         $this->csrfProtector->method("check")->willReturn(true);
-        $sut = new DataExchangeController(
-            "./plugins/realblog/",
-            "./content/",
-            $this->db(false),
-            $this->finder(),
-            $this->csrfProtector,
-            new FakeFileSystem(),
-            $this->view()
-        );
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=import",
             "post" => ["realblog_do" => ""],
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertEquals("Realblog – Import from CSV", $response->title());
         $this->assertStringContainsString(
             "Can't import from &quot;./content/realblog/realblog.csv&quot;!",
@@ -265,19 +203,5 @@ class DataExchangeControllerTest extends TestCase
         $db->method('exportToCsv')->willReturn($success);
         $db->method('importFromCsv')->willReturn($success);
         return $db;
-    }
-
-    private function finder()
-    {
-        $finder = $this->createStub(Finder::class);
-        $finder->method("countArticlesWithStatus")->willReturn(3);
-        return $finder;
-    }
-
-    private function view()
-    {
-        $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
-        $text = $plugin_tx['realblog'];
-        return new View("./views/", $text);
     }
 }

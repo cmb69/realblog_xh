@@ -22,6 +22,7 @@
 namespace Realblog;
 
 use ApprovalTests\Approvals;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 use Plib\FakeRequest;
 use Plib\View;
@@ -33,179 +34,191 @@ use Realblog\Value\FullArticle;
 
 class BlogControllerTest extends TestCase
 {
+    /** @var array<string,string> */
+    private $conf;
+
+    /** @var DB&Stub */
+    private $db;
+
+    /** @var Finder&Stub */
+    private $finder;
+
+    /** @var View */
+    private $view;
+
+    /** @var FakePages */
+    private $pages;
+
+    public function setUp(): void
+    {
+        $this->conf = XH_includeVar("./config/config.php", "plugin_cf")["realblog"];
+        $this->db = $this->createStub(DB::class);
+        $this->finder = $this->finder();
+        $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["realblog"]);
+        $this->pages = new FakePages();
+    }
+
+    private function sut(): BlogController
+    {
+        return new BlogController($this->conf, $this->db, $this->finder, $this->view, $this->pages);
+    }
+
     public function testRendersArticleOverview(): void
     {
-        $finder = $this->finder(["count" => 7, "articles" => $this->articles()]);
-        $sut = new BlogController($this->conf(), $this->db(), $finder, $this->view(), new FakePages());
+        $this->finder = $this->finder(["count" => 7, "articles" => $this->articles()]);
         $request = new FakeRequest([
             "url" => "http://example.com/?Blog",
         ]);
-        $response = $sut($request, "blog", true, "all");
+        $response = $this->sut()($request, "blog", true, "all");
         Approvals::verifyHtml($response->output());
     }
 
     public function testRendersArticle(): void
     {
-        $conf = $this->conf(["show_teaser" => "true"]);
-        $pages = new FakePages(["h" => ["", "Blog"]]);
-        $sut = new BlogController($conf, $this->db(), $this->finder(), $this->view(), $pages);
+        $this->conf["show_teaser"] = "true";
+        $this->pages = new FakePages(["h" => ["", "Blog"]]);
         $request = new FakeRequest([
             "url" => "http://example.com/?Blog&realblog_id=3&realblog_search=word",
             "s" => 1,
         ]);
-        $response = $sut($request, "blog", true, "all");
+        $response = $this->sut()($request, "blog", true, "all");
         Approvals::verifyHtml($response->output());
     }
 
     public function testSetsTitleAndDescription(): void
     {
-        $pages = new FakePages(["h" => ["", "Blog"]]);
-        $sut = new BlogController($this->conf(), $this->db(), $this->finder(), $this->view(), $pages);
+        $this->pages = new FakePages(["h" => ["", "Blog"]]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&realblog_id=3",
             "s" => 1,
         ]);
-        $response = $sut($request, "blog", true, "all");
+        $response = $this->sut()($request, "blog", true, "all");
         $this->assertEquals("Blog – Title", $response->title());
         $this->assertEquals("Teaser", $response->description());
     }
 
     public function testRecordsPageView(): void
     {
-        $db = $this->createMock(DB::class);
-        $db->expects($this->once())->method("recordPageView")->with(3);
-        $pages = new FakePages(["h" => ["", "Blog"]]);
-        $sut = new BlogController($this->conf(), $db, $this->finder(), $this->view(), $pages);
+        $this->db = $this->createMock(DB::class);
+        $this->db->expects($this->once())->method("recordPageView")->with(3);
+        $this->pages = new FakePages(["h" => ["", "Blog"]]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&realblog_id=3",
             "s" => 1,
         ]);
-        $sut($request, "blog", false, "all");
+        $this->sut()($request, "blog", false, "all");
     }
 
     public function testRendersEmptySearchResults(): void
     {
-        $sut = new BlogController($this->conf(), $this->db(), $this->finder(), $this->view(), new FakePages());
         $request = new FakeRequest([
             "url" => "http://example.com/?&realblog_search=search",
         ]);
-        $response = $sut($request, "blog", true, "all");
+        $response = $this->sut()($request, "blog", true, "all");
         Approvals::verifyHtml($response->output());
     }
 
     public function testRendersOverviewWithComments()
     {
-        $conf = $this->conf(["comments_plugin" => "Realblog\\Infra"]);
-        $finder = $this->finder(["count" => 7, "articles" => $this->articles()]);
-        $pages = new FakePages(["h" => ["", "Blog"]]);
-        $sut = new BlogController($conf, $this->db(), $finder, $this->view(), $pages);
+        $this->conf["comments_plugin"] = "Realblog\\Infra";
+        $this->finder = $this->finder(["count" => 7, "articles" => $this->articles()]);
+        $this->pages = new FakePages(["h" => ["", "Blog"]]);
         $request = new FakeRequest([
             "url" => "http://example.com/?Blog",
             "s" => 1,
         ]);
-        $response = $sut($request, "blog", true, "all");
+        $response = $this->sut()($request, "blog", true, "all");
         Approvals::verifyHtml($response->output());
     }
 
     public function testRendersArticleWithComments()
     {
-        $conf = $this->conf(["comments_plugin" => "Realblog\\Infra"]);
-        $pages = new FakePages(["h" => ["", "Blog"]]);
-        $finder = $this->finder(["commentable" => true]);
-        $sut = new BlogController($conf, $this->db(), $finder, $this->view(), $pages);
+        $this->conf["comments_plugin"] = "Realblog\\Infra";
+        $this->pages = new FakePages(["h" => ["", "Blog"]]);
+        $this->finder = $this->finder(["commentable" => true]);
         $request = new FakeRequest([
             "url" => "http://example.com/?Blog&realblog_id=3&realblog_search=word",
             "s" => 1,
         ]);
-        $response = $sut($request, "blog", true, "all");
+        $response = $this->sut()($request, "blog", true, "all");
         Approvals::verifyHtml($response->output());
     }
 
     public function testRendersArticleWithHeadingAboveMeta(): void
     {
-        $conf = $this->conf(["heading_above_meta" => "true", "comments_plugin" => "Realblog\\Infra"]);
-        $finder = $this->finder(["count" => 7, "articles" => $this->articles()]);
-        $sut = new BlogController($conf, $this->db(), $finder, $this->view(), new FakePages());
+        $this->conf["heading_above_meta"] = "true";
+        $this->conf["comments_plugin"] = "Realblog\\Infra";
+        $this->finder = $this->finder(["count" => 7, "articles" => $this->articles()]);
         $request = new FakeRequest([
             "url" => "http://example.com/?Blog",
         ]);
-        $response = $sut($request, "blog", true, "all");
+        $response = $this->sut()($request, "blog", true, "all");
         Approvals::verifyHtml($response->output());
     }
 
     public function testRendersArticleWithCommentsAndAdminFeatures()
     {
-        $conf = $this->conf(["comments_plugin" => "Realblog\\Infra", "heading_above_meta" => "true"]);
-        $pages = new FakePages(["h" => ["", "Blog"]]);
-        $finder = $this->finder(["commentable" => true]);
-        $sut = new BlogController($conf, $this->db(), $finder, $this->view(), $pages);
+        $this->conf["comments_plugin"] = "Realblog\\Infra";
+        $this->conf["heading_above_meta"] = "true";
+        $this->pages = new FakePages(["h" => ["", "Blog"]]);
+        $this->finder = $this->finder(["commentable" => true]);
         $request = new FakeRequest([
             "url" => "http://example.com/?Blog&realblog_id=3",
             "admin" => true,
             "s" => 1,
         ]);
-        $response = $sut($request, "blog", true, "all");
+        $response = $this->sut()($request, "blog", true, "all");
         Approvals::verifyHtml($response->output());
     }
 
     public function testRendersEmptyArchive(): void
     {
-        $sut = new BlogController($this->conf(), $this->db(), $this->finder(), $this->view(), new FakePages());
         $request = new FakeRequest([
             "url" => "http://example.com/?Archive&realblog_year=2023",
         ]);
-        $response = $sut($request, "archive", true);
+        $response = $this->sut()($request, "archive", true);
         Approvals::verifyHtml($response->output());
     }
 
     public function testRendersArchive(): void
     {
-        $finder = $this->finder(["articles" => $this->archivedArticles()]);
-        $sut = new BlogController($this->conf(), $this->db(), $finder, $this->view(), new FakePages());
+        $this->finder = $this->finder(["articles" => $this->archivedArticles()]);
         $request = new FakeRequest([
             "url" => "http://example.com/?Archive&realblog_year=2022",
             ]);
-        $response = $sut($request, "archive", true);
+        $response = $this->sut()($request, "archive", true);
         Approvals::verifyHtml($response->output());
     }
 
     public function testRedirectsToExplicitRealblogYear(): void
     {
-        $finder = $this->finder(["articles" => $this->archivedArticles()]);
-        $sut = new BlogController($this->conf(), $this->db(), $finder, $this->view(), new FakePages());
+        $this->finder = $this->finder(["articles" => $this->archivedArticles()]);
         $request = new FakeRequest([
             "url" => "http://example.com/?Archive",
         ]);
-        $response = $sut($request, "archive", true);
+        $response = $this->sut()($request, "archive", true);
         $this->assertEquals("http://example.com/?Archive&realblog_year=2022", $response->location());
     }
 
     public function testRendersArchivedArticle(): void
     {
-        $finder = $this->finder(["article" => $this->archivedArticle()]);
-        $pages = new FakePages(["h" => ["irrelevant0", "irrelevant1", "Archive"]]);
-        $sut = new BlogController($this->conf(), $this->db(), $finder, $this->view(), $pages);
+        $this->finder = $this->finder(["article" => $this->archivedArticle()]);
+        $this->pages = new FakePages(["h" => ["irrelevant0", "irrelevant1", "Archive"]]);
         $request = new FakeRequest([
             "url" => "http://example.com/?Archive&realblog_id=3",
             "s" => 2,
         ]);
-        $response = $sut($request, "archive", true);
+        $response = $this->sut()($request, "archive", true);
         Approvals::verifyHtml($response->output());
     }
 
     public function testRendersArchiveWithEmptySearchResults(): void
     {
-        $sut = new BlogController($this->conf(), $this->db(), $this->finder(), $this->view(), new FakePages());
         $request = new FakeRequest([
             "url" => "http://example.com/?&realblog_search=search",
         ]);
-        $response = $sut($request, "archive", true, "all");
+        $response = $this->sut()($request, "archive", true, "all");
         Approvals::verifyHtml($response->output());
-    }
-
-    private function db()
-    {
-        return $this->createStub(DB::class);
     }
 
     private function finder($options = [])
@@ -218,17 +231,6 @@ class BlogControllerTest extends TestCase
         $finder->method("findArchivedArticlesInPeriod")->willReturn($options["articles"] ?? []);
         $finder->method("findArchivedArticlesContaining")->willReturn([]);
         return $finder;
-    }
-
-    private function view()
-    {
-        return new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["realblog"]);
-    }
-
-    private function conf($options = [])
-    {
-        $conf = XH_includeVar("./config/config.php", "plugin_cf")["realblog"];
-        return $options + $conf;
     }
 
     private function articles(): array

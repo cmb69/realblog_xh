@@ -22,6 +22,7 @@
 namespace Realblog;
 
 use ApprovalTests\Approvals;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 use Plib\FakeRequest;
 use Plib\View;
@@ -31,80 +32,66 @@ use Realblog\Value\Article;
 
 class FeedControllerTest extends TestCase
 {
+    /** @var array<string,string> */
+    private $conf;
+
+    /** @var Finder&Stub */
+    private $finder;
+
+    /** @var Pages&Stub */
+    private $pages;
+
+    /** @var View */
+    private $view;
+
+    public function setUp(): void
+    {
+        $text = XH_includeVar("./languages/en.php", "plugin_tx")["realblog"];
+        $this->conf = XH_includeVar("./config/config.php", "plugin_cf")["realblog"];
+        $this->conf["rss_logo"] = "rss.png";
+        $this->conf["rss_page"] = $text["rss_page"];
+        $this->finder = $this->createStub(Finder::class);
+        $this->pages = $this->createStub(Pages::class);
+        $this->view = new View("./views/", $text);
+    }
+
+    private function sut(): FeedController
+    {
+        return new FeedController(
+            "./userfiles/images/",
+            $this->conf,
+            $this->finder,
+            $this->pages,
+            $this->view
+        );
+    }
+
     public function testRendersFeedWithAnArticle(): void
     {
-        $sut = new FeedController(
-            "./userfiles/images/",
-            $this->conf(),
-            $this->finder([$this->article()]),
-            $this->pages(),
-            $this->view()
-        );
+        $this->finder->method("findFeedableArticles")->willReturn([$this->article()]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=realblog_feed",
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testSetsAppropriateContentType()
     {
-        $sut = new FeedController(
-            "./userfiles/images/",
-            $this->conf(),
-            $this->finder([$this->article()]),
-            $this->pages(),
-            $this->view()
-        );
+        $this->finder->method("findFeedableArticles")->willReturn([$this->article()]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&function=realblog_feed",
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertEquals("application/xml; charset=UTF-8", $response->contentType());
     }
 
     public function testRendersNothingWhenNotRequested(): void
     {
-        $sut = new FeedController(
-            "./userfiles/images/",
-            $this->conf(),
-            $this->finder([]),
-            $this->pages(),
-            $this->view()
-        );
+        $this->finder->method("findFeedableArticles")->willReturn([]);
         $request = new FakeRequest();
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertEquals("", $response->output());
-    }
-
-    private function finder(array $articles): Finder
-    {
-        $finder = $this->createStub(Finder::class);
-        $finder->method("findFeedableArticles")->willReturn($articles);
-        return $finder;
-    }
-
-    private function pages(): Pages
-    {
-        return $this->createStub(Pages::class);
-    }
-
-    private function view(): View
-    {
-        return new View("./views/", $this->text());
-    }
-
-    private function conf(): array
-    {
-        $conf = XH_includeVar("./config/config.php", "plugin_cf")["realblog"];
-        $conf["rss_logo"] = "rss.png";
-        $conf["rss_page"] = $this->text()["rss_page"];
-        return $conf;
-    }
-
-    private function text(): array
-    {
-        return XH_includeVar("./languages/en.php", "plugin_tx")["realblog"];
     }
 
     private function article(): Article

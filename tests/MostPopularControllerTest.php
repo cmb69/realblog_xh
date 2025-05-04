@@ -22,6 +22,7 @@
 namespace Realblog;
 
 use ApprovalTests\Approvals;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 use Plib\FakeRequest;
 use Plib\View;
@@ -31,57 +32,57 @@ use Realblog\Value\MostPopularArticle;
 
 class MostPopularControllerTest extends TestCase
 {
+    /** @var array<string,string> */
+    private $conf;
+
+    /** @var FakePages */
+    private $pages;
+
+    /** @var Finder&Stub */
+    private $finder;
+
+    /** @var View */
+    private $view;
+
+    public function setUp(): void
+    {
+        $this->conf = XH_includeVar("./config/config.php", "plugin_cf")["realblog"];
+        $this->pages = new FakePages();
+        $this->finder = $this->createStub(Finder::class);
+        $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["realblog"]);
+    }
+
+    private function sut(): MostPopularController
+    {
+        return new MostPopularController(
+            $this->conf,
+            $this->pages,
+            $this->finder,
+            $this->view
+        );
+    }
+
     public function testRendersEmptyList(): void
     {
-        $sut = new MostPopularController(
-            $this->conf(),
-            new FakePages(["u" => ["foo"]]),
-            $this->finder([]),
-            $this->view()
-        );
-        $response = $sut(new FakeRequest(), "foo");
+        $this->pages = new FakePages(["u" => ["foo"]]);
+        $this->finder->method("findMostPopularArticles")->willReturn([]);
+        $response = $this->sut()(new FakeRequest(), "foo");
         $this->assertStringContainsString("no entries available", $response->output());
     }
 
     public function testRendersMostPopularArticles(): void
     {
-        $sut = new MostPopularController(
-            $this->conf(),
-            new FakePages(["u" => ["foo"]]),
-            $this->finder($this->articles()),
-            $this->view()
-        );
-        $response = $sut(new FakeRequest(), "foo");
+        $this->pages = new FakePages(["u" => ["foo"]]);
+        $this->finder->method("findMostPopularArticles")->willReturn($this->articles());
+        $response = $this->sut()(new FakeRequest(), "foo");
         Approvals::verifyHtml($response->output());
     }
 
     public function testRendersNothingIfPageDoesNotExist(): void
     {
-        $sut = new MostPopularController(
-            $this->conf(),
-            new FakePages(),
-            $this->finder($this->articles()),
-            $this->view()
-        );
-        $response = $sut(new FakeRequest(), "bar");
+        $this->finder->method("findMostPopularArticles")->willReturn($this->articles());
+        $response = $this->sut()(new FakeRequest(), "bar");
         $this->assertSame("", $response->output());
-    }
-
-    private function finder($articles)
-    {
-        $finder = $this->createStub(Finder::class);
-        $finder->method("findMostPopularArticles")->willReturn($articles);
-        return $finder;
-    }
-
-    private function view()
-    {
-        return new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["realblog"]);
-    }
-
-    private function conf()
-    {
-        return XH_includeVar("./config/config.php", "plugin_cf")["realblog"];
     }
 
     private function articles(): array

@@ -22,6 +22,7 @@
 namespace Realblog;
 
 use ApprovalTests\Approvals;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 use Plib\CsrfProtector;
@@ -35,178 +36,204 @@ use Realblog\Value\FullArticle;
 
 class MainAdminControllerTest extends TestCase
 {
+    /** @var array<string,string> */
+    private $conf;
+
+    /** @var DB&MockObject */
+    private $db;
+
+    /** @var Finder&Stub */
+    private $finder;
+
     /** @var CsrfProtector&Stub */
     private $csrfProtector;
 
+    /** @var View */
+    private $view;
+
+    /** @var FakeEditor */
+    private $editor;
+
     public function setUp(): void
     {
+        $this->conf = XH_includeVar("./config/config.php", "plugin_cf")["realblog"];
+        $this->db = $this->db();
+        $this->finder = $this->finder();
         $this->csrfProtector = $this->createStub(CsrfProtector::class);
         $this->csrfProtector->method("token")->willReturn("e3c1b42a6098b48a39f9f54ddb3388f7");
+        $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["realblog"]);
+        $this->editor = new FakeEditor();
+    }
+
+    private function sut()
+    {
+        return new MainAdminController(
+            "./plugins/realblog/",
+            $this->conf,
+            $this->db,
+            $this->finder,
+            $this->csrfProtector,
+            $this->view,
+            $this->editor
+        );
     }
 
     public function testDefaultActionRendersOverview(): void
     {
-        $sut = $this->sut(["finder" => ["articles" => $this->articles()]]);
+        $this->finder = $this->finder(["articles" => $this->articles()]);
         $request = new FakeRequest();
-        $response = $sut($request);
+        $response = $this->sut()($request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testCreateActionRendersArticle(): void
     {
-        $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
+        $this->finder = $this->finder(["article" => $this->firstArticle()]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=create",
             "time" => 1675205155,
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         Approvals::verifyHtml($response->output());
         $this->assertEquals("Create new article", $response->title());
     }
 
     public function testCreateActionInitializesEditor(): void
     {
-        $editor = new FakeEditor;
-        $sut = $this->sut(["finder" => ["article" => $this->firstArticle()], "editor" => $editor]);
+        $this->finder = $this->finder(["article" => $this->firstArticle()]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=create",
             "time" => 1675205155,
         ]);
-        $sut($request);
-        $this->assertEquals(["realblog_headline_field", "realblog_story_field"], $editor->classes());
+        $this->sut()($request);
+        $this->assertEquals(["realblog_headline_field", "realblog_story_field"], $this->editor->classes());
     }
 
     public function testCreateActionOutputsHjs(): void
     {
-        $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
+        $this->finder = $this->finder(["article" => $this->firstArticle()]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=create",
             "time" => 1675205155,
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertSame("<meta name=\"realblog\" content='[\"cat1\",\"cat2\"]'>\n", $response->hjs());
     }
 
     public function testEditActionRendersArticle(): void
     {
-        $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
+        $this->finder = $this->finder(["article" => $this->firstArticle()]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=edit",
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         Approvals::verifyHtml($response->output());
         $this->assertEquals("Edit article #1", $response->title());
     }
 
     public function testEditActionInitializesEditor(): void
     {
-        $editor = new FakeEditor;
-        $sut = $this->sut(["finder" => ["article" => $this->firstArticle()], "editor" => $editor]);
+        $this->finder = $this->finder(["article" => $this->firstArticle()]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=edit",
         ]);
-        $sut($request);
-        $this->assertEquals(["realblog_headline_field", "realblog_story_field"], $editor->classes());
+        $this->sut()($request);
+        $this->assertEquals(["realblog_headline_field", "realblog_story_field"], $this->editor->classes());
     }
 
     public function testEditActionOutputsHjs(): void
     {
-        $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
+        $this->finder = $this->finder(["article" => $this->firstArticle()]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=edit",
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertSame("<meta name=\"realblog\" content='[\"cat1\",\"cat2\"]'>\n", $response->hjs());
     }
 
     public function testEditActionRendersArticleWithAutoInputs(): void
     {
-        $sut = $this->sut([
-            "conf" => ["auto_publish" => "true", "auto_archive" => "true"],
-            "finder" => ["article" => $this->firstArticle()]
-        ]);
+        $this->finder = $this->finder(["article" => $this->firstArticle()]);
+        $this->conf["auto_publish"] = "true";
+        $this->conf["auto_archive"] = "true";
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=edit",
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testEditActionFailsOnMissingArticle(): void
     {
-        $sut = $this->sut();
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=edit",
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertStringContainsString("Article not found!", $response->output());
     }
 
     public function testDeleteActionRendersArticle(): void
     {
-        $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
+        $this->finder = $this->finder(["article" => $this->firstArticle()]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=delete",
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         Approvals::verifyHtml($response->output());
         $this->assertEquals("Delete article #1", $response->title());
     }
 
     public function testDeleteActionInitializesEditor(): void
     {
-        $editor = new FakeEditor;
-        $sut = $this->sut(["finder" => ["article" => $this->firstArticle()], "editor" => $editor]);
+        $this->finder = $this->finder(["article" => $this->firstArticle()]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=delete",
         ]);
-        $sut($request);
-        $this->assertEquals(["realblog_headline_field", "realblog_story_field"], $editor->classes());
+        $this->sut()($request);
+        $this->assertEquals(["realblog_headline_field", "realblog_story_field"], $this->editor->classes());
     }
 
     public function testDeletectionOutputsHjs(): void
     {
-        $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
+        $this->finder = $this->finder(["article" => $this->firstArticle()]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=delete",
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertSame("<meta name=\"realblog\" content='[\"cat1\",\"cat2\"]'>\n", $response->hjs());
     }
 
     public function testDeleteActionFailsOnMissingArticle(): void
     {
-        $sut = $this->sut();
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=delete",
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertStringContainsString("Article not found!", $response->output());
     }
 
     public function testDoCreateActionIsCsrfProtected()
     {
         $this->csrfProtector->method("check")->willReturn(false);
-        $sut = $this->sut();
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=create",
             "post" => $this->dummyPost(),
             "time" => 1675205155,
         ]);
-        $repsonse = $sut($request);
+        $repsonse = $this->sut()($request);
         $this->assertStringContainsString("You are not authorized for this action!", $repsonse->output());
     }
 
     public function testDoCreateActionRedirectsOnSuccess()
     {
+        $this->db = $this->db(["insert" => 1]);
         $this->csrfProtector->method("check")->willReturn(true);
-        $sut = $this->sut(["db" => ["insert" => 1]]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=create",
             "post" => $this->dummyPost(),
             "time" => 1675205155,
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertEquals(
             "http://example.com/?realblog&admin=plugin_main&action=plugin_text&realblog_page=1",
             $response->location()
@@ -216,27 +243,27 @@ class MainAdminControllerTest extends TestCase
     public function testDoCreateActionReportsInvalidArticle(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $sut = $this->sut();
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=create",
             "post" => $this->invalidPost(),
             "time" => 1675205155,
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertEquals("Create new article", $response->title());
         Approvals::verifyHtml($response->output());
     }
 
     public function testDoCreateActionFailureIsReported(): void
     {
+        $this->finder = $this->finder(["article" => $this->firstArticle()]);
+        $this->db = $this->db(["insert" => 0]);
         $this->csrfProtector->method("check")->willReturn(true);
-        $sut = $this->sut(["finder" => ["article" => $this->firstArticle()], "db" => ["insert" => 0]]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=create",
             "post" => $this->dummyPost(),
             "time" => 1675205155,
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertEquals("Create new article", $response->title());
         $this->assertStringContainsString("Article couldn't be added!", $response->output());
     }
@@ -244,26 +271,25 @@ class MainAdminControllerTest extends TestCase
     public function testDoEditActionIsCsrfProtected()
     {
         $this->csrfProtector->method("check")->willReturn(false);
-        $sut = $this->sut();
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=edit",
             "post" => $this->dummyPost(),
             "time" => 1675205155,
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertStringContainsString("You are not authorized for this action!", $response->output());
     }
 
     public function testDoEditActionRedirectsOnSuccess()
     {
+        $this->db = $this->db(["update" => 1]);
         $this->csrfProtector->method("check")->willReturn(true);
-        $sut = $this->sut(["db" => ["update" => 1]]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=edit",
             "post" => $this->dummyPost(),
             "time" => 1675205155,
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertEquals(
             "http://example.com/?realblog&admin=plugin_main&action=plugin_text&realblog_page=1",
             $response->location()
@@ -273,27 +299,27 @@ class MainAdminControllerTest extends TestCase
     public function testDoEditActionReportsInvalidArticle(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $sut = $this->sut();
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=edit",
             "post" => $this->invalidPost(),
             "time" => 1675205155,
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertEquals("Edit article #-1", $response->title());
         Approvals::verifyHtml($response->output());
     }
 
     public function testDoEditActionFailureIsReported(): void
     {
+        $this->finder = $this->finder(["article" => $this->firstArticle()]);
+        $this->db = $this->db(["update" => 0]);
         $this->csrfProtector->method("check")->willReturn(true);
-        $sut = $this->sut(["finder" => ["article" => $this->firstArticle()], "db" => ["update" => 0]]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=edit",
             "post" => $this->dummyPost(),
             "time" => 1675205155,
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertEquals("Edit article #0", $response->title());
         $this->assertStringContainsString("Article couldn't be modified!", $response->output());
     }
@@ -301,26 +327,25 @@ class MainAdminControllerTest extends TestCase
     public function testDoDeleteActionIsCsrfProtected()
     {
         $this->csrfProtector->method("check")->willReturn(false);
-        $sut = $this->sut();
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=delete",
             "post" => $this->dummyPost(),
             "time" => 1675205155,
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertStringContainsString("You are not authorized for this action!", $response->output());
     }
 
    public function testDoDeleteActionRedirectsOnSuccess()
     {
+        $this->db = $this->db(["delete" => 1]);
         $this->csrfProtector->method("check")->willReturn(true);
-        $sut = $this->sut(["db" => ["delete" => 1]]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=delete",
             "post" => $this->dummyPost(),
             "time" => 1675205155,
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertEquals(
             "http://example.com/?realblog&admin=plugin_main&action=plugin_text&realblog_page=1",
             $response->location()
@@ -329,78 +354,74 @@ class MainAdminControllerTest extends TestCase
 
     public function testDoDeleteActionFailureIsReported(): void
     {
+        $this->finder = $this->finder(["article" => $this->firstArticle()]);
+        $this->db = $this->db(["delete" => 0]);
         $this->csrfProtector->method("check")->willReturn(true);
-        $sut = $this->sut(["finder" => ["article" => $this->firstArticle()], "db" => ["delete" => 0]]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=delete",
             "action" => "do_delete",
             "post" => $this->dummyPost(),
             "time" => 1675205155,
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertEquals("Delete article #0", $response->title());
         $this->assertStringContainsString("Article couldn't be deleted!", $response->output());
     }
 
     public function testDeleteSelectedActionRendersConfirmation()
     {
-        $sut = $this->sut();
         $request = new FakeRequest([
             "url" => "http://example.com/?&realblog_ids[]=17&realblog_ids[]=4&action=delete_selected",
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertEquals("Delete selected articles", $response->title());
         Approvals::verifyHtml($response->output());
     }
 
     public function testDeleteSelectedActionReportsIfNothingIsSelected()
     {
-        $sut = $this->sut();
         $request = new FakeRequest(["url" => "http://example.com/?&action=delete_selected"]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testChangeStatusActionRendersConfirmation()
     {
-        $sut = $this->sut();
         $request = new FakeRequest([
             "url" => "http://example.com/?&realblog_ids[]=17&realblog_ids[]=4&action=change_status",
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertEquals("Change article status", $response->title());
         Approvals::verifyHtml($response->output());
     }
 
     public function testChangeStatusActionReportsIfNothingIsSelected()
     {
-        $sut = $this->sut();
         $request = new FakeRequest(["url" => "http://example.com/?&action=change_status"]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         Approvals::verifyHtml($response->output());
     }
 
     public function testDoDeleteSelectedActionIsCsrfProtected()
     {
         $this->csrfProtector->method("check")->willReturn(false);
-        $sut = $this->sut();
         $request = new FakeRequest([
             "url" => "http://example.com/?&realblog_ids[]=17&realblog_ids[]=4&action=delete_selected",
             "post" => ["realblog_do" => ""],
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertStringContainsString("You are not authorized for this action!", $response->output());
     }
 
     public function testDoDeleteSelectedActionRedirectsOnSuccess()
     {
+        $this->db = $this->db(["bulkDelete" => 2]);
         $this->csrfProtector->method("check")->willReturn(true);
-        $sut = $this->sut(["db" => ["bulkDelete" => 2]]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&realblog_ids[]=17&realblog_ids[]=4&action=delete_selected",
             "post" => ["realblog_do" => ""],
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertEquals(
             "http://example.com/?realblog&admin=plugin_main&action=plugin_text&realblog_page=1",
             $response->location()
@@ -409,26 +430,26 @@ class MainAdminControllerTest extends TestCase
 
     public function testDoDeleteSelectedActionReportsPartialSuccess()
     {
+        $this->db = $this->db(["bulkDelete" => 1]);
         $this->csrfProtector->method("check")->willReturn(true);
-        $sut = $this->sut(["db" => ["bulkDelete" => 1]]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&realblog_ids[]=17&realblog_ids[]=4&action=delete_selected",
             "post" => ["realblog_do" => ""],
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertEquals("Delete selected articles", $response->title());
         Approvals::verifyHtml($response->output());
     }
 
     public function testDoDeleteSelectedActionReportsFailure()
     {
+        $this->db = $this->db(["bulkDelete" => 0]);
         $this->csrfProtector->method("check")->willReturn(true);
-        $sut = $this->sut(["db" => ["bulkDelete" => 0]]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&realblog_ids[]=17&realblog_ids[]=4&action=delete_selected",
             "post" => ["realblog_do" => ""],
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertEquals("Delete selected articles", $response->title());
         $this->assertStringContainsString("No articles have been deleted!", $response->output());
     }
@@ -436,24 +457,23 @@ class MainAdminControllerTest extends TestCase
     public function testDoChangeStatusActionIsCsrfProtected()
     {
         $this->csrfProtector->method("check")->willReturn(false);
-        $sut = $this->sut();
         $request = new FakeRequest([
             "url" => "http://example.com/?&realblog_ids[]=17&realblog_ids[]=4&action=change_status",
             "post" => ["realblog_do" => ""],
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertStringContainsString("You are not authorized for this action!", $response->output());
     }
 
     public function testDoChangeStatusActionRedirectsOnSuccess()
     {
+        $this->db = $this->db(["bulkUpdate" => 2]);
         $this->csrfProtector->method("check")->willReturn(true);
-        $sut = $this->sut(["db" => ["bulkUpdate" => 2]]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&realblog_ids[]=17&realblog_ids[]=4&action=change_status",
             "post" => ["realblog_do" => ""],
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertEquals(
             "http://example.com/?realblog&admin=plugin_main&action=plugin_text&realblog_page=1",
             $response->location()
@@ -462,43 +482,30 @@ class MainAdminControllerTest extends TestCase
 
     public function testDoChangeStatusActionReportsPartialSuccess()
     {
+        $this->db = $this->db(["bulkUpdate" => 1]);
         $this->csrfProtector->method("check")->willReturn(true);
-        $sut = $this->sut(["db" => ["bulkUpdate" => 1]]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&realblog_ids[]=17&realblog_ids[]=4&action=change_status",
             "post" => ["realblog_do" => ""],
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertEquals("Change article status", $response->title());
         Approvals::verifyHtml($response->output());
     }
 
     public function testDoChangeStatusActionReportsFailure()
     {
+        $this->db = $this->db(["bulkUpdate" => 0]);
         $this->csrfProtector->method("check")->willReturn(true);
-        $sut = $this->sut(["db" => ["bulkUpdate" => 0]]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&realblog_ids[]=17&realblog_ids[]=4&action=change_status",
             "post" => ["realblog_do" => ""],
         ]);
-        $response = $sut($request);
+        $response = $this->sut()($request);
         $this->assertEquals("Change article status", $response->title());
         $this->assertStringContainsString(
             "The status of the selected articles couldn't be changed!",
             $response->output()
-        );
-    }
-
-    private function sut($options = [])
-    {
-        return new MainAdminController(
-            "./plugins/realblog/",
-            $this->conf($options["conf"] ?? []),
-            $this->db($options["db"] ?? []),
-            $this->finder($options["finder"] ?? []),
-            $this->csrfProtector,
-            $this->view(),
-            $options["editor"] ?? new FakeEditor
         );
     }
 
@@ -526,17 +533,6 @@ class MainAdminControllerTest extends TestCase
         $finder->method('findById')->willReturn($options["article"] ?? null);
         $finder->method('findAllCategories')->willReturn(["cat1", "cat2"]);
         return $finder;
-    }
-
-    private function view()
-    {
-        return new View("./views/", XH_includeVar("./languages/en.php", 'plugin_tx')['realblog']);
-    }
-
-    private function conf($options = [])
-    {
-        $conf = XH_includeVar("./config/config.php", 'plugin_cf')['realblog'];
-        return $options + $conf;
     }
 
     public function dummyPost(): array

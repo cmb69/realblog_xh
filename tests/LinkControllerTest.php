@@ -22,6 +22,7 @@
 namespace Realblog;
 
 use ApprovalTests\Approvals;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 use Plib\FakeRequest;
 use Plib\View;
@@ -31,35 +32,43 @@ use Realblog\Value\Article;
 
 class LinkControllerTest extends TestCase
 {
+    /** @var array<string,string> */
+    private $conf;
+
+    /** @var FakePages */
+    private $pages;
+
+    /** @var Finder&Stub */
+    private $finder;
+
+    /** @var View */
+    private $view;
+
+    public function setUp(): void
+    {
+        $this->conf = XH_includeVar("./config/config.php", "plugin_cf")["realblog"];
+        $this->pages = new FakePages();
+        $this->finder = $this->createStub(Finder::class);
+        $this->finder->method("findArticles")->willReturn([$this->article()]);
+        $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["realblog"]);
+    }
+
+    private function sut(): LinkController
+    {
+        return new LinkController($this->conf, $this->pages, $this->finder, $this->view);
+    }
+
     public function testRendersLatestArticles(): void
     {
-        $sut = new LinkController($this->conf(), new FakePages(["u" => ["Blog"]]), $this->finder(), $this->view());
-        $response = $sut(new FakeRequest(), "Blog", true);
+        $this->pages = new FakePages(["u" => ["Blog"]]);
+        $response = $this->sut()(new FakeRequest(), "Blog", true);
         Approvals::verifyHtml($response->output());
     }
 
     public function testRendersNothingWhenPageDoesNotExist(): void
     {
-        $sut = new LinkController($this->conf(), new FakePages(), $this->finder(), $this->view());
-        $response = $sut(new FakeRequest(), "Blog", true);
+        $response = $this->sut()(new FakeRequest(), "Blog", true);
         $this->assertEquals("", $response->output());
-    }
-
-    private function finder()
-    {
-        $finder = $this->createStub(Finder::class);
-        $finder->method("findArticles")->willReturn([$this->article()]);
-        return $finder;
-    }
-
-    private function view()
-    {
-        return new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["realblog"]);
-    }
-
-    private function conf()
-    {
-        return XH_includeVar("./config/config.php", "plugin_cf")["realblog"];
     }
 
     private function article()

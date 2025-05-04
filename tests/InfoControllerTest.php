@@ -29,22 +29,27 @@ use Plib\View;
 
 class InfoControllerTest extends TestCase
 {
+    /** @var array<string,string> */
+    private $conf;
+
+    /** @var View */
+    private $view;
+
+    public function setUp(): void
+    {
+        $this->conf = XH_includeVar("./config/config.php", "plugin_cf")["realblog"];;
+        $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["realblog"]);
+    }
+
+    private function sut(): InfoController
+    {
+        return new InfoController("./plugins/realblog/", $this->conf, new FakeSystemChecker(), $this->view);;
+    }
+
     public function testShowsPluginInfo(): void
     {
-        $sut = new InfoController("./plugins/realblog/", $this->conf(), new FakeSystemChecker(), $this->view());
         $request = new FakeRequest();
-        $response = $sut($request);
+        $response = $this->sut()($request);
         Approvals::verifyHtml($response->output());
-    }
-
-    private function conf()
-    {
-        return XH_includeVar("./config/config.php", "plugin_cf")["realblog"];
-    }
-
-    private function view()
-    {
-        $text = XH_includeVar("./languages/en.php", "plugin_tx")["realblog"];
-        return new View("./views/", $text);
     }
 }
