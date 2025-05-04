@@ -24,7 +24,7 @@ use Realblog\Infra\View;
 <?endif?>
 <?if (!empty($articles)):?>
 <?  foreach ($articles as $group):?>
-  <<?=$heading?>><?=$this->month($group['month'])?> <?=$group['year']?></<?=$heading?>>
+  <<?=$heading?>><?=$group['month']?> <?=$group['year']?></<?=$heading?>>
   <ul class="realblog_archive">
 <?    foreach ($group['articles'] as $article):?>
     <li>

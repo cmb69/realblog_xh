@@ -300,7 +300,7 @@ class BlogController
 
     /**
      * @param list<Article> $articles
-     * @return list<array{year:int,month:int,articles:list<array{title:string,date:string,url:string}>}>
+     * @return list<array{year:int,month:string,articles:list<array{title:string,date:string,url:string}>}>
      */
     private function archivedArticleRecords(Request $request, $articles): array
     {
@@ -316,7 +316,7 @@ class BlogController
             }
             $records[] = [
                 "year" => $group["year"],
-                "month" => $group["month"] - 1,
+                "month" => explode(',', $this->view->text("date_months"))[$group["month"] - 1],
                 "articles" => $articleRecords
             ];
         }

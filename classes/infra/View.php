@@ -55,12 +55,6 @@ class View
         return sprintf($this->esc($this->text[$key]), $count, ...$args);
     }
 
-    public function month(int $month): string
-    {
-        $names = explode(',', $this->text['date_months']);
-        return $this->esc($names[$month]);
-    }
-
     /** @param scalar $args */
     public function message(string $type, string $key, ...$args): string
     {
