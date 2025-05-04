@@ -22,7 +22,7 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
 <?if (count($ids)):?>
   <p class="xh_warning"><?=$this->text('confirm_changestatus')?></p>
   <form name="confirm" method="post">
-    <input type="hidden" name="xh_csrf_token" value="<?=$this->esc($csrfToken)?>">
+    <input type="hidden" name="realblog_token" value="<?=$this->esc($csrfToken)?>">
     <p style="text-align: center">
       <select name="realblog_status">
       <option value="<?=$this->esc(-1)?>"><?=$this->text('new_realblogstatus')?></option>

@@ -42,7 +42,7 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
   <form name="realblog" method="post">
     <input type="hidden" name="realblog_id" value="<?=$this->esc($id)?>">
     <input type="hidden" name="realblog_version" value="<?=$this->esc($version)?>">
-    <input type="hidden" name="xh_csrf_token" value="<?=$this->esc($csrfToken)?>">
+    <input type="hidden" name="realblog_token" value="<?=$this->esc($csrfToken)?>">
     <table>
       <tr>
         <td><label for="realblog_date1" class="realblog_label"><?=$this->text('date_label')?></label></td>
