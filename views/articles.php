@@ -2,6 +2,8 @@
 
 use Plib\View;
 
+if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
+
 /**
  * @var View $this
  * @var list<array{title:string,url:string,categories:string,link_header:bool,date:string,teaser:string,read_more:bool,commentable:bool,comment_count:int}> $articles
