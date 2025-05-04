@@ -23,17 +23,17 @@
 
 namespace Realblog;
 
+use Plib\Request;
+use Plib\Url;
 use Plib\View;
 use Realblog\Infra\CsrfProtector;
 use Realblog\Infra\DB;
 use Realblog\Infra\Editor;
 use Realblog\Infra\Finder;
-use Realblog\Infra\Request;
 use Realblog\Logic\Util;
 use Realblog\Value\Article;
 use Realblog\Value\FullArticle;
 use Realblog\Value\Response;
-use Realblog\Value\Url;
 
 class MainAdminController
 {
@@ -82,8 +82,8 @@ class MainAdminController
     public function __invoke(Request $request): Response
     {
         $response = $this->dispatch($request);
-        if ($request->edit() && $request->url()->param("realblog_page") !== null) {
-            $page = max($request->intFromGet("realblog_page"), 1);
+        if ($request->edit() && $request->get("realblog_page") !== null) {
+            $page = max((int) $request->get("realblog_page"), 1);
             $response = $response->withCookie('realblog_page', (string) $page);
         }
         return $response;
@@ -119,15 +119,14 @@ class MainAdminController
 
     private function action(Request $request): string
     {
-        $action = $request->url()->param("action");
+        $action = $request->get("action");
         if (!is_string($action)) {
             return "";
         }
         if (!strncmp($action, "do_", strlen("do_"))) {
             return "";
         }
-        $post = $request->post();
-        if (!isset($post["realblog_do"])) {
+        if ($request->post("realblog_do") === null) {
             return $action;
         }
         return "do_$action";
@@ -168,7 +167,7 @@ class MainAdminController
      */
     private function articleRecords(Request $request, array $articles, int $page)
     {
-        $url = $request->url()->withPage("realblog")->with("admin", "plugin_main")
+        $url = $request->url()->page("realblog")->with("admin", "plugin_main")
             ->with("realblog_page", (string) $page);
         return array_map(function (Article $article) use ($url) {
             $url = $url->with("realblog_id", (string) $article->id);
@@ -188,13 +187,13 @@ class MainAdminController
 
     private function stateFilter(Request $request): int
     {
-        $param = $request->url()->param("realblog_filter");
+        $param = $request->getArray("realblog_filter");
         if (!is_array($param)) {
-            $cookie = $request->cookie();
-            if (!isset($cookie["realblog_filter"])) {
+            $cookie = $request->cookie("realblog_filter");
+            if ($cookie === null) {
                 return Article::MASK_ALL;
             }
-            return (int) $cookie["realblog_filter"];
+            return (int) $cookie;
         }
         $filters = 0;
         foreach ($param as $state) {
@@ -215,7 +214,7 @@ class MainAdminController
 
     private function editAction(Request $request): Response
     {
-        $article = $this->finder->findById(max($request->intFromGet("realblog_id"), 1));
+        $article = $this->finder->findById(max((int) ($request->get("realblog_id") ?? 0), 1));
         if (!$article) {
             return Response::create($this->view->message("fail", "message_not_found"));
         }
@@ -224,7 +223,7 @@ class MainAdminController
 
     private function deleteAction(Request $request): Response
     {
-        $article = $this->finder->findById(max($request->intFromGet("realblog_id"), 1));
+        $article = $this->finder->findById(max((int) ($request->get("realblog_id") ?? 0), 1));
         if (!$article) {
             return Response::create($this->view->message("fail", "message_not_found"));
         }
@@ -326,18 +325,18 @@ class MainAdminController
     private function articlePost(Request $request): array
     {
         return [
-            $request->trimmedPostString("realblog_id"),
-            $request->trimmedPostString("realblog_version"),
-            $request->trimmedPostString("realblog_date"),
-            $request->trimmedPostString("realblog_startdate"),
-            $request->trimmedPostString("realblog_enddate"),
-            $request->trimmedPostString("realblog_status"),
-            $request->trimmedPostString("realblog_categories"),
-            $request->trimmedPostString("realblog_title"),
-            $request->trimmedPostString("realblog_headline"),
-            $request->trimmedPostString("realblog_story"),
-            $request->trimmedPostString("realblog_rssfeed"),
-            $request->trimmedPostString("realblog_comments"),
+            $request->post("realblog_id") ?? "",
+            $request->post("realblog_version") ?? "",
+            $request->post("realblog_date") ?? "",
+            $request->post("realblog_startdate") ?? "",
+            $request->post("realblog_enddate") ?? "",
+            $request->post("realblog_status") ?? "",
+            $request->post("realblog_categories") ?? "",
+            $request->post("realblog_title") ?? "",
+            $request->post("realblog_headline") ?? "",
+            $request->post("realblog_story") ?? "",
+            $request->post("realblog_rssfeed") ?? "",
+            $request->post("realblog_comments") ?? "",
         ];
     }
 
@@ -370,7 +369,7 @@ class MainAdminController
     {
         $this->csrfProtector->check();
         $ids = $this->realblogIdsFromGet($request);
-        $status = min(max((int) ($request->post()["realblog_status"] ?? 0), 0), 2);
+        $status = min(max((int) ($request->post("realblog_status") ?? 0), 0), 2);
         $res = $this->db->updateStatusOfArticlesWithIds($ids, $status);
         if ($res !== count($ids)) {
             $errors = $res > 0 ? [["changestatus_warning", $res, count($ids)]] : [["changestatus_error"]];
@@ -406,7 +405,7 @@ class MainAdminController
     /** @return list<int> */
     private function realblogIdsFromGet(Request $request): array
     {
-        $param = $request->url()->param("realblog_ids");
+        $param = $request->getArray("realblog_ids");
         if ($param === null || !is_array($param)) {
             return [];
         }
@@ -428,21 +427,21 @@ class MainAdminController
 
     private function overviewUrl(Request $request): Url
     {
-        return $request->url()->withPage("realblog")->with("admin", "plugin_main")->with("action", "plugin_text")
+        return $request->url()->page("realblog")->with("admin", "plugin_main")->with("action", "plugin_text")
             ->with("realblog_page", (string) $this->realblogPage($request));
     }
 
     /** @return int */
     private function realblogPage(Request $request): int
     {
-        $param = $request->url()->param("realblog_page");
+        $param = $request->get("realblog_page");
         if ($param !== null && is_string($param)) {
             return max((int) $param, 1);
         }
         if ($request->admin() && $request->edit()) {
-            $cookie = $request->cookie();
-            if (isset($cookie["realblog_page"])) {
-                return max((int) $cookie["realblog_page"], 1);
+            $cookie = $request->cookie("realblog_page");
+            if ($cookie !== null) {
+                return max((int) $cookie, 1);
             }
         }
         return 1;

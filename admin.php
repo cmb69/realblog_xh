@@ -23,6 +23,7 @@
 
 namespace Realblog;
 
+use Plib\Request as PlibRequest;
 use Realblog\Infra\Request;
 use Realblog\Infra\Responder;
 
@@ -51,7 +52,7 @@ if (XH_wantsPluginAdministration("realblog")) {
             $o .= Dic::makeInfoController()(Request::current())();
             break;
         case "plugin_main":
-            $o .= Responder::respond(Dic::makeMainAdminController()(Request::current()));
+            $o .= Responder::respond(Dic::makeMainAdminController()(PlibRequest::current()));
             break;
         case "data_exchange":
             $o .= Dic::makeDataExchangeController()(Request::current())();
