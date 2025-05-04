@@ -23,10 +23,10 @@
 
 namespace Realblog;
 
+use Plib\Response;
 use Plib\SystemChecker;
 use Realblog\Infra\Request;
 use Realblog\Infra\View;
-use Realblog\Value\Response;
 
 class InfoController
 {
@@ -92,7 +92,7 @@ class InfoController
             $xhVersion,
             $this->systemChecker->checkVersion(CMSIMPLE_XH_VERSION, "CMSimple_XH $xhVersion") ? "success" : "fail",
         ];
-        $plibVersion = "1.7";
+        $plibVersion = "1.8";
         $checks[] = [
             "syscheck_plibversion",
             $plibVersion,

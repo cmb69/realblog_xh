@@ -101,7 +101,7 @@ class BlogControllerTest extends TestCase
             "server" => ["QUERY_STRING" => "&realblog_page=3"],
         ]);
         $response = $sut($request, "blog", false, "all");
-        $this->assertEquals(["realblog_page" => "3"], $response->cookies());
+        $this->assertEquals(["realblog_page", "3", 0], $response->cookie());
     }
 
     public function testRendersOverviewWithComments()

@@ -27,7 +27,7 @@ use Realblog\Infra\DB;
 use Realblog\Infra\Request;
 use Realblog\Infra\View;
 use Realblog\Value\Article;
-use Realblog\Value\Response;
+use Plib\Response;
 
 class GeneralController
 {

@@ -21,12 +21,12 @@
 
 namespace Realblog;
 
+use Plib\Response;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Pages;
 use Realblog\Infra\Request;
 use Realblog\Infra\View;
 use Realblog\Value\MostPopularArticle;
-use Realblog\Value\Response;
 use Realblog\Value\Url;
 
 class MostPopularController

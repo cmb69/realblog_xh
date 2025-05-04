@@ -21,6 +21,7 @@
 
 namespace Realblog;
 
+use Plib\Response;
 use Realblog\Infra\CsrfProtector;
 use Realblog\Infra\DB;
 use Realblog\Infra\FileSystem;
@@ -28,8 +29,6 @@ use Realblog\Infra\Finder;
 use Realblog\Infra\Request;
 use Realblog\Infra\View;
 use Realblog\Value\Article;
-use Realblog\Value\Html;
-use Realblog\Value\Response;
 use Realblog\Value\Url;
 
 class DataExchangeController

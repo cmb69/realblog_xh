@@ -23,6 +23,7 @@
 
 namespace Realblog;
 
+use Plib\Response;
 use Realblog\Infra\DB;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Pages;
@@ -32,7 +33,6 @@ use Realblog\Logic\Util;
 use Realblog\Value\Article;
 use Realblog\Value\FullArticle;
 use Realblog\Value\Html;
-use Realblog\Value\Response;
 use Realblog\Value\Url;
 
 class BlogController
@@ -73,7 +73,7 @@ class BlogController
         $response = $this->dispatch($request, $mode, $showSearch, $category);
         if ($request->edit() && $request->url()->param("realblog_page") !== null) {
             $page = max($request->intFromget("realblog_page"), 1);
-            $response = $response->withCookie("realblog_page", (string) $page);
+            $response = $response->withCookie("realblog_page", (string) $page, 0);
         }
         return $response;
     }

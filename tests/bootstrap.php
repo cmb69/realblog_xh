@@ -11,6 +11,7 @@ require_once "../../cmsimple/classes/CSRFProtection.php";
 require_once "../../cmsimple/functions.php";
 require_once "../../cmsimple/utf8.php";
 
+require_once "../plib/classes/Response.php";
 require_once "../plib/classes/SystemChecker.php";
 require_once "../plib/classes/FakeSystemChecker.php";
 
