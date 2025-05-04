@@ -103,6 +103,7 @@ $plugin_tx['realblog']['error_title']="Title must not be empty!";
 $plugin_tx['realblog']['syscheck_extension']="PHP extension '%s' is loaded";
 $plugin_tx['realblog']['syscheck_fail']="failure";
 $plugin_tx['realblog']['syscheck_phpversion']="PHP version ≥ %s";
+$plugin_tx['realblog']['syscheck_plibversion']="Plib_XH version ≥ %s";
 $plugin_tx['realblog']['syscheck_success']="okay";
 $plugin_tx['realblog']['syscheck_title']="System check";
 $plugin_tx['realblog']['syscheck_warning']="warning";

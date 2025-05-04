@@ -92,6 +92,12 @@ class InfoController
             $xhVersion,
             $this->systemChecker->checkVersion(CMSIMPLE_XH_VERSION, "CMSimple_XH $xhVersion") ? "success" : "fail",
         ];
+        $plibVersion = "1.7";
+        $checks[] = [
+            "syscheck_plibversion",
+            $plibVersion,
+            $this->systemChecker->checkPlugin("plib", $plibVersion) ? "success" : "fail",
+        ];
         $folders = array(
             $this->pluginFolder . "config",
             $this->pluginFolder . "css",
