@@ -50,7 +50,7 @@ class FakeRequest extends Request
         return $this->options["post"] ?? [];
     }
 
-    protected function cookie(): array
+    public function cookie(): array
     {
         return $this->options["cookie"] ?? [];
     }

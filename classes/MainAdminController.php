@@ -119,7 +119,7 @@ class MainAdminController
 
     private function defaultAction(Request $request): Response
     {
-        $states = $request->stateFilter();
+        $states = $this->stateFilter($request);
         $articleCount = $this->finder->countArticlesWithStatus($states);
         $limit = (int) $this->conf['admin_records_page'];
         [$offset, $pageCount] = Util::paginationOffset($articleCount, $limit, $request->realblogPage());
@@ -132,7 +132,7 @@ class MainAdminController
     private function renderArticles(Request $request, array $articles, int $pageCount): string
     {
         $page = min($request->realblogPage(), $pageCount);
-        $states = $request->stateFilter();
+        $states = $this->stateFilter($request);
         return $this->view->render("articles_form", [
             "imageFolder" => $this->pluginFolder . "images/",
             "page" => $page,
@@ -168,6 +168,26 @@ class MainAdminController
                 "edit_url" => $url->with("action", "edit")->relative(),
             ];
         }, $articles);
+    }
+
+    private function stateFilter(Request $request): int
+    {
+        $param = $request->url()->param("realblog_filter");
+        if (!is_array($param)) {
+            $cookie = $request->cookie();
+            if (!isset($cookie["realblog_filter"])) {
+                return Article::MASK_ALL;
+            }
+            return (int) $cookie["realblog_filter"];
+        }
+        $filters = 0;
+        foreach ($param as $state) {
+            if (!in_array($state, ["0", "1", "2"], true)) {
+                continue;
+            }
+            $filters |= 1 << $state;
+        }
+        return $filters;
     }
 
     private function createAction(Request $request): Response
