@@ -86,12 +86,6 @@ class View
         return "<meta name=\"$name\" content='$value'>\n";
     }
 
-    public function renderLink(string $href): string
-    {
-        $href = $this->esc($href);
-        return "\n<link rel=\"alternate\" type=\"application/rss+xml\" href=\"$href\">";
-    }
-
     /** @param scalar $value */
     public function esc($value): string
     {
