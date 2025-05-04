@@ -133,26 +133,7 @@ class Request
         return min(max((int) ($this->post()["realblog_status"] ?? 0), 0), 2);
     }
 
-    /** @return array{string,string,string,string,string,string,string,string,string,string,string,string} */
-    public function articlePost(): array
-    {
-        return [
-            $this->trimmedPostString("realblog_id"),
-            $this->trimmedPostString("realblog_version"),
-            $this->trimmedPostString("realblog_date"),
-            $this->trimmedPostString("realblog_startdate"),
-            $this->trimmedPostString("realblog_enddate"),
-            $this->trimmedPostString("realblog_status"),
-            $this->trimmedPostString("realblog_categories"),
-            $this->trimmedPostString("realblog_title"),
-            $this->trimmedPostString("realblog_headline"),
-            $this->trimmedPostString("realblog_story"),
-            $this->trimmedPostString("realblog_rssfeed"),
-            $this->trimmedPostString("realblog_comments"),
-        ];
-    }
-
-    private function trimmedPostString(string $name): string
+    public function trimmedPostString(string $name): string
     {
         $post = $this->post();
         if (!isset($post[$name]) || !is_string($post[$name])) {

@@ -198,7 +198,7 @@ class MainAdminController
     private function doCreateAction(Request $request): Response
     {
         $this->csrfProtector->check();
-        $article = FullArticle::fromStrings(...$request->articlePost());
+        $article = FullArticle::fromStrings(...$this->articlePost($request));
         $errors = Util::validateArticle($article);
         if ($errors) {
             return $this->showArticleEditor($article, "create", $errors);
@@ -213,7 +213,7 @@ class MainAdminController
     private function doEditAction(Request $request): Response
     {
         $this->csrfProtector->check();
-        $article = FullArticle::fromStrings(...$request->articlePost());
+        $article = FullArticle::fromStrings(...$this->articlePost($request));
         $errors = Util::validateArticle($article);
         if ($errors) {
             return $this->showArticleEditor($article, "edit", $errors);
@@ -228,7 +228,7 @@ class MainAdminController
     private function doDeleteAction(Request $request): Response
     {
         $this->csrfProtector->check();
-        $article = FullArticle::fromStrings(...$request->articlePost());
+        $article = FullArticle::fromStrings(...$this->articlePost($request));
         $res = $this->db->deleteArticle($article);
         if ($res !== 1) {
             return $this->showArticleEditor($article, "delete", [["story_deleted_error"]]);
@@ -284,6 +284,25 @@ class MainAdminController
             "errors" => $errors,
             "script" => $this->pluginFolder . "realblog.js",
         ]);
+    }
+
+    /** @return array{string,string,string,string,string,string,string,string,string,string,string,string} */
+    private function articlePost(Request $request): array
+    {
+        return [
+            $request->trimmedPostString("realblog_id"),
+            $request->trimmedPostString("realblog_version"),
+            $request->trimmedPostString("realblog_date"),
+            $request->trimmedPostString("realblog_startdate"),
+            $request->trimmedPostString("realblog_enddate"),
+            $request->trimmedPostString("realblog_status"),
+            $request->trimmedPostString("realblog_categories"),
+            $request->trimmedPostString("realblog_title"),
+            $request->trimmedPostString("realblog_headline"),
+            $request->trimmedPostString("realblog_story"),
+            $request->trimmedPostString("realblog_rssfeed"),
+            $request->trimmedPostString("realblog_comments"),
+        ];
     }
 
     private function deleteSelectedAction(Request $request): Response
