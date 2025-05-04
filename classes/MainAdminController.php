@@ -122,7 +122,7 @@ class MainAdminController
         $states = $this->stateFilter($request);
         $articleCount = $this->finder->countArticlesWithStatus($states);
         $limit = (int) $this->conf['admin_records_page'];
-        [$offset, $pageCount] = Util::paginationOffset($articleCount, $limit, $request->realblogPage());
+        [$offset, $pageCount] = Util::paginationOffset($articleCount, $limit, $this->realblogPage($request));
         $articles = $this->finder->findArticlesWithStatus($states, $limit, $offset);
         return Response::create($this->renderArticles($request, $articles, $pageCount))
             ->withCookie("realblog_filter", (string) $states);
@@ -131,7 +131,7 @@ class MainAdminController
     /** @param list<Article> $articles */
     private function renderArticles(Request $request, array $articles, int $pageCount): string
     {
-        $page = min($request->realblogPage(), $pageCount);
+        $page = min($this->realblogPage($request), $pageCount);
         $states = $this->stateFilter($request);
         return $this->view->render("articles_form", [
             "imageFolder" => $this->pluginFolder . "images/",
@@ -413,6 +413,22 @@ class MainAdminController
     private function overviewUrl(Request $request): Url
     {
         return $request->url()->withPage("realblog")->with("admin", "plugin_main")->with("action", "plugin_text")
-            ->with("realblog_page", (string) $request->realblogPage());
+            ->with("realblog_page", (string) $this->realblogPage($request));
+    }
+
+    /** @return int */
+    private function realblogPage(Request $request): int
+    {
+        $param = $request->url()->param("realblog_page");
+        if ($param !== null && is_string($param)) {
+            return max((int) $param, 1);
+        }
+        if ($request->admin() && $request->edit()) {
+            $cookie = $request->cookie();
+            if (isset($cookie["realblog_page"])) {
+                return max((int) $cookie["realblog_page"], 1);
+            }
+        }
+        return 1;
     }
 }

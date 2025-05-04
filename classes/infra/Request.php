@@ -100,22 +100,6 @@ class Request
         return (int) $param;
     }
 
-    /** @return int */
-    public function realblogPage(): int
-    {
-        $param = $this->url()->param("realblog_page");
-        if ($param !== null && is_string($param)) {
-            return max((int) $param, 1);
-        }
-        if ($this->admin() && $this->edit()) {
-            $cookie = $this->cookie();
-            if (isset($cookie["realblog_page"])) {
-                return max((int) $cookie["realblog_page"], 1);
-            }
-        }
-        return 1;
-    }
-
     public function trimmedPostString(string $name): string
     {
         $post = $this->post();
