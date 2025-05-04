@@ -29,7 +29,7 @@ use Plib\CsrfProtector;
 use Plib\FakeRequest;
 use Plib\View;
 use Realblog\Infra\DB;
-use Realblog\Infra\FakeEditor;
+use Realblog\Infra\Editor;
 use Realblog\Infra\Finder;
 use Realblog\Value\Article;
 use Realblog\Value\FullArticle;
@@ -51,7 +51,7 @@ class MainAdminControllerTest extends TestCase
     /** @var View */
     private $view;
 
-    /** @var FakeEditor */
+    /** @var Editor&MockObject */
     private $editor;
 
     public function setUp(): void
@@ -62,7 +62,7 @@ class MainAdminControllerTest extends TestCase
         $this->csrfProtector = $this->createStub(CsrfProtector::class);
         $this->csrfProtector->method("token")->willReturn("e3c1b42a6098b48a39f9f54ddb3388f7");
         $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["realblog"]);
-        $this->editor = new FakeEditor();
+        $this->editor = $this->createMock(Editor::class);
     }
 
     private function sut()
@@ -101,12 +101,13 @@ class MainAdminControllerTest extends TestCase
     public function testCreateActionInitializesEditor(): void
     {
         $this->finder = $this->finder(["article" => $this->firstArticle()]);
+        $this->editor->expects($this->once())->method("init")
+            ->with(["realblog_headline_field", "realblog_story_field"]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=create",
             "time" => 1675205155,
         ]);
         $this->sut()($request);
-        $this->assertEquals(["realblog_headline_field", "realblog_story_field"], $this->editor->classes());
     }
 
     public function testCreateActionOutputsHjs(): void
@@ -134,11 +135,12 @@ class MainAdminControllerTest extends TestCase
     public function testEditActionInitializesEditor(): void
     {
         $this->finder = $this->finder(["article" => $this->firstArticle()]);
+        $this->editor->expects($this->once())->method("init")
+            ->with(["realblog_headline_field", "realblog_story_field"]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=edit",
         ]);
         $this->sut()($request);
-        $this->assertEquals(["realblog_headline_field", "realblog_story_field"], $this->editor->classes());
     }
 
     public function testEditActionOutputsHjs(): void
@@ -186,11 +188,12 @@ class MainAdminControllerTest extends TestCase
     public function testDeleteActionInitializesEditor(): void
     {
         $this->finder = $this->finder(["article" => $this->firstArticle()]);
+        $this->editor->expects($this->once())->method("init")
+            ->with(["realblog_headline_field", "realblog_story_field"]);
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=delete",
         ]);
         $this->sut()($request);
-        $this->assertEquals(["realblog_headline_field", "realblog_story_field"], $this->editor->classes());
     }
 
     public function testDeletectionOutputsHjs(): void
