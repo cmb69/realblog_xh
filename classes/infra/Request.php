@@ -116,18 +116,6 @@ class Request
         return 1;
     }
 
-    /** @return list<int> */
-    public function realblogIdsFromGet(): array
-    {
-        $param = $this->url()->param("realblog_ids");
-        if ($param === null || !is_array($param)) {
-            return [];
-        }
-        return array_map("intval", array_filter($param, function ($id) {
-            return (int) $id >= 1;
-        }));
-    }
-
     public function trimmedPostString(string $name): string
     {
         $post = $this->post();

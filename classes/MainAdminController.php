@@ -340,7 +340,7 @@ class MainAdminController
     private function doDeleteSelectedAction(Request $request): Response
     {
         $this->csrfProtector->check();
-        $ids = $request->realblogIdsFromGet();
+        $ids = $this->realblogIdsFromGet($request);
         $res = $this->db->deleteArticlesWithIds($ids);
         if ($res !== count($ids)) {
             $errors = $res > 0 ? [["deleteall_warning", $res, count($ids)]] : [["deleteall_error"]];
@@ -353,7 +353,7 @@ class MainAdminController
     private function doChangeStatusAction(Request $request): Response
     {
         $this->csrfProtector->check();
-        $ids = $request->realblogIdsFromGet();
+        $ids = $this->realblogIdsFromGet($request);
         $status = min(max((int) ($request->post()["realblog_status"] ?? 0), 0), 2);
         $res = $this->db->updateStatusOfArticlesWithIds($ids, $status);
         if ($res !== count($ids)) {
@@ -368,7 +368,7 @@ class MainAdminController
     private function renderDeleteConfirmation(Request $request, array $errors = []): string
     {
         return $this->view->render("confirm_delete", [
-            "ids" => $request->realblogIdsFromGet(),
+            "ids" => $this->realblogIdsFromGet($request),
             "url" => $this->overviewUrl($request)->relative(),
             "csrfToken" => $this->csrfProtector->token(),
             "errors" => $errors,
@@ -379,12 +379,24 @@ class MainAdminController
     private function renderChangeStatusConfirmation(Request $request, array $errors = []): string
     {
         return $this->view->render("confirm_change_status", [
-            "ids" => $request->realblogIdsFromGet(),
+            "ids" => $this->realblogIdsFromGet($request),
             "url" => $this->overviewUrl($request)->relative(),
             "csrfToken" => $this->csrfProtector->token(),
             "errors" => $errors,
             "states" => self::STATES,
         ]);
+    }
+
+    /** @return list<int> */
+    private function realblogIdsFromGet(Request $request): array
+    {
+        $param = $request->url()->param("realblog_ids");
+        if ($param === null || !is_array($param)) {
+            return [];
+        }
+        return array_map("intval", array_filter($param, function ($id) {
+            return (int) $id >= 1;
+        }));
     }
 
     /**
