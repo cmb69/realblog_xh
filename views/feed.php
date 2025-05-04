@@ -1,6 +1,6 @@
 <?php
 
-use Realblog\Infra\View;
+use Plib\View;
 
 /**
  * @var View $this
@@ -15,23 +15,23 @@ use Realblog\Infra\View;
   <channel>
     <title><?=$this->text('rss_title')?></title>
     <description><?=$this->text('rss_description')?></description>
-    <link><?=$url?></link>
+    <link><?=$this->esc($url)?></link>
     <language><?=$this->text('rss_language')?></language>
     <copyright><?=$this->text('rss_copyright')?></copyright>
-    <managingEditor><?=$managing_editor?></managingEditor>
+    <managingEditor><?=$this->esc($managing_editor)?></managingEditor>
 <?if ($has_logo):?>
     <image>
-      <url><?=$image_url?></url>
-      <link><?=$url?></link>
+      <url><?=$this->esc($image_url)?></url>
+      <link><?=$this->esc($url)?></link>
       <title><?=$this->text('rss_title')?></title>
     </image>
 <?endif?>
 <?foreach ($articles as $article):?>
     <item>
-      <title><?=$article['title']?></title>
-      <link><?=$article['url']?></link>
-      <description><?=$article['teaser']?></description>
-      <pubDate><?=$article['date']?></pubDate>
+      <title><?=$this->esc($article['title'])?></title>
+      <link><?=$this->esc($article['url'])?></link>
+      <description><?=$this->esc($article['teaser'])?></description>
+      <pubDate><?=$this->esc($article['date'])?></pubDate>
     </item>
 <?endforeach?>
   </channel>

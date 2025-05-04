@@ -25,8 +25,8 @@ namespace Realblog;
 
 use Plib\Response;
 use Plib\SystemChecker;
+use Plib\View;
 use Realblog\Infra\Request;
-use Realblog\Infra\View;
 
 class InfoController
 {

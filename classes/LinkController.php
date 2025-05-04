@@ -24,12 +24,11 @@
 namespace Realblog;
 
 use Plib\Response;
+use Plib\View;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Pages;
 use Realblog\Infra\Request;
-use Realblog\Infra\View;
 use Realblog\Value\Article;
-use Realblog\Value\Html;
 use Realblog\Value\Url;
 
 class LinkController
@@ -77,7 +76,7 @@ class LinkController
 
     /**
      * @param list<Article> $articles
-     * @return list<array{title:string,date:string,url:string,teaser:Html}>
+     * @return list<array{title:string,date:string,url:string,teaser:string}>
      */
     private function articleRecords(Url $url, array $articles, string $pageUrl): array
     {
@@ -88,7 +87,7 @@ class LinkController
                 "date" => date($this->view->text("date_format"), $article->date),
                 "url" => $url->withPage($pageUrl)
                     ->with("realblog_id", (string) $article->id)->relative(),
-                "teaser" => Html::of($this->pages->evaluateScripting($article->teaser)),
+                "teaser" => $this->pages->evaluateScripting($article->teaser),
             ];
         }
         return $records;

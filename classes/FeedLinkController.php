@@ -24,8 +24,8 @@
 namespace Realblog;
 
 use Plib\Response;
+use Plib\View;
 use Realblog\Infra\Request;
-use Realblog\Infra\View;
 
 class FeedLinkController
 {

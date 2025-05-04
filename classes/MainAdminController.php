@@ -23,12 +23,12 @@
 
 namespace Realblog;
 
+use Plib\View;
 use Realblog\Infra\CsrfProtector;
 use Realblog\Infra\DB;
 use Realblog\Infra\Editor;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Request;
-use Realblog\Infra\View;
 use Realblog\Logic\Util;
 use Realblog\Value\Article;
 use Realblog\Value\FullArticle;
@@ -243,9 +243,9 @@ class MainAdminController
         if ($action === "create") {
             $title = $this->view->text("tooltip_create");
         } elseif ($action === "edit") {
-            $title = $this->view->text("title_edit", $this->view->esc($article->id));
+            $title = $this->view->text("title_edit", $article->id);
         } elseif ($action === "delete") {
-            $title = $this->view->text("title_delete", $this->view->esc($article->id));
+            $title = $this->view->text("title_delete", $article->id);
         }
         $this->editor->init(['realblog_headline_field', 'realblog_story_field']);
         $json = json_encode(

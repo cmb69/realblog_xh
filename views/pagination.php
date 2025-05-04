@@ -1,6 +1,6 @@
 <?php
 
-use Realblog\Infra\View;
+use Plib\View;
 
 /**
  * @var View $this
@@ -17,7 +17,7 @@ use Realblog\Infra\View;
 <?  elseif (!isset($page['url'])):?>
   <span class="realblog_pag_current"><?=$page['num']?></span>
 <?  else:?>
-  <a class="realblog_button" href="<?=$page['url']?>"><?=$page['num']?></a>
+  <a class="realblog_button" href="<?=$this->esc($page['url'])?>"><?=$page['num']?></a>
 <?  endif?>
 <?endforeach?>
 </div>

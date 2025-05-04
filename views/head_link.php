@@ -1,6 +1,6 @@
 <?php
 
-use Realblog\Infra\View;
+use Plib\View;
 
 /**
  * @var View $this

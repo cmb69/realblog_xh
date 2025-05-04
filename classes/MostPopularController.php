@@ -22,10 +22,10 @@
 namespace Realblog;
 
 use Plib\Response;
+use Plib\View;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Pages;
 use Realblog\Infra\Request;
-use Realblog\Infra\View;
 use Realblog\Value\MostPopularArticle;
 use Realblog\Value\Url;
 

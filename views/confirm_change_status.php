@@ -1,6 +1,6 @@
 <?php
 
-use Realblog\Infra\View;
+use Plib\View;
 
 /**
  * @var View $this
@@ -20,7 +20,7 @@ use Realblog\Infra\View;
 <?if (count($ids)):?>
   <p class="xh_warning"><?=$this->text('confirm_changestatus')?></p>
   <form name="confirm" method="post">
-    <input type="hidden" name="xh_csrf_token" value="<?=$csrfToken?>">
+    <input type="hidden" name="xh_csrf_token" value="<?=$this->esc($csrfToken)?>">
     <p style="text-align: center">
       <select name="realblog_status">
       <option value="<?=-1?>"><?=$this->text('new_realblogstatus')?></option>
@@ -34,5 +34,5 @@ use Realblog\Infra\View;
 <?else:?>
   <p class="xh_info"><?=$this->text('nothing_selected')?></p>
 <?endif?>
-  <p><a href="<?=$url?>"><?=$this->text('blog_back')?></a></p>
+  <p><a href="<?=$this->esc($url)?>"><?=$this->text('blog_back')?></a></p>
 </div>

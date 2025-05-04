@@ -22,9 +22,9 @@
 namespace Realblog;
 
 use PHPUnit\Framework\TestCase;
+use Plib\View;
 use Realblog\Infra\DB;
 use Realblog\Infra\Finder;
-use Realblog\Infra\View;
 use ApprovalTests\Approvals;
 use Realblog\Infra\FakeCsrfProtector;
 use Realblog\Infra\FakeFileSystem;

@@ -1,6 +1,6 @@
 <?php
 
-use Realblog\Infra\View;
+use Plib\View;
 
 /**
  * @var View $this
@@ -28,19 +28,19 @@ use Realblog\Infra\View;
 
     <div class="realblog_buttons">
 <?if (isset($back_to_search_url)):?>
-      <a class="realblog_button" href="<?=$back_to_search_url?>"><?=$this->text('search_back')?></a>
+      <a class="realblog_button" href="<?=$this->esc($back_to_search_url)?>"><?=$this->text('search_back')?></a>
 <?endif?>
-      <a class="realblog_button" href="<?=$back_url?>"><?=$this->text($back_text)?></a>
+      <a class="realblog_button" href="<?=$this->esc($back_url)?>"><?=$this->text($back_text)?></a>
 <?if ($is_admin):?>
 <?  if ($wants_comments && isset($edit_comments_url)):?>
-      <a class="realblog_button" href="<?=$edit_comments_url?>"><?=$this->text('comment_edit')?></a>
+      <a class="realblog_button" href="<?=$this->esc($edit_comments_url)?>"><?=$this->text('comment_edit')?></a>
 <?  endif?>
-      <a class="realblog_button" href="<?=$edit_url?>"><?=$this->text('entry_edit')?></a>
+      <a class="realblog_button" href="<?=$this->esc($edit_url)?>"><?=$this->text('entry_edit')?></a>
 <?endif?>
     </div>
 
 <?if (!$heading_above_meta):?>
-    <<?=$heading?>><?=$title?></<?=$heading?>>
+    <<?=$this->esc($heading)?>><?=$this->esc($title)?></<?=$this->esc($heading)?>>
 <?endif?>
     <div class="realblog_article_meta">
       <span class="realblog_meta_date"><?=$this->text('message_published_on', $date)?></span>
@@ -52,20 +52,20 @@ use Realblog\Infra\View;
 <?endif?>
     </div>
 <?if ($heading_above_meta):?>
-    <<?=$heading?>><?=$title?></<?=$heading?>>
+    <<?=$this->esc($heading)?>><?=$this->esc($title)?></<?=$this->esc($heading)?>>
 <?endif?>
-    <div class="realblog_show_story_entry"><?=$story?></div>
+    <div class="realblog_show_story_entry"><?=$this->raw($story)?></div>
 
     <div class="realblog_buttons">
 <?if (isset($back_to_search_url)):?>
-      <a class="realblog_button" href="<?=$back_to_search_url?>"><?=$this->text('search_back')?></a>
+      <a class="realblog_button" href="<?=$this->esc($back_to_search_url)?>"><?=$this->text('search_back')?></a>
 <?endif?>
-      <a class="realblog_button" href="<?=$back_url?>"><?=$this->text($back_text)?></a>
+      <a class="realblog_button" href="<?=$this->esc($back_url)?>"><?=$this->text($back_text)?></a>
 <?if ($is_admin):?>
 <?  if ($wants_comments && isset($edit_comments_url)):?>
-      <a class="realblog_button" href="<?=$edit_comments_url?>"><?=$this->text('comment_edit')?></a>
+      <a class="realblog_button" href="<?=$this->esc($edit_comments_url)?>"><?=$this->text('comment_edit')?></a>
 <?  endif?>
-      <a class="realblog_button" href="<?=$edit_url?>"><?=$this->text('entry_edit')?></a>
+      <a class="realblog_button" href="<?=$this->esc($edit_url)?>"><?=$this->text('entry_edit')?></a>
 <?endif?>
     </div>
 

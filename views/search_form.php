@@ -1,6 +1,6 @@
 <?php
 
-use Realblog\Infra\View;
+use Plib\View;
 
 /**
  * @var View $this
@@ -11,7 +11,7 @@ use Realblog\Infra\View;
 ?>
 <!-- realblog search form -->
 <form class="realblog_search_form" method="get">
-  <input type="hidden" name="selected" value="<?=$selected?>">
+  <input type="hidden" name="selected" value="<?=$this->esc($selected)?>">
 <?if (isset($page)):?>
   <input type="hidden" name="realblog_page" value="<?=$page?>">
 <?endif?>

@@ -1,6 +1,6 @@
 <?php
 
-use Realblog\Infra\View;
+use Plib\View;
 
 /**
  * @var View $this
@@ -31,15 +31,15 @@ use Realblog\Infra\View;
 <?  endif?>
       </div>
 <?endif?>
-      <<?=$heading?>>
+      <<?=$this->esc($heading)?>>
 <?  if ($article['link_header']):?>
-        <a href="<?=$article['url']?>" title="<?=$this->text('tooltip_view')?>">
+        <a href="<?=$this->esc($article['url'])?>" title="<?=$this->text('tooltip_view')?>">
 <?  endif?>
-        <?=$article['title']?>
+        <?=$this->esc($article['title'])?>
 <?  if ($article['link_header']):?>
         </a>
 <?  endif?>
-      </<?=$heading?>>
+      </<?=$this->esc($heading)?>>
 <?if (!$heading_above_meta):?>
       <div class="realblog_article_meta">
         <span class="realblog_meta_date"><?=$this->text('message_published_on', $article['date'])?></span>
@@ -51,11 +51,11 @@ use Realblog\Infra\View;
 <?  endif?>
       </div>
 <?endif?>
-      <div class="realblog_show_story"><?=$article['teaser']?></div>
+      <div class="realblog_show_story"><?=$this->raw($article['teaser'])?></div>
 <?  if ($article['link_header']):?>
       <div class="realblog_entry_footer">
         <p class="realblog_read_more">
-          <a class="realblog_button" href="<?=$article['url']?>" title="<?=$this->text('tooltip_view')?>"><?=$this->text('read_more')?></a>
+          <a class="realblog_button" href="<?=$this->esc($article['url'])?>" title="<?=$this->text('tooltip_view')?>"><?=$this->text('read_more')?></a>
         </p>
       </div>
 <?  endif?>

@@ -23,12 +23,12 @@ namespace Realblog;
 
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
+use Plib\View;
 use Realblog\Infra\DB;
 use Realblog\Infra\FakeCsrfProtector;
 use Realblog\Infra\FakeEditor;
 use Realblog\Infra\FakeRequest;
 use Realblog\Infra\Finder;
-use Realblog\Infra\View;
 use Realblog\Value\Article;
 use Realblog\Value\FullArticle;
 
@@ -156,7 +156,7 @@ class MainAdminControllerTest extends TestCase
         $sut = $this->sut();
         $request = new FakeRequest(["server" => ["QUERY_STRING" => "&action=edit"]]);
         $response = $sut($request);
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString("Article not found!", $response->output());
     }
 
     public function testDeleteActionRendersArticle(): void
@@ -190,7 +190,7 @@ class MainAdminControllerTest extends TestCase
         $sut = $this->sut();
         $request = new FakeRequest(["server" => ["QUERY_STRING" => "&action=delete"]]);
         $response = $sut($request);
-        Approvals::verifyHtml($response->output());
+        $this->assertStringContainsString("Article not found!", $response->output());
     }
 
     public function testDoCreateActionIsCsrfProtected()

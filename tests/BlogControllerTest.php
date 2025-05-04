@@ -23,14 +23,13 @@ namespace Realblog;
 
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
+use Plib\View;
 use Realblog\Infra\DB;
 use Realblog\Infra\FakePages;
 use Realblog\Infra\FakeRequest;
 use Realblog\Infra\Finder;
-use Realblog\Infra\View;
 use Realblog\Value\Article;
 use Realblog\Value\FullArticle;
-use Realblog\Value\Url;
 
 class BlogControllerTest extends TestCase
 {

@@ -24,15 +24,14 @@
 namespace Realblog;
 
 use Plib\Response;
+use Plib\View;
 use Realblog\Infra\DB;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Pages;
 use Realblog\Infra\Request;
-use Realblog\Infra\View;
 use Realblog\Logic\Util;
 use Realblog\Value\Article;
 use Realblog\Value\FullArticle;
-use Realblog\Value\Html;
 use Realblog\Value\Url;
 
 class BlogController
@@ -126,7 +125,7 @@ class BlogController
             "articles" => $this->articleRecords($request, $articles, $url),
             "heading" => $this->conf["heading_level"],
             "heading_above_meta" => $this->conf["heading_above_meta"],
-            "pagination" => Html::of($pagination),
+            "pagination" => $pagination,
             "top_pagination" => (bool) $this->conf["pagination_top"],
             "bottom_pagination" => (bool) $this->conf["pagination_bottom"],
         ]);
@@ -134,7 +133,7 @@ class BlogController
 
     /**
      * @param list<Article> $articles
-     * @return list<array{title:string,url:string,categories:string,link_header:bool,date:string,teaser:html,read_more:bool,commentable:bool,comment_count:int}>
+     * @return list<array{title:string,url:string,categories:string,link_header:bool,date:string,teaser:string,read_more:bool,commentable:bool,comment_count:int}>
      */
     private function articleRecords(Request $request, array $articles, Url $url): array
     {
@@ -148,7 +147,7 @@ class BlogController
                 "categories" => implode(", ", explode(",", trim($article->categories, ","))),
                 "link_header" => $article->hasBody || $request->admin(),
                 "date" => date($this->view->text("date_format"), $article->date),
-                "teaser" => Html::of($this->pages->evaluateScripting($article->teaser)),
+                "teaser" => $this->pages->evaluateScripting($article->teaser),
                 "read_more" => $this->conf["show_read_more_link"]  && $article->hasBody,
                 "commentable" => $isCommentable,
                 "comment_count" => $isCommentable ? $bridge::count("realblog{$article->id}") : null,
@@ -240,10 +239,10 @@ class BlogController
             "edit_url" => $editUrl,
             "edit_comments_url" => !empty($commentsUrl) ? $commentsUrl : null,
             "comment_count" => !empty($commentsUrl) ? $bridge::count("realblog{$article->id}") : null,
-            "comments" => !empty($commentsUrl) ? Html::of($bridge::handle("realblog{$article->id}")) : null,
+            "comments" => !empty($commentsUrl) ? $bridge::handle("realblog{$article->id}") : null,
             "date" => date($this->view->text("date_format"), $article->date),
             "categories" => implode(", ", explode(",", trim($article->categories, ","))),
-            "story" => Html::of($this->pages->evaluateScripting($story)),
+            "story" => $this->pages->evaluateScripting($story),
         ]))->withTitle($this->pages->headingOf($request->page()) . " – " . $article->title)
             ->withDescription(Util::shortenText($teaser));
     }

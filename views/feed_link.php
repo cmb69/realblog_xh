@@ -1,6 +1,6 @@
 <?php
 
-use Realblog\Infra\View;
+use Plib\View;
 
 /**
  * @var View $this
@@ -10,6 +10,6 @@ use Realblog\Infra\View;
  */
 ?>
 <!-- realblog feed link -->
-<a href="<?=$url?>" target="<?=$target?>">
-  <img src="<?=$image?>" alt="<?=$this->text('rss_tooltip')?>" title="<?=$this->text('rss_tooltip')?>" style="border: 0">
+<a href="<?=$this->esc($url)?>" target="<?=$this->esc($target)?>">
+  <img src="<?=$this->esc($image)?>" alt="<?=$this->text('rss_tooltip')?>" title="<?=$this->text('rss_tooltip')?>" style="border: 0">
 </a>

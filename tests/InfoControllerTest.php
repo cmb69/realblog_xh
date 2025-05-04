@@ -24,8 +24,8 @@ namespace Realblog;
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 use Plib\FakeSystemChecker;
+use Plib\View;
 use Realblog\Infra\FakeRequest;
-use Realblog\Infra\View;
 
 class InfoControllerTest extends TestCase
 {

@@ -24,19 +24,19 @@
 namespace Realblog;
 
 use Plib\SystemChecker;
+use Plib\View;
 use Realblog\Infra\CsrfProtector;
 use Realblog\Infra\DB;
 use Realblog\Infra\Editor;
 use Realblog\Infra\FileSystem;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Pages;
-use Realblog\Infra\View;
 
 class Dic
 {
     public static function makeGeneralController(): GeneralController
     {
-        return new GeneralController(self::makeConf(), self::makeDb(), self::makeView());
+        return new GeneralController(self::makeConf(), self::makeDb(), self::view());
     }
 
     public static function makeBlogController(): BlogController
@@ -45,7 +45,7 @@ class Dic
             self::makeConf(),
             self::makeDb(),
             new Finder(self::makeDb()),
-            self::makeView(),
+            self::view(),
             new Pages()
         );
     }
@@ -56,14 +56,14 @@ class Dic
             self::makeConf(),
             new Pages(),
             new Finder(Dic::makeDb()),
-            self::makeView()
+            self::view()
         );
     }
 
     public static function makeFeedLinkController(): FeedLinkController
     {
         global $pth;
-        return new FeedLinkController($pth["folder"]["plugins"] . "realblog/", self::makeView());
+        return new FeedLinkController($pth["folder"]["plugins"] . "realblog/", self::view());
     }
 
     public static function makeMostPopularController(): MostPopularController
@@ -72,7 +72,7 @@ class Dic
             self::makeConf(),
             new Pages(),
             new Finder(Dic::makeDb()),
-            self::makeView()
+            self::view()
         );
     }
 
@@ -84,7 +84,7 @@ class Dic
             self::makeConf(),
             new Finder(Dic::makeDb()),
             new Pages(),
-            self::makeView()
+            self::view()
         );
     }
 
@@ -95,7 +95,7 @@ class Dic
             $pth["folder"]["plugins"] . "realblog/",
             self::makeConf(),
             new SystemChecker(),
-            self::makeView()
+            self::view()
         );
     }
 
@@ -108,7 +108,7 @@ class Dic
             Dic::makeDb(),
             new Finder(Dic::makeDb()),
             new CsrfProtector(),
-            self::makeView(),
+            self::view(),
             new Editor()
         );
     }
@@ -123,7 +123,7 @@ class Dic
             new Finder(Dic::makeDb()),
             new CsrfProtector(),
             new FileSystem(),
-            self::makeView()
+            self::view()
         );
     }
 
@@ -138,10 +138,9 @@ class Dic
         return $instance;
     }
 
-    private static function makeView(): View
+    private static function view(): View
     {
         global $pth, $plugin_tx;
-
         return new View("{$pth['folder']['plugins']}realblog/views/", $plugin_tx['realblog']);
     }
 

@@ -1,10 +1,10 @@
 <?php
 
-use Realblog\Infra\View;
+use Plib\View;
 
 /**
  * @var View $this
- * @var list<array{year:int,month:int,articles:list<array{title:string,date:string,url:string}>}> $articles
+ * @var list<array{year:int,month:string,articles:list<array{title:string,date:string,url:string}>}> $articles
  * @var string $heading
  * @var list<array{year:int,url:string|null}>|null $years
  */
@@ -15,7 +15,7 @@ use Realblog\Infra\View;
   <div class="realblog_pagination">
 <?foreach ($years as $year):?>
 <?  if (isset($year['url'])):?>
-    <a class="realblog_button" href="<?=$year['url']?>"><?=$year['year']?></a>
+    <a class="realblog_button" href="<?=$this->esc($year['url'])?>"><?=$year['year']?></a>
 <?  else:?>
     <span class="realblog_pag_current"><?=$year['year']?></span>
 <?  endif?>
@@ -24,12 +24,12 @@ use Realblog\Infra\View;
 <?endif?>
 <?if (!empty($articles)):?>
 <?  foreach ($articles as $group):?>
-  <<?=$heading?>><?=$group['month']?> <?=$group['year']?></<?=$heading?>>
+  <<?=$this->esc($heading)?>><?=$this->esc($group['month'])?> <?=$group['year']?></<?=$this->esc($heading)?>>
   <ul class="realblog_archive">
 <?    foreach ($group['articles'] as $article):?>
     <li>
-      <?=$article['date']?>
-      <a href="<?=$article['url']?>" title="<?=$this->text('tooltip_view')?>"><?=$article['title']?></a>
+      <?=$this->esc($article['date'])?>
+      <a href="<?=$this->esc($article['url'])?>" title="<?=$this->text('tooltip_view')?>"><?=$this->esc($article['title'])?></a>
     </li>
 <?    endforeach?>
   </ul>
