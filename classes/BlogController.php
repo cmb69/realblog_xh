@@ -23,16 +23,16 @@
 
 namespace Realblog;
 
+use Plib\Request;
 use Plib\Response;
+use Plib\Url;
 use Plib\View;
 use Realblog\Infra\DB;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Pages;
-use Realblog\Infra\Request;
 use Realblog\Logic\Util;
 use Realblog\Value\Article;
 use Realblog\Value\FullArticle;
-use Realblog\Value\Url;
 
 class BlogController
 {
@@ -70,8 +70,8 @@ class BlogController
     {
         assert(in_array($mode, ["blog", "archive"], true));
         $response = $this->dispatch($request, $mode, $showSearch, $category);
-        if ($request->edit() && $request->url()->param("realblog_page") !== null) {
-            $page = max($request->intFromget("realblog_page"), 1);
+        if ($request->edit() && $request->get("realblog_page") !== null) {
+            $page = max((int) $request->get("realblog_page"), 1);
             $response = $response->withCookie("realblog_page", (string) $page, 0);
         }
         return $response;
@@ -79,8 +79,8 @@ class BlogController
 
     private function dispatch(Request $request, string $mode, bool $showSearch, string $category): Response
     {
-        if ($request->url()->param("realblog_id") !== null) {
-            return $this->oneArticle($request, max($request->intFromGet("realblog_id"), 1));
+        if ($request->get("realblog_id") !== null) {
+            return $this->oneArticle($request, max((int) $request->get("realblog_id"), 1));
         }
         if ($mode === "blog") {
             return $this->allArticles($request, $showSearch, $category);
@@ -96,7 +96,7 @@ class BlogController
         }
         $order = ($this->conf["entries_order"] == "desc") ? -1 : 1;
         $limit = max(1, (int) $this->conf["entries_per_page"]);
-        $searchTerm = $request->stringFromGet("realblog_search");
+        $searchTerm = $request->get("realblog_search") ?? "";
         $articleCount = $this->finder->countArticlesWithStatus(Article::MASK_PUBLISHED, $category, $searchTerm);
         [$offset, $pageCount, $page] = Util::paginationOffset($articleCount, $limit, $this->realblogPage($request));
         $articles = $this->finder->findArticles(Article::PUBLISHED, $limit, $offset, $order, $category, $searchTerm);
@@ -115,7 +115,7 @@ class BlogController
         int $page,
         int $pageCount
     ): string {
-        $searchTerm = $request->stringFromGet("realblog_search");
+        $searchTerm = $request->get("realblog_search") ?? "";
         $radius = (int) $this->conf["pagination_radius"];
         $url = $request->url()->with("realblog_search", $searchTerm);
         $pagination = $this->renderPagination($articleCount, $page, $pageCount, $radius, $url);
@@ -213,11 +213,11 @@ class BlogController
         $url = $url->without("realblog_id");
         $bridge = ucfirst($this->conf["comments_plugin"]) . "\\RealblogBridge";
         $backUrl = $url->without("realblog_search")->relative();
-        $searchTerm = $request->stringFromGet("realblog_search");
+        $searchTerm = $request->get("realblog_search") ?? "";
         if ($searchTerm !== "") {
             $backToSearchUrl = $url->with("realblog_search", $searchTerm)->relative();
         }
-        $editUrl = $request->url()->withPage("realblog")->with("admin", "plugin_main")
+        $editUrl = $request->url()->page("realblog")->with("admin", "plugin_main")
             ->with("action", "edit")->with("realblog_id", (string) $article->id)->relative();
         if ($this->conf["comments_plugin"] && class_exists($bridge)) {
             $commentsUrl = $bridge::getEditUrl("realblog{$article->id}");
@@ -243,7 +243,7 @@ class BlogController
             "date" => date($this->view->text("date_format"), $article->date),
             "categories" => implode(", ", explode(",", trim($article->categories, ","))),
             "story" => $this->pages->evaluateScripting($story),
-        ]))->withTitle($this->pages->headingOf($request->page()) . " – " . $article->title)
+        ]))->withTitle($this->pages->headingOf($request->s()) . " – " . $article->title)
             ->withDescription(Util::shortenText($teaser));
     }
 
@@ -253,13 +253,13 @@ class BlogController
         if ($showSearch) {
             $html .= $this->renderSearchForm($request, "archive");
         }
-        $searchTerm = $request->stringFromGet("realblog_search");
+        $searchTerm = $request->get("realblog_search") ?? "";
         if ($searchTerm) {
             $articles = $this->finder->findArchivedArticlesContaining($searchTerm);
             $html .= $this->renderSearchResults($request, "archive", count($articles));
         } else {
             $year = $this->year($request);
-            if ($request->url()->param("realblog_year") === null && $year !== "") {
+            if ($request->get("realblog_year") === null && $year !== "") {
                 $url = $request->url()->without("realblog_search")->with("realblog_year", $year)->absolute();
                 return Response::redirect($url);
             }
@@ -272,7 +272,7 @@ class BlogController
     /** @param list<Article> $articles */
     private function renderArchive(Request $request, array $articles): string
     {
-        if ($request->stringFromGet("realblog_search") === "") {
+        if (($request->get("realblog_search") ?? "") === "") {
             $year = (int) $this->year($request);
             $articles = $this->finder->findArchivedArticlesInPeriod(
                 (int) mktime(0, 0, 0, 1, 1, $year),
@@ -345,7 +345,7 @@ class BlogController
         $page = $this->realblogPage($request);
         $year = (int) $this->year($request);
         return $this->view->render("search_form", [
-            "selected" => $request->url()->page(),
+            "selected" => $request->selected(),
             "page" => $mode === "blog" && $page !== 1 ? $page : null,
             "year" => $mode === "archive" && $year ? $year : null,
         ]);
@@ -354,7 +354,7 @@ class BlogController
     private function renderSearchResults(Request $request, string $what, int $count): string
     {
         return $this->view->render("search_results", [
-            "words" => $request->stringFromGet("realblog_search"),
+            "words" => $request->get("realblog_search") ?? "",
             "count" => $count,
             "url" => $request->url()->without("realblog_search")->relative(),
             "key" => ($what == "archive") ? "back_to_archive" : "search_show_all",
@@ -364,14 +364,14 @@ class BlogController
     /** @return int */
     private function realblogPage(Request $request): int
     {
-        $param = $request->url()->param("realblog_page");
+        $param = $request->get("realblog_page");
         if ($param !== null && is_string($param)) {
             return max((int) $param, 1);
         }
         if ($request->admin() && $request->edit()) {
-            $cookie = $request->cookie();
-            if (isset($cookie["realblog_page"])) {
-                return max((int) $cookie["realblog_page"], 1);
+            $cookie = $request->cookie("realblog_page");
+            if ($cookie !== null) {
+                return max((int) $cookie, 1);
             }
         }
         return 1;
@@ -379,7 +379,7 @@ class BlogController
 
     private function year(Request $request): string
     {
-        $param = $request->url()->param("realblog_year");
+        $param = $request->get("realblog_year");
         if (is_string($param)) {
             return $param;
         }

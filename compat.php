@@ -21,6 +21,7 @@
  * along with Realblog_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Plib\Request as PlibRequest;
 use Realblog\Dic;
 use Realblog\Infra\Request;
 use Realblog\Infra\Responder;
@@ -49,7 +50,7 @@ function showrealblog($options = "", $category = 'all')
                 break;
         }
     }
-    return Dic::makeBlogController()(Request::current(), "blog", $includesearch, $category)();
+    return Dic::makeBlogController()(PlibRequest::current(), "blog", $includesearch, $category)();
 }
 
 /**
@@ -76,7 +77,7 @@ function showrealblogarchive($options = "")
                 break;
         }
     }
-    return Dic::makeBlogController()(Request::current(), "archive", $includesearch)();
+    return Dic::makeBlogController()(PlibRequest::current(), "archive", $includesearch)();
 }
 
 /**
