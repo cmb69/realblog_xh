@@ -85,7 +85,7 @@ class LinkController
         foreach ($articles as $article) {
             $records[] = [
                 "title" => $article->title,
-                "date" => $this->view->date($article->date),
+                "date" => date($this->view->text("date_format"), $article->date),
                 "url" => $url->withPage($pageUrl)
                     ->with("realblog_id", (string) $article->id)->relative(),
                 "teaser" => Html::of($this->pages->evaluateScripting($article->teaser)),

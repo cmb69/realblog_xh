@@ -147,7 +147,7 @@ class BlogController
                 "url" => $url->with("realblog_id", (string) $article->id)->relative(),
                 "categories" => implode(", ", explode(",", trim($article->categories, ","))),
                 "link_header" => $article->hasBody || $request->admin(),
-                "date" => $this->view->date($article->date),
+                "date" => date($this->view->text("date_format"), $article->date),
                 "teaser" => Html::of($this->pages->evaluateScripting($article->teaser)),
                 "read_more" => $this->conf["show_read_more_link"]  && $article->hasBody,
                 "commentable" => $isCommentable,
@@ -241,7 +241,7 @@ class BlogController
             "edit_comments_url" => !empty($commentsUrl) ? $commentsUrl : null,
             "comment_count" => !empty($commentsUrl) ? $bridge::count("realblog{$article->id}") : null,
             "comments" => !empty($commentsUrl) ? Html::of($bridge::handle("realblog{$article->id}")) : null,
-            "date" => $this->view->date($article->date),
+            "date" => date($this->view->text("date_format"), $article->date),
             "categories" => implode(", ", explode(",", trim($article->categories, ","))),
             "story" => Html::of($this->pages->evaluateScripting($story)),
         ]))->withTitle($this->pages->headingOf($request->page()) . " – " . $article->title)
@@ -310,7 +310,7 @@ class BlogController
             foreach ($group["articles"] as $article) {
                 $articleRecords[] = [
                     "title" => $article->title,
-                    "date" => $this->view->date($article->date),
+                    "date" => date($this->view->text("date_format"), $article->date),
                     "url" => $request->url()->with("realblog_id", (string) $article->id)->relative(),
                 ];
             }

@@ -55,11 +55,6 @@ class View
         return sprintf($this->esc($this->text[$key]), $count, ...$args);
     }
 
-    public function date(int $timestamp): string
-    {
-        return $this->esc(date($this->text['date_format'], $timestamp));
-    }
-
     public function month(int $month): string
     {
         $names = explode(',', $this->text['date_months']);

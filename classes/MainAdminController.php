@@ -158,7 +158,7 @@ class MainAdminController
             $url = $url->with("realblog_id", (string) $article->id);
             return [
                 "id" => $article->id,
-                "date" => $this->view->date($article->date),
+                "date" => date($this->view->text("date_format"), $article->date),
                 "status" => $article->status,
                 "categories" => $article->categories,
                 "title" => $article->title,
