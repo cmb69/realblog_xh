@@ -92,11 +92,6 @@ class View
         return "\n<link rel=\"alternate\" type=\"application/rss+xml\" href=\"$href\">";
     }
 
-    public function renderXmlDeclaration(): string
-    {
-        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-    }
-
     /** @param scalar $value */
     public function esc($value): string
     {
