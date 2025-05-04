@@ -23,9 +23,9 @@ use Plib\View;
     <input type="hidden" name="xh_csrf_token" value="<?=$this->esc($csrfToken)?>">
     <p style="text-align: center">
       <select name="realblog_status">
-      <option value="<?=-1?>"><?=$this->text('new_realblogstatus')?></option>
+      <option value="<?=$this->esc(-1)?>"><?=$this->text('new_realblogstatus')?></option>
 <?foreach ($states as $i => $state):?>
-        <option value="<?=$i?>"><?=$this->text($state)?></option>
+        <option value="<?=$this->esc($i)?>"><?=$this->text($state)?></option>
 <?endforeach?>
       </select>
       <button name="realblog_do"><?=$this->text('btn_ok')?></button>

@@ -72,7 +72,7 @@ use Plib\View;
   </div>
 
 <?if ($wants_comments):?>
-  <?=$comments?>
+  <?=$this->raw($comments)?>
 <?endif?>
 
 </div>

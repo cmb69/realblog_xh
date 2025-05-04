@@ -15,7 +15,7 @@ use Plib\View;
 <!-- realblog articles -->
 <div class="realblog_show_box">
 <?if ($top_pagination):?>
-  <?=$pagination?>
+  <?=$this->raw($pagination)?>
 <?endif?>
   <div id="realblog_entries_preview" class="realblog_entries_preview">
 <?foreach ($articles as $article):?>
@@ -63,6 +63,6 @@ use Plib\View;
 <?endforeach?>
   </div>
 <?if ($bottom_pagination):?>
-  <?=$pagination?>
+  <?=$this->raw($pagination)?>
 <?endif?>
 </div>

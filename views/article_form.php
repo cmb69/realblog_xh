@@ -34,8 +34,8 @@ use Plib\View;
   <p class="xh_fail"><?=$this->text(...$error)?></p>
 <?endforeach?>
   <form name="realblog" method="post">
-    <input type="hidden" name="realblog_id" value="<?=$id?>">
-    <input type="hidden" name="realblog_version" value="<?=$version?>">
+    <input type="hidden" name="realblog_id" value="<?=$this->esc($id)?>">
+    <input type="hidden" name="realblog_version" value="<?=$this->esc($version)?>">
     <input type="hidden" name="xh_csrf_token" value="<?=$this->esc($csrfToken)?>">
     <table>
       <tr>
@@ -72,21 +72,21 @@ use Plib\View;
         <td>
           <select id="realblog_status" name="realblog_status">
 <?foreach ($states as [$value, $label, $selected]):?>
-            <option value="<?=$value?>" <?=$this->esc($selected)?>><?=$this->text($label)?></option>
+            <option value="<?=$this->esc($value)?>" <?=$this->esc($selected)?>><?=$this->text($label)?></option>
 <?endforeach?>
           </select>
         </td>
         <td>
           <label>
             <input type="hidden" name="realblog_comments" value="">
-            <input type="checkbox" name="realblog_comments" value="1" <?=$commentable?>>
+            <input type="checkbox" name="realblog_comments" value="1" <?=$this->esc($commentable)?>>
             <span><?=$this->text('comment_label')?></span>
           </label>
         </td>
         <td>
           <label>
             <input type="hidden" name="realblog_rssfeed" value="">
-            <input type="checkbox" name="realblog_rssfeed" value="1" <?=$feedable?>>
+            <input type="checkbox" name="realblog_rssfeed" value="1" <?=$this->esc($feedable)?>>
             <span><?=$this->text('label_rss')?></span>
           </label>
         </td>

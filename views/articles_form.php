@@ -47,7 +47,7 @@ use Plib\View;
 <?foreach ($articles as $article):?>
         <tr>
           <td>
-            <input type="checkbox" name="realblog_ids[]" value="<?=$article['id']?>">
+            <input type="checkbox" name="realblog_ids[]" value="<?=$this->esc($article['id'])?>">
           </td>
           <td>
             <a href="<?=$this->esc($article['delete_url'])?>">
@@ -59,11 +59,11 @@ use Plib\View;
               <img src="<?=$this->esc($imageFolder)?>edit.png" title="<?=$this->text('tooltip_edit')?>" alt="<?=$this->text('tooltip_edit')?>">
             </a>
           </td>
-          <td><?=$article['id']?></td>
+          <td><?=$this->esc($article['id'])?></td>
           <td><?=$this->esc($article['date'])?></td>
-          <td><?=$article['status']?></td>
-          <td><?=$article['feedable']?></td>
-          <td><?=$article['commentable']?></td>
+          <td><?=$this->esc($article['status'])?></td>
+          <td><?=$this->esc($article['feedable'])?></td>
+          <td><?=$this->esc($article['commentable'])?></td>
         </tr>
         <tr>
           <td colspan="5" class="realblog_table_title"><?=$this->esc($article['title'])?></td>
@@ -76,7 +76,7 @@ use Plib\View;
           <td colspan="8">
 <?foreach ($states as [$value,$label,$checked]):?>
             <label>
-              <input type="checkbox" name="realblog_filter[]" value="<?=$value?>" <?=$this->esc($checked)?>>
+              <input type="checkbox" name="realblog_filter[]" value="<?=$this->esc($value)?>" <?=$this->esc($checked)?>>
               <?=$this->text($label)?>
             </label>
 <?endforeach?>
@@ -87,18 +87,18 @@ use Plib\View;
         </tr>
         <tr>
           <td colspan="8">
-            <input type="text" name="realblog_page" value="<?=$page?>" size="2">
-            / <?=$lastPage?>
+            <input type="text" name="realblog_page" value="<?=$this->esc($page)?>" size="2">
+            / <?=$this->esc($lastPage)?>
             <button name="realblog_page" value="1" title="<?=$this->text('tooltip_first')?>">
               <img src="<?=$this->esc($imageFolder)?>first.png" alt="<?=$this->text('tooltip_first')?>">
             </button>
-            <button name="realblog_page" value="<?=$prevPage?>" title="<?=$this->text('tooltip_previous')?>">
+            <button name="realblog_page" value="<?=$this->esc($prevPage)?>" title="<?=$this->text('tooltip_previous')?>">
               <img src="<?=$this->esc($imageFolder)?>prev.png" alt="<?=$this->text('tooltip_previous')?>">
             </button>
-            <button name="realblog_page" value="<?=$nextPage?>" title="<?=$this->text('tooltip_next')?>">
+            <button name="realblog_page" value="<?=$this->esc($nextPage)?>" title="<?=$this->text('tooltip_next')?>">
               <img src="<?=$this->esc($imageFolder)?>next.png" alt="<?=$this->text('tooltip_next')?>">
             </button>
-            <button name="realblog_page" value="<?=$lastPage?>" title="<?=$this->text('tooltip_last')?>">
+            <button name="realblog_page" value="<?=$this->esc($lastPage)?>" title="<?=$this->text('tooltip_last')?>">
               <img src="<?=$this->esc($imageFolder)?>last.png" alt="<?=$this->text('tooltip_last')?>">
             </button>
           </td>

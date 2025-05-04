@@ -18,7 +18,7 @@ use Plib\View;
   </p>
   <p class="realblog_searchresult_body">
     <span><?=$this->text('search_result')?></span>
-    <span class="realblog_searchcount"><?=$count?></span>
+    <span class="realblog_searchcount"><?=$this->esc($count)?></span>
   </p>
   <p class="realblog_searchresult_foot">
     <a class="realblog_button" href="<?=$this->esc($url)?>"><?=$this->text($key)?></a>

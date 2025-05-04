@@ -15,16 +15,16 @@ use Plib\View;
   <div class="realblog_pagination">
 <?foreach ($years as $year):?>
 <?  if (isset($year['url'])):?>
-    <a class="realblog_button" href="<?=$this->esc($year['url'])?>"><?=$year['year']?></a>
+    <a class="realblog_button" href="<?=$this->esc($year['url'])?>"><?=$this->esc($year['year'])?></a>
 <?  else:?>
-    <span class="realblog_pag_current"><?=$year['year']?></span>
+    <span class="realblog_pag_current"><?=$this->esc($year['year'])?></span>
 <?  endif?>
 <?endforeach?>
   </div>
 <?endif?>
 <?if (!empty($articles)):?>
 <?  foreach ($articles as $group):?>
-  <<?=$this->esc($heading)?>><?=$this->esc($group['month'])?> <?=$group['year']?></<?=$this->esc($heading)?>>
+  <<?=$this->esc($heading)?>><?=$this->esc($group['month'])?> <?=$this->esc($group['year'])?></<?=$this->esc($heading)?>>
   <ul class="realblog_archive">
 <?    foreach ($group['articles'] as $article):?>
     <li>
