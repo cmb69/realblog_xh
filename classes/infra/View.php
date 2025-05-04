@@ -93,7 +93,7 @@ class View
     public function renderMeta(string $name, $value): string
     {
         $name = $this->esc($name);
-        $value = json_encode($value, JSON_HEX_APOS|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
+        $value = json_encode($value, JSON_HEX_APOS | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         return "<meta name=\"$name\" content='$value'>\n";
     }
 

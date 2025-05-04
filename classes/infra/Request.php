@@ -29,7 +29,7 @@ class Request
     /** @codeCoverageIgnore */
     public static function current(): self
     {
-        return new self;
+        return new self();
     }
 
     /** @codeCoverageIgnore */

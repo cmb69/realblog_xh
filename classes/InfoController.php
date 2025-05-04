@@ -94,7 +94,7 @@ class InfoController
         ];
         $folders = array(
             $this->pluginFolder . "config",
-            $this->pluginFolder ."css",
+            $this->pluginFolder . "css",
             $this->pluginFolder . "languages",
         );
         foreach ($folders as $folder) {

@@ -38,7 +38,7 @@ class Util
         $groups = $currentGroup = [];
         foreach ($articles as $article) {
             $year = (int) idate('Y', $article->date);
-            $month =(int) idate('n', $article->date);
+            $month = (int) idate('n', $article->date);
             if ($year !== $currentYear || $month !== $currentMonth) {
                 if (!empty($currentGroup)) {
                     assert($currentYear !== null);

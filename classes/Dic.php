@@ -46,7 +46,7 @@ class Dic
             self::makeDb(),
             new Finder(self::makeDb()),
             self::makeView(),
-            new Pages
+            new Pages()
         );
     }
 
@@ -54,7 +54,7 @@ class Dic
     {
         return new LinkController(
             self::makeConf(),
-            new Pages,
+            new Pages(),
             new Finder(Dic::makeDb()),
             self::makeView()
         );
@@ -70,7 +70,7 @@ class Dic
     {
         return new MostPopularController(
             self::makeConf(),
-            new Pages,
+            new Pages(),
             new Finder(Dic::makeDb()),
             self::makeView()
         );
@@ -83,7 +83,7 @@ class Dic
             $pth["folder"]["images"],
             self::makeConf(),
             new Finder(Dic::makeDb()),
-            new Pages,
+            new Pages(),
             self::makeView()
         );
     }
@@ -107,7 +107,7 @@ class Dic
             self::makeConf(),
             Dic::makeDb(),
             new Finder(Dic::makeDb()),
-            new CsrfProtector,
+            new CsrfProtector(),
             self::makeView(),
             new Editor()
         );
@@ -121,8 +121,8 @@ class Dic
             $pth["folder"]["content"],
             Dic::makeDb(),
             new Finder(Dic::makeDb()),
-            new CsrfProtector,
-            new FileSystem,
+            new CsrfProtector(),
+            new FileSystem(),
             self::makeView()
         );
     }
