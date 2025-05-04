@@ -20,13 +20,13 @@ jobs:
       - name: Checkout Realblog_XH
         uses: actions/checkout@v3
         with:
-          path: 'cmsimplexh/plugins/realblog'
+          path:'cmsimplexh/plugins/realblog
       - name: Cache tools
         id: cache-tools
         uses: actions/cache@v3
         with:
           path: cmsimplexh/plugins/realblog/tools
-          key: tools-${{matrix.php}}-${{hashFiles('cmsimplexh/plugins/realblog/.phive')}}
+          key: tools-${{hashFiles('cmsimplexh/plugins/realblog/.phive')}}
       - if: ${{steps.cache-tools.outputs.cache-hit != 'true'}}
         name: phive install
         run: cd cmsimplexh/plugins/realblog && phive --no-progress install --copy --force-accept-unsigned --trust-gpg-keys 0x31C7E470E2138192,0x4AA394086372C20A,0x51C67305FFC2E5C0,0xA4E55EA12C7C085C,0xCF1A108D0E7AE720,0xD5F0CB76E2DD74F8
