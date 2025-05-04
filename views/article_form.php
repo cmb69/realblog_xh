@@ -23,9 +23,11 @@ use Realblog\Infra\View;
  * @var string $categories
  * @var string $button
  * @var list<array{string}> $errors
+ * @var string $script
  */
 ?>
 <!-- realblog article form -->
+<script type="module" src="<?=$this->esc($script)?>"></script>
 <div class="realblog_fields_block">
   <h1>Realblog – <?=$page_title?></h1>
 <?foreach ($errors as $error):?>

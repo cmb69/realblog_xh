@@ -7,9 +7,11 @@ use Realblog\Infra\View;
  * @var int $article_count
  * @var string $filename
  * @var string|null $filemtime
+ * @var string $script
  */
 ?>
 <!-- realblog data exchange -->
+<script type="module" src="<?=$this->esc($script)?>"></script>
 <div class="realblog_data_exchange">
   <h1>Realblog – <?=$this->text('exchange_heading')?></h1>
   <form method="get">

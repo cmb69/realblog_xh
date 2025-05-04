@@ -249,9 +249,8 @@ class MainAdminController
         }
         $this->editor->init(['realblog_headline_field', 'realblog_story_field']);
         $hjs = $this->view->renderMeta("realblog", $this->finder->findAllCategories());
-        $bjs = $this->view->renderScript($this->pluginFolder . "realblog.js");
         return Response::create($this->renderArticleForm($article, $title, "btn_$action", $errors))
-            ->withTitle($title)->withHjs($hjs)->withBjs($bjs);
+            ->withTitle($title)->withHjs($hjs);
     }
 
     /** @param list<array{string}> $errors */
@@ -279,6 +278,7 @@ class MainAdminController
             "categories" => trim($article->categories, ","),
             "button" => $button,
             "errors" => $errors,
+            "script" => $this->pluginFolder . "realblog.js",
         ]);
     }
 

@@ -114,16 +114,6 @@ class MainAdminControllerTest extends TestCase
         Approvals::verifyHtml($response->hjs());
     }
 
-    public function testCreateActionOutputsBjs(): void
-    {
-        $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
-        $request = new FakeRequest([
-            "server" => ["REQUEST_TIME" => 1675205155, "QUERY_STRING" => "&action=create"]
-        ]);
-        $response = $sut($request);
-        Approvals::verifyHtml($response->bjs());
-    }
-
     public function testEditActionRendersArticle(): void
     {
         $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
@@ -148,14 +138,6 @@ class MainAdminControllerTest extends TestCase
         $request = new FakeRequest(["server" => ["QUERY_STRING" => "&action=edit"]]);
         $response = $sut($request);
         Approvals::verifyHtml($response->hjs());
-    }
-
-    public function testEditActionOutputsBjs(): void
-    {
-        $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
-        $request = new FakeRequest(["server" => ["QUERY_STRING" => "&action=edit"]]);
-        $response = $sut($request);
-        Approvals::verifyHtml($response->bjs());
     }
 
     public function testEditActionRendersArticleWithAutoInputs(): void
@@ -201,14 +183,6 @@ class MainAdminControllerTest extends TestCase
         $request = new FakeRequest(["server" => ["QUERY_STRING" => "&action=delete"]]);
         $response = $sut($request);
         Approvals::verifyHtml($response->hjs());
-    }
-
-    public function testDeletectionOutputsBjs(): void
-    {
-        $sut = $this->sut(["finder" => ["article" => $this->firstArticle()]]);
-        $request = new FakeRequest(["server" => ["QUERY_STRING" => "&action=delete"]]);
-        $response = $sut($request);
-        Approvals::verifyHtml($response->bjs());
     }
 
     public function testDeleteActionFailsOnMissingArticle(): void

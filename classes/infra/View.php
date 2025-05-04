@@ -86,12 +86,6 @@ class View
         return "<meta name=\"$name\" content='$value'>\n";
     }
 
-    public function renderScript(string $filename): string
-    {
-        $filename = $this->esc($filename);
-        return "<script src=\"$filename\"></script>\n";
-    }
-
     public function renderLink(string $href): string
     {
         $href = $this->esc($href);

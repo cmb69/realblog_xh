@@ -96,7 +96,8 @@ class DataExchangeController
             "article_count" => $this->finder->countArticlesWithStatus(Article::MASK_ALL),
             "filename" => $filename,
             "filemtime" => $readable ? date("c", $this->fileSystem->fileMTime($filename)) : null,
-        ]))->withBjs($this->view->renderScript($this->pluginFolder . "realblog.js"));
+            "script" => $this->pluginFolder . "realblog.js",
+        ]));
     }
 
     private function export(Request $request): Response
