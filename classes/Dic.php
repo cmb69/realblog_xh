@@ -23,13 +23,13 @@
 
 namespace Realblog;
 
+use Plib\SystemChecker;
 use Realblog\Infra\CsrfProtector;
 use Realblog\Infra\DB;
 use Realblog\Infra\Editor;
 use Realblog\Infra\FileSystem;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Pages;
-use Realblog\Infra\SystemChecker;
 use Realblog\Infra\View;
 
 class Dic
@@ -94,7 +94,7 @@ class Dic
         return new InfoController(
             $pth["folder"]["plugins"] . "realblog/",
             self::makeConf(),
-            new SystemChecker,
+            new SystemChecker(),
             self::makeView()
         );
     }

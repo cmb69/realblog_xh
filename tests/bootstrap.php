@@ -1,5 +1,6 @@
 <?php
 
+const CMSIMPLE_XH_VERSION = "1.8";
 const CMSIMPLE_URL = "http://example.com/";
 const CMSIMPLE_ROOT = "/";
 const REALBLOG_VERSION = "3.0beta9";
@@ -9,6 +10,9 @@ require_once "./vendor/autoload.php";
 require_once "../../cmsimple/classes/CSRFProtection.php";
 require_once "../../cmsimple/functions.php";
 require_once "../../cmsimple/utf8.php";
+
+require_once "../plib/classes/SystemChecker.php";
+require_once "../plib/classes/FakeSystemChecker.php";
 
 spl_autoload_register(function (string $className) {
     $parts = explode("\\", $className);

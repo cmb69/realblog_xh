@@ -23,8 +23,8 @@
 
 namespace Realblog;
 
+use Plib\SystemChecker;
 use Realblog\Infra\Request;
-use Realblog\Infra\SystemChecker;
 use Realblog\Infra\View;
 use Realblog\Value\Response;
 
@@ -77,7 +77,7 @@ class InfoController
         $checks[] = [
             "syscheck_phpversion",
             $phpVersion,
-            $this->systemChecker->checkPHPVersion($phpVersion) ? "success" : "fail"
+            $this->systemChecker->checkVersion(PHP_VERSION, $phpVersion) ? "success" : "fail"
         ];
         foreach (array("sqlite3") as $extension) {
             $checks[] = [
@@ -90,7 +90,7 @@ class InfoController
         $checks[] = [
             "syscheck_xhversion",
             $xhVersion,
-            $this->systemChecker->checkXHVersion($xhVersion) ? "success" : "fail",
+            $this->systemChecker->checkVersion(CMSIMPLE_XH_VERSION, "CMSimple_XH $xhVersion") ? "success" : "fail",
         ];
         $folders = array(
             $this->pluginFolder . "config",

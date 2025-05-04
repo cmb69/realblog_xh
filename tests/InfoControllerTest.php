@@ -23,15 +23,15 @@ namespace Realblog;
 
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
+use Plib\FakeSystemChecker;
 use Realblog\Infra\FakeRequest;
-use Realblog\Infra\FakeSystemChecker;
 use Realblog\Infra\View;
 
 class InfoControllerTest extends TestCase
 {
     public function testShowsPluginInfo(): void
     {
-        $sut = new InfoController("./plugins/realblog/", $this->conf(), new FakeSystemChecker, $this->view());
+        $sut = new InfoController("./plugins/realblog/", $this->conf(), new FakeSystemChecker(), $this->view());
         $request = new FakeRequest();
         $response = $sut($request);
         Approvals::verifyHtml($response->output());

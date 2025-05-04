@@ -2,7 +2,6 @@ parameters:
   level: 9
   paths:
     - classes/
-#    - tests/
     - views/
     - admin.php
     - compat.php
@@ -14,3 +13,5 @@ parameters:
     - ../../cmsimple/adminfuncs.php
     - ../../cmsimple/functions.php
     - ../../cmsimple/utf8.php
+  scanDirectories:
+    - ../plib/classes
