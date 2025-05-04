@@ -93,6 +93,7 @@ $plugin_tx['realblog']['story_deleted_error']="Artikel konnte nicht gelöscht we
 $plugin_tx['realblog']['story_label']="Artikel";
 $plugin_tx['realblog']['story_modified_error']="Artikel konnte nicht geändert werden!";
 $plugin_tx['realblog']['story_overview']="Artikel Auswahl";
+$plugin_tx['realblog']['error_unauthorized']="Sie sind nicht befugt diese Aktion durchzuführen!";
 $plugin_tx['realblog']['error_id']="Ungültige ID!";
 $plugin_tx['realblog']['error_version']="Ungültige Version!";
 $plugin_tx['realblog']['error_date']="Ungültiges Datum!";

@@ -21,11 +21,11 @@
 
 namespace Realblog;
 
+use Plib\CsrfProtector;
 use Plib\Request;
 use Plib\Response;
 use Plib\Url;
 use Plib\View;
-use Realblog\Infra\CsrfProtector;
 use Realblog\Infra\DB;
 use Realblog\Infra\FileSystem;
 use Realblog\Infra\Finder;
@@ -123,7 +123,9 @@ class DataExchangeController
 
     private function doExport(Request $request): Response
     {
-        $this->csrfProtector->check();
+        if (!$this->csrfProtector->check($request->post("realblog_token"))) {
+            return Response::create($this->view->message("fail", "error_unauthorized"));
+        }
         $filename = $this->filename();
         if (!$this->db->exportToCsv($filename)) {
             $errors = [["exchange_export_failure", $filename]];
@@ -156,7 +158,9 @@ class DataExchangeController
 
     private function doImport(Request $request): Response
     {
-        $this->csrfProtector->check();
+        if (!$this->csrfProtector->check($request->post("realblog_token"))) {
+            return Response::create($this->view->message("fail", "error_unauthorized"));
+        }
         $filename = $this->filename();
         if (!$this->db->importFromCsv($filename)) {
             $errors = [["exchange_import_failure", $filename]];

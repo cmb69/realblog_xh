@@ -23,6 +23,7 @@
 
 namespace Realblog;
 
+use Plib\CsrfProtector as PlibCsrfProtector;
 use Plib\SystemChecker;
 use Plib\View;
 use Realblog\Infra\CsrfProtector;
@@ -121,7 +122,7 @@ class Dic
             $pth["folder"]["content"],
             Dic::makeDb(),
             new Finder(Dic::makeDb()),
-            new CsrfProtector(),
+            new PlibCsrfProtector(),
             new FileSystem(),
             self::view()
         );
