@@ -248,7 +248,11 @@ class MainAdminController
             $title = $this->view->text("title_delete", $this->view->esc($article->id));
         }
         $this->editor->init(['realblog_headline_field', 'realblog_story_field']);
-        $hjs = $this->view->renderMeta("realblog", $this->finder->findAllCategories());
+        $json = json_encode(
+            $this->finder->findAllCategories(),
+            JSON_HEX_APOS | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+        );
+        $hjs = "<meta name=\"realblog\" content='$json'>\n";
         return Response::create($this->renderArticleForm($article, $title, "btn_$action", $errors))
             ->withTitle($title)->withHjs($hjs);
     }
