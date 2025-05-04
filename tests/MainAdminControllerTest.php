@@ -28,7 +28,6 @@ use Plib\CsrfProtector;
 use Plib\FakeRequest;
 use Plib\View;
 use Realblog\Infra\DB;
-use Realblog\Infra\FakeCsrfProtector;
 use Realblog\Infra\FakeEditor;
 use Realblog\Infra\Finder;
 use Realblog\Value\Article;
@@ -45,50 +44,10 @@ class MainAdminControllerTest extends TestCase
         $this->csrfProtector->method("token")->willReturn("e3c1b42a6098b48a39f9f54ddb3388f7");
     }
 
-    public function testSetsCookies()
-    {
-        $sut = $this->sut();
-        $request = new FakeRequest([
-            "url" => "http://example.com/?&realblog_page=3",
-            "admin" => true,
-            "edit" => true,
-        ]);
-        $response = $sut($request);
-        $this->assertEquals(
-            ["realblog_page" => "3", "realblog_filter" => (string) Article::MASK_ALL],
-            $response->cookies()
-        );
-    }
-
     public function testDefaultActionRendersOverview(): void
     {
         $sut = $this->sut(["finder" => ["articles" => $this->articles()]]);
         $request = new FakeRequest();
-        $response = $sut($request);
-        Approvals::verifyHtml($response->output());
-    }
-
-    public function testDefaultActionSetsFilterCookie()
-    {
-        $sut = $this->sut();
-        $request = new FakeRequest([
-            "url" => "http://example.com/?&realblog_filter[]=0&realblog_filter[]=2",
-        ]);
-        $response = $sut($request);
-        $this->assertEquals(["realblog_filter" => "5"], $response->cookies());
-    }
-
-    public function testDefaultActionGetsPageAndFilterFromCookie()
-    {
-        $sut = $this->sut();
-        $request = new FakeRequest([
-            "admin" => true,
-            "edit" => true,
-            "cookie" => [
-                "realblog_page" => "1",
-                "realblog_filter" => "5",
-            ],
-        ]);
         $response = $sut($request);
         Approvals::verifyHtml($response->output());
     }

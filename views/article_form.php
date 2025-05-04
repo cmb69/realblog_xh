@@ -26,12 +26,16 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
  * @var string $button
  * @var list<array{string}> $errors
  * @var string $script
+ * @var string $back_url
  */
 ?>
 <!-- realblog article form -->
 <script type="module" src="<?=$this->esc($script)?>"></script>
 <div class="realblog_fields_block">
   <h1>Realblog – <?=$this->esc($page_title)?></h1>
+  <p>
+    <a href="<?=$this->esc($back_url)?>"><?=$this->text("blog_back")?></a>
+  </p>
 <?foreach ($errors as $error):?>
   <p class="xh_fail"><?=$this->text(...$error)?></p>
 <?endforeach?>
@@ -113,6 +117,8 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
       <label for="realblog_story" class="realblog_label"><?=$this->text('story_label')?></label>
       <textarea class="realblog_story_field" id="realblog_story" name="realblog_story" rows="30" cols="80"><?=$this->esc($body)?></textarea>
     </p>
-    <p style="text-align: center"><button name="realblog_do"><?=$this->text($button)?></button></p>
+    <p style="text-align: center">
+      <button name="realblog_do"><?=$this->text($button)?></button>
+    </p>
   </form>
 </div>

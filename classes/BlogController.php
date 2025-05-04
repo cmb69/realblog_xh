@@ -69,16 +69,6 @@ class BlogController
     public function __invoke(Request $request, string $mode, bool $showSearch, string $category = ""): Response
     {
         assert(in_array($mode, ["blog", "archive"], true));
-        $response = $this->dispatch($request, $mode, $showSearch, $category);
-        if ($request->edit() && $request->get("realblog_page") !== null) {
-            $page = max((int) $request->get("realblog_page"), 1);
-            $response = $response->withCookie("realblog_page", (string) $page, 0);
-        }
-        return $response;
-    }
-
-    private function dispatch(Request $request, string $mode, bool $showSearch, string $category): Response
-    {
         if ($request->get("realblog_id") !== null) {
             return $this->oneArticle($request, max((int) $request->get("realblog_id"), 1));
         }
@@ -361,20 +351,9 @@ class BlogController
         ]);
     }
 
-    /** @return int */
     private function realblogPage(Request $request): int
     {
-        $param = $request->get("realblog_page");
-        if ($param !== null && is_string($param)) {
-            return max((int) $param, 1);
-        }
-        if ($request->admin() && $request->edit()) {
-            $cookie = $request->cookie("realblog_page");
-            if ($cookie !== null) {
-                return max((int) $cookie, 1);
-            }
-        }
-        return 1;
+        return max(1, (int) $request->get("realblog_page"));
     }
 
     private function year(Request $request): string

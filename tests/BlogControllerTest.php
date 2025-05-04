@@ -93,18 +93,6 @@ class BlogControllerTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
-    public function testSetsCookieInEditMode()
-    {
-        $sut = new BlogController($this->conf(), $this->db(), $this->finder(), $this->view(), new FakePages());
-        $request = new FakeRequest([
-            "url" => "http://example.com/?&realblog_page=3",
-            "admin" => true,
-            "edit" => true,
-        ]);
-        $response = $sut($request, "blog", false, "all");
-        $this->assertEquals(["realblog_page", "3", 0], $response->cookie());
-    }
-
     public function testRendersOverviewWithComments()
     {
         $conf = $this->conf(["comments_plugin" => "Realblog\\Infra"]);

@@ -81,16 +81,6 @@ class MainAdminController
 
     public function __invoke(Request $request): Response
     {
-        $response = $this->dispatch($request);
-        if ($request->edit() && $request->get("realblog_page") !== null) {
-            $page = max((int) $request->get("realblog_page"), 1);
-            $response = $response->withCookie('realblog_page', (string) $page);
-        }
-        return $response;
-    }
-
-    private function dispatch(Request $request): Response
-    {
         switch ($this->action($request)) {
             default:
                 return $this->defaultAction($request);
@@ -139,8 +129,7 @@ class MainAdminController
         $limit = (int) $this->conf['admin_records_page'];
         [$offset, $pageCount] = Util::paginationOffset($articleCount, $limit, $this->realblogPage($request));
         $articles = $this->finder->findArticlesWithStatus($states, $limit, $offset);
-        return Response::create($this->renderArticles($request, $articles, $pageCount))
-            ->withCookie("realblog_filter", (string) $states);
+        return Response::create($this->renderArticles($request, $articles, $pageCount));
     }
 
     /** @param list<Article> $articles */
@@ -188,12 +177,8 @@ class MainAdminController
     private function stateFilter(Request $request): int
     {
         $param = $request->getArray("realblog_filter");
-        if (!is_array($param)) {
-            $cookie = $request->cookie("realblog_filter");
-            if ($cookie === null) {
-                return Article::MASK_ALL;
-            }
-            return (int) $cookie;
+        if ($param === null) {
+            return Article::MASK_ALL;
         }
         $filters = 0;
         foreach ($param as $state) {
@@ -209,7 +194,7 @@ class MainAdminController
     {
         $timestamp = $request->time();
         $article = new FullArticle(0, 0, $timestamp, 2147483647, 2147483647, 0, '', '', '', '', false, false);
-        return $this->showArticleEditor($article, "create");
+        return $this->showArticleEditor($request, $article, "create");
     }
 
     private function editAction(Request $request): Response
@@ -218,7 +203,7 @@ class MainAdminController
         if (!$article) {
             return Response::create($this->view->message("fail", "message_not_found"));
         }
-        return $this->showArticleEditor($article, "edit");
+        return $this->showArticleEditor($request, $article, "edit");
     }
 
     private function deleteAction(Request $request): Response
@@ -227,7 +212,7 @@ class MainAdminController
         if (!$article) {
             return Response::create($this->view->message("fail", "message_not_found"));
         }
-        return $this->showArticleEditor($article, "delete");
+        return $this->showArticleEditor($request, $article, "delete");
     }
 
     private function doCreateAction(Request $request): Response
@@ -238,11 +223,11 @@ class MainAdminController
         $article = FullArticle::fromStrings(...$this->articlePost($request));
         $errors = Util::validateArticle($article);
         if ($errors) {
-            return $this->showArticleEditor($article, "create", $errors);
+            return $this->showArticleEditor($request, $article, "create", $errors);
         }
         $res = $this->db->insertArticle($article);
         if ($res !== 1) {
-            return $this->showArticleEditor($article, "create", [["story_added_error"]]);
+            return $this->showArticleEditor($request, $article, "create", [["story_added_error"]]);
         }
         return Response::redirect($this->overviewUrl($request)->absolute());
     }
@@ -255,11 +240,11 @@ class MainAdminController
         $article = FullArticle::fromStrings(...$this->articlePost($request));
         $errors = Util::validateArticle($article);
         if ($errors) {
-            return $this->showArticleEditor($article, "edit", $errors);
+            return $this->showArticleEditor($request, $article, "edit", $errors);
         }
         $res = $this->db->updateArticle($article);
         if ($res !== 1) {
-            return $this->showArticleEditor($article, "edit", [["story_modified_error"]]);
+            return $this->showArticleEditor($request, $article, "edit", [["story_modified_error"]]);
         }
         return Response::redirect($this->overviewUrl($request)->absolute());
     }
@@ -272,14 +257,18 @@ class MainAdminController
         $article = FullArticle::fromStrings(...$this->articlePost($request));
         $res = $this->db->deleteArticle($article);
         if ($res !== 1) {
-            return $this->showArticleEditor($article, "delete", [["story_deleted_error"]]);
+            return $this->showArticleEditor($request, $article, "delete", [["story_deleted_error"]]);
         }
         return Response::redirect($this->overviewUrl($request)->absolute());
     }
 
     /** @param list<array{string}> $errors */
-    private function showArticleEditor(FullArticle $article, string $action, array $errors = []): Response
-    {
+    private function showArticleEditor(
+        Request $request,
+        FullArticle $article,
+        string $action,
+        array $errors = []
+    ): Response {
         assert(in_array($action, ["create", "edit", "delete"], true));
         if ($action === "create") {
             $title = $this->view->text("tooltip_create");
@@ -294,13 +283,18 @@ class MainAdminController
             JSON_HEX_APOS | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
         );
         $hjs = "<meta name=\"realblog\" content='$json'>\n";
-        return Response::create($this->renderArticleForm($article, $title, "btn_$action", $errors))
+        return Response::create($this->renderArticleForm($request, $article, $title, "btn_$action", $errors))
             ->withTitle($title)->withHjs($hjs);
     }
 
     /** @param list<array{string}> $errors */
-    private function renderArticleForm(FullArticle $article, string $title, string $button, array $errors): string
-    {
+    private function renderArticleForm(
+        Request $request,
+        FullArticle $article,
+        string $title,
+        string $button,
+        array $errors
+    ): string {
         return $this->view->render("article_form", [
             "id" => $article->id,
             "version" => $article->version,
@@ -324,6 +318,7 @@ class MainAdminController
             "button" => $button,
             "errors" => $errors,
             "script" => $this->pluginFolder . "realblog.js",
+            "back_url" => $request->url()->without("action")->relative(),
         ]);
     }
 
@@ -441,19 +436,8 @@ class MainAdminController
             ->with("realblog_page", (string) $this->realblogPage($request));
     }
 
-    /** @return int */
     private function realblogPage(Request $request): int
     {
-        $param = $request->get("realblog_page");
-        if ($param !== null && is_string($param)) {
-            return max((int) $param, 1);
-        }
-        if ($request->admin() && $request->edit()) {
-            $cookie = $request->cookie("realblog_page");
-            if ($cookie !== null) {
-                return max((int) $cookie, 1);
-            }
-        }
-        return 1;
+        return max(1, (int) $request->get("realblog_page"));
     }
 }

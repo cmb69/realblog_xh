@@ -2,6 +2,9 @@
 <script type="module" src="./plugins/realblog/realblog.js"></script>
 <div class="realblog_fields_block">
   <h1>Realblog – Edit article #1</h1>
+  <p>
+    <a href="/">entries overview</a>
+  </p>
   <form name="realblog" method="post">
     <input type="hidden" name="realblog_id" value="1">
     <input type="hidden" name="realblog_version" value="1">
@@ -72,6 +75,8 @@
       <label for="realblog_story" class="realblog_label">entry</label>
       <textarea class="realblog_story_field" id="realblog_story" name="realblog_story" rows="30" cols="80">Some lengthy blog post.</textarea>
     </p>
-    <p style="text-align: center"><button name="realblog_do">Save</button></p>
+    <p style="text-align: center">
+      <button name="realblog_do">Save</button>
+    </p>
   </form>
 </div>
