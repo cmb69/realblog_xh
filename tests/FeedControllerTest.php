@@ -23,8 +23,8 @@ namespace Realblog;
 
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
+use Plib\FakeRequest;
 use Plib\View;
-use Realblog\Infra\FakeRequest;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Pages;
 use Realblog\Value\Article;
@@ -41,7 +41,7 @@ class FeedControllerTest extends TestCase
             $this->view()
         );
         $request = new FakeRequest([
-            "server" => ["QUERY_STRING" => "&function=realblog_feed"],
+            "url" => "http://example.com/?&function=realblog_feed",
         ]);
         $response = $sut($request);
         Approvals::verifyHtml($response->output());
@@ -57,7 +57,7 @@ class FeedControllerTest extends TestCase
             $this->view()
         );
         $request = new FakeRequest([
-            "server" => ["QUERY_STRING" => "&function=realblog_feed"],
+            "url" => "http://example.com/?&function=realblog_feed",
         ]);
         $response = $sut($request);
         $this->assertEquals("application/xml; charset=UTF-8", $response->contentType());

@@ -50,9 +50,8 @@ this program; if not, see <http://www.gnu.org/licenses>.
 */
 ////////////////////////////////////////////////// HISTORIC LICENSE SECTION END
 
-use Plib\Request as PlibRequest;
+use Plib\Request;
 use Realblog\Dic;
-use Realblog\Infra\Request;
 
 const REALBLOG_VERSION = "3.0beta9";
 
@@ -67,12 +66,12 @@ Dic::makeFeedController()(Request::current())();
 
 function realblog_blog(bool $showSearch = false, string $category = "all"): string
 {
-    return Dic::makeBlogController()(PlibRequest::current(), "blog", $showSearch, $category)();
+    return Dic::makeBlogController()(Request::current(), "blog", $showSearch, $category)();
 }
 
 function realblog_archive(bool $showSearch = false): string
 {
-    return Dic::makeBlogController()(PlibRequest::current(), "archive", $showSearch)();
+    return Dic::makeBlogController()(Request::current(), "archive", $showSearch)();
 }
 
 function realblog_link(string $pageUrl, bool $showTeaser = false): string

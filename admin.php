@@ -23,8 +23,7 @@
 
 namespace Realblog;
 
-use Plib\Request as PlibRequest;
-use Realblog\Infra\Request;
+use Plib\Request;
 use Realblog\Infra\Responder;
 
 /**
@@ -36,7 +35,7 @@ use Realblog\Infra\Responder;
 
 $temp = [
     "heading" => $plugin_tx["realblog"]["exchange_heading"],
-    "url" => Request::current()->url()->withPage("realblog")->with("admin", "data_exchange")->relative(),
+    "url" => Request::current()->url()->page("realblog")->with("admin", "data_exchange")->relative(),
 ];
 
 XH_registerStandardPluginMenuItems(true);
@@ -52,10 +51,10 @@ if (XH_wantsPluginAdministration("realblog")) {
             $o .= Dic::makeInfoController()(Request::current())();
             break;
         case "plugin_main":
-            $o .= Responder::respond(Dic::makeMainAdminController()(PlibRequest::current()));
+            $o .= Responder::respond(Dic::makeMainAdminController()(Request::current()));
             break;
         case "data_exchange":
-            $o .= Dic::makeDataExchangeController()(PlibRequest::current())();
+            $o .= Dic::makeDataExchangeController()(Request::current())();
             break;
         default:
             $o .= plugin_admin_common();

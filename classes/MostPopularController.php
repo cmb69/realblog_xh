@@ -21,13 +21,13 @@
 
 namespace Realblog;
 
+use Plib\Request;
 use Plib\Response;
+use Plib\Url;
 use Plib\View;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Pages;
-use Realblog\Infra\Request;
 use Realblog\Value\MostPopularArticle;
-use Realblog\Value\Url;
 
 class MostPopularController
 {
@@ -76,7 +76,7 @@ class MostPopularController
                 "id" => $article->id,
                 "title" => $article->title,
                 "page_views" => $article->pageViews,
-                "url" => $url->withPage($pageUrl)->with("realblog_id", (string) $article->id)->relative(),
+                "url" => $url->page($pageUrl)->with("realblog_id", (string) $article->id)->relative(),
             ];
         }
         return $records;

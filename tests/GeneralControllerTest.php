@@ -23,9 +23,9 @@ namespace Realblog;
 
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
+use Plib\FakeRequest;
 use Plib\View;
 use Realblog\Infra\DB;
-use Realblog\Infra\FakeRequest;
 use Realblog\Value\Article;
 
 class GeneralControllerTest extends TestCase

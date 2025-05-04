@@ -23,13 +23,13 @@
 
 namespace Realblog;
 
+use Plib\Request;
 use Plib\Response;
+use Plib\Url;
 use Plib\View;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Pages;
-use Realblog\Infra\Request;
 use Realblog\Value\Article;
-use Realblog\Value\Url;
 
 class LinkController
 {
@@ -85,7 +85,7 @@ class LinkController
             $records[] = [
                 "title" => $article->title,
                 "date" => date($this->view->text("date_format"), $article->date),
-                "url" => $url->withPage($pageUrl)
+                "url" => $url->page($pageUrl)
                     ->with("realblog_id", (string) $article->id)->relative(),
                 "teaser" => $this->pages->evaluateScripting($article->teaser),
             ];

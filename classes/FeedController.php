@@ -23,13 +23,13 @@
 
 namespace Realblog;
 
+use Plib\Request;
 use Plib\Response;
+use Plib\Url;
 use Plib\View;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Pages;
-use Realblog\Infra\Request;
 use Realblog\Value\Article;
-use Realblog\Value\Url;
 
 class FeedController
 {
@@ -65,16 +65,16 @@ class FeedController
 
     public function __invoke(Request $request): Response
     {
-        if (!$this->conf["rss_enabled"] || $request->url()->param("function") !== "realblog_feed") {
+        if (!$this->conf["rss_enabled"] || $request->get("function") !== "realblog_feed") {
             return Response::create();
         }
         $count = (int) $this->conf["rss_entries"];
         $logo = $this->imageFolder . $this->conf["rss_logo"];
         return Response::create("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" . $this->view->render("feed", [
-            "url" => $request->url()->withPage($this->conf["rss_page"])->absolute(),
+            "url" => $request->url()->page($this->conf["rss_page"])->absolute(),
             "managing_editor" => $this->conf["rss_editor"],
             "has_logo" => (bool) $this->conf["rss_logo"],
-            "image_url" => $request->url()->withPath($logo)->absolute(),
+            "image_url" => $request->url()->path($logo)->absolute(),
             "articles" => $this->articleRecords($request->url(), $this->finder->findFeedableArticles($count)),
         ]))->withContentType("application/xml; charset=UTF-8");
     }
@@ -89,7 +89,7 @@ class FeedController
         foreach ($articles as $article) {
             $records[] = [
                 "title" => $article->title,
-                "url" => $url->withPage($this->conf["rss_page"])
+                "url" => $url->page($this->conf["rss_page"])
                     ->with("realblog_id", (string) $article->id)->absolute(),
                 "teaser" => $this->pages->evaluateScripting($article->teaser),
                 "date" => (string) date("r", $article->date),

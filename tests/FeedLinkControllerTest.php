@@ -23,8 +23,8 @@ namespace Realblog;
 
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
+use Plib\FakeRequest;
 use Plib\View;
-use Realblog\Infra\FakeRequest;
 
 class FeedLinkControllerTest extends TestCase
 {

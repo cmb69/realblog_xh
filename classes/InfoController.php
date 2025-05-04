@@ -23,10 +23,10 @@
 
 namespace Realblog;
 
+use Plib\Request;
 use Plib\Response;
 use Plib\SystemChecker;
 use Plib\View;
-use Realblog\Infra\Request;
 
 class InfoController
 {

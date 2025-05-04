@@ -23,9 +23,9 @@
 
 namespace Realblog;
 
+use Plib\Request;
 use Plib\Response;
 use Plib\View;
-use Realblog\Infra\Request;
 
 class FeedLinkController
 {
@@ -44,7 +44,7 @@ class FeedLinkController
     public function __invoke(Request $request, string $target): Response
     {
         return Response::create($this->view->render("feed_link", [
-            "url" => $request->url()->withPage("")->with("function", "realblog_feed")->relative(),
+            "url" => $request->url()->page("")->with("function", "realblog_feed")->relative(),
             "target" => $target,
             "image" => $this->pluginFolder . "images/rss.png",
         ]));

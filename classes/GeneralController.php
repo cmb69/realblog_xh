@@ -23,10 +23,10 @@
 
 namespace Realblog;
 
+use Plib\Request;
 use Plib\Response;
 use Plib\View;
 use Realblog\Infra\DB;
-use Realblog\Infra\Request;
 use Realblog\Value\Article;
 
 class GeneralController
