@@ -21,15 +21,15 @@
 
 namespace Realblog;
 
+use Plib\Request;
 use Plib\Response;
+use Plib\Url;
 use Plib\View;
 use Realblog\Infra\CsrfProtector;
 use Realblog\Infra\DB;
 use Realblog\Infra\FileSystem;
 use Realblog\Infra\Finder;
-use Realblog\Infra\Request;
 use Realblog\Value\Article;
-use Realblog\Value\Url;
 
 class DataExchangeController
 {
@@ -90,15 +90,14 @@ class DataExchangeController
 
     private function action(Request $request): string
     {
-        $action = $request->url()->param("action");
+        $action = $request->get("action");
         if (!is_string($action)) {
             return "";
         }
         if (!strncmp($action, "do_", strlen("do_"))) {
             return "";
         }
-        $post = $request->post();
-        if (!isset($post["realblog_do"])) {
+        if ($request->post("realblog_do") === null) {
             return $action;
         }
         return "do_$action";
@@ -187,6 +186,6 @@ class DataExchangeController
 
     private function overviewUrl(Url $url): string
     {
-        return $url->withPage("realblog")->with("admin", "data_exchange")->absolute();
+        return $url->page("realblog")->with("admin", "data_exchange")->absolute();
     }
 }
