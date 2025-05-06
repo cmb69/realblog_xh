@@ -104,10 +104,15 @@
       <fileset dir="dist/realblog">
         <include name="config/config.php"/>
         <include name="languages/??.php"/>
-        <include name="css/stylesheet.css"/>
       </fileset>
     </delete>
-    <zip destfile="Realblog_XH-3.2-dev-update-from-3.x.zip" basedir="dist"
+     <if>
+       <available file="dist/realblog/css/stylesheet.css"/>
+       <then>
+         <move file="dist/realblog/css/stylesheet.css" tofile="dist/realblog/css/stylesheet-3.2-dev.css"/>
+       </then>
+     </if>
+     <zip destfile="Realblog_XH-3.2-dev-update-from-3.x.zip" basedir="dist"
        includeemptydirs="false"/>
     <delete dir="patchee" quiet="true"/>
     <delete dir="current" quiet="true"/>
