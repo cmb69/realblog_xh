@@ -19,7 +19,7 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
  * @var string $date
  * @var string $categories
  * @var string $story
- * @var string $comments
+ * @var ?string $comments
  */
 ?>
 <!-- realblog article -->
@@ -76,7 +76,7 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
 
   </div>
 
-<?if ($wants_comments):?>
+<?if ($wants_comments && isset($comments)):?>
   <?=$this->raw($comments)?>
 <?endif?>
 
