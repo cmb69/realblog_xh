@@ -89,7 +89,7 @@ class FeedController
         foreach ($articles as $article) {
             $records[] = [
                 "title" => $article->title,
-                "url" => $url->page($this->conf["rss_page"])
+                "url" => $url->page("")->with("function", "realblog_article")
                     ->with("realblog_id", (string) $article->id)->absolute(),
                 "teaser" => $this->pages->evaluateScripting($article->teaser),
                 "date" => (string) date("r", $article->date),

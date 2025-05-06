@@ -76,7 +76,8 @@ class MostPopularController
                 "id" => $article->id,
                 "title" => $article->title,
                 "page_views" => $article->pageViews,
-                "url" => $url->page($pageUrl)->with("realblog_id", (string) $article->id)->relative(),
+                "url" => $url->page("")->with("function", "realblog_article")
+                    ->with("realblog_id", (string) $article->id)->with("realblog_selected", $pageUrl)->relative(),
             ];
         }
         return $records;

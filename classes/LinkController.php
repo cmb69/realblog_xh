@@ -85,8 +85,8 @@ class LinkController
             $records[] = [
                 "title" => $article->title,
                 "date" => date($this->view->text("date_format"), $article->date),
-                "url" => $url->page($pageUrl)
-                    ->with("realblog_id", (string) $article->id)->relative(),
+                "url" => $url->page("")->with("function", "realblog_article")
+                    ->with("realblog_id", (string) $article->id)->with("realblog_selected", $pageUrl)->relative(),
                 "teaser" => $this->pages->evaluateScripting($article->teaser),
             ];
         }

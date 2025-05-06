@@ -43,10 +43,20 @@ class Dic
     {
         return new BlogController(
             self::makeConf(),
-            self::makeDb(),
             new Finder(self::makeDb()),
             self::view(),
             new Pages()
+        );
+    }
+
+    public static function articleController(): ArticleController
+    {
+        return new ArticleController(
+            self::makeConf(),
+            new Finder(Dic::makeDb()),
+            self::makeDb(),
+            new Pages(),
+            self::view()
         );
     }
 

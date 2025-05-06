@@ -22,6 +22,7 @@
 namespace Realblog;
 
 use ApprovalTests\Approvals;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 use Plib\FakeRequest;
@@ -32,7 +33,7 @@ use Realblog\Infra\Finder;
 use Realblog\Value\Article;
 use Realblog\Value\FullArticle;
 
-class BlogControllerTest extends TestCase
+class ArticleControllerTest extends TestCase
 {
     /** @var array<string,string> */
     private $conf;
@@ -40,104 +41,112 @@ class BlogControllerTest extends TestCase
     /** @var Finder&Stub */
     private $finder;
 
-    /** @var View */
-    private $view;
+    /** @var DB&MockObject */
+    private $db;
 
     /** @var FakePages */
     private $pages;
+
+    /** @var View */
+    private $view;
 
     public function setUp(): void
     {
         $this->conf = XH_includeVar("./config/config.php", "plugin_cf")["realblog"];
         $this->finder = $this->finder();
-        $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["realblog"]);
+        $this->db = $this->createMock(DB::class);
         $this->pages = new FakePages();
+        $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["realblog"]);
     }
 
-    private function sut(): BlogController
+    private function sut(): ArticleController
     {
-        return new BlogController($this->conf, $this->finder, $this->view, $this->pages);
+        return new ArticleController(
+            $this->conf,
+            $this->finder,
+            $this->db,
+            $this->pages,
+            $this->view
+        );
     }
 
-    public function testRendersArticleOverview(): void
+    public function testRendersArticle(): void
     {
-        $this->finder = $this->finder(["count" => 7, "articles" => $this->articles()]);
-        $request = new FakeRequest([
-            "url" => "http://example.com/?Blog",
-        ]);
-        $response = $this->sut()($request, "blog", true, "all");
-        Approvals::verifyHtml($response->output());
-    }
-
-    public function testRendersEmptySearchResults(): void
-    {
-        $request = new FakeRequest([
-            "url" => "http://example.com/?&realblog_search=search",
-        ]);
-        $response = $this->sut()($request, "blog", true, "all");
-        Approvals::verifyHtml($response->output());
-    }
-
-    public function testRendersOverviewWithComments()
-    {
-        $this->conf["comments_plugin"] = "Realblog\\Infra";
-        $this->finder = $this->finder(["count" => 7, "articles" => $this->articles()]);
+        $this->conf["show_teaser"] = "true";
         $this->pages = new FakePages(["h" => ["", "Blog"]]);
         $request = new FakeRequest([
-            "url" => "http://example.com/?Blog",
+            "url" => "http://example.com/?&function=realblog_article&realblog_id=3&realblog_search=word"
+                . "&realblog_page=1&realblog_selected=Blog",
             "s" => 1,
         ]);
         $response = $this->sut()($request, "blog", true, "all");
         Approvals::verifyHtml($response->output());
     }
 
-    public function testRendersArticleWithHeadingAboveMeta(): void
+    public function testSetsTitleAndDescription(): void
     {
-        $this->conf["heading_above_meta"] = "true";
-        $this->conf["comments_plugin"] = "Realblog\\Infra";
-        $this->finder = $this->finder(["count" => 7, "articles" => $this->articles()]);
+        $this->pages = new FakePages(["h" => ["", "Blog"]]);
         $request = new FakeRequest([
-            "url" => "http://example.com/?Blog",
+            "url" => "http://example.com/?&function=realblog_article&realblog_id=3",
+            "s" => 1,
+        ]);
+        $response = $this->sut()($request, "blog", true, "all");
+        $this->assertEquals("Title", $response->title());
+        $this->assertEquals("Teaser", $response->description());
+    }
+
+    public function testRecordsPageView(): void
+    {
+        $this->db = $this->createMock(DB::class);
+        $this->db->expects($this->once())->method("recordPageView")->with(3);
+        $this->pages = new FakePages(["h" => ["", "Blog"]]);
+        $request = new FakeRequest([
+            "url" => "http://example.com/?&function=realblog_article&realblog_id=3",
+            "s" => 1,
+        ]);
+        $this->sut()($request, "blog", false, "all");
+    }
+
+    public function testRendersArticleWithComments()
+    {
+        $this->conf["comments_plugin"] = "Realblog\\Infra";
+        $this->pages = new FakePages(["h" => ["", "Blog"]]);
+        $this->finder = $this->finder(["commentable" => true]);
+        $request = new FakeRequest([
+            "url" => "http://example.com/?&function=realblog_article&realblog_id=3&realblog_search=word"
+                . "&realblog_page=1&realblog_selected=Blog",
+            "s" => 1,
         ]);
         $response = $this->sut()($request, "blog", true, "all");
         Approvals::verifyHtml($response->output());
     }
 
-    public function testRendersEmptyArchive(): void
+    public function testRendersArticleWithCommentsAndAdminFeatures()
     {
+        $this->conf["comments_plugin"] = "Realblog\\Infra";
+        $this->conf["heading_above_meta"] = "true";
+        $this->pages = new FakePages(["h" => ["", "Blog"]]);
+        $this->finder = $this->finder(["commentable" => true]);
         $request = new FakeRequest([
-            "url" => "http://example.com/?Archive&realblog_year=2023",
+            "url" => "http://example.com/?&function=realblog_article&realblog_id=3"
+                . "&realblog_page=1&realblog_selected=Blog",
+            "admin" => true,
+            "s" => 1,
         ]);
-        $response = $this->sut()($request, "archive", true);
+        $response = $this->sut()($request, "blog", true, "all");
         Approvals::verifyHtml($response->output());
     }
 
-    public function testRendersArchive(): void
+    public function testRendersArchivedArticle(): void
     {
-        $this->finder = $this->finder(["articles" => $this->archivedArticles()]);
+        $this->finder = $this->finder(["article" => $this->archivedArticle()]);
+        $this->pages = new FakePages(["h" => ["irrelevant0", "irrelevant1", "Archive"]]);
         $request = new FakeRequest([
-            "url" => "http://example.com/?Archive&realblog_year=2022",
-            ]);
-        $response = $this->sut()($request, "archive", true);
-        Approvals::verifyHtml($response->output());
-    }
-
-    public function testRedirectsToExplicitRealblogYear(): void
-    {
-        $this->finder = $this->finder(["articles" => $this->archivedArticles()]);
-        $request = new FakeRequest([
-            "url" => "http://example.com/?Archive",
+            "url" => "http://example.com/?&function=realblog_article&realblog_id=3"
+                . "&realblog_year=2022&realblog_selected=Archive",
+            "s" => 2,
         ]);
         $response = $this->sut()($request, "archive", true);
-        $this->assertEquals("http://example.com/?Archive&realblog_year=2022", $response->location());
-    }
-
-    public function testRendersArchiveWithEmptySearchResults(): void
-    {
-        $request = new FakeRequest([
-            "url" => "http://example.com/?&realblog_search=search",
-        ]);
-        $response = $this->sut()($request, "archive", true, "all");
         Approvals::verifyHtml($response->output());
     }
 
@@ -151,27 +160,6 @@ class BlogControllerTest extends TestCase
         $finder->method("findArchivedArticlesInPeriod")->willReturn($options["articles"] ?? []);
         $finder->method("findArchivedArticlesContaining")->willReturn([]);
         return $finder;
-    }
-
-    private function articles(): array
-    {
-        $articles = [];
-        foreach (range(1, 7) as $num) {
-            $month = (3 * $num) % 12 + 1;
-            $year = intdiv(3 * $num, 12) + 2021;
-            $articles[] = new Article(
-                $num,
-                gmmktime(12, 0, 0, $month, 14, $year),
-                1,
-                ",test,",
-                "Title $num",
-                "Teaser $num",
-                true,
-                false,
-                true
-            );
-        }
-        return $articles;
     }
 
     private function article(): FullArticle

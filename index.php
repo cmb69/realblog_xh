@@ -56,6 +56,7 @@ use Realblog\Dic;
 const REALBLOG_VERSION = "3.0beta9";
 
 /**
+ * @var string $o
  * @var array<string,array<string,string>> $pth
  */
 
@@ -63,6 +64,7 @@ require_once $pth['folder']['plugin'] . 'compat.php';
 
 Dic::makeGeneralController()(Request::current())();
 Dic::makeFeedController()(Request::current())();
+$o .= Dic::articleController()(Request::current())();
 
 function realblog_blog(bool $showSearch = false, string $category = "all"): string
 {

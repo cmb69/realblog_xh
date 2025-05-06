@@ -7,12 +7,11 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
 /**
  * @var View $this
  * @var string $title
- * @var string $heading
  * @var bool $heading_above_meta
  * @var bool $is_admin
  * @var bool $wants_comments
  * @var string $back_text
- * @var string $back_url
+ * @var ?string $back_url
  * @var string|null $back_to_search_url
  * @var string $edit_url
  * @var string|null $edit_comments_url
@@ -32,7 +31,9 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
 <?if (isset($back_to_search_url)):?>
       <a class="realblog_button" href="<?=$this->esc($back_to_search_url)?>"><?=$this->text('search_back')?></a>
 <?endif?>
+<?if (isset($back_url)):?>
       <a class="realblog_button" href="<?=$this->esc($back_url)?>"><?=$this->text($back_text)?></a>
+<?endif?>
 <?if ($is_admin):?>
 <?  if ($wants_comments && isset($edit_comments_url)):?>
       <a class="realblog_button" href="<?=$this->esc($edit_comments_url)?>"><?=$this->text('comment_edit')?></a>
@@ -42,7 +43,7 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
     </div>
 
 <?if (!$heading_above_meta):?>
-    <<?=$this->esc($heading)?>><?=$this->esc($title)?></<?=$this->esc($heading)?>>
+    <h1><?=$this->esc($title)?></h1>
 <?endif?>
     <div class="realblog_article_meta">
       <span class="realblog_meta_date"><?=$this->text('message_published_on', $date)?></span>
@@ -54,7 +55,7 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
 <?endif?>
     </div>
 <?if ($heading_above_meta):?>
-    <<?=$this->esc($heading)?>><?=$this->esc($title)?></<?=$this->esc($heading)?>>
+    <h1><?=$this->esc($title)?></h1>
 <?endif?>
     <div class="realblog_show_story_entry"><?=$this->raw($story)?></div>
 
@@ -62,7 +63,9 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
 <?if (isset($back_to_search_url)):?>
       <a class="realblog_button" href="<?=$this->esc($back_to_search_url)?>"><?=$this->text('search_back')?></a>
 <?endif?>
+<?if (isset($back_url)):?>
       <a class="realblog_button" href="<?=$this->esc($back_url)?>"><?=$this->text($back_text)?></a>
+<?endif?>
 <?if ($is_admin):?>
 <?  if ($wants_comments && isset($edit_comments_url)):?>
       <a class="realblog_button" href="<?=$this->esc($edit_comments_url)?>"><?=$this->text('comment_edit')?></a>

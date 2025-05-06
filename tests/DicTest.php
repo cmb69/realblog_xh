@@ -44,6 +44,11 @@ class DicTest extends TestCase
         $this->assertInstanceOf(BlogController::class, Dic::makeBlogController());
     }
 
+    public function testMakesArticleController(): void
+    {
+        $this->assertInstanceOf(ArticleController::class, Dic::articleController());
+    }
+
     public function testMakesLinkController(): void
     {
         $this->assertInstanceOf(LinkController::class, Dic::makeLinkController());

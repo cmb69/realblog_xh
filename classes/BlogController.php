@@ -27,20 +27,15 @@ use Plib\Request;
 use Plib\Response;
 use Plib\Url;
 use Plib\View;
-use Realblog\Infra\DB;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Pages;
 use Realblog\Logic\Util;
 use Realblog\Value\Article;
-use Realblog\Value\FullArticle;
 
 class BlogController
 {
     /** @var array<string,string> */
     private $conf;
-
-    /** @var DB */
-    private $db;
 
     /** @var Finder */
     private $finder;
@@ -54,13 +49,11 @@ class BlogController
     /** @param array<string,string> $conf */
     public function __construct(
         array $conf,
-        DB $db,
         Finder $finder,
         View $view,
         Pages $pages
     ) {
         $this->conf = $conf;
-        $this->db = $db;
         $this->finder = $finder;
         $this->view = $view;
         $this->pages = $pages;
@@ -69,9 +62,6 @@ class BlogController
     public function __invoke(Request $request, string $mode, bool $showSearch, string $category = ""): Response
     {
         assert(in_array($mode, ["blog", "archive"], true));
-        if ($request->get("realblog_id") !== null) {
-            return $this->oneArticle($request, max((int) $request->get("realblog_id"), 1));
-        }
         if ($mode === "blog") {
             return $this->allArticles($request, $showSearch, $category);
         }
@@ -129,11 +119,12 @@ class BlogController
     {
         $bridge = ucfirst($this->conf["comments_plugin"]) . "\\RealblogBridge";
         $records = [];
+        $articleUrl = $this->articleUrl($request);
         foreach ($articles as $article) {
             $isCommentable = $this->conf["comments_plugin"] && class_exists($bridge) && $article->commentable;
             $records[] = [
                 "title" => $article->title,
-                "url" => $url->with("realblog_id", (string) $article->id)->relative(),
+                "url" => $articleUrl->with("realblog_id", (string) $article->id)->relative(),
                 "categories" => implode(", ", explode(",", trim($article->categories, ","))),
                 "link_header" => $article->hasBody || $request->admin(),
                 "date" => date($this->view->text("date_format"), $article->date),
@@ -176,65 +167,6 @@ class BlogController
             }
         }
         return $pages;
-    }
-
-    private function oneArticle(Request $request, int $id): Response
-    {
-        $article = $this->finder->findById($id);
-        if (isset($article)) {
-            if (!$request->admin() && $article->status > Article::UNPUBLISHED) {
-                $this->db->recordPageView($id);
-            }
-            if ($request->admin() || $article->status > Article::UNPUBLISHED) {
-                return $this->renderArticle($request, $article);
-            }
-        }
-        return Response::create();
-    }
-
-    private function renderArticle(Request $request, FullArticle $article): Response
-    {
-        $teaser = trim(html_entity_decode(strip_tags($article->teaser), ENT_COMPAT, "UTF-8"));
-        if ($article->status === Article::ARCHIVED) {
-            $url = $request->url()->with("realblog_year", $this->year($request));
-        } else {
-            $url = $request->url()->with("realblog_page", (string) $this->realblogPage($request));
-        }
-        $url = $url->without("realblog_id");
-        $bridge = ucfirst($this->conf["comments_plugin"]) . "\\RealblogBridge";
-        $backUrl = $url->without("realblog_search")->relative();
-        $searchTerm = $request->get("realblog_search") ?? "";
-        if ($searchTerm !== "") {
-            $backToSearchUrl = $url->with("realblog_search", $searchTerm)->relative();
-        }
-        $editUrl = $request->url()->page("realblog")->with("admin", "plugin_main")
-            ->with("action", "edit")->with("realblog_id", (string) $article->id)->relative();
-        if ($this->conf["comments_plugin"] && class_exists($bridge)) {
-            $commentsUrl = $bridge::getEditUrl("realblog{$article->id}");
-        }
-        if ($this->conf["show_teaser"]) {
-            $story = "<div class=\"realblog_teaser\">" . $article->teaser . "</div>" . $article->body;
-        } else {
-            $story = ($article->body !== "") ? $article->body : $article->teaser;
-        }
-        return Response::create($this->view->render("article", [
-            "title" => $article->title,
-            "heading" => $this->conf["heading_level"],
-            "heading_above_meta" => $this->conf["heading_above_meta"],
-            "is_admin" => $request->admin(),
-            "wants_comments" => $this->conf["comments_plugin"] && class_exists($bridge),
-            "back_text" => $article->status === 2 ? "archiv_back" : "blog_back",
-            "back_url" => $backUrl,
-            "back_to_search_url" => $backToSearchUrl ?? null,
-            "edit_url" => $editUrl,
-            "edit_comments_url" => !empty($commentsUrl) ? $commentsUrl : null,
-            "comment_count" => !empty($commentsUrl) ? $bridge::count("realblog{$article->id}") : null,
-            "comments" => !empty($commentsUrl) ? $bridge::handle("realblog{$article->id}") : null,
-            "date" => date($this->view->text("date_format"), $article->date),
-            "categories" => implode(", ", explode(",", trim($article->categories, ","))),
-            "story" => $this->pages->evaluateScripting($story),
-        ]))->withTitle($this->pages->headingOf($request->s()) . " – " . $article->title)
-            ->withDescription(Util::shortenText($teaser));
     }
 
     private function allArchivedArticles(Request $request, bool $showSearch): Response
@@ -294,13 +226,14 @@ class BlogController
     private function archivedArticleRecords(Request $request, $articles): array
     {
         $records = [];
+        $articleUrl = $this->articleUrl($request);
         foreach (Util::groupArticlesByMonth($articles) as $group) {
             $articleRecords = [];
             foreach ($group["articles"] as $article) {
                 $articleRecords[] = [
                     "title" => $article->title,
                     "date" => date($this->view->text("date_format"), $article->date),
-                    "url" => $request->url()->with("realblog_id", (string) $article->id)->relative(),
+                    "url" => $articleUrl->with("realblog_id", (string) $article->id)->relative(),
                 ];
             }
             $records[] = [
@@ -349,6 +282,21 @@ class BlogController
             "url" => $request->url()->without("realblog_search")->relative(),
             "key" => ($what == "archive") ? "back_to_archive" : "search_show_all",
         ]);
+    }
+
+    private function articleUrl(Request $request): Url
+    {
+        $url = $request->url()->page("")->with("function", "realblog_article")
+            ->with("realblog_selected", $request->selected());
+        if ($request->get("realblog_page") !== null) {
+            $url = $url->with("realblog_page", $request->get("realblog_page"));
+        } elseif ($request->get("realblog_year") !== null) {
+            $url = $url->with("realblog_year", $request->get("realblog_year"));
+        }
+        if ($request->get("realblog_search") !== null) {
+            $url = $url->with("realblog_search", $request->get("realblog_search"));
+        }
+        return $url;
     }
 
     private function realblogPage(Request $request): int
