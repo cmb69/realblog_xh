@@ -34,7 +34,7 @@ use Realblog\Infra\Pages;
 
 class Dic
 {
-    public const VERSION = "3.0";
+    public const VERSION = "3.0-dev";
 
     public static function makeGeneralController(): GeneralController
     {

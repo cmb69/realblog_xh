@@ -87,14 +87,14 @@
     <copy file="dist/config/config.php"
         tofile="dist/config/defaultconfig.php"/>
     <copy file="dist/languages/en.php" tofile="dist/languages/default.php"/>
-    <zip destfile="Realblog_XH-3.0.zip" basedir="dist"
+    <zip destfile="Realblog_XH-3.0-dev.zip" basedir="dist"
        prefix="realblog/"/>
     <delete dir="dist"/>
   </target>
 
   <target name="build-patch" description="builds a distributable update package">
     <fail unless="patchee" message="patchee is not defined!"/>
-    <unzip file="Realblog_XH-3.0.zip" todir="current"/>
+    <unzip file="Realblog_XH-3.0-dev.zip" todir="current"/>
     <unzip file="${patchee}" todir="patchee"/>
     <copy todir="dist">
       <fileset dir="current">
@@ -108,7 +108,7 @@
         <include name="css/stylesheet.css"/>
       </fileset>
     </delete>
-    <zip destfile="Realblog_XH-3.0-PATCH.zip" basedir="dist"
+    <zip destfile="Realblog_XH-3.0-dev-PATCH.zip" basedir="dist"
        includeemptydirs="false"/>
     <delete dir="patchee" quiet="true"/>
     <delete dir="current" quiet="true"/>
