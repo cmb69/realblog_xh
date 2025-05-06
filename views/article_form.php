@@ -118,7 +118,8 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
       <textarea class="realblog_story_field" id="realblog_story" name="realblog_story" rows="30" cols="80"><?=$this->esc($body)?></textarea>
     </p>
     <p style="text-align: center">
-      <button name="realblog_do"><?=$this->text($button)?></button>
+      <input type="hidden" name="realblog_do">
+      <button><?=$this->text($button)?></button>
     </p>
   </form>
 </div>
