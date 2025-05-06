@@ -244,10 +244,6 @@ entwickelt wird. Realblog (das früher Realblog_XH hieß) basiert
 auf Advancednews 1.0.5 von Jan Kanters. Vielen Dank an beide, dass sie
 diese beliebten und nützlichen Plugins unter GPL zur Verfügung stellen.
 
-Realblog_XH verwendet jscalendar, das von [Mihai Bazon](http://www.dynarch.com/)
-entwickelt wurde. Vielen Dank an den Entwickler für die Veröffentlichung
-dieser Komponente unter LGPL.
-
 Das Plugin-Icon wurde von [Alessandro Rei](http://www.mentalrey.it/) gestaltet.
 Vielen Dank für die Veröffentlichung des Icons unter GPL.
 
