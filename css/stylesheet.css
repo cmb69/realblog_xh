@@ -37,11 +37,11 @@ margin-bottom: 12px;
 
 .realblog_entry_footer {
     overflow: auto;
+    border-bottom: 1px solid;
 }
 
 .realblog_read_more {
-float: right;
-padding-bottom: 12px;
+    text-align: right;
 }
 
 /* BACKEND select entry table */
@@ -150,8 +150,7 @@ margin: 6px 0 10px 0;
 }
 
 .realblog_show_story {
-width: 100%;
-border-bottom: 1px solid;
+    width: 100%;
 }
 .realblog_show_story:after {
     content: "";
