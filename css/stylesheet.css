@@ -30,6 +30,12 @@ margin-bottom: 12px;
 .realblog_fields_block table {
     width: 100%;
 }
+.realblog_fields_block th {
+    text-align: left;
+}
+.realblog_fields_block td {
+    padding: 0 0 1em 0;
+}
 
 .realblog_label {
     font-weight: bold;

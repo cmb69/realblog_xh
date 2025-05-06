@@ -11,9 +11,9 @@
     <input type="hidden" name="realblog_token" value="e3c1b42a6098b48a39f9f54ddb3388f7">
     <table>
       <tr>
-        <td><label for="realblog_date1" class="realblog_label">date</label></td>
-        <td><label for="realblog_date2" class="realblog_label">publishing</label></td>
-        <td><label for="realblog_date3" class="realblog_label">archiving</span></label>
+        <th><label for="realblog_date1" class="realblog_label">Date</label></td>
+        <th><label for="realblog_date2" class="realblog_label">Publishing</label></td>
+        <th><label for="realblog_date3" class="realblog_label">Archiving</span></label>
       </tr>
       <tr>
         <td>
@@ -29,8 +29,8 @@
         </td>
       </tr>
       <tr>
-        <td><label for="realblog_status" class="realblog_label">Status</label></td>
-        <td colspan="2"></td>
+        <th><label for="realblog_status" class="realblog_label">Status</label></td>
+        <th colspan="2"></td>
       </tr>
       <tr>
         <td>
@@ -44,7 +44,7 @@
           <label>
             <input type="hidden" name="realblog_comments" value="">
             <input type="checkbox" name="realblog_comments" value="1" >
-            <span>enable comments function</span>
+            <span>enable comments</span>
           </label>
         </td>
         <td>
@@ -55,24 +55,30 @@
           </label>
         </td>
       </tr>
+      <tr>
+        <th colspan="3"><label for="realblog_categories" class="realblog_label">Categories</label></td>
+      </tr>
+      <tr>
+        <td colspan="2"><input type="text" id="realblog_categories" name="realblog_categories" value="cat1" size="50"></td>
+        <td>
+          <select id="realblog_category_select">
+            <option>Add Category:</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <th colspan="3"><label for="realblog_title" class="realblog_label">Title</label></td>
+      </tr>
+      <tr>
+        <td colspan="3"><input type="text" id="realblog_title" name="realblog_title" value="Welcome!" size="50"></td>
+      </tr>
     </table>
     <p>
-      <label for="realblog_categories" class="realblog_label">Categories</label>
-      <input type="text" id="realblog_categories" name="realblog_categories" value="cat1" size="50">
-      <select id="realblog_category_select">
-        <option>Add Category:</option>
-      </select>
-    </p>
-    <p>
-      <label for="realblog_title" class="realblog_label">title</label>
-      <input type="text" id="realblog_title" name="realblog_title" value="Welcome!" size="50">
-    </p>
-    <p>
-      <label for="realblog_headline" class="realblog_label">teaser</label>
+      <label for="realblog_headline" class="realblog_label">Teaser</label>
       <textarea class="realblog_headline_field" id="realblog_headline" name="realblog_headline" rows="6" cols="60">Welcome to my wonderful new blog</textarea>
     </p>
     <p>
-      <label for="realblog_story" class="realblog_label">entry</label>
+      <label for="realblog_story" class="realblog_label">Article</label>
       <textarea class="realblog_story_field" id="realblog_story" name="realblog_story" rows="30" cols="80">Some lengthy blog post.</textarea>
     </p>
     <p style="text-align: center">
