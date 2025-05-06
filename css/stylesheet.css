@@ -17,7 +17,7 @@
 
 .realblog_button {
     display: inline-block;
-    border: 1px solid #888;
+    border: 1px solid #888 !important;
     padding: 0.1em 0.5em;
     text-decoration: none;
     cursor: pointer;
