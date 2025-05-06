@@ -84,8 +84,7 @@
       </fileset>
     </move>
     <delete dir="export"/>
-    <copy file="dist/config/config.php"
-        tofile="dist/config/defaultconfig.php"/>
+    <copy file="dist/config/config.php" tofile="dist/config/defaultconfig.php"/>
     <copy file="dist/languages/en.php" tofile="dist/languages/default.php"/>
     <zip destfile="Realblog_XH-3.1-dev.zip" basedir="dist"
        prefix="realblog/"/>
