@@ -63,7 +63,7 @@ class InfoController
             ];
         }
         return Response::create($this->view->render("info", [
-            "version" => REALBLOG_VERSION,
+            "version" => Dic::VERSION,
             "heading" => $this->conf["heading_level"],
             "checks" => $checks,
         ]));

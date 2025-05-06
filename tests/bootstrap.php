@@ -3,7 +3,6 @@
 const CMSIMPLE_XH_VERSION = "1.8";
 const CMSIMPLE_URL = "http://example.com/";
 const CMSIMPLE_ROOT = "/";
-const REALBLOG_VERSION = "3.0beta9";
 
 require_once "./vendor/autoload.php";
 

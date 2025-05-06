@@ -53,8 +53,6 @@ this program; if not, see <http://www.gnu.org/licenses>.
 use Plib\Request;
 use Realblog\Dic;
 
-const REALBLOG_VERSION = "3.0beta9";
-
 /**
  * @var string $o
  * @var array<string,array<string,string>> $pth

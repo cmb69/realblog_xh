@@ -34,6 +34,8 @@ use Realblog\Infra\Pages;
 
 class Dic
 {
+    public const VERSION = "3.0beta9";
+
     public static function makeGeneralController(): GeneralController
     {
         return new GeneralController(self::makeConf(), self::makeDb(), self::view());
