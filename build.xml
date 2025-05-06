@@ -107,7 +107,7 @@
         <include name="css/stylesheet.css"/>
       </fileset>
     </delete>
-    <zip destfile="Realblog_XH-3.2-dev-PATCH.zip" basedir="dist"
+    <zip destfile="Realblog_XH-3.2-dev-update-from-3.x.zip" basedir="dist"
        includeemptydirs="false"/>
     <delete dir="patchee" quiet="true"/>
     <delete dir="current" quiet="true"/>
