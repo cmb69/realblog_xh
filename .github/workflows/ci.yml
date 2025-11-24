@@ -18,10 +18,12 @@ jobs:
           php-version: ${{matrix.php}}
           ini-values: short_open_tag=1
           tools: composer,phive
-      - name: Install CMSimple_XH
-        run: |
-          curl -fsSL -o CMSimple_XH-1.8.zip https://github.com/cmsimple-xh/cmsimple-xh/releases/download/1.8.0/CMSimple_XH-1.8.zip
-          unzip -q CMSimple_XH-1.8.zip
+      - name: Checkout CMSimple_XH
+        uses: actions/checkout@v4
+        with:
+          repository: cmsimple-xh/cmsimple-xh
+          ref: '1.8.0'
+          path: cmsimplexh
       - name: Checkout Plib_XH
         uses: actions/checkout@v4
         with:
