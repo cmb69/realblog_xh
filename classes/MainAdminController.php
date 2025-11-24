@@ -98,12 +98,8 @@ class MainAdminController
                 return $this->doDeleteAction($request);
             case "delete_selected":
                 return $this->deleteSelectedAction($request);
-            case "change_status":
-                return $this->changeStatusAction($request);
             case "do_delete_selected":
                 return $this->doDeleteSelectedAction($request);
-            case "do_change_status":
-                return $this->doChangeStatusAction($request);
         }
     }
 
@@ -298,7 +294,6 @@ class MainAdminController
         return $this->view->render("article_form", [
             "id" => $article->id,
             "version" => $article->version,
-            "status" => $article->status,
             "title" => $article->title,
             "teaser" => $article->teaser,
             "body" => $article->body,
@@ -307,9 +302,6 @@ class MainAdminController
             "page_title" => $title,
             "date" => (string) date("Y-m-d", $article->date),
             "csrfToken" => $this->csrfProtector->token(),
-            "states" => $this->stateTuples("selected", function (int $state) use ($article) {
-                return $state === $article->status;
-            }),
             "categories" => trim($article->categories, ","),
             "button" => $button,
             "errors" => $errors,
@@ -321,11 +313,19 @@ class MainAdminController
     /** @return array{string,string,string,string,string,string,string,string,string,string} */
     private function articlePost(Request $request): array
     {
+        $date = strtotime($request->post("realblog_date") ?? "0");
+        if ($date > $request->time()) {
+            $status = Article::UNPUBLISHED;
+        } elseif ($date < strtotime("-1 month", $request->time())) {
+            $status = Article::ARCHIVED;
+        } else {
+            $status = Article::PUBLISHED;
+        }
         return [
             $request->post("realblog_id") ?? "",
             $request->post("realblog_version") ?? "",
             $request->post("realblog_date") ?? "",
-            $request->post("realblog_status") ?? "",
+            (string) $status,
             $request->post("realblog_categories") ?? "",
             $request->post("realblog_title") ?? "",
             $request->post("realblog_headline") ?? "",
@@ -339,12 +339,6 @@ class MainAdminController
     {
         return Response::create($this->renderDeleteConfirmation($request))
             ->withTitle($this->view->text("tooltip_delete_selected"));
-    }
-
-    private function changeStatusAction(Request $request): Response
-    {
-        return Response::create($this->renderChangeStatusConfirmation($request))
-            ->withTitle($this->view->text("tooltip_change_status"));
     }
 
     private function doDeleteSelectedAction(Request $request): Response
@@ -362,22 +356,6 @@ class MainAdminController
         return Response::redirect($this->overviewUrl($request)->absolute());
     }
 
-    private function doChangeStatusAction(Request $request): Response
-    {
-        if (!$this->csrfProtector->check($request->post("realblog_token"))) {
-            return Response::create($this->view->message("fail", "error_unauthorized"));
-        }
-        $ids = $this->realblogIdsFromGet($request);
-        $status = min(max((int) ($request->post("realblog_status") ?? 0), 0), 2);
-        $res = $this->db->updateStatusOfArticlesWithIds($ids, $status);
-        if ($res !== count($ids)) {
-            $errors = $res > 0 ? [["changestatus_warning", $res, count($ids)]] : [["changestatus_error"]];
-            return Response::create($this->renderChangeStatusConfirmation($request, $errors))
-                ->withTitle($this->view->text("tooltip_change_status"));
-        }
-        return Response::redirect($this->overviewUrl($request)->absolute());
-    }
-
     /** @param list<array{string}> $errors */
     private function renderDeleteConfirmation(Request $request, array $errors = []): string
     {
@@ -386,18 +364,6 @@ class MainAdminController
             "url" => $this->overviewUrl($request)->relative(),
             "csrfToken" => $this->csrfProtector->token(),
             "errors" => $errors,
-        ]);
-    }
-
-    /** @param list<array{string}> $errors */
-    private function renderChangeStatusConfirmation(Request $request, array $errors = []): string
-    {
-        return $this->view->render("confirm_change_status", [
-            "ids" => $this->realblogIdsFromGet($request),
-            "url" => $this->overviewUrl($request)->relative(),
-            "csrfToken" => $this->csrfProtector->token(),
-            "errors" => $errors,
-            "states" => self::STATES,
         ]);
     }
 

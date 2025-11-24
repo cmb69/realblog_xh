@@ -386,23 +386,6 @@ class MainAdminControllerTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
-    public function testChangeStatusActionRendersConfirmation()
-    {
-        $request = new FakeRequest([
-            "url" => "http://example.com/?&realblog_ids[]=17&realblog_ids[]=4&action=change_status",
-        ]);
-        $response = $this->sut()($request);
-        $this->assertEquals("Change article status", $response->title());
-        Approvals::verifyHtml($response->output());
-    }
-
-    public function testChangeStatusActionReportsIfNothingIsSelected()
-    {
-        $request = new FakeRequest(["url" => "http://example.com/?&action=change_status"]);
-        $response = $this->sut()($request);
-        Approvals::verifyHtml($response->output());
-    }
-
     public function testDoDeleteSelectedActionIsCsrfProtected()
     {
         $this->csrfProtector->method("check")->willReturn(false);
@@ -455,61 +438,6 @@ class MainAdminControllerTest extends TestCase
         $this->assertStringContainsString("No articles have been deleted!", $response->output());
     }
 
-    public function testDoChangeStatusActionIsCsrfProtected()
-    {
-        $this->csrfProtector->method("check")->willReturn(false);
-        $request = new FakeRequest([
-            "url" => "http://example.com/?&realblog_ids[]=17&realblog_ids[]=4&action=change_status",
-            "post" => ["realblog_do" => ""],
-        ]);
-        $response = $this->sut()($request);
-        $this->assertStringContainsString("You are not authorized for this action!", $response->output());
-    }
-
-    public function testDoChangeStatusActionRedirectsOnSuccess()
-    {
-        $this->db = $this->db(["bulkUpdate" => 2]);
-        $this->csrfProtector->method("check")->willReturn(true);
-        $request = new FakeRequest([
-            "url" => "http://example.com/?&realblog_ids[]=17&realblog_ids[]=4&action=change_status",
-            "post" => ["realblog_do" => ""],
-        ]);
-        $response = $this->sut()($request);
-        $this->assertEquals(
-            "http://example.com/?realblog&admin=plugin_main&action=plugin_text&realblog_page=1",
-            $response->location()
-        );
-    }
-
-    public function testDoChangeStatusActionReportsPartialSuccess()
-    {
-        $this->db = $this->db(["bulkUpdate" => 1]);
-        $this->csrfProtector->method("check")->willReturn(true);
-        $request = new FakeRequest([
-            "url" => "http://example.com/?&realblog_ids[]=17&realblog_ids[]=4&action=change_status",
-            "post" => ["realblog_do" => ""],
-        ]);
-        $response = $this->sut()($request);
-        $this->assertEquals("Change article status", $response->title());
-        Approvals::verifyHtml($response->output());
-    }
-
-    public function testDoChangeStatusActionReportsFailure()
-    {
-        $this->db = $this->db(["bulkUpdate" => 0]);
-        $this->csrfProtector->method("check")->willReturn(true);
-        $request = new FakeRequest([
-            "url" => "http://example.com/?&realblog_ids[]=17&realblog_ids[]=4&action=change_status",
-            "post" => ["realblog_do" => ""],
-        ]);
-        $response = $this->sut()($request);
-        $this->assertEquals("Change article status", $response->title());
-        $this->assertStringContainsString(
-            "The status of the selected articles couldn't be changed!",
-            $response->output()
-        );
-    }
-
     private function db($options = [])
     {
         $db = $this->createMock(DB::class);
@@ -542,7 +470,6 @@ class MainAdminControllerTest extends TestCase
             'realblog_id' => "",
             'realblog_version' => "",
             'realblog_date' => "2023-02-01",
-            'realblog_status' => "",
             'realblog_categories' => "",
             'realblog_title' => "title",
             'realblog_headline' => "",
@@ -559,7 +486,6 @@ class MainAdminControllerTest extends TestCase
             'realblog_id' => "-1",
             'realblog_version' => "-1",
             'realblog_date' => "",
-            'realblog_status' => "3",
             'realblog_categories' => "",
             'realblog_title' => "",
             'realblog_headline' => "",

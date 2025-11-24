@@ -8,7 +8,6 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
  * @var View $this
  * @var int $id
  * @var int $version
- * @var int $status
  * @var string $title
  * @var string $teaser
  * @var string $body
@@ -55,16 +54,11 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
         </td>
       </tr>
       <tr>
-        <th><label for="realblog_status" class="realblog_label"><?=$this->text('label_status')?></label></td>
-        <th colspan="2"></td>
+        <th></th>
+        <th colspan="2"></th>
       </tr>
       <tr>
         <td>
-          <select id="realblog_status" name="realblog_status">
-<?foreach ($states as [$value, $label, $selected]):?>
-            <option value="<?=$this->esc($value)?>" <?=$this->esc($selected)?>><?=$this->text($label)?></option>
-<?endforeach?>
-          </select>
         </td>
         <td>
           <label>

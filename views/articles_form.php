@@ -31,9 +31,6 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
             <button name="action" value="delete_selected" title="<?=$this->text('tooltip_delete_selected')?>">
               <img src="<?=$this->esc($imageFolder)?>delete-selected.png" alt="<?=$this->text('tooltip_delete_selected')?>">
             </button>
-            <button name="action" value="change_status" title="<?=$this->text('tooltip_change_status')?>">
-              <img src="<?=$this->esc($imageFolder)?>change-status.png" alt="<?=$this->text('tooltip_change_status')?>">
-            </button>
             <button name="action" value="create" title="<?=$this->text('tooltip_create')?>">
               <img src="<?=$this->esc($imageFolder)?>create.png" alt="<?=$this->text('tooltip_create')?>">
             </button>
