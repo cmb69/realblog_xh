@@ -27,35 +27,24 @@ use Plib\Request;
 use Plib\Response;
 use Plib\View;
 use Realblog\Infra\DB;
-use Realblog\Value\Article;
 
 class GeneralController
 {
     /** @var array<string,string> */
     private $conf;
 
-    /** @var DB */
-    private $db;
-
     /** @var View */
     private $view;
 
     /** @param array<string,string> $conf */
-    public function __construct(array $conf, DB $db, View $view)
+    public function __construct(array $conf, View $view)
     {
         $this->conf = $conf;
-        $this->db = $db;
         $this->view = $view;
     }
 
     public function __invoke(Request $request): Response
     {
-        if ($this->conf['auto_publish']) {
-            $this->db->autoChangeStatus('publishing_date', Article::PUBLISHED);
-        }
-        if ($this->conf['auto_archive']) {
-            $this->db->autoChangeStatus('archiving_date', Article::ARCHIVED);
-        }
         if ($this->conf['rss_enabled']) {
             return Response::create()->withHjs($this->view->render("head_link", [
                 "url" => "./?function=realblog_feed",

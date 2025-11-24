@@ -1,8 +1,6 @@
 <?php
 
 $plugin_cf['realblog']['admin_records_page']="16";
-$plugin_cf['realblog']['auto_archive']="";
-$plugin_cf['realblog']['auto_publish']="";
 $plugin_cf['realblog']['comments_plugin']="";
 $plugin_cf['realblog']['entries_per_page']="6";
 $plugin_cf['realblog']['entries_order']="asc";

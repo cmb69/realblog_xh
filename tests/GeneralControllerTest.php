@@ -21,20 +21,14 @@
 
 namespace Realblog;
 
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Plib\FakeRequest;
 use Plib\View;
-use Realblog\Infra\DB;
-use Realblog\Value\Article;
 
 class GeneralControllerTest extends TestCase
 {
     /** @var array<string,string> */
     private $conf;
-
-    /** @var DB&MockObject */
-    private $db;
 
     /** @var View */
     private $view;
@@ -42,30 +36,13 @@ class GeneralControllerTest extends TestCase
     public function setUp(): void
     {
         $this->conf = XH_includeVar("./config/config.php", "plugin_cf")["realblog"];
-        $this->conf['auto_archive'] = "";
-        $this->conf["auto_publish"] = "";
         $this->conf['rss_enabled'] = "";
-        $this->db = $this->createMock(DB::class);;
         $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["realblog"]);
     }
 
     private function sut(): GeneralController
     {
-        return new GeneralController($this->conf, $this->db, $this->view);
-    }
-
-    public function testAutoPublishesWhenConfigured()
-    {
-        $this->conf["auto_publish"] = "true";
-        $this->db->expects($this->once())->method("autoChangeStatus")->with('publishing_date', Article::PUBLISHED);
-        $this->sut()(new FakeRequest());
-    }
-
-    public function testAutoArchivesWhenConfigured()
-    {
-        $this->conf["auto_archive"] = "true";
-        $this->db->expects($this->once())->method("autoChangeStatus")->with('archiving_date', Article::ARCHIVED);
-        $this->sut()(new FakeRequest());
+        return new GeneralController($this->conf, $this->view);
     }
 
     public function testRendersFeedLinkWhenConfigured()

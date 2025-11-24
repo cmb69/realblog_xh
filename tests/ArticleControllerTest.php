@@ -168,8 +168,6 @@ class ArticleControllerTest extends TestCase
             3,
             1,
             gmmktime(12, 0, 0, 6, 23, 2023),
-            gmmktime(12, 0, 0, 6, 23, 2023),
-            gmmktime(12, 0, 0, 6, 23, 2023),
             1,
             ",test,",
             "Title",
@@ -206,8 +204,6 @@ class ArticleControllerTest extends TestCase
         return new FullArticle(
             3,
             2,
-            gmmktime(12, 0, 0, 6, 23, 2022),
-            gmmktime(12, 0, 0, 6, 23, 2022),
             gmmktime(12, 0, 0, 6, 23, 2022),
             2,
             "",

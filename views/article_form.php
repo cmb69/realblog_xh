@@ -15,12 +15,8 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
  * @var bool $feedable
  * @var bool $commentable
  * @var string $date
- * @var string $publishing_date
- * @var string $archiving_date
  * @var string $page_title
  * @var string $csrfToken
- * @var bool $isAutoPublish
- * @var bool $isAutoArchive
  * @var list<array{int,string,string}> $states
  * @var string $categories
  * @var string $button
@@ -46,28 +42,16 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
     <table>
       <tr>
         <th><label for="realblog_date1" class="realblog_label"><?=$this->text('date_label')?></label></td>
-        <th><label for="realblog_date2" class="realblog_label"><?=$this->text('startdate_label')?></label></td>
-        <th><label for="realblog_date3" class="realblog_label"><?=$this->text('enddate_label')?></span></label>
+        <th></td>
+        <th></th>
       </tr>
       <tr>
         <td>
           <input type="date" name="realblog_date" id="realblog_date1" required="required" value="<?=$this->esc($date)?>">
         </td>
         <td>
-<?if ($isAutoPublish):?>
-          <input type="date" name="realblog_startdate" id="realblog_date2" required="required" value="<?=$this->esc($publishing_date)?>">
-<?else:?>
-          <span><?=$this->text('startdate_hint')?></span>
-          <input type="hidden" name="realblog_startdate" value="<?=$this->esc($publishing_date)?>">
-<?endif?>
         </td>
         <td>
-<?if ($isAutoArchive):?>
-          <input type="date" name="realblog_enddate" id="realblog_date3" required="required" value="<?=$this->esc($archiving_date)?>">
-<?else:?>
-          <span><?=$this->text('enddate_hint')?></span>
-          <input type="hidden" name="realblog_enddate" value="<?=$this->esc($archiving_date)?>">
-<?endif?>
         </td>
       </tr>
       <tr>

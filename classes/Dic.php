@@ -38,7 +38,7 @@ class Dic
 
     public static function makeGeneralController(): GeneralController
     {
-        return new GeneralController(self::makeConf(), self::makeDb(), self::view());
+        return new GeneralController(self::makeConf(), self::view());
     }
 
     public static function makeBlogController(): BlogController

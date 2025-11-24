@@ -156,8 +156,6 @@ class MainAdminControllerTest extends TestCase
     public function testEditActionRendersArticleWithAutoInputs(): void
     {
         $this->finder = $this->finder(["article" => $this->firstArticle()]);
-        $this->conf["auto_publish"] = "true";
-        $this->conf["auto_archive"] = "true";
         $request = new FakeRequest([
             "url" => "http://example.com/?&action=edit",
         ]);
@@ -544,8 +542,6 @@ class MainAdminControllerTest extends TestCase
             'realblog_id' => "",
             'realblog_version' => "",
             'realblog_date' => "2023-02-01",
-            'realblog_startdate' => "2023-02-01",
-            'realblog_enddate' => "2024-02-01",
             'realblog_status' => "",
             'realblog_categories' => "",
             'realblog_title' => "title",
@@ -563,8 +559,6 @@ class MainAdminControllerTest extends TestCase
             'realblog_id' => "-1",
             'realblog_version' => "-1",
             'realblog_date' => "",
-            'realblog_startdate' => "",
-            'realblog_enddate' => "",
             'realblog_status' => "3",
             'realblog_categories' => "",
             'realblog_title' => "",
@@ -582,8 +576,6 @@ class MainAdminControllerTest extends TestCase
             1,
             1,
             1675205155,
-            1675205155,
-            0,
             1,
             "cat1",
             "Welcome!",

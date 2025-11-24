@@ -33,12 +33,6 @@ class FullArticle
     public $date;
 
     /** @var int */
-    public $publishingDate;
-
-    /** @var int */
-    public $archivingDate;
-
-    /** @var int */
     public $status;
 
     /** @var string */
@@ -63,8 +57,6 @@ class FullArticle
         string $id,
         string $version,
         string $date,
-        string $publishingDate,
-        string $archivingDate,
         string $status,
         string $categories,
         string $title,
@@ -77,8 +69,6 @@ class FullArticle
             (int) $id,
             (int) $version,
             strtotime($date) ?: 0,
-            strtotime($publishingDate) ?: 0,
-            strtotime($archivingDate) ?: 0,
             (int) $status,
             "," . $categories . ",",
             $title,
@@ -93,8 +83,6 @@ class FullArticle
         int $id,
         int $version,
         int $date,
-        int $publishingDate,
-        int $archivingDate,
         int $status,
         string $categories,
         string $title,
@@ -106,8 +94,6 @@ class FullArticle
         $this->id = $id;
         $this->version = $version;
         $this->date = $date;
-        $this->publishingDate = $publishingDate;
-        $this->archivingDate = $archivingDate;
         $this->status = $status;
         $this->categories = $categories;
         $this->title = $title;

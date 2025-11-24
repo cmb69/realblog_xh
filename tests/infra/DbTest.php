@@ -66,16 +66,6 @@ class DbTest extends TestCase
         $this->assertEquals(1, $this->sut->deleteArticle($this->article()));
     }
 
-    public function testAutoChangesStatus(): void
-    {
-        $this->assertEquals(1, $this->sut->insertArticle($this->article()));
-        $result = $this->sut->getConnection()->querySingle("SELECT status FROM articles WHERE id = 1");
-        $this->assertEquals(Article::PUBLISHED, $result);
-        $this->sut->autoChangeStatus("archiving_date", Article::ARCHIVED);
-        $result = $this->sut->getConnection()->querySingle("SELECT status FROM articles WHERE id = 1");
-        $this->assertEquals(Article::ARCHIVED, $result);
-    }
-
     public function testUpdatesStatuses(): void
     {
         $this->assertEquals(1, $this->sut->insertArticle($this->article()));
@@ -134,8 +124,6 @@ class DbTest extends TestCase
         return new FullArticle(
             1,
             1,
-            1676974220,
-            1676974220,
             1676974220,
             1,
             ",,",

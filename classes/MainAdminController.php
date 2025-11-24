@@ -193,7 +193,7 @@ class MainAdminController
     private function createAction(Request $request): Response
     {
         $timestamp = $request->time();
-        $article = new FullArticle(0, 0, $timestamp, 2147483647, 2147483647, 0, '', '', '', '', false, false);
+        $article = new FullArticle(0, 0, $timestamp, 0, '', '', '', '', false, false);
         return $this->showArticleEditor($request, $article, "create");
     }
 
@@ -306,11 +306,7 @@ class MainAdminController
             "commentable" => $article->commentable ? "checked" : "",
             "page_title" => $title,
             "date" => (string) date("Y-m-d", $article->date),
-            "publishing_date" => (string) date("Y-m-d", $article->publishingDate),
-            "archiving_date" => (string) date("Y-m-d", $article->archivingDate),
             "csrfToken" => $this->csrfProtector->token(),
-            "isAutoPublish" => (bool) $this->conf["auto_publish"],
-            "isAutoArchive" => (bool) $this->conf["auto_archive"],
             "states" => $this->stateTuples("selected", function (int $state) use ($article) {
                 return $state === $article->status;
             }),
@@ -322,15 +318,13 @@ class MainAdminController
         ]);
     }
 
-    /** @return array{string,string,string,string,string,string,string,string,string,string,string,string} */
+    /** @return array{string,string,string,string,string,string,string,string,string,string} */
     private function articlePost(Request $request): array
     {
         return [
             $request->post("realblog_id") ?? "",
             $request->post("realblog_version") ?? "",
             $request->post("realblog_date") ?? "",
-            $request->post("realblog_startdate") ?? "",
-            $request->post("realblog_enddate") ?? "",
             $request->post("realblog_status") ?? "",
             $request->post("realblog_categories") ?? "",
             $request->post("realblog_title") ?? "",

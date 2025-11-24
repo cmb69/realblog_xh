@@ -122,12 +122,6 @@ class Util
         if ($article->date <= 0) {
             $errors[] = ["error_date"];
         }
-        if ($article->publishingDate <= 0) {
-            $errors[] = ["error_publishing_date"];
-        }
-        if ($article->archivingDate <= 0) {
-            $errors[] = ["error_archiving_date"];
-        }
         if ($article->status < Article::FIRST_STATE || $article->status > Article::LAST_STATE) {
             $errors[] = ["error_status"];
         }

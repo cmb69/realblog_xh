@@ -176,8 +176,6 @@ class FinderTest extends TestCase
             1,
             1,
             $options["date"] ?? 1676974220,
-            1676974220,
-            1676974220,
             $options["status"] ?? 1,
             $options["categories"] ?? ",,",
             $options["title"] ?? "My Article",
