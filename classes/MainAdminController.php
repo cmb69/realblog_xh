@@ -148,7 +148,7 @@ class MainAdminController
 
     /**
      * @param list<Article> $articles
-     * @return list<array{id:int,date:string,status:int,categories:string,title:string,feedable:bool,commentable:bool,delete_url:string,edit_url:string}>
+     * @return list<array{id:int,date:string,categories:string,title:string,feedable:bool,commentable:bool,delete_url:string,edit_url:string}>
      */
     private function articleRecords(Request $request, array $articles, int $page)
     {
@@ -159,7 +159,6 @@ class MainAdminController
             return [
                 "id" => $article->id,
                 "date" => date($this->view->text("date_format"), $article->date),
-                "status" => $article->status,
                 "categories" => $article->categories,
                 "title" => $article->title,
                 "feedable" => $article->feedable,
