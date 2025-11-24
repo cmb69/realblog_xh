@@ -1,7 +1,6 @@
 <?php
 
 $plugin_tx['realblog']['archiv_back']="archief overzicht";
-$plugin_tx['realblog']['archived']="gearchiveerd";
 $plugin_tx['realblog']['back_to_archive']="terug naar archief »";
 $plugin_tx['realblog']['backuped']="opgeslagen";
 $plugin_tx['realblog']['blog_back']="artikel overzicht";
@@ -31,9 +30,7 @@ $plugin_tx['realblog']['message_datafile']="Data file bestaat niet of niet besch
 $plugin_tx['realblog']['month_names']="";
 $plugin_tx['realblog']['no_topics']="geen artikelen beschikbaar";
 $plugin_tx['realblog']['nothing_selected']="geen artikelen geselecteerd";
-$plugin_tx['realblog']['published']="gepubliceerd";
 $plugin_tx['realblog']['read_more']="lees meer »";
-$plugin_tx['realblog']['readyforpublishing']="niet gepubliceerd";
 $plugin_tx['realblog']['return']="terug";
 $plugin_tx['realblog']['rss_copyright']="";
 $plugin_tx['realblog']['rss_description']="De weblog van ...";

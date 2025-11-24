@@ -1,7 +1,6 @@
 <?php
 
 $plugin_tx['realblog']['archiv_back']="Prahľad archívu";
-$plugin_tx['realblog']['archived']="archívované";
 $plugin_tx['realblog']['back_to_archive']="naspäť do archívu »";
 $plugin_tx['realblog']['backuped']="uložené";
 $plugin_tx['realblog']['blog_back']="prehľad článkov";
@@ -32,9 +31,7 @@ $plugin_tx['realblog']['month_names']="";
 $plugin_tx['realblog']['no_topics']="Neexistujú žiadne články";
 $plugin_tx['realblog']['nothing_selected']="nevybrali ste žiadne články";
 $plugin_tx['realblog']['page_label']="strana";
-$plugin_tx['realblog']['published']="zverejnené";
 $plugin_tx['realblog']['read_more']="Čítať ďalej »";
-$plugin_tx['realblog']['readyforpublishing']="nezverejnené";
 $plugin_tx['realblog']['return']="naspäť";
 $plugin_tx['realblog']['rss_copyright']="";
 $plugin_tx['realblog']['rss_description']="Weblog ...";

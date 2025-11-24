@@ -8,7 +8,6 @@
  */
 
 $plugin_tx['realblog']['archiv_back']="Обзор архива";
-$plugin_tx['realblog']['archived']=" • архивирована";
 $plugin_tx['realblog']['back_to_archive']="Возврат к архиву »";
 $plugin_tx['realblog']['backuped']=" • сохранена";
 $plugin_tx['realblog']['blog_back']="Обзор записей";
@@ -41,9 +40,7 @@ $plugin_tx['realblog']['menu_help']="Помощь";
 $plugin_tx['realblog']['month_names']="январь,февраль,март,апрель,май,июнь,июль,август,сентябрь,октябрь,ноябрь,декабрь";
 $plugin_tx['realblog']['no_topics']="Записи недоступны";
 $plugin_tx['realblog']['nothing_selected']="Записи не выбраны";
-$plugin_tx['realblog']['published']=" • опубликована";
 $plugin_tx['realblog']['read_more']="читать дальше »";
-$plugin_tx['realblog']['readyforpublishing']=" • не опубликована";
 $plugin_tx['realblog']['return']="назад";
 $plugin_tx['realblog']['rss_description']="информация";
 $plugin_tx['realblog']['rss_enable']="true";

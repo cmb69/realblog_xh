@@ -12,7 +12,6 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
  * @var int $nextPage
  * @var int $lastPage
  * @var list<array{id:int,date:string,categories:string,title:string,feedable:bool,commentable:bool,delete_url:string,edit_url:string}> $articles
- * @var list<array{int,string,string}> $states
  */
 ?>
 <!-- realblog articles form -->
@@ -69,19 +68,6 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
 <?endforeach?>
       </tbody>
       <tfoot>
-        <tr>
-          <td colspan="7">
-<?foreach ($states as [$value,$label,$checked]):?>
-            <label>
-              <input type="checkbox" name="realblog_filter[]" value="<?=$this->esc($value)?>" <?=$this->esc($checked)?>>
-              <?=$this->text($label)?>
-            </label>
-<?endforeach?>
-            <button title="<?=$this->text('tooltip_filter')?>">
-              <img src="<?=$this->esc($imageFolder)?>filter.png" alt="<?=$this->text('tooltip_filter')?>">
-            </button>
-          </td>
-        </tr>
         <tr>
           <td colspan="7">
             <input type="text" name="realblog_page" value="<?=$this->esc($page)?>" size="2">

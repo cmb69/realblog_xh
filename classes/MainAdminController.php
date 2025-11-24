@@ -37,8 +37,6 @@ use Realblog\Value\FullArticle;
 
 class MainAdminController
 {
-    private const STATES = ['readyforpublishing', 'published', 'archived'];
-
     /** @var string */
     private $pluginFolder;
 
@@ -120,11 +118,10 @@ class MainAdminController
 
     private function defaultAction(Request $request): Response
     {
-        $states = $this->stateFilter($request);
-        $articleCount = $this->finder->countArticlesWithStatus($states);
+        $articleCount = $this->finder->countArticlesWithStatus(7);
         $limit = (int) $this->conf['admin_records_page'];
         [$offset, $pageCount] = Util::paginationOffset($articleCount, $limit, $this->realblogPage($request));
-        $articles = $this->finder->findArticlesWithStatus($states, $limit, $offset);
+        $articles = $this->finder->findArticlesWithStatus(7, $limit, $offset);
         return Response::create($this->renderArticles($request, $articles, $pageCount));
     }
 
@@ -132,7 +129,6 @@ class MainAdminController
     private function renderArticles(Request $request, array $articles, int $pageCount): string
     {
         $page = min($this->realblogPage($request), $pageCount);
-        $states = $this->stateFilter($request);
         return $this->view->render("articles_form", [
             "imageFolder" => $this->pluginFolder . "images/",
             "page" => $page,
@@ -140,9 +136,6 @@ class MainAdminController
             "nextPage" => min($page + 1, $pageCount),
             "lastPage" => $pageCount,
             "articles" => $this->articleRecords($request, $articles, $page),
-            "states" => $this->stateTuples("checked", function (int $state) use ($states) {
-                return (bool) ((1 << $state) & $states);
-            }),
         ]);
     }
 
@@ -167,22 +160,6 @@ class MainAdminController
                 "edit_url" => $url->with("action", "edit")->relative(),
             ];
         }, $articles);
-    }
-
-    private function stateFilter(Request $request): int
-    {
-        $param = $request->getArray("realblog_filter");
-        if ($param === null) {
-            return Article::MASK_ALL;
-        }
-        $filters = 0;
-        foreach ($param as $state) {
-            if (!in_array($state, ["0", "1", "2"], true)) {
-                continue;
-            }
-            $filters |= 1 << $state;
-        }
-        return $filters;
     }
 
     private function createAction(Request $request): Response
@@ -376,17 +353,6 @@ class MainAdminController
         return array_map("intval", array_filter($param, function ($id) {
             return (int) $id >= 1;
         }));
-    }
-
-    /**
-     * @param callable(int):bool $predicate
-     * @return list<array{int,string,string}>
-     */
-    private function stateTuples(string $attribute, callable $predicate): array
-    {
-        return array_map(function (int $state, string $label) use ($attribute, $predicate) {
-            return [$state, $label, $predicate($state) ? $attribute : ""];
-        }, array_keys(self::STATES), array_values(self::STATES));
     }
 
     private function overviewUrl(Request $request): Url

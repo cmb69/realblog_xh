@@ -1,7 +1,6 @@
 <?php
 
 $plugin_tx['realblog']['archiv_back']="zur Archiv-Übersicht";
-$plugin_tx['realblog']['archived']="Archiviert";
 $plugin_tx['realblog']['article_count_0']="Kein Artikel";
 $plugin_tx['realblog']['article_count_1']="Ein Artikel";
 $plugin_tx['realblog']['article_count_2_4']="%d Artikel";
@@ -61,9 +60,7 @@ $plugin_tx['realblog']['page_views_0']="kein mal gelesen";
 $plugin_tx['realblog']['page_views_1']="ein mal gelesen";
 $plugin_tx['realblog']['page_views_2_4']="%d mal gelesen";
 $plugin_tx['realblog']['page_views_5']="%d mal gelesen";
-$plugin_tx['realblog']['published']="Veröffentlicht";
 $plugin_tx['realblog']['read_more']="Artikel lesen »";
-$plugin_tx['realblog']['readyforpublishing']="Nicht veröffentlicht";
 $plugin_tx['realblog']['return']="Zurück";
 $plugin_tx['realblog']['rss_copyright']="";
 $plugin_tx['realblog']['rss_description']="Das Weblog von ...";
