@@ -41,24 +41,11 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
     <table>
       <tr>
         <th><label for="realblog_date1" class="realblog_label"><?=$this->text('date_label')?></label></td>
-        <th></td>
-        <th></th>
-      </tr>
-      <tr>
-        <td>
-          <input type="date" name="realblog_date" id="realblog_date1" required="required" value="<?=$this->esc($date)?>">
-        </td>
-        <td>
-        </td>
-        <td>
-        </td>
-      </tr>
-      <tr>
-        <th></th>
         <th colspan="2"></th>
       </tr>
       <tr>
         <td>
+          <input type="date" name="realblog_date" id="realblog_date1" required="required" value="<?=$this->esc($date)?>">
         </td>
         <td>
           <label>
