@@ -30,7 +30,6 @@ use Realblog\Infra\DB;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Pages;
 use Realblog\Logic\Util;
-use Realblog\Value\Article;
 use Realblog\Value\FullArticle;
 
 class ArticleController

@@ -54,4 +54,11 @@ class GeneralControllerTest extends TestCase
             $response->hjs()
         );
     }
+
+    public function testDoesNothingIfFeedIsDisabled()
+    {
+        $this->conf["rss_enabled"] = "";
+        $response = $this->sut()(new FakeRequest());
+        $this->assertSame("", $response->output());
+    }
 }

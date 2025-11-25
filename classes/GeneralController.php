@@ -50,9 +50,6 @@ class GeneralController
                 "url" => "./?function=realblog_feed",
             ]));
         }
-        if ($request->get("function") === "realblog_article") {
-            Response::create("show article");
-        }
         return Response::create();
     }
 }
