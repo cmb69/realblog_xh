@@ -278,8 +278,8 @@ SQL;
         $result = $statement->execute();
         assert($result !== false);
         $record = $result->fetchArray(SQLITE3_NUM);
-        unset($record[3], $record[4], $record[5]);
         if ($record !== false) {
+            unset($record[3], $record[4], $record[5]);
             return new FullArticle(...$record);
         } else {
             return null;

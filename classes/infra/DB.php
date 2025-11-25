@@ -86,7 +86,11 @@ CREATE TABLE articles (
     feedable INTEGER,
     commentable INTEGER
 );
-CREATE INDEX status ON articles (status, date, id);
+CREATE TABLE page_views (
+    article_id INTEGER NOT NULL,
+    timestamp INTEGER NOT NULL
+);
+CREATE INDEX date ON articles (date, id);
 CREATE INDEX feedable ON articles (feedable, date, id);
 EOS;
         assert($this->connection !== null);
@@ -121,9 +125,9 @@ SQL;
                 $categories = implode(',', $categories);
                 $statement->bindValue(':id', $record[0], SQLITE3_INTEGER);
                 $statement->bindValue(':date', $record[1], SQLITE3_INTEGER);
-                $statement->bindValue(':publishing_date', $record[2], SQLITE3_INTEGER);
-                $statement->bindValue(':archiving_date', $record[3], SQLITE3_INTEGER);
-                $statement->bindValue(':status', $status, SQLITE3_INTEGER);
+                $statement->bindValue(':publishing_date', $record[2], SQLITE3_NULL);
+                $statement->bindValue(':archiving_date', $record[3], SQLITE3_NULL);
+                $statement->bindValue(':status', $status, SQLITE3_NULL);
                 $statement->bindValue(':categories', ",$categories,", SQLITE3_TEXT);
                 $statement->bindValue(':title', $record[6], SQLITE3_TEXT);
                 $statement->bindValue(':teaser', $record[7], SQLITE3_TEXT);
@@ -161,6 +165,8 @@ CREATE TABLE IF NOT EXISTS page_views (
     article_id INTEGER NOT NULL,
     timestamp INTEGER NOT NULL
 );
+DROP INDEX IF EXISTS status;
+CREATE INDEX IF NOT EXISTS date ON articles (date, id);
 EOS;
         assert($this->connection !== null);
         $this->connection->exec($sql);
@@ -180,9 +186,9 @@ EOS;
         assert($statement !== false);
         $statement->bindValue(':id', null, SQLITE3_NULL);
         $statement->bindValue(':date', $article->date, SQLITE3_INTEGER);
-        $statement->bindValue(':publishing_date', 0, SQLITE3_INTEGER);
-        $statement->bindValue(':archiving_date', 0, SQLITE3_INTEGER);
-        $statement->bindValue(':status', 0, SQLITE3_INTEGER);
+        $statement->bindValue(':publishing_date', 0, SQLITE3_NULL);
+        $statement->bindValue(':archiving_date', 0, SQLITE3_NULL);
+        $statement->bindValue(':status', 0, SQLITE3_NULL);
         $statement->bindValue(':categories', $article->categories, SQLITE3_TEXT);
         $statement->bindValue(':title', $article->title, SQLITE3_TEXT);
         $statement->bindValue(':teaser', $article->teaser, SQLITE3_TEXT);
@@ -201,8 +207,7 @@ EOS;
         $conn = $this->getConnection();
         $sql = <<<'EOS'
 UPDATE articles
-    SET version = version + 1, date = :date, publishing_date = :publishing_date,
-        archiving_date = :archiving_date, status = :status,
+    SET version = version + 1, date = :date,
         categories = :categories, title = :title, teaser = :teaser, body = :body,
         feedable = :feedable, commentable = :commentable
     WHERE id = :id AND version = :version
@@ -212,9 +217,6 @@ EOS;
         $statement->bindValue(':id', $article->id, SQLITE3_INTEGER);
         $statement->bindValue(':version', $article->version, SQLITE3_INTEGER);
         $statement->bindValue(':date', $article->date, SQLITE3_INTEGER);
-        $statement->bindValue(':publishing_date', 0, SQLITE3_INTEGER);
-        $statement->bindValue(':archiving_date', 0, SQLITE3_INTEGER);
-        $statement->bindValue(':status', 0, SQLITE3_INTEGER);
         $statement->bindValue(':categories', $article->categories, SQLITE3_TEXT);
         $statement->bindValue(':title', $article->title, SQLITE3_TEXT);
         $statement->bindValue(':teaser', $article->teaser, SQLITE3_TEXT);
@@ -294,7 +296,7 @@ EOS;
             return false;
         }
         $sql = <<<SQL
-SELECT id, date, status, categories, title, teaser, body, feedable, commentable
+SELECT id, date, categories, title, teaser, body, feedable, commentable
 FROM articles
 SQL;
         $conn = $this->getConnection();
@@ -309,7 +311,7 @@ SQL;
         fputcsv($stream, $record, ",", "\"", "\0");
         while (($record = $result->fetchArray(SQLITE3_NUM)) !== false) {
             $record[1] = date("Y-m-d H:i:s", $record[1]);
-            $record[3] = trim($record[3], ",");
+            $record[2] = trim($record[2], ",");
             fputcsv($stream, $record, ",", "\"", "\0");
         }
         fclose($stream);
@@ -339,15 +341,15 @@ EOS;
             $statement->bindValue(':id', $record[0], SQLITE3_INTEGER);
             $statement->bindValue(':version', 0, SQLITE3_INTEGER);
             $statement->bindValue(':date', strtotime((string) $record[1]), SQLITE3_INTEGER);
-            $statement->bindValue(':publishing_date', 0, SQLITE3_INTEGER);
-            $statement->bindValue(':archiving_date', 0, SQLITE3_INTEGER);
-            $statement->bindValue(':status', $record[2], SQLITE3_INTEGER);
-            $statement->bindValue(':categories', ",{$record[3]},", SQLITE3_TEXT);
-            $statement->bindValue(':title', $record[4], SQLITE3_TEXT);
-            $statement->bindValue(':teaser', $record[5], SQLITE3_TEXT);
-            $statement->bindValue(':body', $record[6], SQLITE3_TEXT);
-            $statement->bindValue(':feedable', $record[7], SQLITE3_INTEGER);
-            $statement->bindValue(':commentable', $record[8], SQLITE3_INTEGER);
+            $statement->bindValue(':publishing_date', 0, SQLITE3_NULL);
+            $statement->bindValue(':archiving_date', 0, SQLITE3_NULL);
+            $statement->bindValue(':status', 0, SQLITE3_NULL);
+            $statement->bindValue(':categories', ",{$record[2]},", SQLITE3_TEXT);
+            $statement->bindValue(':title', $record[3], SQLITE3_TEXT);
+            $statement->bindValue(':teaser', $record[4], SQLITE3_TEXT);
+            $statement->bindValue(':body', $record[5], SQLITE3_TEXT);
+            $statement->bindValue(':feedable', $record[6], SQLITE3_INTEGER);
+            $statement->bindValue(':commentable', $record[7], SQLITE3_INTEGER);
             if (!$statement->execute()) {
                 return false;
             }
