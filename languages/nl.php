@@ -59,7 +59,6 @@ $plugin_tx['realblog']['window_close']="sluit venster";
 $plugin_tx['realblog']['window_print']="print geselecteerde artikelen";
 $plugin_tx['realblog']['cf_admin_records_page']="Aantal artikelen op een pagina in het overzicht van de administrator";
 $plugin_tx['realblog']['cf_comments_plugin']="De naam van de plugin voor commentaren. Laat leeg om commentaren uit te schakelen.";
-$plugin_tx['realblog']['cf_entries_order']="De volgorde van artikelen. \"desc\" betekent nieuwste artikel bovenaan; \"asc\" betekent oudste artikel bovenaan";
 $plugin_tx['realblog']['cf_links_visible']="Aantal zichtbare artikelen met de functie realbloglink()";
 $plugin_tx['realblog']['cf_rss_enabled']="Is de RSS feed beschikbaar?";
 $plugin_tx['realblog']['cf_rss_editor']="Het e-mailadres van u als administrator.";

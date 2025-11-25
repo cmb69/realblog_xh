@@ -3,7 +3,6 @@
 $plugin_cf['realblog']['admin_records_page']="16";
 $plugin_cf['realblog']['comments_plugin']="";
 $plugin_cf['realblog']['entries_per_page']="6";
-$plugin_cf['realblog']['entries_order']="asc";
 $plugin_cf['realblog']['heading_level']="h4";
 $plugin_cf['realblog']['heading_above_meta']="";
 $plugin_cf['realblog']['links_visible']="4";

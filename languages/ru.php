@@ -82,7 +82,6 @@ $plugin_tx['realblog']['window_print']="Печать выбранной запи
 $plugin_tx['realblog']['cf_admin_records_page']="Количество записей для просмотра на одной странице (администрирование)";
 $plugin_tx['realblog']['cf_comments_function']="<p><b>true</b> Разрешить комментарии (если установлен плагин Comments_XH).</p>";
 $plugin_tx['realblog']['cf_editor']="Использовать свой редактор для записей (укажите название, например, tinymce).";
-$plugin_tx['realblog']['cf_entries_order']="<p><b>desc</b> Новые записи вверху</p><p><b>asc</b> Старые записи вверху</p>";
 $plugin_tx['realblog']['cf_links_visible']="Количество видимых записей для функции realbloglink().";
 $plugin_tx['realblog']['cf_rss_copyright']="<p>Ваш CopyRight.</p><p>Необходим только в случае предоставления вами сервиса RSS.</p>";
 $plugin_tx['realblog']['cf_rss_editor']="<p>Ваш электронный адрес как провайдера RSS-ленты.</p><p>Необходим только в случае предоставления вами сервиса RSS.</p>";

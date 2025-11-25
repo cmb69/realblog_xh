@@ -74,13 +74,12 @@ class BlogController
         if ($showSearch) {
             $html .= $this->renderSearchForm($request, "blog");
         }
-        $order = ($this->conf["entries_order"] == "desc") ? -1 : 1;
         $limit = max(1, (int) $this->conf["entries_per_page"]);
         $searchTerm = $request->get("realblog_search") ?? "";
         [$from, $to] = Util::publishingInterval($request->time());
         $articleCount = $this->finder->countPublishedArticles($from, $to, $category, $searchTerm);
         [$offset, $pageCount, $page] = Util::paginationOffset($articleCount, $limit, $this->realblogPage($request));
-        $articles = $this->finder->findArticles($from, $to, $limit, $offset, $order, $category, $searchTerm);
+        $articles = $this->finder->findArticles($from, $to, $limit, $offset, $category, $searchTerm);
         if ($searchTerm) {
             $html .= $this->renderSearchResults($request, "blog", $articleCount);
         }

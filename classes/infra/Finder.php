@@ -46,15 +46,9 @@ class Finder
         int $to,
         int $limit,
         int $offset = 0,
-        int $order = -1,
         string $category = 'all',
         ?string $search = null
     ): array {
-        if ($order === -1) {
-            $order = 'DESC';
-        } else {
-            $order = 'ASC';
-        }
         $categoryClause = ($category !== 'all')
             ? 'AND categories LIKE :category'
             : '';
@@ -65,7 +59,7 @@ class Finder
 SELECT id, date, categories, title, teaser, length(body) AS hasBody, commentable
     FROM articles
     WHERE date > :from AND date < :to $categoryClause $searchClause
-    ORDER BY date $order, id $order
+    ORDER BY date DESC, id DESC
     LIMIT $limit OFFSET $offset
 SQL;
         $connection = $this->db->getConnection();

@@ -112,7 +112,6 @@ $plugin_tx['realblog']['window_close']="Fenster schliessen";
 $plugin_tx['realblog']['window_print']="ausgewählte Artikel drucken";
 $plugin_tx['realblog']['cf_admin_records_page']="Anzahl der Artikel auf einer Seite in der Artikel-Übersicht der Administration";
 $plugin_tx['realblog']['cf_comments_plugin']="Der Name eines kompatiblen Kommentar Plugins. Leer lassen, um Kommentare zu deaktivieren.";
-$plugin_tx['realblog']['cf_entries_order']="Die Anzeigereihenfolge der Artikel. \"desc\" bedeutet neuester Artikel oben; \"asc\" bedeutet ältester Artikel oben";
 $plugin_tx['realblog']['cf_entries_per_page']="Anzahl der Artikel auf einer Übersichtsseite; mindestens \"1\". Tragen Sie eine sehr große Zahl wie \"1000000000\" ein, um die Paginierung komplett zu unterdrücken.";
 $plugin_tx['realblog']['cf_heading_level']="HTML-Element, mit dem Überschriften ausgezeichnet werden.";
 $plugin_tx['realblog']['cf_heading_above_meta']="Ob die Artikel-Metainformationen oberhalb der Artikelüberschrift angezeigt werden soll. Normalerweise wird sie unterhalb angezeigt.";
