@@ -29,6 +29,7 @@ use Plib\Url;
 use Plib\View;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Pages;
+use Realblog\Logic\Util;
 use Realblog\Value\Article;
 
 class FeedController
@@ -70,12 +71,13 @@ class FeedController
         }
         $count = (int) $this->conf["rss_entries"];
         $logo = $this->imageFolder . $this->conf["rss_logo"];
+        $articles = $this->finder->findFeedableArticles(Util::publishingStart($request->time()), $count);
         return Response::create("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" . $this->view->render("feed", [
             "url" => $request->url()->page($this->conf["rss_page"])->absolute(),
             "managing_editor" => $this->conf["rss_editor"],
             "has_logo" => (bool) $this->conf["rss_logo"],
             "image_url" => $request->url()->path($logo)->absolute(),
-            "articles" => $this->articleRecords($request->url(), $this->finder->findFeedableArticles($count)),
+            "articles" => $this->articleRecords($request->url(), $articles),
         ]))->withContentType("application/xml; charset=UTF-8");
     }
 

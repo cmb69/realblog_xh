@@ -76,7 +76,7 @@ class ArticleController
     private function oneArticle(Request $request, int $id): Response
     {
         $article = $this->finder->findById($id);
-        if ($article === null || (!$request->admin() && $article->status === Article::UNPUBLISHED)) {
+        if ($article === null || (!$request->admin() && Util::isUnpublished($article, $request->time()))) {
             return Response::create($this->view->message("fail", "message_not_found"));
         }
         if (!$request->admin()) {
@@ -88,7 +88,7 @@ class ArticleController
     private function renderArticle(Request $request, FullArticle $article): Response
     {
         $teaser = trim(html_entity_decode(strip_tags($article->teaser), ENT_COMPAT, "UTF-8"));
-        if ($article->status === Article::ARCHIVED) {
+        if (Util::isArchieved($article, $request->time())) {
             $url = $request->url()->with("realblog_year", $this->year($request));
         } else {
             $url = $request->url()->with("realblog_page", (string) $this->realblogPage($request));
@@ -129,7 +129,7 @@ class ArticleController
             "heading_above_meta" => $this->conf["heading_above_meta"],
             "is_admin" => $request->admin(),
             "wants_comments" => $this->conf["comments_plugin"] && class_exists($bridge),
-            "back_text" => $article->status === 2 ? "archiv_back" : "blog_back",
+            "back_text" => Util::isArchieved($article, $request->time()) ? "archiv_back" : "blog_back",
             "back_url" => $backUrl,
             "back_to_search_url" => $backToSearchUrl ?? null,
             "edit_url" => $editUrl,
@@ -155,7 +155,7 @@ class ArticleController
         if (is_string($param)) {
             return $param;
         }
-        $archiveYears = $this->finder->findArchiveYears();
+        $archiveYears = $this->finder->findArchiveYears(Util::archiveStart($request->time()));
         if (!$archiveYears) {
             return "";
         }

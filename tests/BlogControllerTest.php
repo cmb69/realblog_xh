@@ -144,7 +144,7 @@ class BlogControllerTest extends TestCase
     private function finder($options = [])
     {
         $finder = $this->createStub(Finder::class);
-        $finder->method("countArticlesWithStatus")->willReturn($options["count"] ?? 0);
+        $finder->method("countPublishedArticles")->willReturn($options["count"] ?? 0);
         $finder->method("findArticles")->willReturn($options["articles"] ?? []);
         $finder->method("findById")->willReturn($options["article"] ?? $this->article());
         $finder->method("findArchiveYears")->willReturn([2020, 2022]);
@@ -162,7 +162,6 @@ class BlogControllerTest extends TestCase
             $articles[] = new Article(
                 $num,
                 gmmktime(12, 0, 0, $month, 14, $year),
-                1,
                 ",test,",
                 "Title $num",
                 "Teaser $num",
@@ -180,9 +179,6 @@ class BlogControllerTest extends TestCase
             3,
             1,
             gmmktime(12, 0, 0, 6, 23, 2023),
-            gmmktime(12, 0, 0, 6, 23, 2023),
-            gmmktime(12, 0, 0, 6, 23, 2023),
-            1,
             ",test,",
             "Title",
             "Teaser",
@@ -201,7 +197,6 @@ class BlogControllerTest extends TestCase
             $articles[] = new Article(
                 $num,
                 gmmktime(12, 0, 0, $month, 14, $year),
-                2,
                 "",
                 "Title $num",
                 "Teaser $num",
@@ -219,9 +214,6 @@ class BlogControllerTest extends TestCase
             3,
             2,
             gmmktime(12, 0, 0, 6, 23, 2022),
-            gmmktime(12, 0, 0, 6, 23, 2022),
-            gmmktime(12, 0, 0, 6, 23, 2022),
-            2,
             "",
             "Title",
             "Teaser",

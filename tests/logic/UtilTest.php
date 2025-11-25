@@ -86,13 +86,10 @@ class UtilTest extends TestCase
     public function validateArticles(): array
     {
         return [
-            [new FullArticle(-1, -1, 0, 0, 0, 3, "", "", "", "", true, false), [
+            [new FullArticle(-1, -1, 0, "", "", "", "", true, false), [
                 ["error_id"],
                 ["error_version"],
                 ["error_date"],
-                ["error_publishing_date"],
-                ["error_archiving_date"],
-                ["error_status"],
                 ["error_title"],
             ]],
         ];

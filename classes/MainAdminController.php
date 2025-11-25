@@ -37,8 +37,6 @@ use Realblog\Value\FullArticle;
 
 class MainAdminController
 {
-    private const STATES = ['readyforpublishing', 'published', 'archived'];
-
     /** @var string */
     private $pluginFolder;
 
@@ -98,12 +96,8 @@ class MainAdminController
                 return $this->doDeleteAction($request);
             case "delete_selected":
                 return $this->deleteSelectedAction($request);
-            case "change_status":
-                return $this->changeStatusAction($request);
             case "do_delete_selected":
                 return $this->doDeleteSelectedAction($request);
-            case "do_change_status":
-                return $this->doChangeStatusAction($request);
         }
     }
 
@@ -124,11 +118,10 @@ class MainAdminController
 
     private function defaultAction(Request $request): Response
     {
-        $states = $this->stateFilter($request);
-        $articleCount = $this->finder->countArticlesWithStatus($states);
+        $articleCount = $this->finder->countArticles();
         $limit = (int) $this->conf['admin_records_page'];
         [$offset, $pageCount] = Util::paginationOffset($articleCount, $limit, $this->realblogPage($request));
-        $articles = $this->finder->findArticlesWithStatus($states, $limit, $offset);
+        $articles = $this->finder->findAllArticles($limit, $offset);
         return Response::create($this->renderArticles($request, $articles, $pageCount));
     }
 
@@ -136,7 +129,6 @@ class MainAdminController
     private function renderArticles(Request $request, array $articles, int $pageCount): string
     {
         $page = min($this->realblogPage($request), $pageCount);
-        $states = $this->stateFilter($request);
         return $this->view->render("articles_form", [
             "imageFolder" => $this->pluginFolder . "images/",
             "page" => $page,
@@ -144,15 +136,12 @@ class MainAdminController
             "nextPage" => min($page + 1, $pageCount),
             "lastPage" => $pageCount,
             "articles" => $this->articleRecords($request, $articles, $page),
-            "states" => $this->stateTuples("checked", function (int $state) use ($states) {
-                return (bool) ((1 << $state) & $states);
-            }),
         ]);
     }
 
     /**
      * @param list<Article> $articles
-     * @return list<array{id:int,date:string,status:int,categories:string,title:string,feedable:bool,commentable:bool,delete_url:string,edit_url:string}>
+     * @return list<array{id:int,date:string,categories:string,title:string,feedable:bool,commentable:bool,delete_url:string,edit_url:string}>
      */
     private function articleRecords(Request $request, array $articles, int $page)
     {
@@ -163,7 +152,6 @@ class MainAdminController
             return [
                 "id" => $article->id,
                 "date" => date($this->view->text("date_format"), $article->date),
-                "status" => $article->status,
                 "categories" => $article->categories,
                 "title" => $article->title,
                 "feedable" => $article->feedable,
@@ -174,26 +162,10 @@ class MainAdminController
         }, $articles);
     }
 
-    private function stateFilter(Request $request): int
-    {
-        $param = $request->getArray("realblog_filter");
-        if ($param === null) {
-            return Article::MASK_ALL;
-        }
-        $filters = 0;
-        foreach ($param as $state) {
-            if (!in_array($state, ["0", "1", "2"], true)) {
-                continue;
-            }
-            $filters |= 1 << $state;
-        }
-        return $filters;
-    }
-
     private function createAction(Request $request): Response
     {
         $timestamp = $request->time();
-        $article = new FullArticle(0, 0, $timestamp, 2147483647, 2147483647, 0, '', '', '', '', false, false);
+        $article = new FullArticle(0, 0, $timestamp, '', '', '', '', false, false);
         return $this->showArticleEditor($request, $article, "create");
     }
 
@@ -298,7 +270,6 @@ class MainAdminController
         return $this->view->render("article_form", [
             "id" => $article->id,
             "version" => $article->version,
-            "status" => $article->status,
             "title" => $article->title,
             "teaser" => $article->teaser,
             "body" => $article->body,
@@ -306,14 +277,7 @@ class MainAdminController
             "commentable" => $article->commentable ? "checked" : "",
             "page_title" => $title,
             "date" => (string) date("Y-m-d", $article->date),
-            "publishing_date" => (string) date("Y-m-d", $article->publishingDate),
-            "archiving_date" => (string) date("Y-m-d", $article->archivingDate),
             "csrfToken" => $this->csrfProtector->token(),
-            "isAutoPublish" => (bool) $this->conf["auto_publish"],
-            "isAutoArchive" => (bool) $this->conf["auto_archive"],
-            "states" => $this->stateTuples("selected", function (int $state) use ($article) {
-                return $state === $article->status;
-            }),
             "categories" => trim($article->categories, ","),
             "button" => $button,
             "errors" => $errors,
@@ -322,16 +286,13 @@ class MainAdminController
         ]);
     }
 
-    /** @return array{string,string,string,string,string,string,string,string,string,string,string,string} */
+    /** @return array{string,string,string,string,string,string,string,string,string} */
     private function articlePost(Request $request): array
     {
         return [
             $request->post("realblog_id") ?? "",
             $request->post("realblog_version") ?? "",
             $request->post("realblog_date") ?? "",
-            $request->post("realblog_startdate") ?? "",
-            $request->post("realblog_enddate") ?? "",
-            $request->post("realblog_status") ?? "",
             $request->post("realblog_categories") ?? "",
             $request->post("realblog_title") ?? "",
             $request->post("realblog_headline") ?? "",
@@ -345,12 +306,6 @@ class MainAdminController
     {
         return Response::create($this->renderDeleteConfirmation($request))
             ->withTitle($this->view->text("tooltip_delete_selected"));
-    }
-
-    private function changeStatusAction(Request $request): Response
-    {
-        return Response::create($this->renderChangeStatusConfirmation($request))
-            ->withTitle($this->view->text("tooltip_change_status"));
     }
 
     private function doDeleteSelectedAction(Request $request): Response
@@ -368,22 +323,6 @@ class MainAdminController
         return Response::redirect($this->overviewUrl($request)->absolute());
     }
 
-    private function doChangeStatusAction(Request $request): Response
-    {
-        if (!$this->csrfProtector->check($request->post("realblog_token"))) {
-            return Response::create($this->view->message("fail", "error_unauthorized"));
-        }
-        $ids = $this->realblogIdsFromGet($request);
-        $status = min(max((int) ($request->post("realblog_status") ?? 0), 0), 2);
-        $res = $this->db->updateStatusOfArticlesWithIds($ids, $status);
-        if ($res !== count($ids)) {
-            $errors = $res > 0 ? [["changestatus_warning", $res, count($ids)]] : [["changestatus_error"]];
-            return Response::create($this->renderChangeStatusConfirmation($request, $errors))
-                ->withTitle($this->view->text("tooltip_change_status"));
-        }
-        return Response::redirect($this->overviewUrl($request)->absolute());
-    }
-
     /** @param list<array{string}> $errors */
     private function renderDeleteConfirmation(Request $request, array $errors = []): string
     {
@@ -392,18 +331,6 @@ class MainAdminController
             "url" => $this->overviewUrl($request)->relative(),
             "csrfToken" => $this->csrfProtector->token(),
             "errors" => $errors,
-        ]);
-    }
-
-    /** @param list<array{string}> $errors */
-    private function renderChangeStatusConfirmation(Request $request, array $errors = []): string
-    {
-        return $this->view->render("confirm_change_status", [
-            "ids" => $this->realblogIdsFromGet($request),
-            "url" => $this->overviewUrl($request)->relative(),
-            "csrfToken" => $this->csrfProtector->token(),
-            "errors" => $errors,
-            "states" => self::STATES,
         ]);
     }
 
@@ -417,17 +344,6 @@ class MainAdminController
         return array_map("intval", array_filter($param, function ($id) {
             return (int) $id >= 1;
         }));
-    }
-
-    /**
-     * @param callable(int):bool $predicate
-     * @return list<array{int,string,string}>
-     */
-    private function stateTuples(string $attribute, callable $predicate): array
-    {
-        return array_map(function (int $state, string $label) use ($attribute, $predicate) {
-            return [$state, $label, $predicate($state) ? $attribute : ""];
-        }, array_keys(self::STATES), array_values(self::STATES));
     }
 
     private function overviewUrl(Request $request): Url

@@ -122,18 +122,37 @@ class Util
         if ($article->date <= 0) {
             $errors[] = ["error_date"];
         }
-        if ($article->publishingDate <= 0) {
-            $errors[] = ["error_publishing_date"];
-        }
-        if ($article->archivingDate <= 0) {
-            $errors[] = ["error_archiving_date"];
-        }
-        if ($article->status < Article::FIRST_STATE || $article->status > Article::LAST_STATE) {
-            $errors[] = ["error_status"];
-        }
         if ($article->title === "") {
             $errors[] = ["error_title"];
         }
         return $errors;
+    }
+
+    public static function isUnpublished(FullArticle $article, int $now): bool
+    {
+        return $article->date > strtotime("midnight", $now);
+    }
+
+    public static function isArchieved(FullArticle $article, int $now): bool
+    {
+        return $article->date < strtotime("midnight -1 month", $now);
+    }
+
+    /** @return array{int,int} */
+    public static function publishingInterval(int $now): array
+    {
+        $to = strtotime("midnight", $now);
+        $from = strtotime("midnight -1 month", $to);
+        return [$from, $to];
+    }
+
+    public static function publishingStart(int $now): int
+    {
+        return strtotime("midnight", $now);
+    }
+
+    public static function archiveStart(int $now): int
+    {
+        return strtotime("midnight -1 month", $now);
     }
 }

@@ -23,15 +23,6 @@ namespace Realblog\Value;
 
 class Article
 {
-    public const UNPUBLISHED = 0;
-    public const PUBLISHED = 1;
-    public const ARCHIVED = 2;
-    public const FIRST_STATE = self::UNPUBLISHED;
-    public const LAST_STATE = self::ARCHIVED;
-
-    public const MASK_PUBLISHED = 1 << self::PUBLISHED;
-    public const MASK_ALL = (1 << self::UNPUBLISHED) | (1 << self::PUBLISHED) | (1 << self::ARCHIVED);
-
     /**
      * @var int
      * @readonly
@@ -43,12 +34,6 @@ class Article
      * @readonly
      */
     public $date;
-
-    /**
-     * @var int
-     * @readonly
-     */
-    public $status;
 
     /**
      * @var string
@@ -89,7 +74,6 @@ class Article
     public function __construct(
         int $id,
         int $date,
-        int $status,
         string $categories,
         string $title,
         string $teaser,
@@ -99,7 +83,6 @@ class Article
     ) {
         $this->id = $id;
         $this->date = $date;
-        $this->status = $status;
         $this->categories = $categories;
         $this->title = $title;
         $this->teaser = $teaser;
