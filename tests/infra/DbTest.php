@@ -79,7 +79,7 @@ class DbTest extends TestCase
         $this->assertEquals(1, $this->sut->insertArticle($this->article()));
         $this->assertEquals(1, $this->sut->insertArticle($this->article()));
         $this->assertEquals(1, $this->sut->insertArticle($this->article()));
-        $this->assertEquals(2, $this->sut->deleteArticlesWithIds([1, 3]));
+        $this->assertEquals(true, $this->sut->deleteArticleById(1));
     }
 
     public function testExportsToCsv(): void

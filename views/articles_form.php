@@ -23,12 +23,9 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
     <table class="realblog_table">
       <thead>
         <tr>
-          <th colspan="3">
+          <th colspan="2">
             <button name="action" value="plugin_text" title="<?=$this->text('tooltip_refresh')?>">
               <img src="<?=$this->esc($imageFolder)?>refresh.png" alt="<?=$this->text('tooltip_refresh')?>">
-            </button>
-            <button name="action" value="delete_selected" title="<?=$this->text('tooltip_delete_selected')?>">
-              <img src="<?=$this->esc($imageFolder)?>delete-selected.png" alt="<?=$this->text('tooltip_delete_selected')?>">
             </button>
             <button name="action" value="create" title="<?=$this->text('tooltip_create')?>">
               <img src="<?=$this->esc($imageFolder)?>create.png" alt="<?=$this->text('tooltip_create')?>">
@@ -43,9 +40,6 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
       <tbody>
 <?foreach ($articles as $article):?>
         <tr>
-          <td>
-            <input type="checkbox" name="realblog_ids[]" value="<?=$this->esc($article['id'])?>">
-          </td>
           <td>
             <a href="<?=$this->esc($article['delete_url'])?>">
               <img src="<?=$this->esc($imageFolder)?>delete.png" title="<?=$this->text('tooltip_delete')?>" alt="<?=$this->text('tooltip_delete')?>">
@@ -62,14 +56,14 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
           <td><?=$this->esc($article['commentable'])?></td>
         </tr>
         <tr>
-          <td colspan="4" class="realblog_table_title"><?=$this->esc($article['title'])?></td>
+          <td colspan="3" class="realblog_table_title"><?=$this->esc($article['title'])?></td>
           <td colspan="3" class="realblog_table_categories"><?=$this->esc($article['categories'])?></td>
         </tr>
 <?endforeach?>
       </tbody>
       <tfoot>
         <tr>
-          <td colspan="7">
+          <td colspan="6">
             <input type="text" name="realblog_page" value="<?=$this->esc($page)?>" size="2">
             / <?=$this->esc($lastPage)?>
             <button name="realblog_page" value="1" title="<?=$this->text('tooltip_first')?>">

@@ -94,10 +94,6 @@ class MainAdminController
                 return $this->doEditAction($request);
             case "do_delete":
                 return $this->doDeleteAction($request);
-            case "delete_selected":
-                return $this->deleteSelectedAction($request);
-            case "do_delete_selected":
-                return $this->doDeleteSelectedAction($request);
         }
     }
 
@@ -178,15 +174,6 @@ class MainAdminController
         return $this->showArticleEditor($request, $article, "edit");
     }
 
-    private function deleteAction(Request $request): Response
-    {
-        $article = $this->finder->findById(max((int) ($request->get("realblog_id") ?? 0), 1));
-        if (!$article) {
-            return Response::create($this->view->message("fail", "message_not_found"));
-        }
-        return $this->showArticleEditor($request, $article, "delete");
-    }
-
     private function doCreateAction(Request $request): Response
     {
         if (!$this->csrfProtector->check($request->post("realblog_token"))) {
@@ -221,19 +208,6 @@ class MainAdminController
         return Response::redirect($this->overviewUrl($request)->absolute());
     }
 
-    private function doDeleteAction(Request $request): Response
-    {
-        if (!$this->csrfProtector->check($request->post("realblog_token"))) {
-            return Response::create($this->view->message("fail", "error_unauthorized"));
-        }
-        $article = FullArticle::fromStrings(...$this->articlePost($request));
-        $res = $this->db->deleteArticle($article);
-        if ($res !== 1) {
-            return $this->showArticleEditor($request, $article, "delete", [["story_deleted_error"]]);
-        }
-        return Response::redirect($this->overviewUrl($request)->absolute());
-    }
-
     /** @param list<array{string}> $errors */
     private function showArticleEditor(
         Request $request,
@@ -241,13 +215,11 @@ class MainAdminController
         string $action,
         array $errors = []
     ): Response {
-        assert(in_array($action, ["create", "edit", "delete"], true));
+        assert(in_array($action, ["create", "edit"], true));
         if ($action === "create") {
             $title = $this->view->text("tooltip_create");
         } elseif ($action === "edit") {
             $title = $this->view->text("title_edit", $article->id);
-        } elseif ($action === "delete") {
-            $title = $this->view->text("title_delete", $article->id);
         }
         $this->editor->init(['realblog_headline_field', 'realblog_story_field']);
         $json = json_encode(
@@ -302,23 +274,22 @@ class MainAdminController
         ];
     }
 
-    private function deleteSelectedAction(Request $request): Response
+    private function deleteAction(Request $request): Response
     {
         return Response::create($this->renderDeleteConfirmation($request))
-            ->withTitle($this->view->text("tooltip_delete_selected"));
+            ->withTitle($this->view->text("tooltip_delete"));
     }
 
-    private function doDeleteSelectedAction(Request $request): Response
+    private function doDeleteAction(Request $request): Response
     {
         if (!$this->csrfProtector->check($request->post("realblog_token"))) {
             return Response::create($this->view->message("fail", "error_unauthorized"));
         }
-        $ids = $this->realblogIdsFromGet($request);
-        $res = $this->db->deleteArticlesWithIds($ids);
-        if ($res !== count($ids)) {
-            $errors = $res > 0 ? [["deleteall_warning", $res, count($ids)]] : [["deleteall_error"]];
-            return Response::create($this->renderDeleteConfirmation($request, $errors))
-                ->withTitle($this->view->text("tooltip_delete_selected"));
+        $id = (int) $request->get("realblog_id");
+        $res = $this->db->deleteArticleById($id);
+        if (!$res) {
+            return Response::create($this->renderDeleteConfirmation($request, [["delete_error"]]))
+                ->withTitle($this->view->text("tooltip_delete"));
         }
         return Response::redirect($this->overviewUrl($request)->absolute());
     }
@@ -327,23 +298,11 @@ class MainAdminController
     private function renderDeleteConfirmation(Request $request, array $errors = []): string
     {
         return $this->view->render("confirm_delete", [
-            "ids" => $this->realblogIdsFromGet($request),
+            "id" => $request->get("realblog_id"),
             "url" => $this->overviewUrl($request)->relative(),
             "csrfToken" => $this->csrfProtector->token(),
             "errors" => $errors,
         ]);
-    }
-
-    /** @return list<int> */
-    private function realblogIdsFromGet(Request $request): array
-    {
-        $param = $request->getArray("realblog_ids");
-        if ($param === null || !is_array($param)) {
-            return [];
-        }
-        return array_map("intval", array_filter($param, function ($id) {
-            return (int) $id >= 1;
-        }));
     }
 
     private function overviewUrl(Request $request): Url

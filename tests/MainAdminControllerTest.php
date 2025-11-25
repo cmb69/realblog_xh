@@ -172,47 +172,6 @@ class MainAdminControllerTest extends TestCase
         $this->assertStringContainsString("Article not found!", $response->output());
     }
 
-    public function testDeleteActionRendersArticle(): void
-    {
-        $this->finder = $this->finder(["article" => $this->firstArticle()]);
-        $request = new FakeRequest([
-            "url" => "http://example.com/?&action=delete",
-        ]);
-        $response = $this->sut()($request);
-        Approvals::verifyHtml($response->output());
-        $this->assertEquals("Delete article #1", $response->title());
-    }
-
-    public function testDeleteActionInitializesEditor(): void
-    {
-        $this->finder = $this->finder(["article" => $this->firstArticle()]);
-        $this->editor->expects($this->once())->method("init")
-            ->with(["realblog_headline_field", "realblog_story_field"]);
-        $request = new FakeRequest([
-            "url" => "http://example.com/?&action=delete",
-        ]);
-        $this->sut()($request);
-    }
-
-    public function testDeletectionOutputsHjs(): void
-    {
-        $this->finder = $this->finder(["article" => $this->firstArticle()]);
-        $request = new FakeRequest([
-            "url" => "http://example.com/?&action=delete",
-        ]);
-        $response = $this->sut()($request);
-        $this->assertSame("<meta name=\"realblog\" content='[\"cat1\",\"cat2\"]'>\n", $response->hjs());
-    }
-
-    public function testDeleteActionFailsOnMissingArticle(): void
-    {
-        $request = new FakeRequest([
-            "url" => "http://example.com/?&action=delete",
-        ]);
-        $response = $this->sut()($request);
-        $this->assertStringContainsString("Article not found!", $response->output());
-    }
-
     public function testDoCreateActionIsCsrfProtected()
     {
         $this->csrfProtector->method("check")->willReturn(false);
@@ -325,64 +284,13 @@ class MainAdminControllerTest extends TestCase
         $this->assertStringContainsString("Article couldn't be modified!", $response->output());
     }
 
-    public function testDoDeleteActionIsCsrfProtected()
-    {
-        $this->csrfProtector->method("check")->willReturn(false);
-        $request = new FakeRequest([
-            "url" => "http://example.com/?&action=delete",
-            "post" => $this->dummyPost(),
-            "time" => 1675205155,
-        ]);
-        $response = $this->sut()($request);
-        $this->assertStringContainsString("You are not authorized for this action!", $response->output());
-    }
-
-   public function testDoDeleteActionRedirectsOnSuccess()
-    {
-        $this->db = $this->db(["delete" => 1]);
-        $this->csrfProtector->method("check")->willReturn(true);
-        $request = new FakeRequest([
-            "url" => "http://example.com/?&action=delete",
-            "post" => $this->dummyPost(),
-            "time" => 1675205155,
-        ]);
-        $response = $this->sut()($request);
-        $this->assertEquals(
-            "http://example.com/?realblog&admin=plugin_main&action=plugin_text&realblog_page=1",
-            $response->location()
-        );
-    }
-
-    public function testDoDeleteActionFailureIsReported(): void
-    {
-        $this->finder = $this->finder(["article" => $this->firstArticle()]);
-        $this->db = $this->db(["delete" => 0]);
-        $this->csrfProtector->method("check")->willReturn(true);
-        $request = new FakeRequest([
-            "url" => "http://example.com/?&action=delete",
-            "action" => "do_delete",
-            "post" => $this->dummyPost(),
-            "time" => 1675205155,
-        ]);
-        $response = $this->sut()($request);
-        $this->assertEquals("Delete article #0", $response->title());
-        $this->assertStringContainsString("Article couldn't be deleted!", $response->output());
-    }
-
-    public function testDeleteSelectedActionRendersConfirmation()
+    public function testDeleteActionRendersConfirmation()
     {
         $request = new FakeRequest([
-            "url" => "http://example.com/?&realblog_ids[]=17&realblog_ids[]=4&action=delete_selected",
+            "url" => "http://example.com/?&realblog_id=17&action=delete",
         ]);
         $response = $this->sut()($request);
-        $this->assertEquals("Delete selected articles", $response->title());
-        Approvals::verifyHtml($response->output());
-    }
-
-    public function testDeleteSelectedActionReportsIfNothingIsSelected()
-    {
-        $request = new FakeRequest(["url" => "http://example.com/?&action=delete_selected"]);
-        $response = $this->sut()($request);
+        $this->assertEquals("Delete article", $response->title());
         Approvals::verifyHtml($response->output());
     }
 
@@ -390,7 +298,7 @@ class MainAdminControllerTest extends TestCase
     {
         $this->csrfProtector->method("check")->willReturn(false);
         $request = new FakeRequest([
-            "url" => "http://example.com/?&realblog_ids[]=17&realblog_ids[]=4&action=delete_selected",
+            "url" => "http://example.com/?&realblog_id&action=delete",
             "post" => ["realblog_do" => ""],
         ]);
         $response = $this->sut()($request);
@@ -399,10 +307,10 @@ class MainAdminControllerTest extends TestCase
 
     public function testDoDeleteSelectedActionRedirectsOnSuccess()
     {
-        $this->db = $this->db(["bulkDelete" => 2]);
+        $this->db = $this->db(["bulkDelete" => true]);
         $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest([
-            "url" => "http://example.com/?&realblog_ids[]=17&realblog_ids[]=4&action=delete_selected",
+            "url" => "http://example.com/?&realblog_id=17&action=delete",
             "post" => ["realblog_do" => ""],
         ]);
         $response = $this->sut()($request);
@@ -412,37 +320,24 @@ class MainAdminControllerTest extends TestCase
         );
     }
 
-    public function testDoDeleteSelectedActionReportsPartialSuccess()
-    {
-        $this->db = $this->db(["bulkDelete" => 1]);
-        $this->csrfProtector->method("check")->willReturn(true);
-        $request = new FakeRequest([
-            "url" => "http://example.com/?&realblog_ids[]=17&realblog_ids[]=4&action=delete_selected",
-            "post" => ["realblog_do" => ""],
-        ]);
-        $response = $this->sut()($request);
-        $this->assertEquals("Delete selected articles", $response->title());
-        Approvals::verifyHtml($response->output());
-    }
-
     public function testDoDeleteSelectedActionReportsFailure()
     {
-        $this->db = $this->db(["bulkDelete" => 0]);
+        $this->db = $this->db(["bulkDelete" => false]);
         $this->csrfProtector->method("check")->willReturn(true);
         $request = new FakeRequest([
-            "url" => "http://example.com/?&realblog_ids[]=17&realblog_ids[]=4&action=delete_selected",
+            "url" => "http://example.com/?&realblog_id=17&action=delete",
             "post" => ["realblog_do" => ""],
         ]);
         $response = $this->sut()($request);
-        $this->assertEquals("Delete selected articles", $response->title());
-        $this->assertStringContainsString("No articles have been deleted!", $response->output());
+        $this->assertEquals("Delete article", $response->title());
+        $this->assertStringContainsString("The article could not be deleted!", $response->output());
     }
 
     private function db($options = [])
     {
         $db = $this->createMock(DB::class);
         $db->expects(isset($options["bulkDelete"]) ? $this->once() : $this->never())
-            ->method("deleteArticlesWithIds")->willReturn($options["bulkDelete"] ?? 0);
+            ->method("deleteArticleById")->willReturn($options["bulkDelete"] ?? false);
         $db->expects(isset($options["bulkUpdate"]) ? $this->once() : $this->never())
             ->method("updateStatusOfArticlesWithIds")->willReturn($options["bulkUpdate"] ?? 0);
         $db->expects(isset($options["insert"]) ? $this->once() : $this->never())

@@ -263,19 +263,15 @@ EOS;
         return (int) $res;
     }
 
-    /** @param list<int> $ids */
-    public function deleteArticlesWithIds(array $ids): int
+    public function deleteArticleById(int $id): bool
     {
-        $sql = sprintf(
-            'DELETE FROM articles WHERE id in (%s)',
-            implode(',', $ids)
-        );
+        $sql = 'DELETE FROM articles WHERE id = :id';
         $conn = $this->getConnection();
-        $res = $conn->exec($sql);
-        if ($res) {
-            $res = $conn->changes();
-        }
-        return (int) $res;
+        $statement = $conn->prepare($sql);
+        assert($statement !== false);
+        $statement->bindValue(':id', $id, SQLITE3_INTEGER);
+        $res = $statement->execute();
+        return (bool) $res;
     }
 
     /** @return void */
