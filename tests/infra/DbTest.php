@@ -125,7 +125,6 @@ class DbTest extends TestCase
             1,
             1,
             1676974220,
-            1,
             ",,",
             "My Article",
             "You should read it!",

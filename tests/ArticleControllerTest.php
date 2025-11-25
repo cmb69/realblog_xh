@@ -78,6 +78,7 @@ class ArticleControllerTest extends TestCase
             "url" => "http://example.com/?&function=realblog_article&realblog_id=3&realblog_search=word"
                 . "&realblog_page=1&realblog_selected=Blog",
             "s" => 1,
+            "time" => strtotime("2023-06-30"),
         ]);
         $response = $this->sut()($request, "blog", true, "all");
         Approvals::verifyHtml($response->output());
@@ -116,6 +117,7 @@ class ArticleControllerTest extends TestCase
             "url" => "http://example.com/?&function=realblog_article&realblog_id=3&realblog_search=word"
                 . "&realblog_page=1&realblog_selected=Blog",
             "s" => 1,
+            "time" => strtotime("2023-06-30"),
         ]);
         $response = $this->sut()($request, "blog", true, "all");
         Approvals::verifyHtml($response->output());
@@ -132,6 +134,7 @@ class ArticleControllerTest extends TestCase
                 . "&realblog_page=1&realblog_selected=Blog",
             "admin" => true,
             "s" => 1,
+            "time" => strtotime("2023-06-30"),
         ]);
         $response = $this->sut()($request, "blog", true, "all");
         Approvals::verifyHtml($response->output());
@@ -168,7 +171,6 @@ class ArticleControllerTest extends TestCase
             3,
             1,
             gmmktime(12, 0, 0, 6, 23, 2023),
-            1,
             ",test,",
             "Title",
             "Teaser",
@@ -204,7 +206,6 @@ class ArticleControllerTest extends TestCase
             3,
             2,
             gmmktime(12, 0, 0, 6, 23, 2022),
-            2,
             "",
             "Title",
             "Teaser",

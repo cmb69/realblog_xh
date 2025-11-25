@@ -32,9 +32,6 @@ class FullArticle
     /** @var int */
     public $date;
 
-    /** @var int */
-    public $status;
-
     /** @var string */
     public $categories;
 
@@ -57,7 +54,6 @@ class FullArticle
         string $id,
         string $version,
         string $date,
-        string $status,
         string $categories,
         string $title,
         string $teaser,
@@ -69,7 +65,6 @@ class FullArticle
             (int) $id,
             (int) $version,
             strtotime($date) ?: 0,
-            (int) $status,
             "," . $categories . ",",
             $title,
             $teaser,
@@ -83,7 +78,6 @@ class FullArticle
         int $id,
         int $version,
         int $date,
-        int $status,
         string $categories,
         string $title,
         string $teaser,
@@ -94,7 +88,6 @@ class FullArticle
         $this->id = $id;
         $this->version = $version;
         $this->date = $date;
-        $this->status = $status;
         $this->categories = $categories;
         $this->title = $title;
         $this->teaser = $teaser;

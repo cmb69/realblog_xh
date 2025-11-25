@@ -165,7 +165,7 @@ class MainAdminController
     private function createAction(Request $request): Response
     {
         $timestamp = $request->time();
-        $article = new FullArticle(0, 0, $timestamp, 0, '', '', '', '', false, false);
+        $article = new FullArticle(0, 0, $timestamp, '', '', '', '', false, false);
         return $this->showArticleEditor($request, $article, "create");
     }
 
@@ -286,22 +286,13 @@ class MainAdminController
         ]);
     }
 
-    /** @return array{string,string,string,string,string,string,string,string,string,string} */
+    /** @return array{string,string,string,string,string,string,string,string,string} */
     private function articlePost(Request $request): array
     {
-        $date = strtotime($request->post("realblog_date") ?? "0");
-        if ($date > $request->time()) {
-            $status = Article::UNPUBLISHED;
-        } elseif ($date < strtotime("-1 month", $request->time())) {
-            $status = Article::ARCHIVED;
-        } else {
-            $status = Article::PUBLISHED;
-        }
         return [
             $request->post("realblog_id") ?? "",
             $request->post("realblog_version") ?? "",
             $request->post("realblog_date") ?? "",
-            (string) $status,
             $request->post("realblog_categories") ?? "",
             $request->post("realblog_title") ?? "",
             $request->post("realblog_headline") ?? "",

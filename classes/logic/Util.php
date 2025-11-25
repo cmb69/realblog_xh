@@ -128,6 +128,16 @@ class Util
         return $errors;
     }
 
+    public static function isUnpublished(FullArticle $article, int $now): bool
+    {
+        return $article->date > strtotime("midnight", $now);
+    }
+
+    public static function isArchieved(FullArticle $article, int $now): bool
+    {
+        return $article->date < strtotime("midnight -1 month", $now);
+    }
+
     /** @return array{int,int} */
     public static function publishingInterval(int $now): array
     {

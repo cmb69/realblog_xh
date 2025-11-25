@@ -23,10 +23,6 @@ namespace Realblog\Value;
 
 class Article
 {
-    public const UNPUBLISHED = 0;
-    public const PUBLISHED = 1;
-    public const ARCHIVED = 2;
-
     /**
      * @var int
      * @readonly
