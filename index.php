@@ -58,8 +58,6 @@ use Realblog\Dic;
  * @var array<string,array<string,string>> $pth
  */
 
-require_once $pth['folder']['plugin'] . 'compat.php';
-
 Dic::makeGeneralController()(Request::current())();
 Dic::makeFeedController()(Request::current())();
 $o .= Dic::articleController()(Request::current())();

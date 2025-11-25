@@ -23,7 +23,6 @@ hinaus hat Realblog_XH keine mehrsprachigen Fähigkeiten.
   - [Archiv](#archiv)
   - [RSS-Feed](#rss-feed)
   - [Kommentare](#kommentare)
-- [Abwärtskompatibilität](#abwärtskompatibilität)
 - [Problembehebung](#problembehebung)
 - [Lizenz](#lizenz)
 - [Danksagung](#danksagung)
@@ -195,17 +194,6 @@ eine Klasse mit dem Namen `%IHRPLUGIN%\RealblogBridge` definieren, die das
 `plugins/realblog/classes/CommentsBridge.php` definiert und dokumentiert ist.
 Stellen Sie sicher, dass diese Klasse und ihre Abhängigkeiten geladen sind, wenn
 Realblog_XH sie braucht; Autoloading wird empfohlen.
-
-## Abwärtskompatibilität
-
-Realblog_XH ist weitgehend abwärtskompatibel zum ursprünglichen Realblog, so dass Sie
-dessen Datendateien (`realblog.txt`) und Pluginaufrufe weiter verwenden können.
-Allerdings gelten diese Pluginaufrufe als missbilligt, und können in einer späteren
-Version entfernt werden.
-
-Die RSS-Feed-Dateien (`realblog_rss_feed.xm`l`) werden nicht mehr verwendet;
-statt dessen werden die Feeds dynamisch generiert. Sie sollten die alten
-Dateien löschen, so dass News-Reader nicht die alten Inhalte aufschnappen.
 
 ## Problembehebung
 

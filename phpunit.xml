@@ -5,7 +5,6 @@
       <directory suffix=".php">classes</directory>
       <directory suffix=".php">views</directory>
       <file>admin.php</file>
-      <file>compat.php</file>
       <file>index.php</file>
     </include>
   </coverage>
