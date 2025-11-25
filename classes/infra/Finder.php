@@ -62,7 +62,7 @@ class Finder
             ? 'AND (title LIKE :search OR body LIKE :search)'
             : '';
         $sql = <<<SQL
-SELECT id, date, categories, title, teaser, length(body) AS hasBody, feedable, commentable
+SELECT id, date, categories, title, teaser, length(body) AS hasBody, commentable
     FROM articles
     WHERE date > :from AND date < :to $categoryClause $searchClause
     ORDER BY date $order, id $order
@@ -88,7 +88,7 @@ SQL;
     public function findArchivedArticlesInPeriod(int $start, int $end): array
     {
         $sql = <<<'SQL'
-SELECT id, date, categories, title, teaser, length(body) AS hasBody, feedable, commentable
+SELECT id, date, categories, title, teaser, length(body) AS hasBody, commentable
     FROM articles
     WHERE date >= :start AND date < :end
     ORDER BY date DESC, id DESC
@@ -131,7 +131,7 @@ SQL;
     public function findArchivedArticlesContaining(int $start, string $search): array
     {
         $sql = <<<'SQL'
-SELECT id, date, categories, title, teaser, length(body) AS hasBody, feedable, commentable
+SELECT id, date, categories, title, teaser, length(body) AS hasBody, commentable
     FROM articles
     WHERE (title LIKE :text OR body LIKE :text) AND date <= :start
     ORDER BY date DESC, id DESC
@@ -195,7 +195,7 @@ SQL;
     {
         $sql = <<<SQL
 SELECT id, date, trim(categories, ',') as categories, title, teaser,
-        length(body) AS hasBody, feedable, commentable
+        length(body) AS hasBody, commentable
     FROM articles ORDER BY id DESC LIMIT $limit OFFSET $offset
 SQL;
         $connection = $this->db->getConnection();
@@ -212,15 +212,14 @@ SQL;
     public function findFeedableArticles(int $start, int $count)
     {
         $sql = <<<SQL
-SELECT id, date, categories, title, teaser, length(body) AS hasBody, feedable, commentable
-    FROM articles WHERE date <= :start AND feedable = :feedable ORDER BY date DESC, id DESC
+SELECT id, date, categories, title, teaser, length(body) AS hasBody, commentable
+    FROM articles WHERE date <= :start ORDER BY date DESC, id DESC
     LIMIT $count
 SQL;
         $connection = $this->db->getConnection();
         $statement = $connection->prepare($sql);
         assert($statement !== false);
         $statement->bindValue(':start', $start, SQLITE3_INTEGER);
-        $statement->bindValue(':feedable', 1, SQLITE3_INTEGER);
         $result = $statement->execute();
         assert($result !== false);
         $objects = array();
@@ -279,7 +278,7 @@ SQL;
         assert($result !== false);
         $record = $result->fetchArray(SQLITE3_NUM);
         if ($record !== false) {
-            unset($record[3], $record[4], $record[5]);
+            unset($record[3], $record[4], $record[5], $record[10]);
             return new FullArticle(...$record);
         } else {
             return null;

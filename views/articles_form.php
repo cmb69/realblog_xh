@@ -11,7 +11,7 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
  * @var int $prevPage
  * @var int $nextPage
  * @var int $lastPage
- * @var list<array{id:int,date:string,categories:string,title:string,feedable:bool,commentable:bool,delete_url:string,edit_url:string}> $articles
+ * @var list<array{id:int,date:string,categories:string,title:string,commentable:bool,delete_url:string,edit_url:string}> $articles
  */
 ?>
 <!-- realblog articles form -->
@@ -33,7 +33,6 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
           </th>
           <th><?=$this->text('id_label')?></th>
           <th><?=$this->text('date_label')?></th>
-          <th><?=$this->text('label_rss')?></th>
           <th><?=$this->text('comments_onoff')?></th>
         </tr>
       </thead>
@@ -52,18 +51,17 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
           </td>
           <td><?=$this->esc($article['id'])?></td>
           <td><?=$this->esc($article['date'])?></td>
-          <td><?=$this->esc($article['feedable'])?></td>
           <td><?=$this->esc($article['commentable'])?></td>
         </tr>
         <tr>
           <td colspan="3" class="realblog_table_title"><?=$this->esc($article['title'])?></td>
-          <td colspan="3" class="realblog_table_categories"><?=$this->esc($article['categories'])?></td>
+          <td colspan="2" class="realblog_table_categories"><?=$this->esc($article['categories'])?></td>
         </tr>
 <?endforeach?>
       </tbody>
       <tfoot>
         <tr>
-          <td colspan="6">
+          <td colspan="5">
             <input type="text" name="realblog_page" value="<?=$this->esc($page)?>" size="2">
             / <?=$this->esc($lastPage)?>
             <button name="realblog_page" value="1" title="<?=$this->text('tooltip_first')?>">

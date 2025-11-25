@@ -166,7 +166,6 @@ class BlogControllerTest extends TestCase
                 "Title $num",
                 "Teaser $num",
                 true,
-                false,
                 true
             );
         }

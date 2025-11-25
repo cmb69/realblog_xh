@@ -133,12 +133,12 @@ class FinderTest extends TestCase
 
     public function testFindsFeedableArticles(): void
     {
-        $article = $this->article(["feedable" => true]);
+        $article = $this->article();
         $this->assertEquals(1, $this->db->insertArticle($article));
-        $article = $this->article(["feedable" => false]);
+        $article = $this->article();
         $this->assertEquals(1, $this->db->insertArticle($article));
         $articles = $this->sut->findFeedableArticles(strtotime("2024-01-01"), 100);
-        $this->assertCount(1, $articles);
+        $this->assertCount(2, $articles);
         $this->assertContainsOnlyInstancesOf(Article::class, $articles);
     }
 
@@ -180,7 +180,6 @@ class FinderTest extends TestCase
             $options["title"] ?? "My Article",
             "You should read it!",
             $options["body"] ?? "It has a lot of useful info.",
-            $options["feedable"] ?? false,
             false
         );
     }

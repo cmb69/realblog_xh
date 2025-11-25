@@ -19,7 +19,6 @@ $plugin_tx['realblog']['entry_edit']="upraviť článok";
 $plugin_tx['realblog']['frontpage_label']="vždy zverejniť";
 $plugin_tx['realblog']['headline_label']="úvodník";
 $plugin_tx['realblog']['id_label']="ID";
-$plugin_tx['realblog']['label_rss']="RSS feed";
 $plugin_tx['realblog']['links_visible_text']="Najnovšie články v blogu:";
 $plugin_tx['realblog']['menu_main']="Články";
 $plugin_tx['realblog']['message_comments_1']="K článku je %d komentár.";

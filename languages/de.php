@@ -38,7 +38,6 @@ $plugin_tx['realblog']['exchange_import_failure']="Konnte nicht von \"%s\" impor
 $plugin_tx['realblog']['frontpage_label']="immer veröffentlichen";
 $plugin_tx['realblog']['headline_label']="Teaser";
 $plugin_tx['realblog']['id_label']="ID";
-$plugin_tx['realblog']['label_rss']="RSS-Feed";
 $plugin_tx['realblog']['label_categories']="Kategorien";
 $plugin_tx['realblog']['label_category_add']="Kategorie hinzufügen:";
 $plugin_tx['realblog']['links_visible_text']="Aktuelle Artikel im Blog:";

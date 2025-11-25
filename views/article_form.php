@@ -11,7 +11,6 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
  * @var string $title
  * @var string $teaser
  * @var string $body
- * @var bool $feedable
  * @var bool $commentable
  * @var string $date
  * @var string $page_title
@@ -54,13 +53,6 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
             <span><?=$this->text('comment_label')?></span>
           </label>
         </td>
-        <td>
-          <label>
-            <input type="hidden" name="realblog_rssfeed" value="">
-            <input type="checkbox" name="realblog_rssfeed" value="1" <?=$this->esc($feedable)?>>
-            <span><?=$this->text('label_rss')?></span>
-          </label>
-        </td>
       </tr>
       <tr>
         <th colspan="3"><label for="realblog_categories" class="realblog_label"><?=$this->text('label_categories')?></label></td>
@@ -77,7 +69,7 @@ if (!defined("CMSIMPLE_XH_VERSION")) {http_response_code(403); exit;}
         <th colspan="3"><label for="realblog_title" class="realblog_label"><?=$this->text('title_label')?></label></td>
       </tr>
       <tr>
-        <td colspan="3"><input type="text" id="realblog_title" name="realblog_title" value="<?=$this->esc($title)?>" size="50"></td>
+        <td colspan="2"><input type="text" id="realblog_title" name="realblog_title" value="<?=$this->esc($title)?>" size="50"></td>
       </tr>
     </table>
     <p>

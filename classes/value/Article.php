@@ -63,12 +63,6 @@ class Article
      * @var bool
      * @readonly
      */
-    public $feedable;
-
-    /**
-     * @var bool
-     * @readonly
-     */
     public $commentable;
 
     public function __construct(
@@ -78,7 +72,6 @@ class Article
         string $title,
         string $teaser,
         bool $hasBody,
-        bool $feedable,
         bool $commentable
     ) {
         $this->id = $id;
@@ -87,7 +80,6 @@ class Article
         $this->title = $title;
         $this->teaser = $teaser;
         $this->hasBody = $hasBody;
-        $this->feedable = $feedable;
         $this->commentable = $commentable;
     }
 }

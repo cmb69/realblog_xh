@@ -91,7 +91,6 @@ CREATE TABLE page_views (
     timestamp INTEGER NOT NULL
 );
 CREATE INDEX date ON articles (date, id);
-CREATE INDEX feedable ON articles (feedable, date, id);
 EOS;
         assert($this->connection !== null);
         $this->connection->exec($sql);
@@ -132,7 +131,7 @@ SQL;
                 $statement->bindValue(':title', $record[6], SQLITE3_TEXT);
                 $statement->bindValue(':teaser', $record[7], SQLITE3_TEXT);
                 $statement->bindValue(':body', $record[8], SQLITE3_TEXT);
-                $statement->bindValue(':feedable', $record[9], SQLITE3_INTEGER);
+                $statement->bindValue(':feedable', 0, SQLITE3_NULL);
                 $statement->bindValue(':commentable', $record[10], SQLITE3_INTEGER);
                 $statement->execute();
             }
@@ -166,6 +165,7 @@ CREATE TABLE IF NOT EXISTS page_views (
     timestamp INTEGER NOT NULL
 );
 DROP INDEX IF EXISTS status;
+DROP INDEX IF EXISTS feedable;
 CREATE INDEX IF NOT EXISTS date ON articles (date, id);
 EOS;
         assert($this->connection !== null);
@@ -193,7 +193,7 @@ EOS;
         $statement->bindValue(':title', $article->title, SQLITE3_TEXT);
         $statement->bindValue(':teaser', $article->teaser, SQLITE3_TEXT);
         $statement->bindValue(':body', $article->body, SQLITE3_TEXT);
-        $statement->bindValue(':feedable', $article->feedable, SQLITE3_INTEGER);
+        $statement->bindValue(':feedable', 0, SQLITE3_NULL);
         $statement->bindValue(':commentable', $article->commentable, SQLITE3_INTEGER);
         $res = $statement->execute();
         if ($res) {
@@ -209,7 +209,7 @@ EOS;
 UPDATE articles
     SET version = version + 1, date = :date,
         categories = :categories, title = :title, teaser = :teaser, body = :body,
-        feedable = :feedable, commentable = :commentable
+        commentable = :commentable
     WHERE id = :id AND version = :version
 EOS;
         $statement = $conn->prepare($sql);
@@ -221,7 +221,6 @@ EOS;
         $statement->bindValue(':title', $article->title, SQLITE3_TEXT);
         $statement->bindValue(':teaser', $article->teaser, SQLITE3_TEXT);
         $statement->bindValue(':body', $article->body, SQLITE3_TEXT);
-        $statement->bindValue(':feedable', $article->feedable, SQLITE3_INTEGER);
         $statement->bindValue(':commentable', $article->commentable, SQLITE3_INTEGER);
         $res = $statement->execute();
         if ($res) {
@@ -292,7 +291,7 @@ EOS;
             return false;
         }
         $sql = <<<SQL
-SELECT id, date, categories, title, teaser, body, feedable, commentable
+SELECT id, date, categories, title, teaser, body, commentable
 FROM articles
 SQL;
         $conn = $this->getConnection();
@@ -344,8 +343,8 @@ EOS;
             $statement->bindValue(':title', $record[3], SQLITE3_TEXT);
             $statement->bindValue(':teaser', $record[4], SQLITE3_TEXT);
             $statement->bindValue(':body', $record[5], SQLITE3_TEXT);
-            $statement->bindValue(':feedable', $record[6], SQLITE3_INTEGER);
-            $statement->bindValue(':commentable', $record[7], SQLITE3_INTEGER);
+            $statement->bindValue(':feedable', 0, SQLITE3_NULL);
+            $statement->bindValue(':commentable', $record[6], SQLITE3_INTEGER);
             if (!$statement->execute()) {
                 return false;
             }

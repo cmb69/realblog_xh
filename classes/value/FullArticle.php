@@ -45,9 +45,6 @@ class FullArticle
     public $body;
 
     /** @var bool */
-    public $feedable;
-
-    /** @var bool */
     public $commentable;
 
     public static function fromStrings(
@@ -58,7 +55,6 @@ class FullArticle
         string $title,
         string $teaser,
         string $body,
-        string $feedable,
         string $commentable
     ): self {
         return new self(
@@ -69,7 +65,6 @@ class FullArticle
             $title,
             $teaser,
             $body,
-            (bool) $feedable,
             (bool) $commentable
         );
     }
@@ -82,7 +77,6 @@ class FullArticle
         string $title,
         string $teaser,
         string $body,
-        bool $feedable,
         bool $commentable
     ) {
         $this->id = $id;
@@ -92,7 +86,6 @@ class FullArticle
         $this->title = $title;
         $this->teaser = $teaser;
         $this->body = $body;
-        $this->feedable = $feedable;
         $this->commentable = $commentable;
     }
 }

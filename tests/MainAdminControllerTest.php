@@ -370,7 +370,6 @@ class MainAdminControllerTest extends TestCase
             'realblog_headline' => "",
             'realblog_story' => "",
             "realblog_comments" => "",
-            "realblog_rssfeed" => "",
             "realblog_do" => "",
         ];
     }
@@ -386,7 +385,6 @@ class MainAdminControllerTest extends TestCase
             'realblog_headline' => "",
             'realblog_story' => "",
             "realblog_comments" => "",
-            "realblog_rssfeed" => "",
             "realblog_do" => "",
         ];
     }
@@ -401,7 +399,6 @@ class MainAdminControllerTest extends TestCase
             "Welcome!",
             "Welcome to my wonderful new blog",
             "Some lengthy blog post.",
-            true,
             false
         );
     }
@@ -414,7 +411,6 @@ class MainAdminControllerTest extends TestCase
             "",
             "Welcome!",
             "Welcome to my wonderful new blog",
-            true,
             true,
             false
         )];

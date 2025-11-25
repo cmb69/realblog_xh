@@ -137,7 +137,7 @@ class MainAdminController
 
     /**
      * @param list<Article> $articles
-     * @return list<array{id:int,date:string,categories:string,title:string,feedable:bool,commentable:bool,delete_url:string,edit_url:string}>
+     * @return list<array{id:int,date:string,categories:string,title:string,commentable:bool,delete_url:string,edit_url:string}>
      */
     private function articleRecords(Request $request, array $articles, int $page)
     {
@@ -150,7 +150,6 @@ class MainAdminController
                 "date" => date($this->view->text("date_format"), $article->date),
                 "categories" => $article->categories,
                 "title" => $article->title,
-                "feedable" => $article->feedable,
                 "commentable" => $article->commentable,
                 "delete_url" => $url->with("action", "delete")->relative(),
                 "edit_url" => $url->with("action", "edit")->relative(),
@@ -161,7 +160,7 @@ class MainAdminController
     private function createAction(Request $request): Response
     {
         $timestamp = $request->time();
-        $article = new FullArticle(0, 0, $timestamp, '', '', '', '', false, false);
+        $article = new FullArticle(0, 0, $timestamp, '', '', '', '', false);
         return $this->showArticleEditor($request, $article, "create");
     }
 
@@ -245,7 +244,6 @@ class MainAdminController
             "title" => $article->title,
             "teaser" => $article->teaser,
             "body" => $article->body,
-            "feedable" => $article->feedable ? "checked" : "",
             "commentable" => $article->commentable ? "checked" : "",
             "page_title" => $title,
             "date" => (string) date("Y-m-d", $article->date),
@@ -258,7 +256,7 @@ class MainAdminController
         ]);
     }
 
-    /** @return array{string,string,string,string,string,string,string,string,string} */
+    /** @return array{string,string,string,string,string,string,string,string} */
     private function articlePost(Request $request): array
     {
         return [
@@ -269,7 +267,6 @@ class MainAdminController
             $request->post("realblog_title") ?? "",
             $request->post("realblog_headline") ?? "",
             $request->post("realblog_story") ?? "",
-            $request->post("realblog_rssfeed") ?? "",
             $request->post("realblog_comments") ?? "",
         ];
     }
