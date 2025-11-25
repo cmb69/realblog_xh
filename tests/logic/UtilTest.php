@@ -90,7 +90,6 @@ class UtilTest extends TestCase
                 ["error_id"],
                 ["error_version"],
                 ["error_date"],
-                ["error_status"],
                 ["error_title"],
             ]],
         ];
