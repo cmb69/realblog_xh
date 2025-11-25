@@ -76,7 +76,6 @@ class LinkControllerTest extends TestCase
         return new Article(
             1,
             strtotime("2023-02-23"),
-            1,
             ",,",
             "My fine Post",
             "Read it",

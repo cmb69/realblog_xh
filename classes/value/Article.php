@@ -45,12 +45,6 @@ class Article
     public $date;
 
     /**
-     * @var int
-     * @readonly
-     */
-    public $status;
-
-    /**
      * @var string
      * @readonly
      */
@@ -89,7 +83,6 @@ class Article
     public function __construct(
         int $id,
         int $date,
-        int $status,
         string $categories,
         string $title,
         string $teaser,
@@ -99,7 +92,6 @@ class Article
     ) {
         $this->id = $id;
         $this->date = $date;
-        $this->status = $status;
         $this->categories = $categories;
         $this->title = $title;
         $this->teaser = $teaser;

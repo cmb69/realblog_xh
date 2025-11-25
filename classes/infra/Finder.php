@@ -62,7 +62,7 @@ class Finder
             ? 'AND (title LIKE :search OR body LIKE :search)'
             : '';
         $sql = <<<SQL
-SELECT id, date, status, categories, title, teaser, length(body) AS hasBody, feedable, commentable
+SELECT id, date, categories, title, teaser, length(body) AS hasBody, feedable, commentable
     FROM articles
     WHERE date > :from AND date < :to $categoryClause $searchClause
     ORDER BY date $order, id $order
@@ -88,7 +88,7 @@ SQL;
     public function findArchivedArticlesInPeriod(int $start, int $end): array
     {
         $sql = <<<'SQL'
-SELECT id, date, status, categories, title, teaser, length(body) AS hasBody, feedable, commentable
+SELECT id, date, categories, title, teaser, length(body) AS hasBody, feedable, commentable
     FROM articles
     WHERE date >= :start AND date < :end
     ORDER BY date DESC, id DESC
@@ -131,7 +131,7 @@ SQL;
     public function findArchivedArticlesContaining(int $start, string $search): array
     {
         $sql = <<<'SQL'
-SELECT id, date, status, categories, title, teaser, length(body) AS hasBody, feedable, commentable
+SELECT id, date, categories, title, teaser, length(body) AS hasBody, feedable, commentable
     FROM articles
     WHERE (title LIKE :text OR body LIKE :text) AND date <= :start
     ORDER BY date DESC, id DESC
@@ -194,7 +194,7 @@ SQL;
     public function findAllArticles(int $limit, int $offset): array
     {
         $sql = <<<SQL
-SELECT id, date, status, trim(categories, ',') as categories, title, teaser,
+SELECT id, date, trim(categories, ',') as categories, title, teaser,
         length(body) AS hasBody, feedable, commentable
     FROM articles ORDER BY id DESC LIMIT $limit OFFSET $offset
 SQL;
@@ -212,7 +212,7 @@ SQL;
     public function findFeedableArticles(int $start, int $count)
     {
         $sql = <<<SQL
-SELECT id, date, status, categories, title, teaser, length(body) AS hasBody, feedable, commentable
+SELECT id, date, categories, title, teaser, length(body) AS hasBody, feedable, commentable
     FROM articles WHERE date <= :start AND feedable = :feedable ORDER BY date DESC, id DESC
     LIMIT $count
 SQL;

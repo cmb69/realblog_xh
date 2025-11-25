@@ -187,7 +187,6 @@ class ArticleControllerTest extends TestCase
             $articles[] = new Article(
                 $num,
                 gmmktime(12, 0, 0, $month, 14, $year),
-                2,
                 "",
                 "Title $num",
                 "Teaser $num",

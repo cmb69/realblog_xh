@@ -517,7 +517,6 @@ class MainAdminControllerTest extends TestCase
         return [new Article(
             1,
             strtotime("2023-01-31T22:45:55+00:00"),
-            Article::PUBLISHED,
             "",
             "Welcome!",
             "Welcome to my wonderful new blog",

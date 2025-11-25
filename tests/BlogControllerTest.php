@@ -162,7 +162,6 @@ class BlogControllerTest extends TestCase
             $articles[] = new Article(
                 $num,
                 gmmktime(12, 0, 0, $month, 14, $year),
-                1,
                 ",test,",
                 "Title $num",
                 "Teaser $num",
@@ -199,7 +198,6 @@ class BlogControllerTest extends TestCase
             $articles[] = new Article(
                 $num,
                 gmmktime(12, 0, 0, $month, 14, $year),
-                2,
                 "",
                 "Title $num",
                 "Teaser $num",
