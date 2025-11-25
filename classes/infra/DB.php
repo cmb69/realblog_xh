@@ -84,13 +84,11 @@ CREATE TABLE articles (
     teaser TEXT,
     body TEXT,
     feedable INTEGER,
-    commentable INTEGER
-);
-CREATE TABLE page_views (
-    article_id INTEGER NOT NULL,
-    timestamp INTEGER NOT NULL
+    commentable INTEGER,
+    numviews INTEGER
 );
 CREATE INDEX date ON articles (date, id);
+CREATE INDEX numviews ON articles (numviews);
 EOS;
         assert($this->connection !== null);
         $this->connection->exec($sql);
@@ -109,7 +107,7 @@ EOS;
             $sql = <<<'SQL'
 INSERT INTO articles VALUES (
     :id, 1, :date, :publishing_date, :archiving_date, :status,
-    :categories, :title, :teaser, :body, :feedable, :commentable
+    :categories, :title, :teaser, :body, :feedable, :commentable, :numviews
 )
 SQL;
             $statement = $this->connection->prepare($sql);
@@ -133,6 +131,7 @@ SQL;
                 $statement->bindValue(':body', $record[8], SQLITE3_TEXT);
                 $statement->bindValue(':feedable', 0, SQLITE3_NULL);
                 $statement->bindValue(':commentable', $record[10], SQLITE3_INTEGER);
+                $statement->bindValue(':numviews', 0, SQLITE3_INTEGER);
                 $statement->execute();
             }
             $this->connection->exec('COMMIT');
@@ -160,13 +159,11 @@ SQL;
     private function updateDatabase()
     {
         $sql = <<<'EOS'
-CREATE TABLE IF NOT EXISTS page_views (
-    article_id INTEGER NOT NULL,
-    timestamp INTEGER NOT NULL
-);
+DROP TABLE IF EXISTS page_views;
 DROP INDEX IF EXISTS status;
 DROP INDEX IF EXISTS feedable;
 CREATE INDEX IF NOT EXISTS date ON articles (date, id);
+CREATE INDEX IF NOT EXISTS numviews ON articles (numviews);
 EOS;
         assert($this->connection !== null);
         $this->connection->exec($sql);
@@ -179,7 +176,7 @@ EOS;
 INSERT INTO articles
     VALUES (
         :id, 1, :date, :publishing_date, :archiving_date, :status,
-        :categories, :title, :teaser, :body, :feedable, :commentable
+        :categories, :title, :teaser, :body, :feedable, :commentable, :numviews
     )
 EOS;
         $statement = $conn->prepare($sql);
@@ -195,6 +192,7 @@ EOS;
         $statement->bindValue(':body', $article->body, SQLITE3_TEXT);
         $statement->bindValue(':feedable', 0, SQLITE3_NULL);
         $statement->bindValue(':commentable', $article->commentable, SQLITE3_INTEGER);
+        $statement->bindValue(':numview', 0, SQLITE3_INTEGER);
         $res = $statement->execute();
         if ($res) {
             $res = $conn->changes();
@@ -276,12 +274,11 @@ EOS;
     /** @return void */
     public function recordPageView(int $articleId)
     {
-        $sql = 'INSERT INTO page_views VALUES (:article_id, :timestamp)';
+        $sql = 'UPDATE articles SET numviews = COALESCE(numviews, 0) + 1 WHERE id = :article_id';
         $conn = $this->getConnection();
         $statement = $conn->prepare($sql);
         assert($statement !== false);
         $statement->bindValue(':article_id', $articleId, SQLITE3_INTEGER);
-        $statement->bindValue(':timestamp', time());
         $statement->execute();
     }
 
@@ -291,7 +288,7 @@ EOS;
             return false;
         }
         $sql = <<<SQL
-SELECT id, date, categories, title, teaser, body, commentable
+SELECT id, date, categories, title, teaser, body, commentable, COALESCE(numviews, 0) AS numviews
 FROM articles
 SQL;
         $conn = $this->getConnection();
@@ -322,7 +319,7 @@ SQL;
 INSERT INTO articles
     VALUES (
         :id, :version, :date, :publishing_date, :archiving_date, :status,
-        :categories, :title, :teaser, :body, :feedable, :commentable
+        :categories, :title, :teaser, :body, :feedable, :commentable, :numviews
     )
 EOS;
         $statement = $conn->prepare($sql);
@@ -345,6 +342,7 @@ EOS;
             $statement->bindValue(':body', $record[5], SQLITE3_TEXT);
             $statement->bindValue(':feedable', 0, SQLITE3_NULL);
             $statement->bindValue(':commentable', $record[6], SQLITE3_INTEGER);
+            $statement->bindValue(':numviews', $record[7], SQLITE3_INTEGER);
             if (!$statement->execute()) {
                 return false;
             }

@@ -1,4 +1,4 @@
-id,date,categories,title,teaser,body,commentable
-1,"2023-02-21 10:10:20",,"My Article","You should read it!","It has a lot of useful info.",0
-2,"2023-02-21 10:10:20",,"My Article","You should read it!","It has a lot of useful info.",0
-3,"2023-02-21 10:10:20",,"My Article","You should read it!","It has a lot of useful info.",0
+id,date,categories,title,teaser,body,commentable,numviews
+1,"2023-02-21 10:10:20",,"My Article","You should read it!","It has a lot of useful info.",0,0
+2,"2023-02-21 10:10:20",,"My Article","You should read it!","It has a lot of useful info.",0,0
+3,"2023-02-21 10:10:20",,"My Article","You should read it!","It has a lot of useful info.",0,0

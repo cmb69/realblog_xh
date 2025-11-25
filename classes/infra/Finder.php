@@ -233,9 +233,8 @@ SQL;
     public function findMostPopularArticles(int $limit): array
     {
         $sql = <<<SQL
-SELECT articles.id, articles.title, COUNT(*) AS page_views
-    FROM articles LEFT JOIN page_views ON articles.id = page_views.article_id
-    GROUP BY articles.id
+SELECT id, title, COALESCE(numviews, 0) AS page_views
+    FROM articles
     ORDER BY page_views DESC
     LIMIT $limit
 SQL;
