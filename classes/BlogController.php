@@ -77,9 +77,10 @@ class BlogController
         $order = ($this->conf["entries_order"] == "desc") ? -1 : 1;
         $limit = max(1, (int) $this->conf["entries_per_page"]);
         $searchTerm = $request->get("realblog_search") ?? "";
-        $articleCount = $this->finder->countArticlesWithStatus(Article::MASK_PUBLISHED, $category, $searchTerm);
+        [$from, $to] = Util::publishingInterval($request->time());
+        $articleCount = $this->finder->countPublishedArticles($from, $to, $category, $searchTerm);
         [$offset, $pageCount, $page] = Util::paginationOffset($articleCount, $limit, $this->realblogPage($request));
-        $articles = $this->finder->findArticles(Article::PUBLISHED, $limit, $offset, $order, $category, $searchTerm);
+        $articles = $this->finder->findArticles($from, $to, $limit, $offset, $order, $category, $searchTerm);
         if ($searchTerm) {
             $html .= $this->renderSearchResults($request, "blog", $articleCount);
         }
@@ -177,7 +178,10 @@ class BlogController
         }
         $searchTerm = $request->get("realblog_search") ?? "";
         if ($searchTerm) {
-            $articles = $this->finder->findArchivedArticlesContaining($searchTerm);
+            $articles = $this->finder->findArchivedArticlesContaining(
+                Util::archiveStart($request->time()),
+                $searchTerm
+            );
             $html .= $this->renderSearchResults($request, "archive", count($articles));
         } else {
             $year = $this->year($request);
@@ -198,7 +202,10 @@ class BlogController
             $year = (int) $this->year($request);
             $articles = $this->finder->findArchivedArticlesInPeriod(
                 (int) mktime(0, 0, 0, 1, 1, $year),
-                (int) mktime(0, 0, 0, 1, 1, $year + 1)
+                min(
+                    (int) mktime(0, 0, 0, 1, 1, $year + 1),
+                    Util::archiveStart($request->time())
+                )
             );
             return $this->renderArchivedArticles($request, $articles, false);
         }
@@ -215,7 +222,10 @@ class BlogController
             "heading" => $heading,
             "years" => $isSearch
                 ? null
-                : $this->yearPaginationRecords($request, $this->finder->findArchiveYears()),
+                : $this->yearPaginationRecords(
+                    $request,
+                    $this->finder->findArchiveYears(Util::archiveStart($request->time()))
+                ),
         ]);
     }
 
@@ -310,7 +320,7 @@ class BlogController
         if (is_string($param)) {
             return $param;
         }
-        $archiveYears = $this->finder->findArchiveYears();
+        $archiveYears = $this->finder->findArchiveYears(Util::archiveStart($request->time()));
         if (!$archiveYears) {
             return "";
         }

@@ -130,4 +130,22 @@ class Util
         }
         return $errors;
     }
+
+    /** @return array{int,int} */
+    public static function publishingInterval(int $now): array
+    {
+        $to = strtotime("midnight", $now);
+        $from = strtotime("midnight -1 month", $to);
+        return [$from, $to];
+    }
+
+    public static function publishingStart(int $now): int
+    {
+        return strtotime("midnight", $now);
+    }
+
+    public static function archiveStart(int $now): int
+    {
+        return strtotime("midnight -1 month", $now);
+    }
 }

@@ -153,7 +153,7 @@ class ArticleControllerTest extends TestCase
     private function finder($options = [])
     {
         $finder = $this->createStub(Finder::class);
-        $finder->method("countArticlesWithStatus")->willReturn($options["count"] ?? 0);
+        $finder->method("countPublishedArticles")->willReturn($options["count"] ?? 0);
         $finder->method("findArticles")->willReturn($options["articles"] ?? []);
         $finder->method("findById")->willReturn($options["article"] ?? $this->article());
         $finder->method("findArchiveYears")->willReturn([2020, 2022]);

@@ -42,7 +42,8 @@ class Finder
      * @return list<Article>
      */
     public function findArticles(
-        int $status,
+        int $from,
+        int $to,
         int $limit,
         int $offset = 0,
         int $order = -1,
@@ -63,14 +64,15 @@ class Finder
         $sql = <<<SQL
 SELECT id, date, status, categories, title, teaser, length(body) AS hasBody, feedable, commentable
     FROM articles
-    WHERE status = :status $categoryClause $searchClause
+    WHERE date > :from AND date < :to $categoryClause $searchClause
     ORDER BY date $order, id $order
     LIMIT $limit OFFSET $offset
 SQL;
         $connection = $this->db->getConnection();
         $statement = $connection->prepare($sql);
         assert($statement !== false);
-        $statement->bindValue(':status', $status, SQLITE3_INTEGER);
+        $statement->bindValue(':from', $from, SQLITE3_INTEGER);
+        $statement->bindValue(':to', $to, SQLITE3_INTEGER);
         $statement->bindValue(':category', "%,$category,%", SQLITE3_TEXT);
         $statement->bindValue(':search', "%$search%", SQLITE3_TEXT);
         $result = $statement->execute();
@@ -88,13 +90,12 @@ SQL;
         $sql = <<<'SQL'
 SELECT id, date, status, categories, title, teaser, length(body) AS hasBody, feedable, commentable
     FROM articles
-    WHERE status = :status AND date >= :start AND date < :end
+    WHERE date >= :start AND date < :end
     ORDER BY date DESC, id DESC
 SQL;
         $connection = $this->db->getConnection();
         $statement = $connection->prepare($sql);
         assert($statement !== false);
-        $statement->bindValue(':status', Article::ARCHIVED, SQLITE3_INTEGER);
         $statement->bindValue(':start', $start, SQLITE3_INTEGER);
         $statement->bindValue(':end', $end, SQLITE3_INTEGER);
         $result = $statement->execute();
@@ -107,16 +108,16 @@ SQL;
     }
 
     /** @return list<int> */
-    public function findArchiveYears(): array
+    public function findArchiveYears(int $start): array
     {
         $sql = <<<'SQL'
 SELECT DISTINCT strftime('%Y', date, 'unixepoch') AS year
-    FROM articles WHERE status = :status ORDER BY year
+    FROM articles WHERE date <= :start ORDER BY year
 SQL;
         $connection = $this->db->getConnection();
         $statement = $connection->prepare($sql);
         assert($statement !== false);
-        $statement->bindValue(':status', Article::ARCHIVED, SQLITE3_INTEGER);
+        $statement->bindValue(':start', $start, SQLITE3_INTEGER);
         $res = $statement->execute();
         assert($res !== false);
         $years = array();
@@ -127,19 +128,19 @@ SQL;
     }
 
     /** @return list<Article> */
-    public function findArchivedArticlesContaining(string $search): array
+    public function findArchivedArticlesContaining(int $start, string $search): array
     {
         $sql = <<<'SQL'
 SELECT id, date, status, categories, title, teaser, length(body) AS hasBody, feedable, commentable
     FROM articles
-    WHERE (title LIKE :text OR body LIKE :text) AND status = :status
+    WHERE (title LIKE :text OR body LIKE :text) AND date <= :start
     ORDER BY date DESC, id DESC
 SQL;
         $connection = $this->db->getConnection();
         $statement = $connection->prepare($sql);
         assert($statement !== false);
         $statement->bindValue(':text', '%' . $search . '%', SQLITE3_TEXT);
-        $statement->bindValue(':status', Article::ARCHIVED, SQLITE3_INTEGER);
+        $statement->bindValue(':start', $start, SQLITE3_INTEGER);
         $result = $statement->execute();
         assert($result !== false);
         $objects = array();
@@ -149,10 +150,24 @@ SQL;
         return $objects;
     }
 
-    public function countArticlesWithStatus(int $states, string $category = 'all', ?string $search = null): int
+    public function countArticles(): int
     {
         $db = $this->db->getConnection();
-        $whereClause = $this->statesToWhereClause($states);
+        $sql = <<<SQL
+SELECT COUNT(*) AS count FROM articles
+SQL;
+        $statement = $db->prepare($sql);
+        assert($statement !== false);
+        $result = $statement->execute();
+        assert($result !== false);
+        $record = $result->fetchArray(SQLITE3_ASSOC);
+        assert($record !== false);
+        return $record['count'];
+    }
+
+    public function countPublishedArticles(int $from, int $to, string $category = 'all', ?string $search = null): int
+    {
+        $db = $this->db->getConnection();
         $categoryClause = ($category !== 'all')
             ? 'AND categories LIKE :category'
             : '';
@@ -160,10 +175,12 @@ SQL;
             ? 'AND (title LIKE :search OR body LIKE :search)'
             : '';
         $sql = <<<SQL
-SELECT COUNT(*) AS count FROM articles WHERE $whereClause $categoryClause $searchClause
+SELECT COUNT(*) AS count FROM articles WHERE date >= :from AND date <= :to $categoryClause $searchClause
 SQL;
         $statement = $db->prepare($sql);
         assert($statement !== false);
+        $statement->bindValue(':from', $from, SQLITE3_INTEGER);
+        $statement->bindValue(':to', $to, SQLITE3_INTEGER);
         $statement->bindValue(':category', "%,$category,%", SQLITE3_TEXT);
         $statement->bindValue(':search', "%$search%", SQLITE3_TEXT);
         $result = $statement->execute();
@@ -174,13 +191,12 @@ SQL;
     }
 
     /** @return list<Article>*/
-    public function findArticlesWithStatus(int $states, int $limit, int $offset): array
+    public function findAllArticles(int $limit, int $offset): array
     {
-        $whereClause = $this->statesToWhereClause($states);
         $sql = <<<SQL
 SELECT id, date, status, trim(categories, ',') as categories, title, teaser,
         length(body) AS hasBody, feedable, commentable
-    FROM articles WHERE $whereClause ORDER BY id DESC LIMIT $limit OFFSET $offset
+    FROM articles ORDER BY id DESC LIMIT $limit OFFSET $offset
 SQL;
         $connection = $this->db->getConnection();
         $result = $connection->query($sql);
@@ -192,32 +208,18 @@ SQL;
         return $objects;
     }
 
-    private function statesToWhereClause(int $states): string
-    {
-        if ($states === 0) {
-            return "1 = 0";
-        }
-        $result = [];
-        for ($i = Article::FIRST_STATE; $i <= Article::LAST_STATE; $i++) {
-            if ($states & (1 << $i)) {
-                $result[] = $i;
-            }
-        }
-        return sprintf("status IN (%s)", implode(", ", $result));
-    }
-
     /** @return list<Article> */
-    public function findFeedableArticles(int $count)
+    public function findFeedableArticles(int $start, int $count)
     {
         $sql = <<<SQL
 SELECT id, date, status, categories, title, teaser, length(body) AS hasBody, feedable, commentable
-    FROM articles WHERE status = :status AND feedable = :feedable ORDER BY date DESC, id DESC
+    FROM articles WHERE date <= :start AND feedable = :feedable ORDER BY date DESC, id DESC
     LIMIT $count
 SQL;
         $connection = $this->db->getConnection();
         $statement = $connection->prepare($sql);
         assert($statement !== false);
-        $statement->bindValue(':status', Article::PUBLISHED, SQLITE3_INTEGER);
+        $statement->bindValue(':start', $start, SQLITE3_INTEGER);
         $statement->bindValue(':feedable', 1, SQLITE3_INTEGER);
         $result = $statement->execute();
         assert($result !== false);

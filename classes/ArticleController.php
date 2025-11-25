@@ -155,7 +155,7 @@ class ArticleController
         if (is_string($param)) {
             return $param;
         }
-        $archiveYears = $this->finder->findArchiveYears();
+        $archiveYears = $this->finder->findArchiveYears(Util::archiveStart($request->time()));
         if (!$archiveYears) {
             return "";
         }

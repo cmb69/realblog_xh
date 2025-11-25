@@ -457,8 +457,8 @@ class MainAdminControllerTest extends TestCase
     private function finder($options = [])
     {
         $finder = $this->createStub(Finder::class);
-        $finder->method("countArticlesWithStatus")->willReturn(count($options["articles"] ?? []));
-        $finder->method('findArticlesWithStatus')->willReturn($options["articles"] ?? []);
+        $finder->method("countArticles")->willReturn(count($options["articles"] ?? []));
+        $finder->method('findAllArticles')->willReturn($options["articles"] ?? []);
         $finder->method('findById')->willReturn($options["article"] ?? null);
         $finder->method('findAllCategories')->willReturn(["cat1", "cat2"]);
         return $finder;

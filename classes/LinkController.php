@@ -29,6 +29,7 @@ use Plib\Url;
 use Plib\View;
 use Realblog\Infra\Finder;
 use Realblog\Infra\Pages;
+use Realblog\Logic\Util;
 use Realblog\Value\Article;
 
 class LinkController
@@ -66,7 +67,8 @@ class LinkController
         if (!$this->pages->hasPageWithUrl($pageUrl) || $this->conf["links_visible"] <= 0) {
             return Response::create();
         }
-        $articles = $this->finder->findArticles(1, (int) $this->conf["links_visible"]);
+        [$from, $to] = Util::publishingInterval($request->time());
+        $articles = $this->finder->findArticles($from, $to, (int) $this->conf["links_visible"]);
         return Response::create($this->view->render("latest", [
             "articles" => $this->articleRecords($request->url(), $articles, $pageUrl),
             "heading" => $this->conf["heading_level"],

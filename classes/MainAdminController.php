@@ -118,10 +118,10 @@ class MainAdminController
 
     private function defaultAction(Request $request): Response
     {
-        $articleCount = $this->finder->countArticlesWithStatus(Article::MASK_ALL);
+        $articleCount = $this->finder->countArticles();
         $limit = (int) $this->conf['admin_records_page'];
         [$offset, $pageCount] = Util::paginationOffset($articleCount, $limit, $this->realblogPage($request));
-        $articles = $this->finder->findArticlesWithStatus(Article::MASK_ALL, $limit, $offset);
+        $articles = $this->finder->findAllArticles($limit, $offset);
         return Response::create($this->renderArticles($request, $articles, $pageCount));
     }
 

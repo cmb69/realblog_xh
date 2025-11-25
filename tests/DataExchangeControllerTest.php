@@ -55,7 +55,7 @@ class DataExchangeControllerTest extends TestCase
         $this->csrfProtector->method("token")->willReturn("e3c1b42a6098b48a39f9f54ddb3388f7");
         $this->db = $this->db(true);
         $this->finder = $this->createStub(Finder::class);
-        $this->finder->method("countArticlesWithStatus")->willReturn(3);
+        $this->finder->method("countArticles")->willReturn(3);
         $this->fileSystem = new FakeFileSystem();
         $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["realblog"]);
     }

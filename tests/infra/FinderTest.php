@@ -59,7 +59,7 @@ class FinderTest extends TestCase
         $this->assertEquals(1, $this->db->insertArticle($this->article()));
         $this->assertEquals(1, $this->db->insertArticle($this->article()));
         $this->assertEquals(1, $this->db->insertArticle($this->article()));
-        $articles = $this->sut->findArticles(1, 10, 0);
+        $articles = $this->sut->findArticles(1676974219, 1676974221, 10, 0);
         $this->assertCount(3, $articles);
         $this->assertContainsOnlyInstancesOf(Article::class, $articles);
     }
@@ -89,7 +89,7 @@ class FinderTest extends TestCase
         $this->assertEquals(1, $this->db->insertArticle($article));
         $article = $this->article(["date" => strtotime("2022-01-01"), "status" => 2]);
         $this->assertEquals(1, $this->db->insertArticle($article));
-        $articles = $this->sut->findArchiveYears();
+        $articles = $this->sut->findArchiveYears(strtotime("2022-01-01"));
         $this->assertCount(2, $articles);
         $this->assertContainsOnly("int", $articles);
     }
@@ -102,23 +102,23 @@ class FinderTest extends TestCase
         $this->assertEquals(1, $this->db->insertArticle($article));
         $article = $this->article(["status" => 2, "body" => "foo search bar"]);
         $this->assertEquals(1, $this->db->insertArticle($article));
-        $articles = $this->sut->findArchivedArticlesContaining("search");
+        $articles = $this->sut->findArchivedArticlesContaining(strtotime("2023-02-22"), "search");
         $this->assertCount(2, $articles);
         $this->assertContainsOnlyInstancesOf(Article::class, $articles);
     }
 
     public function testCountsArticlesWithStatus(): void
     {
-        $article = $this->article(["status" => 0]);
+        $article = $this->article(["date" => strtotime("2023-02-23")]);
         $this->assertEquals(1, $this->db->insertArticle($article));
-        $article = $this->article(["status" => 1]);
+        $article = $this->article(["date" => strtotime("2023-02-22")]);
         $this->assertEquals(1, $this->db->insertArticle($article));
-        $article = $this->article(["status" => 2]);
+        $article = $this->article(["date" => strtotime("2023-02-20")]);
         $this->assertEquals(1, $this->db->insertArticle($article));
-        $this->assertEquals(1, $this->sut->countArticlesWithStatus(Article::MASK_PUBLISHED));
+        $this->assertEquals(1, $this->sut->countPublishedArticles(strtotime("2023-02-21"), strtotime("2023-02-22")));
     }
 
-    public function testFindsArticlesWithStatus(): void
+    public function testFindsArticles(): void
     {
         $article = $this->article(["status" => 0]);
         $this->assertEquals(1, $this->db->insertArticle($article));
@@ -126,8 +126,8 @@ class FinderTest extends TestCase
         $this->assertEquals(1, $this->db->insertArticle($article));
         $article = $this->article(["status" => 2]);
         $this->assertEquals(1, $this->db->insertArticle($article));
-        $articles = $this->sut->findArticlesWithStatus(Article::MASK_PUBLISHED, 100, 0);
-        $this->assertCount(1, $articles);
+        $articles = $this->sut->findAllArticles(100, 0);
+        $this->assertCount(3, $articles);
         $this->assertContainsOnlyInstancesOf(Article::class, $articles);
     }
 
@@ -137,7 +137,7 @@ class FinderTest extends TestCase
         $this->assertEquals(1, $this->db->insertArticle($article));
         $article = $this->article(["feedable" => false]);
         $this->assertEquals(1, $this->db->insertArticle($article));
-        $articles = $this->sut->findFeedableArticles(100);
+        $articles = $this->sut->findFeedableArticles(strtotime("2024-01-01"), 100);
         $this->assertCount(1, $articles);
         $this->assertContainsOnlyInstancesOf(Article::class, $articles);
     }
