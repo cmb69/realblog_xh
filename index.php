@@ -62,9 +62,12 @@ Dic::makeGeneralController()(Request::current())();
 Dic::makeFeedController()(Request::current())();
 $o .= Dic::articleController()(Request::current())();
 
-function realblog_blog(bool $showSearch = false, string $category = "all"): string
+function realblog_blog(bool $showSearch = false): string
 {
-    return Dic::makeBlogController()(Request::current(), "blog", $showSearch, $category)();
+    if (func_num_args() === 2) {
+        trigger_error("Filtering by category via the realblog_blog plugin call is no longer supported", E_USER_WARNING);
+    }
+    return Dic::makeBlogController()(Request::current(), "blog", $showSearch)();
 }
 
 function realblog_archive(bool $showSearch = false): string
@@ -74,7 +77,7 @@ function realblog_archive(bool $showSearch = false): string
 
 function realblog_link(string $pageUrl, bool $showTeaser = false): string
 {
-    trigger_error("realblog_link is deprecated; use realblog_latest instead");
+    trigger_error("realblog_link is deprecated; use realblog_latest instead", E_USER_DEPRECATED);
     return Dic::makeLinkController()(Request::current(), $showTeaser)();
 }
 
@@ -86,6 +89,11 @@ function realblog_latest(bool $showTeaser = false): string
 function realblog_mostpopular(): string
 {
     return Dic::makeMostPopularController()(Request::current())();
+}
+
+function realblog_categories(): string
+{
+    return Dic::categoryController()(Request::current())();
 }
 
 function realblog_feedlink(string $target = "_self"): string

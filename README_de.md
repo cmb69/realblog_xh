@@ -107,6 +107,11 @@ an einer passende Stelle des Templates folgendes ein:
 
     <?=Realblog_mostPopular()?>
 
+Um die Liste mit Links zu den verfügbaren Kategorien auf jeder Seite anzuzeigen,
+fügen Sie an einer passenden Stelle des Templates folgendes ein:
+
+    <?=realblog_categories()?>
+
 ### Administration
 
 In der Hauptadministration des Plugins können Sie die Blog-Beiträge
@@ -134,20 +139,13 @@ dann ist dies am Ende der Datei mit fortlaufenden IDs zu tun.
 
 ### Kategorien
 
-Realblog_XH hat derzeit nur eine sehr grundlegende Unterstützung von Kategorien.
+Realblog_XH hat einfache Unterstützung von Kategorien.
 Um die Kategorien zu definieren, zu denen ein Beitrag gehört, tragen Sie die durch
 *Komma getrennte* Kategorienamen in das entsprechende Feld im Artikelformular ein:
 
     Kategorie 1,Kategorie 2
 
 Beachten Sie, dass Sie beliebig viele Kategorien definieren können.
-
-Es ist Besuchern nicht möglich nach Kategorien zu filtern, aber Sie können
-separate CMSimple_XH Seiten für jede Kategorie anlegen, und die entsprechenden
-Beiträge auf diesen Seiten anzeigen lassen, wenn Sie ein zweites Argument an
-Realblog_blog() übergeben:
-
-    {{{Realblog_blog(false, 'Kategorie 1')}}}
 
 ### Archiv
 

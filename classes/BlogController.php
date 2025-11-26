@@ -59,11 +59,11 @@ class BlogController
         $this->pages = $pages;
     }
 
-    public function __invoke(Request $request, string $mode, bool $showSearch, string $category = ""): Response
+    public function __invoke(Request $request, string $mode, bool $showSearch): Response
     {
         assert(in_array($mode, ["blog", "archive"], true));
         if ($mode === "blog") {
-            return $this->allArticles($request, $showSearch, $category);
+            return $this->allArticles($request, $showSearch, $request->get("realblog_category") ?? "all");
         }
         return $this->allArchivedArticles($request, $showSearch);
     }

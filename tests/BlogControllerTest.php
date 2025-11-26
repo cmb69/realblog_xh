@@ -108,7 +108,7 @@ class BlogControllerTest extends TestCase
         $request = new FakeRequest([
             "url" => "http://example.com/?Archive&realblog_year=2023",
         ]);
-        $response = $this->sut()($request, "archive", true);
+        $response = $this->sut()($request, "archive", true, "");
         Approvals::verifyHtml($response->output());
     }
 
@@ -118,7 +118,7 @@ class BlogControllerTest extends TestCase
         $request = new FakeRequest([
             "url" => "http://example.com/?Archive&realblog_year=2022",
             ]);
-        $response = $this->sut()($request, "archive", true);
+        $response = $this->sut()($request, "archive", true, "");
         Approvals::verifyHtml($response->output());
     }
 
@@ -128,7 +128,7 @@ class BlogControllerTest extends TestCase
         $request = new FakeRequest([
             "url" => "http://example.com/?Archive",
         ]);
-        $response = $this->sut()($request, "archive", true);
+        $response = $this->sut()($request, "archive", true, "");
         $this->assertEquals("http://example.com/?Archive&realblog_year=2022", $response->location());
     }
 

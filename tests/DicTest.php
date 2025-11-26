@@ -69,6 +69,11 @@ class DicTest extends TestCase
         $this->assertInstanceOf(FeedController::class, Dic::makeFeedController());
     }
 
+    public function testMakesCategoryController(): void
+    {
+        $this->assertInstanceOf(CategoryController::class, Dic::categoryController());
+    }
+
     public function testMakesInfoController(): void
     {
         $this->assertInstanceOf(InfoController::class, Dic::makeInfoController());

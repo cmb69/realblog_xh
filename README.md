@@ -103,6 +103,11 @@ appropriate place in the template:
 
     <?=Realblog_mostPopular()?>
 
+To display the list of links to the available categories on each page, insert in
+an appropriate place in the template:
+
+    <?=realblog_categories()?>
+
 ### Administration
 
 You can manage the blog posts in the main plugin adminstration. You can
@@ -128,19 +133,13 @@ consecutively increasing IDs.
 
 ### Categories
 
-Realblog_XH currently has only very basic support for categories. To define
+Realblog_XH has basic support for categories. To define
 the categories a post belongs to, enter a *comma separated* list of
 category names in the respective field of the article form:
 
     Category 1,Category 2
 
 Note that you can define as many categories as you like.
-
-It is not possible for visitors to filter for categories, but you can prepare
-separate CMSimple_XH pages for each category, and display the respective posts
-on these pages by passing a second argument to `Realblog_blog()`:
-
-    {{{Realblog_blog(false, 'Category 1')}}}
 
 ### Archive
 

@@ -99,6 +99,15 @@ class Dic
         );
     }
 
+    public static function categoryController(): CategoryController
+    {
+        return new CategoryController(
+            self::makeConf(),
+            new Finder(Dic::makeDb()),
+            self::view()
+        );
+    }
+
     public static function makeInfoController(): InfoController
     {
         global $pth;

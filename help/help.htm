@@ -119,6 +119,9 @@ in an appropritate place in the template:</p>
 <p>To display the list of the most popular articles on each page, insert
 in an appropriate place in the template:</p>
 <pre><code>&lt;?=Realblog_mostPopular()?&gt;</code></pre>
+<p>To display the list of links to the available categories on each
+page, insert in an appropriate place in the template:</p>
+<pre><code>&lt;?=realblog_categories()?&gt;</code></pre>
 <h3 id="administration">Administration</h3>
 <p>You can manage the blog posts in the main plugin adminstration. You
 can create, edit and delete posts, change their status, etc. The
@@ -140,17 +143,11 @@ IDs (first column), because these are used to refer to the page views.
 It is fine to delete rows, but if you want to insert rows, do it at the
 end of the file with consecutively increasing IDs.</p>
 <h3 id="categories">Categories</h3>
-<p>Realblog_XH currently has only very basic support for categories. To
-define the categories a post belongs to, enter a <em>comma
-separated</em> list of category names in the respective field of the
-article form:</p>
+<p>Realblog_XH has basic support for categories. To define the
+categories a post belongs to, enter a <em>comma separated</em> list of
+category names in the respective field of the article form:</p>
 <pre><code>Category 1,Category 2</code></pre>
 <p>Note that you can define as many categories as you like.</p>
-<p>It is not possible for visitors to filter for categories, but you can
-prepare separate CMSimple_XH pages for each category, and display the
-respective posts on these pages by passing a second argument to
-<code>Realblog_blog()</code>:</p>
-<pre><code>{{{Realblog_blog(false, &#39;Category 1&#39;)}}}</code></pre>
 <h3 id="archive">Archive</h3>
 <p>To display the blog archive on a CMSimple_XH page, write:</p>
 <pre><code>{{{Realblog_archive()}}}</code></pre>

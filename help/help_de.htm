@@ -127,6 +127,10 @@ Sie an einer passenden Stelle des Templates folgendes ein:</p>
 <p>Um die Liste der beliebtesten Artikel auf jeder Seite anzuzeigen,
 fügen Sie an einer passende Stelle des Templates folgendes ein:</p>
 <pre><code>&lt;?=Realblog_mostPopular()?&gt;</code></pre>
+<p>Um die Liste mit Links zu den verfügbaren Kategorien auf jeder Seite
+anzuzeigen, fügen Sie an einer passenden Stelle des Templates folgendes
+ein:</p>
+<pre><code>&lt;?=realblog_categories()?&gt;</code></pre>
 <h3 id="administration">Administration</h3>
 <p>In der Hauptadministration des Plugins können Sie die Blog-Beiträge
 verwalten. Sie können Beiträge erzeugen, bearbeiten und löschen, ihren
@@ -153,18 +157,13 @@ referenzieren. Zeilen dürfen beliebig gelöscht werden, aber wenn neue
 Zeilen eingefügt werden sollen, dann ist dies am Ende der Datei mit
 fortlaufenden IDs zu tun.</p>
 <h3 id="kategorien">Kategorien</h3>
-<p>Realblog_XH hat derzeit nur eine sehr grundlegende Unterstützung von
-Kategorien. Um die Kategorien zu definieren, zu denen ein Beitrag
-gehört, tragen Sie die durch <em>Komma getrennte</em> Kategorienamen in
-das entsprechende Feld im Artikelformular ein:</p>
+<p>Realblog_XH hat einfache Unterstützung von Kategorien. Um die
+Kategorien zu definieren, zu denen ein Beitrag gehört, tragen Sie die
+durch <em>Komma getrennte</em> Kategorienamen in das entsprechende Feld
+im Artikelformular ein:</p>
 <pre><code>Kategorie 1,Kategorie 2</code></pre>
 <p>Beachten Sie, dass Sie beliebig viele Kategorien definieren
 können.</p>
-<p>Es ist Besuchern nicht möglich nach Kategorien zu filtern, aber Sie
-können separate CMSimple_XH Seiten für jede Kategorie anlegen, und die
-entsprechenden Beiträge auf diesen Seiten anzeigen lassen, wenn Sie ein
-zweites Argument an Realblog_blog() übergeben:</p>
-<pre><code>{{{Realblog_blog(false, &#39;Kategorie 1&#39;)}}}</code></pre>
 <h3 id="archiv">Archiv</h3>
 <p>Um das Blog-Archiv auf einer CMSimple_XH Seite anzuzeigen, schreiben
 Sie:</p>
