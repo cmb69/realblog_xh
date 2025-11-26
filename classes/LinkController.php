@@ -62,15 +62,15 @@ class LinkController
         $this->pages = $pages;
     }
 
-    public function __invoke(Request $request, string $pageUrl, bool $showTeaser = false): Response
+    public function __invoke(Request $request, bool $showTeaser = false): Response
     {
-        if (!$this->pages->hasPageWithUrl($pageUrl) || $this->conf["links_visible"] <= 0) {
+        if ($this->conf["links_visible"] <= 0) {
             return Response::create();
         }
         [$from, $to] = Util::publishingInterval($request->time());
         $articles = $this->finder->findArticles($from, $to, (int) $this->conf["links_visible"]);
         return Response::create($this->view->render("latest", [
-            "articles" => $this->articleRecords($request->url(), $articles, $pageUrl),
+            "articles" => $this->articleRecords($request->url(), $articles),
             "heading" => $this->conf["heading_level"],
             "show_teaser" => $showTeaser,
         ]));
@@ -80,8 +80,9 @@ class LinkController
      * @param list<Article> $articles
      * @return list<array{title:string,date:string,url:string,teaser:string}>
      */
-    private function articleRecords(Url $url, array $articles, string $pageUrl): array
+    private function articleRecords(Url $url, array $articles): array
     {
+        $pageUrl = $this->conf["blog_page"];
         $records = [];
         foreach ($articles as $article) {
             $records[] = [

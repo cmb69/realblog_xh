@@ -74,12 +74,18 @@ function realblog_archive(bool $showSearch = false): string
 
 function realblog_link(string $pageUrl, bool $showTeaser = false): string
 {
-    return Dic::makeLinkController()(Request::current(), $pageUrl, $showTeaser)();
+    trigger_error("realblog_link is deprecated; use realblog_latest instead");
+    return Dic::makeLinkController()(Request::current(), $showTeaser)();
 }
 
-function realblog_mostpopular(string $pageUrl): string
+function realblog_latest(bool $showTeaser = false): string
 {
-    return Dic::makeMostPopularController()(Request::current(), $pageUrl)();
+    return Dic::makeLinkController()(Request::current(), $showTeaser)();
+}
+
+function realblog_mostpopular(): string
+{
+    return Dic::makeMostPopularController()(Request::current())();
 }
 
 function realblog_feedlink(string $target = "_self"): string

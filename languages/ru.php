@@ -7,6 +7,7 @@
  * later.
  */
 
+$plugin_tx['realblog']['blog_page']="";
 $plugin_tx['realblog']['archiv_back']="Обзор архива";
 $plugin_tx['realblog']['back_to_archive']="Возврат к архиву »";
 $plugin_tx['realblog']['backuped']=" • сохранена";
@@ -45,7 +46,6 @@ $plugin_tx['realblog']['rss_description']="информация";
 $plugin_tx['realblog']['rss_enable']="true";
 $plugin_tx['realblog']['rss_label']="RSS лента";
 $plugin_tx['realblog']['rss_language']="ru";
-$plugin_tx['realblog']['rss_page']="";
 $plugin_tx['realblog']['rss_title']="CMSimpleRealBlog";
 $plugin_tx['realblog']['rss_tooltip']="RSS лента для сайта <b>Имя сайта</b>";
 $plugin_tx['realblog']['search_and']="И";
@@ -88,7 +88,6 @@ $plugin_tx['realblog']['cf_rss_editor']="<p>Ваш электронный адр
 $plugin_tx['realblog']['cf_rss_encoding']="<p>Кодировка RSS-ленты (например, utf-8)</p><p>Необходима только в случае предоставления вами сервиса RSS.</p>";
 $plugin_tx['realblog']['cf_rss_link']="<p>Ссылка на страницу RSS:</p><p>http:// ... /корневой_каталог_CMSimple</p><p>Необходима только в случае предоставления вами сервиса RSS.</p>";
 $plugin_tx['realblog']['cf_rss_logo']="<p>Расположение вашего логотипа:</p><p>http:// ... /logo.gif</p><p>Этот логотип будет использован для сервиса RSS.</p><p>Необходим только в случае предоставления вами сервиса RSS.</p>";
-$plugin_tx['realblog']['cf_rss_page']="<p>Полный действующий адрес (URL) вашей страницы блога.<br />(Должен начинаться с <b>http://</b>)</p><p><b>Совет:</b></p><p>1. перейдите на вашу страницу в блоге;</p><p>2. скопируйте адресную строку вашего браузера;</p><p>3. вставьте сюда URL.</p><p>Необходим только в случае предоставления вами сервиса RSS.</p>";
 $plugin_tx['realblog']['cf_utf8_marker']="<b>Системная переменная. Не изменять!</b>";
 
 ?>

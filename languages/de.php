@@ -1,5 +1,6 @@
 <?php
 
+$plugin_tx['realblog']['blog_page']="Blog";
 $plugin_tx['realblog']['archiv_back']="zur Archiv-Übersicht";
 $plugin_tx['realblog']['article_count_0']="Kein Artikel";
 $plugin_tx['realblog']['article_count_1']="Ein Artikel";
@@ -63,7 +64,6 @@ $plugin_tx['realblog']['return']="Zurück";
 $plugin_tx['realblog']['rss_copyright']="";
 $plugin_tx['realblog']['rss_description']="Das Weblog von ...";
 $plugin_tx['realblog']['rss_language']="de";
-$plugin_tx['realblog']['rss_page']="Blog";
 $plugin_tx['realblog']['rss_title']="Weblog";
 $plugin_tx['realblog']['rss_tooltip']="RSS feed für diese Website";
 $plugin_tx['realblog']['search_button']="Suche im Blog";

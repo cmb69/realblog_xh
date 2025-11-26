@@ -82,24 +82,26 @@ To also display the search form, write:
 
     {{{Realblog_blog(true)}}}
 
+After you have set up the main blog page, you have to go to `Plugins` →
+`Realblog` → `Languages` → `Blog` → `Page`,
+where you have to enter the URL of the page on which the main blog is shown.
+It is best to navigate to this page and copy and paste everything after the
+question mark up to, but not including, the first ampersand (`&`), if any,
+from the address bar of the browser.
+
 To display the list of the most recent articles on each page,
 insert in an appropritate place in the template:
 
-    <?=Realblog_link('%BLOG_URL%')?>
-
-`%BLOG_URL%` has to be replaced by the URL of the main blog page. For details
-see the description of the [RSS page setting](#rss-feed).
+    <?=realblog_latest()?>
 
 To also display the teasers of these articles, write:
 
-    <?=Realblog_link('%BLOG_URL%', true)?>
+    <?=realblog_latest(true)?>
 
 To display the list of the most popular articles on each page, insert in an
 appropriate place in the template:
 
-    <?=Realblog_mostPopular('%BLOG_URL%')?>
-
-Regarding `%BLOG_URL%`, see the note above.
+    <?=Realblog_mostPopular()?>
 
 ### Administration
 
@@ -168,11 +170,7 @@ the feed in a new window/tab:
     <?=Realblog_feedLink('_blank')?>
 
 Besides some feed related settings in the configuration, there are some
-settings in the language file in the section `RSS`. Most important is `page`,
-where you have to enter the URL of the page on which the main blog is shown.
-It is best to navigate to this page and copy and paste everything after the
-question mark up to, but not including, the first ampersand (`&`), if any,
-from the address bar of the browser.
+settings in the language file in the section `RSS`.
 
 ### Comments
 

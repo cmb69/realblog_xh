@@ -49,7 +49,7 @@ class FeedControllerTest extends TestCase
         $text = XH_includeVar("./languages/en.php", "plugin_tx")["realblog"];
         $this->conf = XH_includeVar("./config/config.php", "plugin_cf")["realblog"];
         $this->conf["rss_logo"] = "rss.png";
-        $this->conf["rss_page"] = $text["rss_page"];
+        $this->conf["blog_page"] = $text["blog_page"];
         $this->finder = $this->createStub(Finder::class);
         $this->pages = $this->createStub(Pages::class);
         $this->view = new View("./views/", $text);

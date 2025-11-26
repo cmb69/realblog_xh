@@ -82,7 +82,6 @@ class Dic
     {
         return new MostPopularController(
             self::makeConf(),
-            new Pages(),
             new Finder(Dic::makeDb()),
             self::view()
         );
@@ -161,6 +160,6 @@ class Dic
     {
         global $plugin_cf, $plugin_tx;
 
-        return ["rss_page" => $plugin_tx["realblog"]["rss_page"]] + $plugin_cf["realblog"];
+        return ["blog_page" => $plugin_tx["realblog"]["blog_page"]] + $plugin_cf["realblog"];
     }
 }

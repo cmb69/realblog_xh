@@ -73,7 +73,7 @@ class FeedController
         $logo = $this->imageFolder . $this->conf["rss_logo"];
         $articles = $this->finder->findFeedableArticles(Util::publishingStart($request->time()), $count);
         return Response::create("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" . $this->view->render("feed", [
-            "url" => $request->url()->page($this->conf["rss_page"])->absolute(),
+            "url" => $request->url()->page($this->conf["blog_page"])->absolute(),
             "managing_editor" => $this->conf["rss_editor"],
             "has_logo" => (bool) $this->conf["rss_logo"],
             "image_url" => $request->url()->path($logo)->absolute(),

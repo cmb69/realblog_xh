@@ -26,16 +26,12 @@ use Plib\Response;
 use Plib\Url;
 use Plib\View;
 use Realblog\Infra\Finder;
-use Realblog\Infra\Pages;
 use Realblog\Value\MostPopularArticle;
 
 class MostPopularController
 {
     /** @var array<string,string> */
     private $conf;
-
-    /** @var Pages */
-    private $pages;
 
     /** @var Finder */
     private $finder;
@@ -44,22 +40,21 @@ class MostPopularController
     private $view;
 
     /** @param array<string,string> $conf */
-    public function __construct(array $conf, Pages $pages, Finder $finder, View $view)
+    public function __construct(array $conf, Finder $finder, View $view)
     {
         $this->conf = $conf;
-        $this->pages = $pages;
         $this->finder = $finder;
         $this->view = $view;
     }
 
-    public function __invoke(Request $request, string $pageUrl): Response
+    public function __invoke(Request $request): Response
     {
-        if (!$this->pages->hasPageWithUrl($pageUrl) || $this->conf["links_visible"] <= 0) {
+        if ($this->conf["links_visible"] <= 0) {
             return Response::create();
         }
         $articles = $this->finder->findMostPopularArticles((int) $this->conf["links_visible"]);
         return Response::create($this->view->render("most_popular", [
-            "articles" => $this->articleRecords($request->url(), $articles, $pageUrl),
+            "articles" => $this->articleRecords($request->url(), $articles),
             "heading" => $this->conf["heading_level"],
         ]));
     }
@@ -68,8 +63,9 @@ class MostPopularController
      * @param list<MostPopularArticle> $articles
      * @return list<array{id:int,title:string,page_views:int,url:string}>
      */
-    private function articleRecords(Url $url, array $articles, string $pageUrl): array
+    private function articleRecords(Url $url, array $articles): array
     {
+        $pageUrl = $this->conf["blog_page"];
         $records = [];
         foreach ($articles as $article) {
             $records[] = [

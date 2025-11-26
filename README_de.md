@@ -85,24 +85,27 @@ Um ebenfalls das Suchformular anzuzeigen, schreiben Sie:
 
     {{{Realblog_blog(true)}}}
 
+Nachdem Sie die Hauptseite des Blogs vorbereitet haben, gehen Sie zu `Plugins` →
+`Realblog` → `Sprach` → `Blog` → `Page`,
+wo Sie die URL der Seite, auf der der Hauptblog angezeigt wird,
+eintragen müssen. Am besten navigieren Sie zu dieser Seite, und kopieren alles
+nach dem Fragezeichen bis zum (exklusive) ersten Kaufmanns-Und (`&`), oder bis
+zum Ende, falls in der URL kein Kaufmanns-Und enthalten ist, aus der
+Adressleiste des Browsers.
+
 Um die Liste der neuesten Artikel auf jeder Seite anzuzeigen,
 fügen Sie an einer passenden Stelle des Templates folgendes ein:
 
-    <?=Realblog_link('%BLOG_URL%')?>
-
-`%BLOG_URL%` muss durch die URL der Hauptseite des Blogs ersetzt werden. Details
-finden Sie in der Beschreibung der [RSS page Einstellung](#rss-feed).
+    <?=realblog_latest()?>
 
 Um ebenfalls die Teaser dieser Artikel anzuzeigen, schreiben Sie:
 
-    <?=Realblog_link('%BLOG_URL%', true)?>
+    <?=realblog_latest(true)?>
 
 Um die Liste der beliebtesten Artikel auf jeder Seite anzuzeigen, fügen Sie
 an einer passende Stelle des Templates folgendes ein:
 
-    <?=Realblog_mostPopular('%BLOG_URL%')?>
-
-Bezüglich `%BLOG_URL%` beachten Sie den Hinweis weiter oben.
+    <?=Realblog_mostPopular()?>
 
 ### Administration
 
@@ -175,12 +178,7 @@ kann genutzt werden, um den Feed in einem neuen Window/Tab anzuzeigen:
     <?=Realblog_feedLink('_blank')?>
 
 Abgesehen von einigen Einstellung bzgl. des Feeds in der Konfiguration gibt
-es einige Einstellungen in der Sprachdatei im Abschnitt `RSS`. Die wichtigste
-ist `page`, wo Sie die URL der Seite, auf der der Hauptblog angezeigt wird,
-eintragen müssen. Am besten navigieren Sie zu dieser Seite, und kopieren alles
-nach dem Fragezeichen bis zum (exklusive) ersten Kaufmanns-Und (`&`), oder bis
-zum Ende, falls in der URL kein Kaufmanns-Und enthalten ist, aus der
-Adressleiste des Browsers.
+es einige Einstellungen in der Sprachdatei im Abschnitt `RSS`.
 
 ### Kommentare
 

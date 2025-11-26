@@ -104,18 +104,21 @@ plugin administration; there are alternative icon sets available in the
 <pre><code>{{{Realblog_blog()}}}</code></pre>
 <p>To also display the search form, write:</p>
 <pre><code>{{{Realblog_blog(true)}}}</code></pre>
+<p>After you have set up the main blog page, you have to go to
+<code>Plugins</code> → <code>Realblog</code> → <code>Languages</code> →
+<code>Blog</code> → <code>Page</code>, where you have to enter the URL
+of the page on which the main blog is shown. It is best to navigate to
+this page and copy and paste everything after the question mark up to,
+but not including, the first ampersand (<code>&amp;</code>), if any,
+from the address bar of the browser.</p>
 <p>To display the list of the most recent articles on each page, insert
 in an appropritate place in the template:</p>
-<pre><code>&lt;?=Realblog_link(&#39;%BLOG_URL%&#39;)?&gt;</code></pre>
-<p><code>%BLOG_URL%</code> has to be replaced by the URL of the main
-blog page. For details see the description of the <a
-href="#rss-feed">RSS page setting</a>.</p>
+<pre><code>&lt;?=realblog_latest()?&gt;</code></pre>
 <p>To also display the teasers of these articles, write:</p>
-<pre><code>&lt;?=Realblog_link(&#39;%BLOG_URL%&#39;, true)?&gt;</code></pre>
+<pre><code>&lt;?=realblog_latest(true)?&gt;</code></pre>
 <p>To display the list of the most popular articles on each page, insert
 in an appropriate place in the template:</p>
-<pre><code>&lt;?=Realblog_mostPopular(&#39;%BLOG_URL%&#39;)?&gt;</code></pre>
-<p>Regarding <code>%BLOG_URL%</code>, see the note above.</p>
+<pre><code>&lt;?=Realblog_mostPopular()?&gt;</code></pre>
 <h3 id="administration">Administration</h3>
 <p>You can manage the blog posts in the main plugin adminstration. You
 can create, edit and delete posts, change their status, etc. The
@@ -165,12 +168,7 @@ specifies the value of the target attribute of the hyperlink. This can
 be used to open the feed in a new window/tab:</p>
 <pre><code>&lt;?=Realblog_feedLink(&#39;_blank&#39;)?&gt;</code></pre>
 <p>Besides some feed related settings in the configuration, there are
-some settings in the language file in the section <code>RSS</code>. Most
-important is <code>page</code>, where you have to enter the URL of the
-page on which the main blog is shown. It is best to navigate to this
-page and copy and paste everything after the question mark up to, but
-not including, the first ampersand (<code>&amp;</code>), if any, from
-the address bar of the browser.</p>
+some settings in the language file in the section <code>RSS</code>.</p>
 <h3 id="comments">Comments</h3>
 <p>To add a commenting facility to your blog, you have to install a
 compatible comments plugin and enter its name in the configuration of

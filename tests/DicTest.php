@@ -31,7 +31,7 @@ class DicTest extends TestCase
 
         $pth = ["folder" => ["content" => "", "images" => "", "plugin" => "", "plugins" => ""]];
         $plugin_cf = ["realblog" => []];
-        $plugin_tx = ["realblog" => ["rss_page" => ""]];
+        $plugin_tx = ["realblog" => ["blog_page" => ""]];
     }
 
     public function testMakesGeneralController(): void

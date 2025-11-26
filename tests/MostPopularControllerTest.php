@@ -26,7 +26,6 @@ use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 use Plib\FakeRequest;
 use Plib\View;
-use Realblog\Infra\FakePages;
 use Realblog\Infra\Finder;
 use Realblog\Value\MostPopularArticle;
 
@@ -34,9 +33,6 @@ class MostPopularControllerTest extends TestCase
 {
     /** @var array<string,string> */
     private $conf;
-
-    /** @var FakePages */
-    private $pages;
 
     /** @var Finder&Stub */
     private $finder;
@@ -47,7 +43,7 @@ class MostPopularControllerTest extends TestCase
     public function setUp(): void
     {
         $this->conf = XH_includeVar("./config/config.php", "plugin_cf")["realblog"];
-        $this->pages = new FakePages();
+        $this->conf["blog_page"] = "foo";
         $this->finder = $this->createStub(Finder::class);
         $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["realblog"]);
     }
@@ -56,7 +52,6 @@ class MostPopularControllerTest extends TestCase
     {
         return new MostPopularController(
             $this->conf,
-            $this->pages,
             $this->finder,
             $this->view
         );
@@ -64,7 +59,6 @@ class MostPopularControllerTest extends TestCase
 
     public function testRendersEmptyList(): void
     {
-        $this->pages = new FakePages(["u" => ["foo"]]);
         $this->finder->method("findMostPopularArticles")->willReturn([]);
         $response = $this->sut()(new FakeRequest(), "foo");
         $this->assertStringContainsString("no entries available", $response->output());
@@ -72,14 +66,14 @@ class MostPopularControllerTest extends TestCase
 
     public function testRendersMostPopularArticles(): void
     {
-        $this->pages = new FakePages(["u" => ["foo"]]);
         $this->finder->method("findMostPopularArticles")->willReturn($this->articles());
         $response = $this->sut()(new FakeRequest(), "foo");
         Approvals::verifyHtml($response->output());
     }
 
-    public function testRendersNothingIfPageDoesNotExist(): void
+    public function testRendersNothingIfZeroLinksVisible(): void
     {
+        $this->conf["links_visible"] = "";
         $this->finder->method("findMostPopularArticles")->willReturn($this->articles());
         $response = $this->sut()(new FakeRequest(), "bar");
         $this->assertSame("", $response->output());

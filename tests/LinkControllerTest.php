@@ -47,6 +47,7 @@ class LinkControllerTest extends TestCase
     public function setUp(): void
     {
         $this->conf = XH_includeVar("./config/config.php", "plugin_cf")["realblog"];
+        $this->conf["blog_page"] = "Blog";
         $this->pages = new FakePages();
         $this->finder = $this->createStub(Finder::class);
         $this->finder->method("findArticles")->willReturn([$this->article()]);
@@ -65,8 +66,9 @@ class LinkControllerTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
-    public function testRendersNothingWhenPageDoesNotExist(): void
+    public function testRendersNothingIfZeroLinksVisible(): void
     {
+        $this->conf["links_visible"] = "";
         $response = $this->sut()(new FakeRequest(), "Blog", true);
         $this->assertEquals("", $response->output());
     }

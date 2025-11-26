@@ -1,5 +1,6 @@
 <?php
 
+$plugin_tx['realblog']['blog_page']="Blog";
 $plugin_tx['realblog']['archiv_back']="archive overview";
 $plugin_tx['realblog']['article_count_0']="no article";
 $plugin_tx['realblog']['article_count_1']="one article";
@@ -40,7 +41,7 @@ $plugin_tx['realblog']['headline_label']="Teaser";
 $plugin_tx['realblog']['id_label']="ID";
 $plugin_tx['realblog']['label_categories']="Categories";
 $plugin_tx['realblog']['label_category_add']="Add Category:";
-$plugin_tx['realblog']['links_visible_text']="Newest entries in Blog:";
+$plugin_tx['realblog']['links_visible_text']="Latest entries in Blog:";
 $plugin_tx['realblog']['menu_main']="Articles";
 $plugin_tx['realblog']['message_published_on']="Published on %s.";
 $plugin_tx['realblog']['message_filed_under']="Filed under %s.";
@@ -63,7 +64,6 @@ $plugin_tx['realblog']['return']="back";
 $plugin_tx['realblog']['rss_copyright']="";
 $plugin_tx['realblog']['rss_description']="The weblog of ...";
 $plugin_tx['realblog']['rss_language']="en";
-$plugin_tx['realblog']['rss_page']="Blog";
 $plugin_tx['realblog']['rss_title']="Weblog";
 $plugin_tx['realblog']['rss_tooltip']="RSS feed for this website";
 $plugin_tx['realblog']['search_button']="Search in Blog";

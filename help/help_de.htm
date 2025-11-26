@@ -111,19 +111,22 @@ Sie:</p>
 <pre><code>{{{Realblog_blog()}}}</code></pre>
 <p>Um ebenfalls das Suchformular anzuzeigen, schreiben Sie:</p>
 <pre><code>{{{Realblog_blog(true)}}}</code></pre>
+<p>Nachdem Sie die Hauptseite des Blogs vorbereitet haben, gehen Sie zu
+<code>Plugins</code> → <code>Realblog</code> → <code>Sprach</code> →
+<code>Blog</code> → <code>Page</code>, wo Sie die URL der Seite, auf der
+der Hauptblog angezeigt wird, eintragen müssen. Am besten navigieren Sie
+zu dieser Seite, und kopieren alles nach dem Fragezeichen bis zum
+(exklusive) ersten Kaufmanns-Und (<code>&amp;</code>), oder bis zum
+Ende, falls in der URL kein Kaufmanns-Und enthalten ist, aus der
+Adressleiste des Browsers.</p>
 <p>Um die Liste der neuesten Artikel auf jeder Seite anzuzeigen, fügen
 Sie an einer passenden Stelle des Templates folgendes ein:</p>
-<pre><code>&lt;?=Realblog_link(&#39;%BLOG_URL%&#39;)?&gt;</code></pre>
-<p><code>%BLOG_URL%</code> muss durch die URL der Hauptseite des Blogs
-ersetzt werden. Details finden Sie in der Beschreibung der <a
-href="#rss-feed">RSS page Einstellung</a>.</p>
+<pre><code>&lt;?=realblog_latest()?&gt;</code></pre>
 <p>Um ebenfalls die Teaser dieser Artikel anzuzeigen, schreiben Sie:</p>
-<pre><code>&lt;?=Realblog_link(&#39;%BLOG_URL%&#39;, true)?&gt;</code></pre>
+<pre><code>&lt;?=realblog_latest(true)?&gt;</code></pre>
 <p>Um die Liste der beliebtesten Artikel auf jeder Seite anzuzeigen,
 fügen Sie an einer passende Stelle des Templates folgendes ein:</p>
-<pre><code>&lt;?=Realblog_mostPopular(&#39;%BLOG_URL%&#39;)?&gt;</code></pre>
-<p>Bezüglich <code>%BLOG_URL%</code> beachten Sie den Hinweis weiter
-oben.</p>
+<pre><code>&lt;?=Realblog_mostPopular()?&gt;</code></pre>
 <h3 id="administration">Administration</h3>
 <p>In der Hauptadministration des Plugins können Sie die Blog-Beiträge
 verwalten. Sie können Beiträge erzeugen, bearbeiten und löschen, ihren
@@ -183,12 +186,7 @@ anzuzeigen:</p>
 <pre><code>&lt;?=Realblog_feedLink(&#39;_blank&#39;)?&gt;</code></pre>
 <p>Abgesehen von einigen Einstellung bzgl. des Feeds in der
 Konfiguration gibt es einige Einstellungen in der Sprachdatei im
-Abschnitt <code>RSS</code>. Die wichtigste ist <code>page</code>, wo Sie
-die URL der Seite, auf der der Hauptblog angezeigt wird, eintragen
-müssen. Am besten navigieren Sie zu dieser Seite, und kopieren alles
-nach dem Fragezeichen bis zum (exklusive) ersten Kaufmanns-Und
-(<code>&amp;</code>), oder bis zum Ende, falls in der URL kein
-Kaufmanns-Und enthalten ist, aus der Adressleiste des Browsers.</p>
+Abschnitt <code>RSS</code>.</p>
 <h3 id="kommentare">Kommentare</h3>
 <p>Um eine Kommentar-Möglichkeit zu Ihrem Blog hinzuzufügen, müssen Sie
 ein kompatibles Kommentar-Plugin installieren, und dessen Namen in der
